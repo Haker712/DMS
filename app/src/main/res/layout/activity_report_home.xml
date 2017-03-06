@@ -1,0 +1,51 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="70dp"
+		android:background="@color/colorAccent">
+		<ImageView
+			android:id="@+id/cancel_img"
+			android:layout_width="@dimen/btn_appbar_width"
+			android:layout_height="@dimen/btn_appbar_width"
+			android:layout_centerVertical="true"
+			android:layout_alignParentLeft="true"
+			android:gravity="center"
+			android:src="@drawable/ic_cancel_xh_btn"
+			android:layout_marginLeft="20dp" />
+
+		<TextView
+			android:id="@+id/reportTitle"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_centerHorizontal="true"
+			android:layout_centerVertical="true"
+			android:text="@string/report"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:textColor="#ffffff"
+			android:textSize="23sp" />
+
+		<Spinner
+			android:id="@+id/reports"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentRight="true"
+			android:layout_centerVertical="true"
+			android:padding="10dp"
+			android:layout_marginRight="10dp" />
+
+	</RelativeLayout>
+
+
+
+	<FrameLayout
+	    android:id="@+id/fragment_report"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:orientation="vertical">
+	</FrameLayout>
+</LinearLayout>

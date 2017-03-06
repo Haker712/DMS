@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.haker.mycalendar.MainActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/rlMonthYear">
+
+        <TextView
+            android:id="@+id/textViewMonth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hello World!" />
+
+        <TextView
+            android:id="@+id/textViewYear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hello World!"
+            android:layout_toRightOf="@+id/textViewMonth"
+            android:layout_alignParentRight="true"
+            android:gravity="right"/>
+
+    </RelativeLayout>
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rlMonthYear">
+
+        <TableRow>
+
+            <Button
+                android:id="@+id/sun"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="SUN"
+                android:textColor="@color/colorWhite"
+                android:background="@color/colorPrimary"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/mon"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="MON"
+                android:textColor="@color/colorWhite"
+                android:background="@color/colorPrimary"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/tue"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="TUE"
+                android:textColor="@color/colorWhite"
+                android:background="@color/colorPrimary"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/wed"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="WED"
+                android:textColor="@color/colorWhite"
+                android:background="@color/colorPrimary"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/thu"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="THU"
+                android:textColor="@color/colorWhite"
+                android:background="@color/colorPrimary"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/fri"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="FRI"
+                android:textColor="@color/colorWhite"
+                android:background="@color/colorPrimary"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/sat"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="SAT"
+                android:textColor="@color/colorWhite"
+                android:background="@color/colorPrimary"
+                android:layout_weight="1"/>
+
+        </TableRow>
+
+        <TableRow
+            android:layout_marginTop="5dp">
+
+            <Button
+                android:id="@+id/day1"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="1"
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/day2"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="1"
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/day3"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="1"
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/day4"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="1"
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/day5"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="1"
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/day6"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="1"
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/day7"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="1"
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+        </TableRow>
+
+        <TableRow
+            android:layout_marginTop="5dp">
+
+            <Button
+                android:id="@+id/day8"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="1"
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/day9"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="1"
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/day10"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="1"
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/day11"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="1"
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/day12"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="1"
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/day13"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="1"
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/day14"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="1"
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+        </TableRow>
+
+        <TableRow
+            android:layout_marginTop="5dp">
+
+            <Button
+                android:id="@+id/day15"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="1"
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/day16"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="1"
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/day17"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="1"
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/day18"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="1"
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/day19"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="1"
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/day20"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="1"
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/day21"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="1"
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+        </TableRow>
+
+        <TableRow
+            android:layout_marginTop="5dp">
+
+            <Button
+                android:id="@+id/day22"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="1"
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/day23"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="1"
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/day24"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="1"
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/day25"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="1"
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/day26"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="1"
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/day27"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="1"
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/day28"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="1"
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/hideRow"
+            android:layout_marginTop="5dp">
+
+            <Button
+                android:id="@+id/day29"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text=""
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/day30"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text=""
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/day31"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text=""
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text=""
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text=""
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text=""
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+            <Button
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text=""
+                android:textColor="@color/colorBlack"
+                android:background="@color/colorWhite"
+                android:layout_margin="2dp"
+                android:layout_weight="1"/>
+
+        </TableRow>
+
+    </TableLayout>
+</RelativeLayout>

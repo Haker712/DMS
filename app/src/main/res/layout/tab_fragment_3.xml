@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_marginBottom="60dp">
+
+    <RelativeLayout
+        android:id="@+id/headerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/appbar_height"
+        android:background="@color/colorAccent" >
+
+        <ImageView
+            android:id="@+id/cancel_img"
+            android:layout_width="@dimen/btn_appbar_width"
+            android:layout_height="@dimen/btn_appbar_height"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:gravity="center"
+            android:src="@drawable/ic_cancel_xh_btn"
+            android:layout_marginLeft="20dp"/>
+
+        <ImageView
+            android:id="@+id/add_img"
+            android:layout_width="@dimen/btn_appbar_width"
+            android:layout_height="@dimen/btn_appbar_height"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/cancel_img"
+            android:gravity="center"
+            android:src="@drawable/ic_add_xh_btn"
+            android:layout_marginLeft="20dp"/>
+        <ImageView
+            android:id="@+id/camera_img"
+            android:layout_width="@dimen/btn_appbar_width"
+            android:layout_height="@dimen/btn_appbar_height"
+            android:layout_toRightOf="@+id/add_img"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:src="@drawable/ic_camrea_hx_btn"
+            android:layout_marginLeft="20dp"/>
+        <ImageView
+            android:id="@+id/save_img"
+            android:layout_width="@dimen/btn_appbar_width"
+            android:layout_height="@dimen/btn_appbar_height"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/camera_img"
+            android:gravity="center"
+            android:src="@drawable/ic_save_xh_btn"
+            android:layout_marginLeft="20dp"/>
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="@string/competitor_activitites"
+            android:textSize="@dimen/appbar_title_size"
+            android:textColor="#ffffff" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/headerLayout"
+        android:text="No Detail"
+        android:textSize="22sp"
+        android:textColor="#FF0000"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="20dp"/>
+
+    <RelativeLayout
+        android:id="@+id/rlayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/message">
+
+        <TextView
+            android:id="@+id/txt_comp_name"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="Competitor Name : "
+            android:textSize="20sp"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="20dp"
+            android:gravity="right"/>
+
+        <Spinner
+            android:id="@+id/comp_name_spinner"
+            android:layout_width="300dp"
+            android:layout_height="45dp"
+            android:layout_toRightOf="@+id/txt_comp_name"
+            android:layout_marginTop="10dp"
+            ></Spinner>
+
+        <TextView
+            android:id="@+id/txt_note"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="Note : "
+            android:textSize="20sp"
+            android:layout_below="@+id/txt_comp_name"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="20dp"
+            android:gravity="right"/>
+
+        <TextView
+            android:id="@+id/txt_notes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="20sp"
+            android:layout_below="@+id/txt_comp_name"
+            android:layout_toRightOf="@+id/txt_note"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="20dp"/>
+
+    </RelativeLayout>
+
+    <GridView
+        android:id="@+id/gridview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:columnWidth="210dp"
+        android:verticalSpacing="20dp"
+        android:numColumns="auto_fit"
+        android:stretchMode="spacingWidth"
+        android:padding="30dp"
+        android:layout_below="@+id/rlayout" />
+
+</RelativeLayout>

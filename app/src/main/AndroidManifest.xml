@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.aceplus.samparoo">
+
+    <permission
+        android:name="com.aceplus.samparoo.permission.MAPS_RECEIVE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".SplashActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".AweSomeSplashActivity"
+            android:screenOrientation="landscape">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".LoginActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".HomeActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".SyncActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".CustomerVisitActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".customer.CustomerActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".customer.CustomerLoactionActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".customer.SaleActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".customer.SaleCheckoutActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".customer.SalePrintActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".customer.SaleOrderActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".customer.SaleOrderCheckoutActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".customer.SaleReturnActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".customer.AddNewCustomerActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".customer.AddNewCustomerLocationActivity"
+            android:screenOrientation="landscape" />
+
+        <activity
+        android:name=".customer.PosmActivity"
+        android:screenOrientation="landscape" />
+
+        <activity
+            android:name=".customer.PosmCheckOutActivity"
+            android:screenOrientation="landscape" />
+
+        <activity
+            android:name=".MarketingActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".marketing.MainFragmentActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".RouteActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".E_CalendarActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".credit_collection.CreditCollectActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".credit_collection.CreditCheckOut_Activity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".report.ReportHomeActivity"
+            android:screenOrientation="landscape" />
+
+        <activity
+            android:name=".customer.DeliveryActivity"
+            android:screenOrientation="landscape" />
+
+        <activity
+            android:name=".PromotionActivity"
+            android:screenOrientation="landscape" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_map_api_key" />
+
+    </application>
+
+</manifest>

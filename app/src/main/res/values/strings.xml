@@ -1,0 +1,100 @@
+<resources>
+    <string name="app_name">SamParOo</string>
+
+    <string name="google_map_api_key">AIzaSyCgBYPxRZ0ds7ZEeeTFnSe6Fd6f6cSPVM4</string>
+
+    <string name="home_title">HOME</string>
+    <string name="username_label">USER NAME : </string>
+    <string name="date_label">DATE : </string>
+
+    <string name="sync_title">SYNC</string>
+    <string name="customer_visit_title">CUSTOMER VISIT</string>
+    <string name="customer_title">CUSTOMER</string>
+    <string name="customer_location_title">CUSTOMER LOCATION</string>
+
+    <string name="search">Search</string>
+    <string name="column">:</string>
+    <string name="customer_name_label">Customer Name:</string>
+    <string name="address_label">Address:</string>
+    <string name="phone_label">Phone:</string>
+    <string name="township_label">Township:</string>
+    <string name="credit_terms_label">Credit Terms:</string>
+    <string name="credit_limit_label">Credit Limit:</string>
+    <string name="credit_amount_label">Credit Amount:</string>
+    <string name="due_amount_label">Due Amount:</string>
+    <string name="prepaid_amount_label">Prepaid Amount:</string>
+    <string name="payment_type_label">Payment Type:</string>
+
+    <string name="sale">SALE</string>
+    <string name="sale_order">SALE ORDER</string>
+    <string name="unsell_reason">UN-SELL REASON</string>
+    <string name="sale_return">SALE RETURN</string>
+    <string name="visit_record">VISIT RECORD</string>
+    <string name="posm">POSM</string>
+    <string name="posm_checkout">POSM CHECKOUT</string>
+
+    <string name="category_previous">&lt;</string>
+    <string name="category_next">&gt;</string>
+    <string name="sale_date">Sale Date:</string>
+    <string name="product">Product</string>
+    <string name="um">UM</string>
+    <string name="qty">Qty</string>
+    <string name="ordered_qty">Ordered Qty</string>
+    <string name="price">Price</string>
+    <string name="discount">Discount</string>
+    <string name="amount">Amount</string>
+    <string name="total_amount">Total Amount</string>
+    <string name="net_amount">Net Amount:</string>
+    <string name="available_quantity">Available Quantity:</string>
+    <string name="quantity">Quantity</string>
+    <string name="quantity_label">Quantity:</string>
+    <string name="general_sale_checkout">General Sale - Checkout</string>
+    <string name="serial">Serial</string>
+    <string name="invoice_id">Invoice ID:</string>
+    <string name="total_amount_">Total Amount:</string>
+    <string name="discount_">Discount:</string>
+    <string name="pay_amount">Pay Amount:</string>
+    <string name="refund">Refund:</string>
+    <string name="change_due_label">Change Due:</string>
+    <string name="receipt_person">Receipt Person:</string>
+    <string name="confirm_and_print">Confirm &amp; Print</string>
+    <string name="promotion">Promotion</string>
+
+    <string name="print">PRINT</string>
+    <string name="sale_man_label">Sale Man:</string>
+    <string name="branch_label">Branch:</string>
+
+    <string name="add_new_customer">ADD NEW CUSTOMER</string>
+
+    <string name="outlet_external_check">OUTLET EXTERNAL CHECK</string>
+    <string name="display_assessment">DISPLAY ASSESSMENT</string>
+    <string name="competitor_activitites">COMPETITORS ACTIVITIES</string>
+    <string name="outlet_stock_availability">OULTET STOCK AVAILABILITY</string>
+    <string name="size_in_store_share">SIZE IN STORE SHARE</string>
+
+    <string name="route_title">E-ROUTE</string>
+    <string name="credit_collection">CREDIT COLLECTION</string>
+    <string name="credit_collection_checkout">CREDIT COLLECTION CHECKOUT</string>
+    <string name="report">REPORT</string>
+
+    <string name="feedback_label">Feedback:</string>
+    <string name="remark_label">Remark:</string>
+    <string name="sale_checkout">SALE CHECKOUT</string>
+    <string name="volume_discount">Vol: Discount</string>
+    <string name="sale_upload_success">Sale Upload Successfully.</string>
+    <string name="download_success">Successfully downloaded.</string>
+    <string name="title_activity_sale_exchange">SaleExchangeActivity</string>
+    <string name="promotion_price">PROMOTION PRICE</string>
+    <string name="promotion_gift">PROMOTION GIFT</string>
+    <string name="date">DATE</string>
+    <string name="product_name">PRODUCT NAME</string>
+    <string name="to_quantity">TO QUANTITY</string>
+    <string name="from_quantity">FROM QUANTITY</string>
+    <string name="promotion_gift_quantity">PROMOTION GIFT QUANTITY</string>
+
+    <string name="delivery">Delivery</string>
+    <string name="delivery_checkout">Delivery Checkout</string>
+
+    <string name="connection_error">Can\'t connect to server</string>
+    <string name="no_download_data_error">Please download information!</string>
+</resources>

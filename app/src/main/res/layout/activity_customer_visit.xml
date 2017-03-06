@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="@color/colorAccent">
+        <ImageView
+            android:id="@+id/cancel_img"
+            android:layout_width="@dimen/btn_appbar_width"
+            android:layout_height="@dimen/btn_appbar_width"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:gravity="center"
+            android:src="@drawable/ic_cancel_xh_btn"
+            android:layout_marginLeft="20dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="@string/customer_visit_title"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#ffffff"
+            android:textSize="23sp" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp">
+
+        <Button
+            android:id="@+id/buttonCustomer"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/btn_height"
+            android:background="@drawable/customer"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/buttonAddNewCustomer"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/btn_height"
+            android:background="@drawable/add_new_customer"
+            android:layout_weight="1"
+            android:layout_marginLeft="20dp"/>
+
+        <Button
+            android:id="@+id/buttonCreditCollections"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/btn_height"
+            android:background="@drawable/credit_collection"
+            android:layout_weight="1"
+            android:layout_marginLeft="20dp"/>
+
+        <Button
+            android:id="@+id/buttonSaleExchange"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/btn_height"
+            android:background="@drawable/sale_exchange"
+            android:layout_weight="1"
+            android:layout_marginLeft="20dp" />
+
+        <Button
+            android:id="@+id/buttonDelivery"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/btn_height"
+            android:background="@drawable/delivery"
+            android:layout_weight="1"
+            android:layout_marginLeft="20dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

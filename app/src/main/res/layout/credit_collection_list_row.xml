@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/invoice_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="invoiceid"
+        android:gravity="center"
+        />
+    <TextView
+        android:id="@+id/invoice_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="invoicedate"
+        android:gravity="center"
+        />
+    <TextView
+        android:id="@+id/invoice_amount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="InvoiceAmount"
+        android:gravity="center"
+        />
+    <TextView
+        android:id="@+id/status_txt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Unpaid"
+        android:textColor="#D77E0F"
+        android:gravity="center"
+        />
+</LinearLayout>
