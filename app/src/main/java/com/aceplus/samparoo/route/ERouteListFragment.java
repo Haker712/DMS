@@ -1,7 +1,6 @@
 package com.aceplus.samparoo.route;
 
 import android.app.Activity;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -12,20 +11,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.aceplus.samparoo.R;
+import com.aceplus.samparoo.model.Route_Township;
 import com.aceplus.samparoo.model.Routedata;
-import com.aceplus.samparoo.report.FragmentPromotionReport;
 import com.aceplus.samparoo.utils.Database;
 
-import org.json.JSONObject;
-
 import java.util.ArrayList;
-
-import static android.R.attr.resource;
+import java.util.List;
 
 /**
  * Created by haker on 2/6/17.
@@ -41,6 +39,14 @@ public class ERouteListFragment extends Fragment {
 
     ListView routeListview;
 
+    Spinner townshipSpinner;
+
+    Route_Township route_township=new Route_Township();
+    ArrayList<Route_Township> route_townships=new ArrayList<>();
+    List<String> townshiplist=new ArrayList<>();
+    String township_Id,township_Name,Seleceted_TownshipId;
+
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -49,9 +55,101 @@ public class ERouteListFragment extends Fragment {
         database = new Database(getContext()).getDataBase();
         routedataArrayList = new ArrayList<>();
 
+        townshipSpinner= (Spinner) view.findViewById(R.id.townshipspinner);
 
 
-        getDataforRoute();
+        Cursor cur_Township=database.rawQuery("select * from TOWNSHIP",null);
+
+        while (cur_Township.moveToNext()){
+
+            township_Id=cur_Township.getString(cur_Township.getColumnIndex("TOWNSHIP_ID"));
+            township_Name=cur_Township.getString(cur_Township.getColumnIndex("TOWNSHIP_NAME"));
+
+            route_township.setTownship_Id(township_Id);
+            route_township.setTownship_Name(township_Name);
+            route_townships.add(route_township);
+
+        }
+
+        for (int i = 0; i < route_townships.size(); i++) {
+
+            townshiplist.add(route_townships.get(i).getTownship_Name());
+
+        }
+
+        ArrayAdapter<String> TownshipAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, townshiplist);
+        TownshipAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        townshipSpinner.setAdapter(TownshipAdapter);
+
+
+        townshipSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                Seleceted_TownshipId=route_townships.get(position).getTownship_Id();
+
+                Cursor cur_CustomerId = database.rawQuery("select * from RouteAssign", null);
+
+                while (cur_CustomerId.moveToNext()) {
+
+                    String cus_Id = cur_CustomerId.getString(cur_CustomerId.getColumnIndex("CustomerId"));
+                    Log.i("Customer_Id>>>",cus_Id);
+
+                    Cursor cur_Data = database.rawQuery("select * from CUSTOMER where id='" + cus_Id + "'and township_number='"+Seleceted_TownshipId+"'", null);
+
+                    while (cur_Data.moveToNext()) {
+
+                        String customer_Name = cur_Data.getString(cur_Data.getColumnIndex("CUSTOMER_NAME"));
+                        String ph_No = cur_Data.getString(cur_Data.getColumnIndex("PH"));
+                        String address = cur_Data.getString(cur_Data.getColumnIndex("ADDRESS"));
+                        String shoptype_id = cur_Data.getString(cur_Data.getColumnIndex("shop_type_id"));
+
+
+                        Log.i("phone--",ph_No);
+                        Log.i("address",address);
+                        Log.i("ShopType___Id",shoptype_id);
+
+
+
+                        Cursor cur_shopetype = database.rawQuery("select * from SHOP_TYPE where ID='" + shoptype_id + "'", null);
+
+
+                        while (cur_shopetype.moveToNext()) {
+
+
+                            String shop_type = cur_shopetype.getString(cur_shopetype.getColumnIndex("SHOP_TYPE_NAME"));
+
+                            routedata.setCustomerName(customer_Name);
+                            routedata.setPhNo(ph_No);
+                            routedata.setAddress(address);
+                            routedata.setShopType(shop_type);
+
+                            routedataArrayList.add(routedata);
+
+
+                        }
+
+                    }
+
+                }
+
+
+
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
+
+
+
+
+       // getDataforRoute();
 
         routeListview= (ListView) view.findViewById(R.id.routeListView);
         ArrayAdapter<Routedata> routeAdapter = new ERouteListFragment.RouteAdapter(getActivity());
@@ -76,7 +174,7 @@ public class ERouteListFragment extends Fragment {
             String cus_Id = cur_CustomerId.getString(cur_CustomerId.getColumnIndex("CustomerId"));
             Log.i("Customer_Id>>>",cus_Id);
 
-            Cursor cur_Data = database.rawQuery("select * from CUSTOMER where id='" + cus_Id + "'", null);
+            Cursor cur_Data = database.rawQuery("select * from CUSTOMER where id='" + cus_Id + "'and township_number='"+Seleceted_TownshipId+"'", null);
 
             while (cur_Data.moveToNext()) {
 

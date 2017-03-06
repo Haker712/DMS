@@ -19,9 +19,7 @@ import android.widget.TextView;
 
 import com.aceplus.samparoo.R;
 import com.aceplus.samparoo.model.SaleReturnDetailreport;
-import com.aceplus.samparoo.model.Saleinvoicedetail;
 import com.aceplus.samparoo.utils.Database;
-import com.aceplus.samparoo.utils.Utils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,6 +42,8 @@ public class FragmentSaleReturnReport extends Fragment {
     SQLiteDatabase database;
 
     String qty,remark,product_name;
+
+   JSONObject saleReturnReportJsonObject;
 
     SaleReturnDetailreport saleReturnDetailreport=new SaleReturnDetailreport();
     List<SaleReturnDetailreport> saleReturnDetailreports = new ArrayList<SaleReturnDetailreport>();
@@ -141,7 +141,7 @@ public class FragmentSaleReturnReport extends Fragment {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
 
-            JSONObject saleReturnReportJsonObject = saleReturnReportsArrayList.get(position);
+            saleReturnReportJsonObject = saleReturnReportsArrayList.get(position);
 
             LayoutInflater layoutInflater = context.getLayoutInflater();
             View view = layoutInflater.inflate(R.layout.list_row_sale_return_report, null, true);
@@ -155,6 +155,9 @@ public class FragmentSaleReturnReport extends Fragment {
                 customerNameTextView.setText(saleReturnReportJsonObject.getString("customerName"));
                 addressTextView.setText(saleReturnReportJsonObject.getString("address"));
                 dateTextView.setText(saleReturnReportJsonObject.getString("returnedDate"));
+
+
+                Log.i("SRCustomerName",saleReturnReportJsonObject.getString("customerName")+"");
 
 
 
