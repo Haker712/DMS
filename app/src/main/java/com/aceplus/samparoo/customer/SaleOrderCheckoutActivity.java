@@ -103,9 +103,9 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
 
     private TextView txt_invoiceId, txt_totalAmount, saleDateTextView, netAmountTextView;
 
-    private TextView txt_tableHeaderDiscount, txt_tableHeaderUM;
+    private TextView txt_tableHeaderDiscount, txt_tableHeaderUM, txt_tableHeaderQty;
 
-    private LinearLayout advancedPaidAmountLayout, totalInfoForGeneralSaleLayout, totalInfoForPreOrderLayout, receiptPersonLayout, refundLayout, payAmountLayout, netAmountLayout, volumeDiscountLayout;
+    private LinearLayout advancedPaidAmountLayout, totalInfoForGeneralSaleLayout, totalInfoForPreOrderLayout, receiptPersonLayout, refundLayout, payAmountLayout, netAmountLayout, volumeDiscountLayout, volDisForPreOrderLayout;
 
     private EditText prepaidAmt, receiptPersonEditText;
 
@@ -159,8 +159,14 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
         }*/
 
         registerIDs();
-
+        txt_tableHeaderQty.setText(R.string.ordered_qty);
         titleTextView.setText("SALE ORDER CHECKOUT");
+
+        for (SoldProduct soldProduct : soldProductList) {
+
+            totalAmount += soldProduct.getTotalAmount();
+        }
+        txt_totalAmount.setText(Utils.formatAmount(totalAmount));
 
         Cursor cursorForLocation = database.rawQuery("select * from Location", null);
         while (cursorForLocation.moveToNext()) {
@@ -193,10 +199,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
         calculateVolumeDiscount();
         calculateInvoiceDiscount();
 
-        double net_amt = totalAmount - totalItemDiscountAmount - totalVolumeDiscount;
-        Log.i("net_amt", net_amt + "");
-
-        netAmountTextView.setText(Utils.formatAmount(net_amt));
+        netAmountTextView.setText(Utils.formatAmount(totalAmount - totalItemDiscountAmount - totalVolumeDiscount));
 
         showPromotionData();
 
@@ -211,6 +214,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
         img_back = (ImageView) findViewById(R.id.back_img);
         img_confirmAndPrint = (ImageView) findViewById(R.id.confirmAndPrint_img);
         txt_tableHeaderUM = (TextView) findViewById(R.id.tableHeaderUM);
+        txt_tableHeaderQty = (TextView) findViewById(R.id.tableHeaderQty);
         txt_tableHeaderDiscount = (TextView) findViewById(R.id.tableHeaderDiscount);
 
         saleDateTextView = (TextView) findViewById(R.id.saleDateTextView);
@@ -223,15 +227,15 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
         refundLayout = (LinearLayout) findViewById(R.id.refundLayout);
         payAmountLayout = (LinearLayout) findViewById(R.id.payAmountLayout);
         netAmountLayout = (LinearLayout) findViewById(R.id.netAmountLayout);
-        volumeDiscountLayout = (LinearLayout) findViewById(R.id.volumeDiscountLayout);
+        volumeDiscountLayout = (LinearLayout) findViewById(R.id.volumeDiscountLayout2);
         receiptPersonLayout = (LinearLayout) findViewById(R.id.layout_receipt_person);
         prepaidAmt = (EditText) findViewById(R.id.prepaidAmount);
         receiptPersonEditText = (EditText) findViewById(R.id.receiptPerson);
         lv_soldProductList = (ListView) findViewById(R.id.soldProductList);
-        netAmountTextView = (TextView) findViewById(R.id.netAmountTextView);
+        netAmountTextView = (TextView) findViewById(R.id.netAmount);
         promotionPlanItemListView = (ListView) findViewById(R.id.promotion_plan_item_listview);
-
-        volDisForPreOrder = (TextView) findViewById(R.id.volDisForPreOrder);
+        volDisForPreOrderLayout = (LinearLayout) findViewById(R.id.volDisForPreOrderLayout);
+        volDisForPreOrder = (TextView) findViewById(R.id.volumeDiscount);
     }
 
     /**
@@ -241,14 +245,15 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
         txt_tableHeaderUM.setVisibility(View.GONE);
         txt_tableHeaderDiscount.setVisibility(View.GONE);
         advancedPaidAmountLayout.setVisibility(View.GONE);
-        totalInfoForGeneralSaleLayout.setVisibility(View.GONE);
-
+        netAmountLayout.setVisibility(View.VISIBLE);
+        refundLayout.setVisibility(View.GONE);
+        payAmountLayout.setVisibility(View.GONE);
+        receiptPersonLayout.setVisibility(View.GONE);
+        volDisForPreOrderLayout.setVisibility(View.GONE);
         if(isDelivery) {
-            totalInfoForGeneralSaleLayout.setVisibility(View.VISIBLE);
-            refundLayout.setVisibility(View.GONE);
-            payAmountLayout.setVisibility(View.GONE);
-            volumeDiscountLayout.setVisibility(View.GONE);
             totalInfoForPreOrderLayout.setVisibility(View.GONE);
+            volumeDiscountLayout.setVisibility(View.GONE);
+            volDisForPreOrderLayout.setVisibility(View.GONE);
             advancedPaidAmountLayout.setVisibility(View.VISIBLE);
             receiptPersonLayout.setVisibility(View.VISIBLE);
         }
@@ -365,7 +370,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
                 totalVolumeDiscount = totalAmount * (discountPercentForVolDis / 100);
             }
 
-            Log.i("totalInvoiceDiscount -->>", totalVolumeDiscount + "");
+            Log.i("totalInvoiceDiscount ----->>>>>>>", totalVolumeDiscount + "");
         }
 
         volDisForPreOrder.setText(Utils.formatAmount(totalVolumeDiscount));
@@ -674,7 +679,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
      */
     private void uploadPreOrderToServer() {
 
-        Utils.callDialog("Please wait...", this);
+        Utils.callDialog("Please wait...", SaleOrderCheckoutActivity.this);
 
         final PreOrderRequest preOrderRequest = getPreOrderRequest();
 
@@ -691,7 +696,6 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
             public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        Utils.cancelDialog();
                         Toast.makeText(SaleOrderCheckoutActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
 
                         database.beginTransaction();
@@ -703,6 +707,8 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
 
                         database.setTransactionSuccessful();
                         database.endTransaction();
+
+                        Utils.cancelDialog();
                     }
                 } else {
                     onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));

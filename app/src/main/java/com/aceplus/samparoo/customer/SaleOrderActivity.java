@@ -245,7 +245,7 @@ public class SaleOrderActivity extends AppCompatActivity {
 
         saleDateTextView.setText(Utils.getCurrentDate(false));
 
-        soldProductListRowAdapter = new SaleOrderActivity.SoldProductListRowAdapter(this, R.layout.list_row_sold_product_with_custom_discount);
+        soldProductListRowAdapter = new SoldProductListRowAdapter(this, R.layout.list_row_sold_product_with_custom_discount);
 
         soldProductListView.setAdapter(soldProductListRowAdapter);
         soldProductListRowAdapter.notifyDataSetChanged();
@@ -647,6 +647,17 @@ public class SaleOrderActivity extends AppCompatActivity {
             }
             soldProduct.setTotalAmt(totalAmount);
             totalAmountTextView.setText(totalAmount.toString());
+
+            double netAmount = 0.0;
+            for (SoldProduct soldProduct1 : soldProductList) {
+                //netAmount += soldProduct.getNetAmount(SaleActivity.this);
+                Log.i("soldProduct1.getTotalAmount", soldProduct1.getTotalAmount() + "");
+                netAmount += soldProduct1.getTotalAmount();
+            }
+            Log.i("netAmount", netAmount + "");
+
+            ((TextView) context.findViewById(R.id.netAmountTextView)).setText(Utils.formatAmount(netAmount));
+
             return view;
         }
 
@@ -740,7 +751,7 @@ public class SaleOrderActivity extends AppCompatActivity {
         params.setMargins(20, 0, 0, 20);
         promotionPlanGiftListView.setLayoutParams(params);
 
-        promotionProductCustomAdapter = new SaleOrderActivity.PromotionProductCustomAdapter(this);
+        promotionProductCustomAdapter = new PromotionProductCustomAdapter(this);
         promotionPlanGiftListView.setAdapter(promotionProductCustomAdapter);
         promotionProductCustomAdapter.notifyDataSetChanged();
     }
