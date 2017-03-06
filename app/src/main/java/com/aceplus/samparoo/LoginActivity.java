@@ -108,7 +108,7 @@ public class LoginActivity extends AppCompatActivity {
         mySharedPreference = getSharedPreferences(MyPREFS, mode);
         myEditor = mySharedPreference.edit();
 
-        editTextUserID.setText("ASDF");
+        editTextUserID.setText("ACE");
         editTextPassword.setText("samparoo");
 
         if (Utils.isOsMarshmallow()) {
