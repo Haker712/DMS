@@ -196,13 +196,13 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
         txt_totalAmount.setText(Utils.formatAmount(totalAmount));
 
         setSoldProductInformation();
+
         calculateVolumeDiscount();
         calculateInvoiceDiscount();
 
         netAmountTextView.setText(Utils.formatAmount(totalAmount - totalItemDiscountAmount - totalVolumeDiscount));
 
         showPromotionData();
-
         catchEvents();
     }
 
@@ -292,11 +292,16 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
             volDisFilterId = cursor.getString(cursor.getColumnIndex(DatabaseContract.VolumeDiscountFilter.id));
             exclude = cursor.getInt(cursor.getColumnIndex(DatabaseContract.VolumeDiscountFilter.exclude));
             if (exclude == 0) {
-                double promotion_price = 0.0;
+
+                for (SoldProduct soldProduct : soldProductList) {
+                    buy_amt = soldProduct.getProduct().getPrice() * soldProduct.getQuantity();
+                }
+
+               /* double promotion_price = 0.0;
                 for (Promotion promotion : promotionArrayList) {
                     promotion_price += promotion.getPromotionPrice();
                 }
-                buy_amt += promotion_price;
+                buy_amt += promotion_price;*/
             }
             Log.i("buy_amt", buy_amt + "");
             Log.i("volDisFilterId", volDisFilterId);
@@ -347,11 +352,15 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
             exclude = cursor.getInt(cursor.getColumnIndex(DatabaseContract.VolumeDiscount.exclude));
 
             if (exclude == 0) {
-                double promotion_price = 0.0;
+                for (SoldProduct soldProduct : soldProductList) {
+                    buy_amt = soldProduct.getProduct().getPrice() * soldProduct.getQuantity();
+                }
+
+               /* double promotion_price = 0.0;
                 for (Promotion promotion : promotionArrayList) {
                     promotion_price += promotion.getPromotionPrice();
                 }
-                buy_amt += promotion_price;
+                buy_amt += promotion_price;*/
             }
 
 
@@ -413,9 +422,9 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
                         " and " + DatabaseContract.PromotionGift.fromQuantity + " <= " + buy_qty + " and " + DatabaseContract.PromotionGift.toQuantity + " >= " + buy_qty + " and " + DatabaseContract.PromotionGift.stockId + " = '" + stock_id_new + "'", null);
                 Log.i("GiftCount", cursorForPromotionGift.getCount() + "");
                 while (cursorForPromotionGift.moveToNext()) {
-                    String promotionGiftId = cursorForPromotionGift.getString(cursorForPromotionGift.getColumnIndex(DatabaseContract.PromotionGift.id));
+                    String promotionGiftId = cursorForPromotionGift.getString(cursorForPromotionGift.getColumnIndex(DatabaseContract.PromotionGift.promotionPlanId));
                     Log.i("promotionGiftId", promotionGiftId + "");
-                    Cursor cursorForPromotionGiftItem = database.rawQuery("select * from " + DatabaseContract.PromotionGiftItem.tb + " where " + DatabaseContract.PromotionGiftItem.id + " = '" + promotionGiftId + "'", null);
+                    Cursor cursorForPromotionGiftItem = database.rawQuery("select * from " + DatabaseContract.PromotionGiftItem.tb + " where " + DatabaseContract.PromotionGiftItem.promotionPlanId + " = '" + promotionGiftId + "'", null);
                     while (cursorForPromotionGiftItem.moveToNext()) {
                         promotionProductId = cursorForPromotionGiftItem.getString(cursorForPromotionGiftItem.getColumnIndex(DatabaseContract.PromotionGiftItem.stockId));
                         Log.i("promotionProductId", promotionProductId + "");
@@ -446,7 +455,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
                 if (promotionProductQty != 0) {
                     promotion.setPromotionQty(promotionProductQty);
                 }*/
-                if (promotion.getPromotionQty() != 0 && promotion.getPromotionPrice() != 0.0 && !promotion.getPromotionProductName().equals("")) {
+                if (promotion.getPromotionQty() != 0 && !promotion.getPromotionProductName().equals("")) {
                     promotionArrayList.add(promotion);
                 }
             }
