@@ -41,10 +41,11 @@ public class ERouteListFragment extends Fragment {
 
     Spinner townshipSpinner;
 
-    Route_Township route_township=new Route_Township();
+    Route_Township route_township;
     ArrayList<Route_Township> route_townships=new ArrayList<>();
     List<String> townshiplist=new ArrayList<>();
     String township_Id,township_Name,Seleceted_TownshipId;
+    String shop_type="";
 
 
     @Nullable
@@ -57,10 +58,13 @@ public class ERouteListFragment extends Fragment {
 
         townshipSpinner= (Spinner) view.findViewById(R.id.townshipspinner);
 
+        routeListview= (ListView) view.findViewById(R.id.routeListView);
+
 
         Cursor cur_Township=database.rawQuery("select * from TOWNSHIP",null);
 
         while (cur_Township.moveToNext()){
+            route_township=new Route_Township();
 
             township_Id=cur_Township.getString(cur_Township.getColumnIndex("TOWNSHIP_ID"));
             township_Name=cur_Township.getString(cur_Township.getColumnIndex("TOWNSHIP_NAME"));
@@ -86,11 +90,14 @@ public class ERouteListFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
+
+
                 Seleceted_TownshipId=route_townships.get(position).getTownship_Id();
 
                 Cursor cur_CustomerId = database.rawQuery("select * from RouteAssign", null);
 
                 while (cur_CustomerId.moveToNext()) {
+
 
                     String cus_Id = cur_CustomerId.getString(cur_CustomerId.getColumnIndex("CustomerId"));
                     Log.i("Customer_Id>>>",cus_Id);
@@ -98,6 +105,8 @@ public class ERouteListFragment extends Fragment {
                     Cursor cur_Data = database.rawQuery("select * from CUSTOMER where id='" + cus_Id + "'and township_number='"+Seleceted_TownshipId+"'", null);
 
                     while (cur_Data.moveToNext()) {
+
+                        routedata=new Routedata();
 
                         String customer_Name = cur_Data.getString(cur_Data.getColumnIndex("CUSTOMER_NAME"));
                         String ph_No = cur_Data.getString(cur_Data.getColumnIndex("PH"));
@@ -117,17 +126,35 @@ public class ERouteListFragment extends Fragment {
                         while (cur_shopetype.moveToNext()) {
 
 
-                            String shop_type = cur_shopetype.getString(cur_shopetype.getColumnIndex("SHOP_TYPE_NAME"));
 
+                            shop_type = cur_shopetype.getString(cur_shopetype.getColumnIndex("SHOP_TYPE_NAME"));
+
+
+
+
+
+
+                        }
+                        try {
                             routedata.setCustomerName(customer_Name);
                             routedata.setPhNo(ph_No);
                             routedata.setAddress(address);
                             routedata.setShopType(shop_type);
 
                             routedataArrayList.add(routedata);
-
-
                         }
+                        catch (NullPointerException a){
+                            a.printStackTrace();
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+
+                        Log.i("ArraySize",routedataArrayList.size()+"");
+                        RouteAdapter routeAdapter = new RouteAdapter(getActivity());
+                        routeListview.setAdapter(routeAdapter);
+
+
+
 
                     }
 
@@ -151,9 +178,7 @@ public class ERouteListFragment extends Fragment {
 
        // getDataforRoute();
 
-        routeListview= (ListView) view.findViewById(R.id.routeListView);
-        ArrayAdapter<Routedata> routeAdapter = new ERouteListFragment.RouteAdapter(getActivity());
-        routeListview.setAdapter(routeAdapter);
+
 
 
 
@@ -236,6 +261,7 @@ public class ERouteListFragment extends Fragment {
 
 
             textView_customer_Name.setText(routedata.getCustomerName());
+            Log.i("CusN",routedata.getCustomerName()+"ggg");
             textView_shoptpye.setText(routedata.getShopType());
             textView_address.setText(routedata.getAddress());
             textView_Phone.setText(routedata.getPhNo());

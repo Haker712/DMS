@@ -6,7 +6,6 @@ package com.aceplus.samparoo.model;
 
 public class Routedata {
 
-
     public String getCustomerNo() {
         return customerNo;
     }
