@@ -222,11 +222,15 @@ public class SaleCheckoutActivity extends AppCompatActivity {
                 volDisFilterId = cursor.getString(cursor.getColumnIndex(DatabaseContract.VolumeDiscountFilter.id));
                 exclude = cursor.getInt(cursor.getColumnIndex(DatabaseContract.VolumeDiscountFilter.exclude));
                 if (exclude == 0) {
-                    double promotion_price = 0.0;
+                    for (SoldProduct soldProduct : soldProductList) {
+                        buy_amt = soldProduct.getProduct().getPrice() * soldProduct.getQuantity();
+                    }
+
+                   /* double promotion_price = 0.0;
                     for (Promotion promotion : promotionArrayList) {
                         promotion_price += promotion.getPromotionPrice();
                     }
-                    buy_amt += promotion_price;
+                    buy_amt += promotion_price;*/
                 }
                 Log.i("buy_amt", buy_amt + "");
                 Log.i("volDisFilterId", volDisFilterId);
@@ -282,11 +286,15 @@ public class SaleCheckoutActivity extends AppCompatActivity {
             exclude = cursor.getInt(cursor.getColumnIndex(DatabaseContract.VolumeDiscount.exclude));
 
             if (exclude == 0) {
-                double promotion_price = 0.0;
+                for (SoldProduct soldProduct : soldProductList) {
+                    buy_amt = soldProduct.getProduct().getPrice() * soldProduct.getQuantity();
+                }
+
+               /* double promotion_price = 0.0;
                 for (Promotion promotion : promotionArrayList) {
                     promotion_price += promotion.getPromotionPrice();
                 }
-                buy_amt += promotion_price;
+                buy_amt += promotion_price;*/
             }
 
 
