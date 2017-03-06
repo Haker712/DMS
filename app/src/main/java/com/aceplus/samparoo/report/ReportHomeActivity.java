@@ -1,8 +1,6 @@
 package com.aceplus.samparoo.report;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.Fragment;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -18,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 
 import com.aceplus.samparoo.R;
 import com.aceplus.samparoo.utils.Database;
@@ -531,7 +528,7 @@ public class ReportHomeActivity extends FragmentActivity {
         ArrayList<JSONObject> preOrderReportsArrayList = new ArrayList<JSONObject>();
 
         Cursor cursor = database.rawQuery(
-                "SELECT CUSTOMER.CUSTOMER_NAME, ADVANCE_PAYMENT_AMOUNT, NET_AMOUNT, PRODUCT_LIST"
+                "SELECT CUSTOMER.CUSTOMER_NAME, ADVANCE_PAYMENT_AMOUNT, NET_AMOUNT, INVOICE_ID"
                         + " FROM PRE_ORDER"
                         + " INNER JOIN CUSTOMER"
                         + " ON CUSTOMER.CUSTOMER_ID = PRE_ORDER.CUSTOMER_ID"
@@ -545,21 +542,24 @@ public class ReportHomeActivity extends FragmentActivity {
                 preOrderReportJSONObject.put("prepaidAmount", cursor.getDouble(cursor.getColumnIndex("ADVANCE_PAYMENT_AMOUNT")));
                 preOrderReportJSONObject.put("totalAmount", cursor.getDouble(cursor.getColumnIndex("NET_AMOUNT")));
 
-                JSONArray productListJSONArray = new JSONArray(cursor.getString(cursor.getColumnIndex("PRODUCT_LIST")));
-                for (int i = 0; i < productListJSONArray.length(); i++) {
+                preOrderReportJSONObject.put("invoice_Id",cursor.getString(cursor.getColumnIndex("INVOICE_ID")));
 
-                    JSONObject productJSONObject = productListJSONArray.getJSONObject(i);
-                    System.out.println("SELECT PRODUCT_NAME FROM PRODUCT"
-                            + " WHERE PRODUCT_ID = '" + productJSONObject.getString("productId") + "'");
-                    Cursor cursorForProduct = database.rawQuery(
-                            "SELECT PRODUCT_NAME FROM PRODUCT"
-                                    + " WHERE PRODUCT_ID = '" + productJSONObject.getString("productId") + "'", null);
-                    if (cursorForProduct.moveToNext()) {
+//                JSONArray productListJSONArray = new JSONArray(cursor.getString(cursor.getColumnIndex("PRODUCT_LIST")));
+//                for (int i = 0; i < productListJSONArray.length(); i++) {
+//
+//                    JSONObject productJSONObject = productListJSONArray.getJSONObject(i);
+//                    System.out.println("SELECT PRODUCT_NAME FROM PRODUCT"
+//                            + " WHERE PRODUCT_ID = '" + productJSONObject.getString("productId") + "'");
+//                    Cursor cursorForProduct = database.rawQuery(
+//                            "SELECT PRODUCT_NAME FROM PRODUCT"
+//                                    + " WHERE PRODUCT_ID = '" + productJSONObject.getString("productId") + "'", null);
+//                    if (cursorForProduct.moveToNext()) {
+//
+//                        productJSONObject.put("productName", cursorForProduct.getString(cursorForProduct.getColumnIndex("PRODUCT_NAME")));
+//                    }
+//                }
+//                preOrderReportJSONObject.put("productList", productListJSONArray);
 
-                        productJSONObject.put("productName", cursorForProduct.getString(cursorForProduct.getColumnIndex("PRODUCT_NAME")));
-                    }
-                }
-                preOrderReportJSONObject.put("productList", productListJSONArray);
             } catch (JSONException e) {
 
                 e.printStackTrace();
