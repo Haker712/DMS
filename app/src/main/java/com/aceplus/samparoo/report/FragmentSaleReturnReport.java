@@ -45,7 +45,7 @@ public class FragmentSaleReturnReport extends Fragment {
 
    JSONObject saleReturnReportJsonObject;
 
-    SaleReturnDetailreport saleReturnDetailreport=new SaleReturnDetailreport();
+    SaleReturnDetailreport saleReturnDetailreport;
     List<SaleReturnDetailreport> saleReturnDetailreports = new ArrayList<SaleReturnDetailreport>();
 
 
@@ -81,9 +81,13 @@ public class FragmentSaleReturnReport extends Fragment {
 
 
                 qty=cursor_sale_return_id.getString(cursor_sale_return_id.getColumnIndex("QUANTITY"));
+                Log.i("QTY",qty);
                 remark=cursor_sale_return_id.getString(cursor_sale_return_id.getColumnIndex("REMARK"));
+                Log.i("Remark",remark);
 
                 while (cursor_sale_return_id.moveToNext()){
+
+                    saleReturnDetailreport=new SaleReturnDetailreport();
 
                     String product_id=cursor_sale_return_id.getString(cursor_sale_return_id.getColumnIndex("PRODUCT_ID"));
 
@@ -93,6 +97,7 @@ public class FragmentSaleReturnReport extends Fragment {
 
 
                         product_name=cursor_product_id.getString(cursor_product_id.getColumnIndex("PRODUCT_NAME"));
+                        Log.i("ProductName",product_name);
 
                     }
 
