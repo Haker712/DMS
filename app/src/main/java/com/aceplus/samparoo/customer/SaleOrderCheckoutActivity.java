@@ -193,7 +193,10 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
         calculateVolumeDiscount();
         calculateInvoiceDiscount();
 
-        netAmountTextView.setText(Utils.formatAmount(totalAmount - totalItemDiscountAmount - totalVolumeDiscount));
+        double net_amt = totalAmount - totalItemDiscountAmount - totalVolumeDiscount;
+        Log.i("net_amt", net_amt + "");
+
+        netAmountTextView.setText(Utils.formatAmount(net_amt));
 
         showPromotionData();
 
@@ -362,7 +365,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
                 totalVolumeDiscount = totalAmount * (discountPercentForVolDis / 100);
             }
 
-            Log.i("totalInvoiceDiscount ----->>>>>>>", totalVolumeDiscount + "");
+            Log.i("totalInvoiceDiscount -->>", totalVolumeDiscount + "");
         }
 
         volDisForPreOrder.setText(Utils.formatAmount(totalVolumeDiscount));
