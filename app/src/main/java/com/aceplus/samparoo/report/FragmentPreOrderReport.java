@@ -3,8 +3,11 @@ package com.aceplus.samparoo.report;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,16 +16,15 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-
 import com.aceplus.samparoo.R;
+import com.aceplus.samparoo.model.Preorder_Product;
+import com.aceplus.samparoo.utils.Database;
 import com.aceplus.samparoo.utils.Utils;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @SuppressLint("NewApi")
 public class FragmentPreOrderReport extends Fragment {
@@ -31,11 +33,21 @@ public class FragmentPreOrderReport extends Fragment {
 
     ArrayList<JSONObject> preOrderReportsArrayList;
 
+    SQLiteDatabase database;
+
+    String invoice_Id;
+
+    ArrayList<Preorder_Product> preorderProductArrayList=new ArrayList<>();
+    Preorder_Product preorderProduct;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_pre_order_report, container, false);
+
+
+        database = new Database(getContext()).getDataBase();
 
         preOrderReportsListView = (ListView) view.findViewById(R.id.preOrderReports);
         preOrderReportsListView.setAdapter(new PreOrderReportsArrayAdapter(getActivity()));
@@ -47,20 +59,45 @@ public class FragmentPreOrderReport extends Fragment {
 
                 View dialogBoxView = getActivity().getLayoutInflater().inflate(R.layout.dialog_box_pre_order_products, null);
                 ListView preOrderProductsListView = (ListView) dialogBoxView.findViewById(R.id.preOrderProducts);
+
+                JSONObject saleInvoiceReportJsonObject = preOrderReportsArrayList.get(position);
+
                 try {
+                    invoice_Id = saleInvoiceReportJsonObject.getString("invoice_Id");
 
-//					if (preOrderProductsList.size() == 0) {
-
-                    preOrderProductsList.clear();
-                    JSONArray preOrderProductsJSONArray = FragmentPreOrderReport.this.preOrderReportsArrayList.get(position).getJSONArray("productList");
-                    for (int i = 0; i < preOrderProductsJSONArray.length(); i++) {
-
-                        preOrderProductsList.add(preOrderProductsJSONArray.getJSONObject(i));
-                    }
-//					}
                 } catch (JSONException e) {
-
                     e.printStackTrace();
+                }
+
+                Cursor cursor = database.rawQuery("select * from PRE_ORDER_PRODUCT where SALE_ORDER_ID='" + invoice_Id + "'", null);
+
+                while (cursor.moveToNext()) {
+
+
+
+                    String orderQty = cursor.getString(cursor.getColumnIndex("ORDER_QTY"));
+                    Log.i("OrderQty",orderQty);
+                    String total_amount = cursor.getString(cursor.getColumnIndex("TOTAL_AMT"));
+
+                    String product_Id = cursor.getString(cursor.getColumnIndex("PRODUCT_ID"));
+
+                    Cursor cursor1 = database.rawQuery("select * from PRODUCT where ID='" + product_Id + "'", null);
+
+                    while (cursor1.moveToNext()) {
+
+                        preorderProduct=new Preorder_Product();
+
+                        String productName = cursor1.getString(cursor1.getColumnIndex("PRODUCT_NAME"));
+
+                        preorderProduct.setProductName(productName);
+                        preorderProduct.setOrderQty(orderQty);
+                        preorderProduct.setTotalAmount(total_amount);
+
+                        preorderProductArrayList.add(preorderProduct);
+
+                    }
+
+
                 }
                 preOrderProductsListView.setAdapter(new PreOrderProductsArrayAdapter(getActivity()));
                 new AlertDialog.Builder(getActivity())
@@ -109,39 +146,36 @@ public class FragmentPreOrderReport extends Fragment {
         }
     }
 
-    List<JSONObject> preOrderProductsList = new ArrayList<JSONObject>();
-
-    private class PreOrderProductsArrayAdapter extends ArrayAdapter<JSONObject> {
+    private class PreOrderProductsArrayAdapter extends ArrayAdapter<Preorder_Product> {
 
         public final Activity context;
 
         public PreOrderProductsArrayAdapter(Activity context) {
 
-            super(context, R.layout.list_row_pre_order_product, preOrderProductsList);
+            super(context, R.layout.list_row_pre_order_product, preorderProductArrayList);
             this.context = context;
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
 
-            JSONObject saleInvoiceReportJsonObject = preOrderProductsList.get(position);
+
+            preorderProduct=preorderProductArrayList.get(position);
 
             LayoutInflater layoutInflater = context.getLayoutInflater();
             View view = layoutInflater.inflate(R.layout.list_row_pre_order_product, null, true);
+
 
             TextView productNameTextView = (TextView) view.findViewById(R.id.productName);
             TextView quantityTextView = (TextView) view.findViewById(R.id.quantity);
             TextView totalAmountTextView = (TextView) view.findViewById(R.id.totalAmount);
 
-            try {
+          productNameTextView.setText(preorderProduct.getProductName());
+            quantityTextView.setText(preorderProduct.getOrderQty());
+            totalAmountTextView.setText(preorderProduct.getTotalAmount());
 
-                productNameTextView.setText(saleInvoiceReportJsonObject.getString("productName"));
-                quantityTextView.setText(saleInvoiceReportJsonObject.getString("orderQty"));
-                totalAmountTextView.setText(saleInvoiceReportJsonObject.getString("totalAmt"));
-            } catch (JSONException e) {
 
-                e.printStackTrace();
-            }
+
             return view;
         }
     }
