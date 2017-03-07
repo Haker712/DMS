@@ -269,11 +269,6 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
     private void setSoldProductInformation() {
         saleDateTextView.setText(Utils.getCurrentDate(false));
         txt_invoiceId.setText(Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.forPreOrderSale));
-
-        for (SoldProduct soldProduct : soldProductList) {
-
-            totalAmount += soldProduct.getTotalAmount();
-        }
     }
 
     private void calculateVolumeDiscount() {
