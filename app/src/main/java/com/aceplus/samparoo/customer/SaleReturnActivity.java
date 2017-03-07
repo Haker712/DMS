@@ -69,8 +69,6 @@ public class SaleReturnActivity extends Activity {
     Customer customer;
 
     private AutoCompleteTextView searchProductTextView;
-    private Button previousCategoryButton, nextCategoryButton;
-    private TextView categoryTextView;
     private ListView productsInGivenCategoryListView;
 
     private TextView saleDateTextView, txtCustomerName, netAmountTextView;
@@ -94,6 +92,9 @@ public class SaleReturnActivity extends Activity {
     Cursor cursor;
 
     String check;
+
+    Product[] products;
+    private ArrayList<String> productsForSearch = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,30 +138,57 @@ public class SaleReturnActivity extends Activity {
 
         registerIDs();
 
-        initCategories();
+        products = getProducts("");
 
-        if (categories.length > 0) {
+        //productsForSearch.clear();
+        Log.i("products length", products.length + "");
 
-            categoryTextView.setText(categories[0].getName());
-            currentCategoryIndex = 0;
+        for (int i = 0; i < products.length; i++) {
+            productsForSearch.add(products[i].getName());
+        }
 
-            setProductListView(categories[0].getName());
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.custom_simple_list_item_1, android.R.id.text1, productsForSearch);
+        productsInGivenCategoryListView.setAdapter(arrayAdapter);
 
-            ArrayList<String> products = new ArrayList<String>();
-            for (Category category : categories) {
+        searchProductTextView.setAdapter(new ArrayAdapter<String>(SaleReturnActivity.this, android.R.layout.simple_list_item_1, productsForSearch));
+        searchProductTextView.setThreshold(1);
 
-                for (Product product : category.getProducts()) {
+        searchProductTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-                    products.add(product.getName());
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position,
+                                    long id) {
+
+                sellProduct(null, parent.getItemAtPosition(position).toString());
+                searchProductTextView.setText("");
+            }
+        });
+
+        productsInGivenCategoryListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position,
+                                    long id) {
+
+                //sellProduct(categoryTextView.getText().toString(), parent.getItemAtPosition(position).toString());
+
+                Product tempProduct = null;
+
+                for (Product product : products) {
+
+                    if (product.getName().equals(parent.getItemAtPosition(position).toString())) {
+
+                        tempProduct = product;
+                    }
+                }
+
+                if (tempProduct != null) {
+
+                    soldProductList.add(new SoldProduct(tempProduct, false));
+                    soldProductListRowAdapter.notifyDataSetChanged();
                 }
             }
-            searchProductTextView.setAdapter(new ArrayAdapter<String>(
-                    this, android.R.layout.simple_list_item_1, products));
-            searchProductTextView.setThreshold(1);
-        } else {
-
-            categoryTextView.setText("No product");
-        }
+        });
 
         setAdapters();
 
@@ -169,9 +197,6 @@ public class SaleReturnActivity extends Activity {
 
     private void registerIDs() {
         searchProductTextView = (AutoCompleteTextView) findViewById(R.id.searchAutoCompleteTextView);
-        previousCategoryButton = (Button) findViewById(R.id.previusCategoryButton);
-        categoryTextView = (TextView) findViewById(R.id.categoryTextView);
-        nextCategoryButton = (Button) findViewById(R.id.nextCategoryButton);
         productsInGivenCategoryListView = (ListView) findViewById(R.id.productsListView);
         saleDateTextView = (TextView) findViewById(R.id.saleDateTextView);
         soldProductListView = (ListView) findViewById(R.id.soldProductList);
@@ -193,59 +218,6 @@ public class SaleReturnActivity extends Activity {
         txtCustomerName.setText(customer.getCustomerName());
 
         saleDateTextView.setText(Utils.getCurrentDate(false));
-
-        previousCategoryButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-
-                if (categories.length > 0) {
-
-                    if (currentCategoryIndex == 0) {
-
-                        currentCategoryIndex = categories.length - 1;
-                    } else {
-
-                        currentCategoryIndex--;
-                    }
-
-                    categoryTextView.setText(categories[currentCategoryIndex].getName());
-                    setProductListView(categories[currentCategoryIndex].getName());
-                }
-            }
-        });
-
-        nextCategoryButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-
-                if (categories.length > 0) {
-
-                    if (currentCategoryIndex == categories.length - 1) {
-
-                        currentCategoryIndex = 0;
-                    } else {
-
-                        currentCategoryIndex++;
-                    }
-
-                    categoryTextView.setText(categories[currentCategoryIndex].getName());
-                    setProductListView(categories[currentCategoryIndex].getName());
-                }
-            }
-        });
-
-        productsInGivenCategoryListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position,
-                                    long id) {
-
-                sellProduct(categoryTextView.getText().toString(), parent.getItemAtPosition(position).toString());
-            }
-        });
-
 
         soldProductListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
