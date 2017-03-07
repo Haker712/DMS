@@ -67,7 +67,7 @@ public class FragmentSaleReturnReport extends Fragment {
 
                 JSONObject saleReturnReportJsonObject = saleReturnReportsArrayList.get(position);
                 try {
-                    sale_return_id=saleReturnReportJsonObject.getString("saleReturnID");
+                    sale_return_id=saleReturnReportJsonObject.getString("saleReturnId");
                     Log.i("invoice_Id", sale_return_id);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -80,20 +80,21 @@ public class FragmentSaleReturnReport extends Fragment {
                 Cursor cursor_sale_return_id= database.rawQuery("select * from SALE_RETURN_DETAIL WHERE SALE_RETURN_ID='"+sale_return_id+"'",null);
 
 
-                qty=cursor_sale_return_id.getString(cursor_sale_return_id.getColumnIndex("QUANTITY"));
-                Log.i("QTY",qty);
-                remark=cursor_sale_return_id.getString(cursor_sale_return_id.getColumnIndex("REMARK"));
-                Log.i("Remark",remark);
 
                 while (cursor_sale_return_id.moveToNext()){
 
-                    saleReturnDetailreport=new SaleReturnDetailreport();
+                    qty=cursor_sale_return_id.getString(cursor_sale_return_id.getColumnIndex("QUANTITY"));
+                    Log.i("QTY",qty);
+                    remark=cursor_sale_return_id.getString(cursor_sale_return_id.getColumnIndex("REMARK"));
+                    Log.i("Remark",remark);
 
                     String product_id=cursor_sale_return_id.getString(cursor_sale_return_id.getColumnIndex("PRODUCT_ID"));
 
                     Cursor cursor_product_id=database.rawQuery("select * from PRODUCT WHERE PRODUCT_ID='"+product_id+"'",null);
 
                     while (cursor_product_id.moveToNext()){
+
+                        saleReturnDetailreport=new SaleReturnDetailreport();
 
 
                         product_name=cursor_product_id.getString(cursor_product_id.getColumnIndex("PRODUCT_NAME"));
@@ -104,10 +105,11 @@ public class FragmentSaleReturnReport extends Fragment {
                     saleReturnDetailreport.setProductName(product_name);
                     saleReturnDetailreport.setQuantity(qty);
                     saleReturnDetailreport.setRemark(remark);
+                    saleReturnDetailreports.add(saleReturnDetailreport);
 
                 }
 
-                saleReturnDetailreports.add(saleReturnDetailreport);
+
 
 
 
@@ -141,6 +143,8 @@ public class FragmentSaleReturnReport extends Fragment {
 
             super(context, R.layout.list_row_sale_return_report, saleReturnReportsArrayList);
             this.context = context;
+
+            Log.i("ArraySize",saleReturnReportsArrayList.size()+"");
         }
 
         @Override
@@ -158,11 +162,10 @@ public class FragmentSaleReturnReport extends Fragment {
             try {
 
                 customerNameTextView.setText(saleReturnReportJsonObject.getString("customerName"));
-                addressTextView.setText(saleReturnReportJsonObject.getString("address"));
+                addressTextView.setText(saleReturnReportJsonObject.getString("customerAddress"));
                 dateTextView.setText(saleReturnReportJsonObject.getString("returnedDate"));
 
 
-                Log.i("SRCustomerName",saleReturnReportJsonObject.getString("customerName")+"");
 
 
 
@@ -188,7 +191,7 @@ public class FragmentSaleReturnReport extends Fragment {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
 
-            SaleReturnDetailreport saleReturnDetailreport = saleReturnDetailreports.get(position);
+            saleReturnDetailreport = saleReturnDetailreports.get(position);
 
             LayoutInflater layoutInflater = context.getLayoutInflater();
             View view = layoutInflater.inflate(R.layout.list_row_sale_return_detail, null, true);

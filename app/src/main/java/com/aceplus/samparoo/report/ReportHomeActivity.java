@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NavUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -427,13 +429,34 @@ public class ReportHomeActivity extends FragmentActivity {
                 //saleReturnReportJsonObject.put("returnProductList", cursor.getString(cursor.getColumnIndex("RETURN_PRODUCT")));*/
 
                 saleReturnReportJsonObject.put("saleReturnId", cursor.getString(cursor.getColumnIndex("SALE_RETURN_ID")));
-                saleReturnReportJsonObject.put("customerId", cursor.getString(cursor.getColumnIndex("CUSTOMER_ID")));
+
+                Log.i("SRID",cursor.getString(cursor.getColumnIndex("SALE_RETURN_ID")));
                 saleReturnReportJsonObject.put("returnedDate", cursor.getString(cursor.getColumnIndex("RETURNED_DATE")));
-                saleReturnReportJsonObject.put("address", cursor.getString(cursor.getColumnIndex("PC_ADDRESS")));
+
+              //  saleReturnReportJsonObject.put("customerId", cursor.getString(cursor.getColumnIndex("CUSTOMER_ID")));
+
+                String customer_Id=cursor.getString(cursor.getColumnIndex("CUSTOMER_ID"));
 
             } catch (JSONException e) {
 
                 e.printStackTrace();
+            }
+
+            Cursor cur_CusId=database.rawQuery("select * from CUSTOMER",null);
+
+            while (cur_CusId.moveToNext()){
+
+
+                String cusName=cur_CusId.getString(cur_CusId.getColumnIndex("CUSTOMER_NAME"));
+                String cusAddress=cur_CusId.getString(cur_CusId.getColumnIndex("ADDRESS"));
+
+                try {
+                    saleReturnReportJsonObject.put("customerName",cusName);
+                    saleReturnReportJsonObject.put("customerAddress",cusAddress);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
             }
 
             saleReturnReportsArrayList.add(saleReturnReportJsonObject);
