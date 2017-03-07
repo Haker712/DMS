@@ -9,6 +9,7 @@ import com.aceplus.samparoo.credit_collection.CreditCollectActivity;
 import com.aceplus.samparoo.customer.AddNewCustomerActivity;
 import com.aceplus.samparoo.customer.CustomerActivity;
 import com.aceplus.samparoo.customer.DeliveryActivity;
+import com.aceplus.samparoo.delivery.OrderSaleInformationActivity;
 import com.aceplus.samparoo.utils.Utils;
 
 import butterknife.ButterKnife;
@@ -54,7 +55,7 @@ public class CustomerVisitActivity extends AppCompatActivity {
         Intent intent=new Intent(this,CustomerActivity.class);
         intent.putExtra("SaleExchange","yes");
         startActivity(intent);
-
+        finish();
     }
 
     @OnClick(R.id.buttonDelivery)
@@ -62,7 +63,7 @@ public class CustomerVisitActivity extends AppCompatActivity {
 
         Intent intent=new Intent(this,DeliveryActivity.class);
         startActivity(intent);
-
+        finish();
     }
 
 
