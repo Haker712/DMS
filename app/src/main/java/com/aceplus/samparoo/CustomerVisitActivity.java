@@ -9,7 +9,6 @@ import com.aceplus.samparoo.credit_collection.CreditCollectActivity;
 import com.aceplus.samparoo.customer.AddNewCustomerActivity;
 import com.aceplus.samparoo.customer.CustomerActivity;
 import com.aceplus.samparoo.customer.DeliveryActivity;
-import com.aceplus.samparoo.delivery.OrderSaleInformationActivity;
 import com.aceplus.samparoo.utils.Utils;
 
 import butterknife.ButterKnife;

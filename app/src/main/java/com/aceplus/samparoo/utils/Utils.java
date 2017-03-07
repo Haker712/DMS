@@ -325,7 +325,7 @@ public class Utils {
         return invoiceNo + String.format("%0" + (idLength - invoiceNo.length()) + "d", next);
     }
 
-    public static String getInvoiceNo(Context context, String locationCode) {
+    public static String getInvoiceNoForPOSM(Context context, String saleManId, String locationCode) {
 
         int idLength = 14;
 
@@ -344,6 +344,7 @@ public class Utils {
         String invoiceNo = "";
 
         invoiceNo += locationCode;
+        invoiceNo += saleManId;
         invoiceNo += new SimpleDateFormat("yyMMdd").format(new Date());
 
         return invoiceNo + String.format("%0" + (idLength - invoiceNo.length()) + "d", next);

@@ -1,105 +1,90 @@
 package com.aceplus.samparoo.route;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.aceplus.samparoo.R;
+import com.aceplus.samparoo.utils.Constant;
+import com.aceplus.samparoo.utils.Database;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
  * Created by haker on 2/6/17.
  */
-public class ERouteMapFragment extends Fragment {
+public class ERouteMapFragment extends Fragment{
 
     View view;
 
-    GoogleMap googleMap;
+    private GoogleMap mMap;
 
-    SharedPreferences sharedPreferences;
+    double latitude = 0.0, longitude = 0.0;
 
-    int locationCount = 0;
+    FragmentActivity activity;
 
-    int markerCount = 0;
-
-    double latitude = 0.0;
-    double longitude = 0.0;
-
-    String customerLat = null;
-    String customerLng = null;
+    SQLiteDatabase sqLiteDatabase;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_e_route_map, container, false);
 
-        //setUpMapView();
+        activity = getActivity();
 
-        return view;
-    }
+        sqLiteDatabase = new Database(activity).getDataBase();
 
-    private void setUpMapView() {
-        int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity());//AIzaSyD1O_cBbfeGE8h54vmy_dwh1iWVyszVztE
-        if (status != ConnectionResult.SUCCESS) {
-            int requestCode = 10;
-            Dialog dialog = GooglePlayServicesUtil.getErrorDialog(status, getActivity(), requestCode);
-            dialog.show();
-
-        } else {
-            SupportMapFragment fm = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-
-            googleMap = fm.getMap();
-
-            googleMap.setMyLocationEnabled(true);
-
-            sharedPreferences = getActivity().getSharedPreferences("location", 0);
-
-            locationCount = sharedPreferences.getInt("locationCount", 0);
-
-            String zoom = sharedPreferences.getString("zoom", "15");
-
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude, longitude)));
-
-            googleMap.animateCamera(CameraUpdateFactory.zoomTo(Float.parseFloat(zoom)));
-        }
-
-        googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
-            public void onMapClick(LatLng point) {
-                if (markerCount == 0) {
-                    drawMarker(point);
-                    customerLat = String.valueOf(point.latitude);
-                    customerLng = String.valueOf(point.longitude);
-                    markerCount++;
+            public void onMapReady(GoogleMap googleMap) {
+                mMap = googleMap;
+
+                if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                    return;
+                }
+                mMap.setMyLocationEnabled(true);
+
+                Cursor cursor = sqLiteDatabase.rawQuery("select * from CUSTOMER", null);
+                while (cursor.moveToNext()) {
+                    // Add a marker in Sydney and move the camera
+                    //LatLng sydney = new LatLng(-34, 151);
+                    //LatLng sydney = new LatLng(latitude, longitude);
+                    LatLng latLng = new LatLng(cursor.getDouble(cursor.getColumnIndex("LATITUDE")), cursor.getDouble(cursor.getColumnIndex("LONGITUDE")));
+                    //MarkerOptions marker = new MarkerOptions().position(new LatLng(latitude, longitude)).title(merchants.getName()).snippet(merchants.getOpeningTime() + " To " + merchants.getClosingTime());
+                    MarkerOptions marker = new MarkerOptions().position(latLng);
+                    // Changing marker icon
+                    //marker.icon(BitmapDescriptorFactory.fromResource(R.drawable.store));
+                    mMap.addMarker(marker);
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                    //mMap.setMaxZoomPreference(Constants.KEY_MAX_ZOOM);
+                    mMap.animateCamera(CameraUpdateFactory.zoomTo(Float.parseFloat(Constant.KEY_MAX_ZOOM)));
                 }
             }
         });
-        googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
-            @Override
-            public void onMapLongClick(LatLng point) {
-                googleMap.clear();
-                markerCount = 0;
-                customerLat = null;
-                customerLng = null;
-            }
-        });
-    }
 
-    private void drawMarker(LatLng point) {
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(point);
-        googleMap.addMarker(markerOptions);
+        return view;
     }
 }

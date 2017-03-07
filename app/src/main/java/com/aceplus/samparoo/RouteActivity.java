@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -28,7 +29,7 @@ import butterknife.OnItemSelected;
 /**
  * Created by haker on 2/6/17.
  */
-public class RouteActivity extends AppCompatActivity {
+public class RouteActivity extends FragmentActivity {
 
     @InjectView(R.id.title)
     TextView textViewTitle;

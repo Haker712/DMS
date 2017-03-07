@@ -28,6 +28,7 @@ import com.aceplus.samparoo.model.PosmByCustomer;
 import com.aceplus.samparoo.model.SoldProduct;
 import com.aceplus.samparoo.utils.Constant;
 import com.aceplus.samparoo.utils.Database;
+import com.aceplus.samparoo.utils.DatabaseContract;
 import com.aceplus.samparoo.utils.Utils;
 
 import java.text.SimpleDateFormat;
@@ -69,12 +70,14 @@ public class PosmCheckOutActivity extends AppCompatActivity{
 
     int customerId;
 
+    int locationCode = 0;
+    String locationCodeName = "";
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sale_checkout);
 
-        setTitle(R.string.posm_checkout);
         soldProductList = (ArrayList<SoldProduct>) getIntent().getSerializableExtra(this.SOLD_PROUDCT_LIST_KEY);
 
         products = (ArrayList<String>) getIntent().getSerializableExtra(this.PRESENT_PROUDCT_LIST_KEY);
@@ -84,6 +87,12 @@ public class PosmCheckOutActivity extends AppCompatActivity{
         database = new Database(this).getDataBase();
 
         customerId = getCustomerId();
+
+        Cursor cursorForLocation = database.rawQuery("select * from Location", null);
+        while (cursorForLocation.moveToNext()) {
+            locationCode = cursorForLocation.getInt(cursorForLocation.getColumnIndex(DatabaseContract.Location.id));
+            locationCodeName = cursorForLocation.getString(cursorForLocation.getColumnIndex(DatabaseContract.Location.no));
+        }
 
         registerIDs();
         hideUnnecessaryView();
@@ -96,6 +105,10 @@ public class PosmCheckOutActivity extends AppCompatActivity{
      * Register all view ids that are related to this activity
      */
     private void registerIDs() {
+
+        TextView textViewTitle = (TextView) findViewById(R.id.title);
+        textViewTitle.setText(R.string.posm_checkout);
+
         img_back = (ImageView) findViewById(R.id.back_img);
         img_confirmAndPrint = (ImageView) findViewById(R.id.confirmAndPrint_img);
         txt_tableHeaderUM = (TextView) findViewById(R.id.tableHeaderUM);
@@ -131,7 +144,7 @@ public class PosmCheckOutActivity extends AppCompatActivity{
 
     private void setSoldProductInformation() {
         saleDateTextView.setText(Utils.getCurrentDate(false));
-        txt_invoiceId.setText(Utils.getInvoiceNo(this, "YGN"));
+        txt_invoiceId.setText(Utils.getInvoiceNoForPOSM(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + ""));
 
         double totalAmount = 0.0;
         for (SoldProduct soldProduct : soldProductList) {
