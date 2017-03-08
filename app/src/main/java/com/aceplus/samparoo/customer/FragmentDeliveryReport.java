@@ -117,7 +117,7 @@ public class FragmentDeliveryReport extends Fragment {
 
                 cursor = database.rawQuery(
                         "SELECT * FROM PRODUCT"
-                                + " WHERE PRODUCT_ID = '" + deliverItem.getStockNo() + "'", null);
+                                + " WHERE ID = '" + deliverItem.getStockNo() + "'", null);
                 if (cursor.moveToNext()) {
 
                     SoldProduct soldProduct = new SoldProduct(new Product(
