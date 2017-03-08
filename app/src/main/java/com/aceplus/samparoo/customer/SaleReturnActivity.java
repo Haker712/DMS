@@ -353,6 +353,14 @@ public class SaleReturnActivity extends Activity {
             saleReturnDetail.setQuantity(soldProductList.get(i).getQuantity());
             saleReturnDetail.setRemark(soldProductList.get(i).getRemark());
             insertSaleReturnDetail(saleReturnDetail);
+
+            if (check.equalsIgnoreCase("yes")){
+                database.execSQL("UPDATE PRODUCT SET REMAINING_QTY = REMAINING_QTY + " + soldProductList.get(i).getQuantity()
+                        + ", EXCHANGE_QTY = EXCHANGE_QTY + " + soldProductList.get(i).getQuantity() + " WHERE PRODUCT_ID = \'" + soldProductList.get(i).getProduct().getId() + "\'");
+            } else {
+                database.execSQL("UPDATE PRODUCT SET REMAINING_QTY = REMAINING_QTY + " + soldProductList.get(i).getQuantity()
+                        + ", RETURN_QTY = RETURN_QTY + " + soldProductList.get(i).getQuantity() + " WHERE PRODUCT_ID = \'" + soldProductList.get(i).getProduct().getId() + "\'");
+            }
         }
 
         database.setTransactionSuccessful();
