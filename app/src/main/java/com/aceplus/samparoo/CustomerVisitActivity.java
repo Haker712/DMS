@@ -54,7 +54,7 @@ public class CustomerVisitActivity extends AppCompatActivity {
         Intent intent=new Intent(this,CustomerActivity.class);
         intent.putExtra("SaleExchange","yes");
         startActivity(intent);
-
+        finish();
     }
 
     @OnClick(R.id.buttonDelivery)
@@ -62,7 +62,7 @@ public class CustomerVisitActivity extends AppCompatActivity {
 
         Intent intent=new Intent(this,DeliveryActivity.class);
         startActivity(intent);
-
+        finish();
     }
 
 

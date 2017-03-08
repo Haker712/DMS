@@ -145,10 +145,10 @@ public class SaleCheckoutActivity extends AppCompatActivity {
             check = intent.getExtras().getString("SaleExchange");
             if (check.equalsIgnoreCase("yes")) {
 
-                invoiceIdTextView.setText(Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCodeName, Utils.FOR_SALE_EXCHANGE));
+                invoiceIdTextView.setText(Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.FOR_SALE_EXCHANGE));
             } else {
 
-                invoiceIdTextView.setText(Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCodeName, Utils.FOR_OTHERS));
+                invoiceIdTextView.setText(Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.FOR_OTHERS));
             }
         }
         soldProductListRowAdapter = new SoldProductListRowAdapter(this);

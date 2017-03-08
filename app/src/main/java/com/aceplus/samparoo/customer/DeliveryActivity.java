@@ -12,6 +12,7 @@ import com.aceplus.samparoo.utils.Database;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -89,19 +90,19 @@ public class DeliveryActivity extends AppCompatActivity {
             deliver.setPaidAmount(cursor.getDouble(cursor.getColumnIndex("PAID_AMOUNT")));
 
 
-            cursor = database.rawQuery("SELECT D.DELIVERY_ID, D.STOCK_NO, D.ORDER_QTY, D.SPRICE, " +
-                    "PRODUCT.PRODUCT_NAME FROM DELIVERY_ITEM D " +
-                    "INNER JOIN PRODUCT ON PRODUCT.PRODUCT_ID = D.STOCK_NO;", null);
+            Cursor deliveryItemCursor = database.rawQuery("SELECT D.DELIVERY_ID, D.STOCK_NO, D.ORDER_QTY, D.SPRICE " +
+                    "FROM DELIVERY_ITEM D INNER JOIN " +
+                    "PRODUCT ON PRODUCT.ID = D.STOCK_NO;", null);
 
+            Log.i("deliver_Count -> ", String.valueOf(deliveryItemCursor.getCount()));
             List<DeliverItem> deliverItemList = new ArrayList<>();
 
-            while (cursor.moveToNext()) {
+            while (deliveryItemCursor.moveToNext()) {
                 DeliverItem deliverItem = new DeliverItem();
-                deliverItem.setDeliverId(cursor.getInt(cursor.getColumnIndex("DELIVERY_ID")));
-                deliverItem.setStockNo(cursor.getString(cursor.getColumnIndex("STOCK_NO")));
-                deliverItem.setOrderQty(cursor.getInt(cursor.getColumnIndex("ORDER_QTY")));
-                deliverItem.setSPrice(cursor.getDouble(cursor.getColumnIndex("SPRICE")));
-                deliverItem.setSPrice(cursor.getDouble(cursor.getColumnIndex("PRODUCT_NAME")));
+                deliverItem.setDeliverId(deliveryItemCursor.getInt(deliveryItemCursor.getColumnIndex("DELIVERY_ID")));
+                deliverItem.setStockNo(deliveryItemCursor.getString(deliveryItemCursor.getColumnIndex("STOCK_NO")));
+                deliverItem.setOrderQty(deliveryItemCursor.getInt(deliveryItemCursor.getColumnIndex("ORDER_QTY")));
+                deliverItem.setSPrice(deliveryItemCursor.getDouble(deliveryItemCursor.getColumnIndex("SPRICE")));
 
                 if (deliverItem.getDeliverId() == deliver.getDeliverId()) {
                     deliverItemList.add(deliverItem);
@@ -112,7 +113,8 @@ public class DeliveryActivity extends AppCompatActivity {
             deliverList.add(deliver);
         }
 
-        return deliverList;
+        Log.i("deliver_list_Count -> ", String.valueOf(deliverList.size()));
+         return deliverList;
 
     }
 }

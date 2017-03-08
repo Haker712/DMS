@@ -459,7 +459,7 @@ public class PosmActivity extends AppCompatActivity {
 
                 TextView orderedQuantityTextView = (TextView) view.findViewById(R.id.orderedQuantity);
                 TextView um = (TextView) view.findViewById(R.id.um);
-                TextView discount = (TextView) view.findViewById(R.id.discount);
+                TextView discount = (TextView) view.findViewById(R.id.promotionPrice);
 
                 um.setVisibility(View.GONE);
                 discount.setVisibility(View.GONE);

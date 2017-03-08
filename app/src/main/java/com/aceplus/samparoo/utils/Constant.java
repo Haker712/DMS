@@ -22,5 +22,5 @@ public class Constant {
 
     public static String ADDNEWCUSTOMERCOUNT="addnewcustomerCount";
 
-
+    public static String KEY_MAX_ZOOM = "12";
 }
