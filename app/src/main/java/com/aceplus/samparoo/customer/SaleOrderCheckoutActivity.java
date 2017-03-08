@@ -1015,6 +1015,13 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
 
             totolQtyForInvoice += soldProduct.getQuantity();
             database.insert("INVOICE_PRODUCT", null, cvInvoiceProduct);
+
+            database.execSQL("UPDATE PRODUCT SET REMAINING_QTY = REMAINING_QTY - " + soldProduct.getQuantity()
+                    + ", DELIVERY_QTY = DELIVERY_QTY + " + soldProduct.getQuantity() + " WHERE PRODUCT_ID = \'" + soldProduct.getProduct().getId() + "\'");
+
+            for (Promotion promotion : promotionArrayList) {
+                database.execSQL("UPDATE PRODUCT SET PRESENT_QTY = PRESENT_QTY + " + promotion.getPromotionQty() + " WHERE PRODUCT_ID = \'" + soldProduct.getProduct().getId() + "\'");
+            }
         }
         return totolQtyForInvoice;
     }
