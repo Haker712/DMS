@@ -10,9 +10,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center_horizontal"
-        android:text="Customer Name"
         android:textStyle="bold"
-        android:textColor="#FFFFFF" />
+        />
 
     <TextView
         android:id="@+id/shoptype"
@@ -20,9 +19,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center_horizontal"
-        android:text="Shop Type Name"
         android:textStyle="bold"
-        android:textColor="#FFFFFF" />
+       />
 
     <TextView
         android:id="@+id/productName"
@@ -30,9 +28,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center_horizontal"
-        android:text="Product Name"
         android:textStyle="bold"
-        android:textColor="#FFFFFF" />
+      />
 
     <TextView
         android:id="@+id/qty"
@@ -40,9 +37,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center_horizontal"
-        android:text="Qty"
         android:textStyle="bold"
-        android:textColor="#FFFFFF" />
+       />
 
 
 </LinearLayout>

@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +36,8 @@ public class FragmentPOSMReport extends Fragment {
 
     ListView POSMListView;
 
+    JSONObject posmReportJsonObject;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -57,6 +60,8 @@ public class FragmentPOSMReport extends Fragment {
         public POSMAdapter(Activity context) {
             super(context, R.layout.list_row_posm_report,POSMReportArrayList );
             this.context = context;
+
+            Log.i("SIZE",POSMReportArrayList.size()+"");
         }
 
         @NonNull
@@ -64,7 +69,8 @@ public class FragmentPOSMReport extends Fragment {
         public View getView(int position, View convertView, ViewGroup parent) {
 
 
-            JSONObject posmReportJsonObject = POSMReportArrayList.get(position);
+
+            posmReportJsonObject = POSMReportArrayList.get(position);
 
             LayoutInflater layoutInflater = context.getLayoutInflater();
             View view = layoutInflater.inflate(R.layout.list_row_posm_report, null, true);

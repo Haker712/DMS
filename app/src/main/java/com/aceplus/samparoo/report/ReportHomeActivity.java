@@ -258,12 +258,15 @@ public class ReportHomeActivity extends FragmentActivity {
                         for (JSONObject POSMReportJSONObject : getPOSMReports()) {
 
                             POSMReportArrayList.add(POSMReportJSONObject);
+
                         }
                     }
 
                     FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                     FragmentPOSMReport fragmentPOSMReport=new FragmentPOSMReport();
+                    fragmentPOSMReport.POSMReportArrayList = POSMReportArrayList;
                     fragmentTransaction.replace(R.id.fragment_report,fragmentPOSMReport);
+                    fragmentTransaction.commit();
 
 
                 }
@@ -638,11 +641,12 @@ public class ReportHomeActivity extends FragmentActivity {
 
             String stock_Id=cursor.getString(cursor.getColumnIndex("STOCK_ID"));
 
-            Cursor cursor2=database.rawQuery("select * from PRODUCT where PRODUCT_ID'"+stock_Id+"'",null);
+            Cursor cursor2=database.rawQuery("select * from PRODUCT where ID='"+stock_Id+"'",null);
 
             while(cursor2.moveToNext()){
 
                 product_name=cursor2.getString(cursor2.getColumnIndex("PRODUCT_NAME"));
+                Log.i("ProductName",product_name);
 
             }
 
