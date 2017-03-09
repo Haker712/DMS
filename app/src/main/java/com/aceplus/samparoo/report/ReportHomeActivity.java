@@ -46,6 +46,8 @@ public class ReportHomeActivity extends FragmentActivity {
 
     TextView reportTitle;
 
+    String cus_name,product_name,shop_name;
+
     @SuppressLint("NewApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +89,7 @@ public class ReportHomeActivity extends FragmentActivity {
         final ArrayList<JSONObject> customerFeedbackReportsArrayList = new ArrayList<JSONObject>();
         final ArrayList<JSONObject> preOrderReportsArrayList = new ArrayList<JSONObject>();
         final ArrayList<JSONObject> saleReturnReportsArrayList = new ArrayList<>();
+        final ArrayList<JSONObject> POSMReportArrayList=new ArrayList<>();
 
 
         final String[] reportNames = {
@@ -98,6 +101,7 @@ public class ReportHomeActivity extends FragmentActivity {
                 , "Credit Collection Report"
                 , "Sale Return Report"
                 , "Sale Exchange Report"
+                , "POSM Report"
 
         };
         ArrayAdapter<String> reportsSpinnerAdapter
@@ -247,7 +251,26 @@ public class ReportHomeActivity extends FragmentActivity {
 
                     fragmentTransaction.addToBackStack(null);
                     fragmentTransaction.commit();
+                } else if (position == 8) {
+
+                    if (POSMReportArrayList.size() == 0) {
+
+                        for (JSONObject POSMReportJSONObject : getPOSMReports()) {
+
+                            POSMReportArrayList.add(POSMReportJSONObject);
+
+                        }
+                    }
+
+                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    FragmentPOSMReport fragmentPOSMReport=new FragmentPOSMReport();
+                    fragmentPOSMReport.POSMReportArrayList = POSMReportArrayList;
+                    fragmentTransaction.replace(R.id.fragment_report,fragmentPOSMReport);
+                    fragmentTransaction.commit();
+
+
                 }
+
             }
 
             @Override
@@ -430,29 +453,29 @@ public class ReportHomeActivity extends FragmentActivity {
 
                 saleReturnReportJsonObject.put("saleReturnId", cursor.getString(cursor.getColumnIndex("SALE_RETURN_ID")));
 
-                Log.i("SRID",cursor.getString(cursor.getColumnIndex("SALE_RETURN_ID")));
+                Log.i("SRID", cursor.getString(cursor.getColumnIndex("SALE_RETURN_ID")));
                 saleReturnReportJsonObject.put("returnedDate", cursor.getString(cursor.getColumnIndex("RETURNED_DATE")));
 
-              //  saleReturnReportJsonObject.put("customerId", cursor.getString(cursor.getColumnIndex("CUSTOMER_ID")));
+                //  saleReturnReportJsonObject.put("customerId", cursor.getString(cursor.getColumnIndex("CUSTOMER_ID")));
 
-                String customer_Id=cursor.getString(cursor.getColumnIndex("CUSTOMER_ID"));
+                String customer_Id = cursor.getString(cursor.getColumnIndex("CUSTOMER_ID"));
 
             } catch (JSONException e) {
 
                 e.printStackTrace();
             }
 
-            Cursor cur_CusId=database.rawQuery("select * from CUSTOMER",null);
+            Cursor cur_CusId = database.rawQuery("select * from CUSTOMER", null);
 
-            while (cur_CusId.moveToNext()){
+            while (cur_CusId.moveToNext()) {
 
 
-                String cusName=cur_CusId.getString(cur_CusId.getColumnIndex("CUSTOMER_NAME"));
-                String cusAddress=cur_CusId.getString(cur_CusId.getColumnIndex("ADDRESS"));
+                String cusName = cur_CusId.getString(cur_CusId.getColumnIndex("CUSTOMER_NAME"));
+                String cusAddress = cur_CusId.getString(cur_CusId.getColumnIndex("ADDRESS"));
 
                 try {
-                    saleReturnReportJsonObject.put("customerName",cusName);
-                    saleReturnReportJsonObject.put("customerAddress",cusAddress);
+                    saleReturnReportJsonObject.put("customerName", cusName);
+                    saleReturnReportJsonObject.put("customerAddress", cusAddress);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -565,7 +588,7 @@ public class ReportHomeActivity extends FragmentActivity {
                 preOrderReportJSONObject.put("prepaidAmount", cursor.getDouble(cursor.getColumnIndex("ADVANCE_PAYMENT_AMOUNT")));
                 preOrderReportJSONObject.put("totalAmount", cursor.getDouble(cursor.getColumnIndex("NET_AMOUNT")));
 
-                preOrderReportJSONObject.put("invoice_Id",cursor.getString(cursor.getColumnIndex("INVOICE_ID")));
+                preOrderReportJSONObject.put("invoice_Id", cursor.getString(cursor.getColumnIndex("INVOICE_ID")));
 
 //                JSONArray productListJSONArray = new JSONArray(cursor.getString(cursor.getColumnIndex("PRODUCT_LIST")));
 //                for (int i = 0; i < productListJSONArray.length(); i++) {
@@ -592,6 +615,70 @@ public class ReportHomeActivity extends FragmentActivity {
         }
 
         return preOrderReportsArrayList;
+    }
+
+    private ArrayList<JSONObject> getPOSMReports(){
+
+        ArrayList<JSONObject> POSMReportArrayList=new ArrayList<>();
+
+        Cursor cursor=database.rawQuery("select * from POSM_BY_CUSTOMER",null);
+
+        while (cursor.moveToNext()){
+
+            JSONObject POSMReportJSONObject = new JSONObject();
+
+
+            String qty=cursor.getString(cursor.getColumnIndex("QUANTITY"));
+            String cus_Id=cursor.getString(cursor.getColumnIndex("CUSTOMER_ID"));
+
+            Cursor cursor1=database.rawQuery("select * from CUSTOMER where id='"+cus_Id+"'",null);
+
+            while (cursor1.moveToNext()){
+
+                cus_name=cursor1.getString(cursor1.getColumnIndex("CUSTOMER_NAME"));
+
+            }
+
+            String stock_Id=cursor.getString(cursor.getColumnIndex("STOCK_ID"));
+
+            Cursor cursor2=database.rawQuery("select * from PRODUCT where ID='"+stock_Id+"'",null);
+
+            while(cursor2.moveToNext()){
+
+                product_name=cursor2.getString(cursor2.getColumnIndex("PRODUCT_NAME"));
+                Log.i("ProductName",product_name);
+
+            }
+
+            String shop_Id=cursor.getString(cursor.getColumnIndex("SHOP_TYPE_ID"));
+
+            Cursor cursor3=database.rawQuery("select * from SHOP_TYPE where ID='"+shop_Id+"'",null);
+
+            while (cursor3.moveToNext()){
+
+                shop_name=cursor3.getString(cursor3.getColumnIndex("SHOP_TYPE_NAME"));
+
+
+            }
+
+
+            try {
+
+                POSMReportJSONObject.put("CustomerName",cus_name);
+                POSMReportJSONObject.put("ProductName",product_name);
+                POSMReportJSONObject.put("ShopName",shop_name);
+                POSMReportJSONObject.put("Quantity",qty);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            POSMReportArrayList.add(POSMReportJSONObject);
+
+
+        }
+
+        return POSMReportArrayList;
+
     }
 
 

@@ -35,6 +35,8 @@ import com.aceplus.samparoo.model.PreOrder;
 import com.aceplus.samparoo.model.PreOrderProduct;
 import com.aceplus.samparoo.model.Promotion;
 import com.aceplus.samparoo.model.SoldProduct;
+import com.aceplus.samparoo.model.forApi.DeliveryApi;
+import com.aceplus.samparoo.model.forApi.DeliveryItemApi;
 import com.aceplus.samparoo.model.forApi.InvoiceResponse;
 import com.aceplus.samparoo.model.forApi.PreOrderApi;
 import com.aceplus.samparoo.model.forApi.PreOrderDetailApi;
@@ -984,6 +986,13 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
                 + totalQuantity + "\""
                 + ")");
 
+        DeliveryApi deliveryApi = new DeliveryApi();
+        deliveryApi.setInvoiceNo(invoiceId);
+        deliveryApi.setInvoiceDate(saleDate);
+        deliveryApi.setSaleId(invoiceId);
+        deliveryApi.setRemark("");
+        insertDeliveryUpload(deliveryApi);
+
         database.setTransactionSuccessful();
         database.endTransaction();
     }
@@ -1015,8 +1024,49 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
 
             totolQtyForInvoice += soldProduct.getQuantity();
             database.insert("INVOICE_PRODUCT", null, cvInvoiceProduct);
+
+            DeliveryItemApi deliveryItemApi = new DeliveryItemApi();
+            deliveryItemApi.setDeliveryId(invoiceId);
+            deliveryItemApi.setStockId(soldProduct.getProduct().getStockId());
+            deliveryItemApi.setDeliveryQty(soldProduct.getQuantity());
+            insertDeliveryItemUpload(deliveryItemApi);
+
+            database.execSQL("UPDATE PRODUCT SET REMAINING_QTY = REMAINING_QTY - " + soldProduct.getQuantity()
+                    + ", DELIVERY_QTY = DELIVERY_QTY + " + soldProduct.getQuantity() + " WHERE PRODUCT_ID = \'" + soldProduct.getProduct().getId() + "\'");
+
+            for (Promotion promotion : promotionArrayList) {
+                database.execSQL("UPDATE PRODUCT SET PRESENT_QTY = PRESENT_QTY + " + promotion.getPromotionQty() + " WHERE PRODUCT_ID = \'" + soldProduct.getProduct().getId() + "\'");
+            }
         }
         return totolQtyForInvoice;
+    }
+
+    /**
+     * Insert delivery to database for upload.
+     *
+     * @param deliveryApi Delivery model for upload
+     */
+    void insertDeliveryUpload(DeliveryApi deliveryApi) {
+        ContentValues cvDeliveryUpload = new ContentValues();
+        cvDeliveryUpload.put(DatabaseContract.DELIVERY_UPLOAD.INVOICE_NO, deliveryApi.getInvoiceNo());
+        cvDeliveryUpload.put(DatabaseContract.DELIVERY_UPLOAD.INVOICE_DATE, deliveryApi.getInvoiceDate());
+        cvDeliveryUpload.put(DatabaseContract.DELIVERY_UPLOAD.CUSTOMER_ID, SaleOrderCheckoutActivity.this.customer.getId());
+        cvDeliveryUpload.put(DatabaseContract.DELIVERY_UPLOAD.SALE_ID, deliveryApi.getSaleId());
+        cvDeliveryUpload.put(DatabaseContract.DELIVERY_UPLOAD.REMARK, deliveryApi.getRemark());
+        database.insert(DatabaseContract.DELIVERY_UPLOAD.TABLE, null, cvDeliveryUpload);
+    }
+
+    /**
+     * Insert delivery item to database for upload
+     *
+     * @param deliveryItemApi Delivery item model for upload
+     */
+    void insertDeliveryItemUpload(DeliveryItemApi deliveryItemApi) {
+        ContentValues cvDeliveryUploadItem = new ContentValues();
+        cvDeliveryUploadItem.put(DatabaseContract.DELIVERY_ITEM_UPLOAD.DELIVERY_ID, deliveryItemApi.getDeliveryId());
+        cvDeliveryUploadItem.put(DatabaseContract.DELIVERY_ITEM_UPLOAD.STOCK_ID, deliveryItemApi.getStockId());
+        cvDeliveryUploadItem.put(DatabaseContract.DELIVERY_ITEM_UPLOAD.DELIVERY_QTY, deliveryItemApi.getDeliveryQty());
+        database.insert(DatabaseContract.DELIVERY_ITEM_UPLOAD.TABLE, null, cvDeliveryUploadItem);
     }
 
     /**

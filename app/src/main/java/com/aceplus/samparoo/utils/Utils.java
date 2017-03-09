@@ -309,7 +309,7 @@ public class Utils {
         } else if (mode.equals(Utils.FOR_DELIVERY)) {
 
 //			next = 1;
-            Cursor cursor = database.rawQuery("SELECT COUNT(*) AS COUNT FROM DELIVERED_DATA", null);
+            Cursor cursor = database.rawQuery("SELECT COUNT(*) AS COUNT FROM DELIVERY_UPLOAD", null);
             if (cursor.moveToNext()) {
 
                 next += cursor.getInt(cursor.getColumnIndex("COUNT")) + 1;
