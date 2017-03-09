@@ -275,4 +275,20 @@ public class DatabaseContract {
         public static final String SPRICE="SPRICE";
         public static final String FOC_STATUS="FOC_STATUS";
     }
+
+    public abstract class DELIVERY_UPLOAD {
+        public static final String TABLE = "DELIVERY_UPLOAD";
+        public static final String INVOICE_NO="INVOICE_NO";
+        public static final String INVOICE_DATE="INVOICE_DATE";
+        public static final String CUSTOMER_ID="CUSTOMER_ID";
+        public static final String SALE_ID="SALE_ID";
+        public static final String REMARK="REMARK";
+    }
+
+    public abstract class DELIVERY_ITEM_UPLOAD {
+        public static final String TABLE = "DELIVERY_ITEM_UPLOAD";
+        public static final String DELIVERY_ID="DELIVERY_ID";
+        public static final String STOCK_ID="STOCK_ID";
+        public static final String DELIVERY_QTY="DELIVERY_QTY";
+    }
 }
