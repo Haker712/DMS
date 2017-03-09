@@ -42,11 +42,12 @@ public class ERouteListFragment extends Fragment {
     Spinner townshipSpinner;
 
     Route_Township route_township;
-    ArrayList<Route_Township> route_townships=new ArrayList<>();
-    List<String> townshiplist=new ArrayList<>();
-    String township_Id,township_Name,Seleceted_TownshipId;
-    String shop_type="";
+    ArrayList<Route_Township> route_townships = new ArrayList<>();
+    List<String> townshiplist = new ArrayList<>();
+    String township_Id, township_Name, Seleceted_TownshipId;
+    String shop_type = "";
 
+    RouteAdapter routeAdapter;
 
     @Nullable
     @Override
@@ -55,19 +56,22 @@ public class ERouteListFragment extends Fragment {
 
         database = new Database(getContext()).getDataBase();
         routedataArrayList = new ArrayList<>();
+        routedataArrayList.clear();
 
-        townshipSpinner= (Spinner) view.findViewById(R.id.townshipspinner);
+        townshipSpinner = (Spinner) view.findViewById(R.id.townshipspinner);
 
-        routeListview= (ListView) view.findViewById(R.id.routeListView);
+        routeListview = (ListView) view.findViewById(R.id.routeListView);
 
 
-        Cursor cur_Township=database.rawQuery("select * from TOWNSHIP",null);
+        Cursor cur_Township = database.rawQuery("select * from TOWNSHIP", null);
 
-        while (cur_Township.moveToNext()){
-            route_township=new Route_Township();
 
-            township_Id=cur_Township.getString(cur_Township.getColumnIndex("TOWNSHIP_ID"));
-            township_Name=cur_Township.getString(cur_Township.getColumnIndex("TOWNSHIP_NAME"));
+        while (cur_Township.moveToNext()) {
+            route_township = new Route_Township();
+
+
+            township_Id = cur_Township.getString(cur_Township.getColumnIndex("TOWNSHIP_ID"));
+            township_Name = cur_Township.getString(cur_Township.getColumnIndex("TOWNSHIP_NAME"));
 
             route_township.setTownship_Id(township_Id);
             route_township.setTownship_Name(township_Name);
@@ -90,23 +94,29 @@ public class ERouteListFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
+                routedataArrayList.clear();
+                routeAdapter = new RouteAdapter(getActivity());
 
+                routeListview.setAdapter(routeAdapter);
+                routeAdapter.notifyDataSetChanged();
 
-                Seleceted_TownshipId=route_townships.get(position).getTownship_Id();
+                Seleceted_TownshipId = route_townships.get(position).getTownship_Id();
 
                 Cursor cur_CustomerId = database.rawQuery("select * from RouteAssign", null);
+
 
                 while (cur_CustomerId.moveToNext()) {
 
 
                     String cus_Id = cur_CustomerId.getString(cur_CustomerId.getColumnIndex("CustomerId"));
-                    Log.i("Customer_Id>>>",cus_Id);
+                    Log.i("Customer_Id>>>", cus_Id);
 
-                    Cursor cur_Data = database.rawQuery("select * from CUSTOMER where id='" + cus_Id + "'and township_number='"+Seleceted_TownshipId+"'", null);
+                    Cursor cur_Data = database.rawQuery("select * from CUSTOMER where id='" + cus_Id + "'and township_number='" + Seleceted_TownshipId + "'", null);
+
 
                     while (cur_Data.moveToNext()) {
 
-                        routedata=new Routedata();
+                        routedata = new Routedata();
 
                         String customer_Name = cur_Data.getString(cur_Data.getColumnIndex("CUSTOMER_NAME"));
                         String ph_No = cur_Data.getString(cur_Data.getColumnIndex("PH"));
@@ -114,10 +124,9 @@ public class ERouteListFragment extends Fragment {
                         String shoptype_id = cur_Data.getString(cur_Data.getColumnIndex("shop_type_id"));
 
 
-                        Log.i("phone--",ph_No);
-                        Log.i("address",address);
-                        Log.i("ShopType___Id",shoptype_id);
-
+                        Log.i("phone--", ph_No);
+                        Log.i("address", address);
+                        Log.i("ShopType___Id", shoptype_id);
 
 
                         Cursor cur_shopetype = database.rawQuery("select * from SHOP_TYPE where ID='" + shoptype_id + "'", null);
@@ -126,12 +135,7 @@ public class ERouteListFragment extends Fragment {
                         while (cur_shopetype.moveToNext()) {
 
 
-
                             shop_type = cur_shopetype.getString(cur_shopetype.getColumnIndex("SHOP_TYPE_NAME"));
-
-
-
-
 
 
                         }
@@ -142,25 +146,24 @@ public class ERouteListFragment extends Fragment {
                             routedata.setShopType(shop_type);
 
                             routedataArrayList.add(routedata);
-                        }
-                        catch (NullPointerException a){
+                        } catch (NullPointerException a) {
                             a.printStackTrace();
-                        }catch (Exception e){
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
 
-                        Log.i("ArraySize",routedataArrayList.size()+"");
-                        RouteAdapter routeAdapter = new RouteAdapter(getActivity());
-                        routeListview.setAdapter(routeAdapter);
+                        Log.i("ArraySize", routedataArrayList.size() + "");
 
+
+
+                            routeAdapter = new RouteAdapter(getActivity());
+                            routeListview.setAdapter(routeAdapter);
 
 
 
                     }
 
                 }
-
-
 
 
             }
@@ -172,14 +175,7 @@ public class ERouteListFragment extends Fragment {
         });
 
 
-
-
-
-
-       // getDataforRoute();
-
-
-
+        // getDataforRoute();
 
 
         return view;
@@ -197,9 +193,9 @@ public class ERouteListFragment extends Fragment {
         while (cur_CustomerId.moveToNext()) {
 
             String cus_Id = cur_CustomerId.getString(cur_CustomerId.getColumnIndex("CustomerId"));
-            Log.i("Customer_Id>>>",cus_Id);
+            Log.i("Customer_Id>>>", cus_Id);
 
-            Cursor cur_Data = database.rawQuery("select * from CUSTOMER where id='" + cus_Id + "'and township_number='"+Seleceted_TownshipId+"'", null);
+            Cursor cur_Data = database.rawQuery("select * from CUSTOMER where id='" + cus_Id + "'and township_number='" + Seleceted_TownshipId + "'", null);
 
             while (cur_Data.moveToNext()) {
 
@@ -209,10 +205,9 @@ public class ERouteListFragment extends Fragment {
                 String shoptype_id = cur_Data.getString(cur_Data.getColumnIndex("shop_type_id"));
 
 
-                Log.i("phone--",ph_No);
-                Log.i("address",address);
-                Log.i("ShopType___Id",shoptype_id);
-
+                Log.i("phone--", ph_No);
+                Log.i("address", address);
+                Log.i("ShopType___Id", shoptype_id);
 
 
                 Cursor cur_shopetype = database.rawQuery("select * from SHOP_TYPE where ID='" + shoptype_id + "'", null);
@@ -243,7 +238,7 @@ public class ERouteListFragment extends Fragment {
         public final Activity context;
 
         public RouteAdapter(Activity context) {
-            super(context, R.layout.list_row_route,routedataArrayList);
+            super(context, R.layout.list_row_route, routedataArrayList);
             this.context = context;
         }
 
@@ -251,20 +246,22 @@ public class ERouteListFragment extends Fragment {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
 
+            Routedata routedata1=routedataArrayList.get(position);
+
             LayoutInflater layoutInflater = context.getLayoutInflater();
             View view = layoutInflater.inflate(R.layout.list_row_route, null, true);
 
-            TextView textView_customer_Name= (TextView) view.findViewById(R.id.customer_Name);
-            TextView textView_shoptpye= (TextView) view.findViewById(R.id.shop_Type);
-            TextView textView_address= (TextView) view.findViewById(R.id.address);
-            TextView textView_Phone= (TextView) view.findViewById(R.id.phone);
+            TextView textView_customer_Name = (TextView) view.findViewById(R.id.customer_Name);
+            TextView textView_shoptpye = (TextView) view.findViewById(R.id.shop_Type);
+            TextView textView_address = (TextView) view.findViewById(R.id.address);
+            TextView textView_Phone = (TextView) view.findViewById(R.id.phone);
 
 
-            textView_customer_Name.setText(routedata.getCustomerName());
-            Log.i("CusN",routedata.getCustomerName()+"ggg");
-            textView_shoptpye.setText(routedata.getShopType());
-            textView_address.setText(routedata.getAddress());
-            textView_Phone.setText(routedata.getPhNo());
+            textView_customer_Name.setText(routedata1.getCustomerName());
+            Log.i("CusN", routedata1.getCustomerName() + "ggg");
+            textView_shoptpye.setText(routedata1.getShopType());
+            textView_address.setText(routedata1.getAddress());
+            textView_Phone.setText(routedata1.getPhNo());
 
             return view;
         }
