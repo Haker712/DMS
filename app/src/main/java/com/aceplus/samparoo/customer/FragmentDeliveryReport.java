@@ -68,7 +68,7 @@ public class FragmentDeliveryReport extends Fragment {
                     List<DeliverItem> deliveryItemList = FragmentDeliveryReport.this.deliveryReportsArrayList.get(position).getDeliverItemList();
 
                     ArrayList<SoldProduct> soldProductList = FragmentDeliveryReport.this.getProductList(deliveryItemList);
-                    ArrayList<SoldProduct> copySoldProductList = new ArrayList<SoldProduct>(soldProductList);
+                    ArrayList<SoldProduct> copySoldProductList = new ArrayList<>(soldProductList);
 
                     for (SoldProduct soldProduct : soldProductList) {
 
@@ -129,6 +129,7 @@ public class FragmentDeliveryReport extends Fragment {
                             , cursor.getInt(cursor.getColumnIndex("REMAINING_QTY"))), false);
                     soldProduct.setOrderedQuantity(deliverItem.getOrderQty());
                     soldProduct.setQuantity(soldProduct.getOrderedQuantity());
+                    soldProduct.getProduct().setStockId(Integer.parseInt(deliverItem.getStockNo()));
                     soldProductList.add(soldProduct);
                 }
 
@@ -161,6 +162,7 @@ public class FragmentDeliveryReport extends Fragment {
                     , cursor.getDouble(cursor.getColumnIndex("LONGITUDE"))
                     , cursor.getInt(cursor.getColumnIndex("VISIT_RECORD")));
             customer.setShopTypeId(cursor.getInt(cursor.getColumnIndex("shop_type_id")));
+            customer.setId(cursor.getInt(cursor.getColumnIndex("id")));
         }
 
         return customer;

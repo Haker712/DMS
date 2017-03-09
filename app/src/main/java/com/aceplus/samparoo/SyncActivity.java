@@ -26,8 +26,12 @@ import com.aceplus.samparoo.model.forApi.CustomerForApi;
 import com.aceplus.samparoo.model.forApi.CustomerResponse;
 import com.aceplus.samparoo.model.forApi.DataForVolumeDiscount;
 import com.aceplus.samparoo.model.forApi.DataforSaleUpload;
+import com.aceplus.samparoo.model.forApi.DeliveryApi;
 import com.aceplus.samparoo.model.forApi.DeliveryForApi;
+import com.aceplus.samparoo.model.forApi.DeliveryItemApi;
 import com.aceplus.samparoo.model.forApi.DeliveryItemForApi;
+import com.aceplus.samparoo.model.forApi.DeliveryRequest;
+import com.aceplus.samparoo.model.forApi.DeliveryRequestData;
 import com.aceplus.samparoo.model.forApi.DeliveryResponse;
 import com.aceplus.samparoo.model.forApi.District;
 import com.aceplus.samparoo.model.forApi.GeneralData;
@@ -141,11 +145,12 @@ public class SyncActivity extends AppCompatActivity {
     @OnClick(R.id.buttonUpload)
     void upload() {
 
-        uploadInvoiceToSever();
-        uploadCustomertoserver();
+       uploadInvoiceToSever();
+        /* uploadCustomertoserver();
         uploadPreOrderToServer();
         uploadSaleReturnToServer();
-        uploadPosmByCustomerToServer();
+        uploadPosmByCustomerToServer();*/
+        uploadDeliveryToServer();
     }
 
     private int getRouteID(String saleman_Id) {
@@ -1665,6 +1670,135 @@ public class SyncActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * upload delivery data to server
+     */
+    private void uploadDeliveryToServer() {
+        final DeliveryRequest deliveryRequest = getDeliveryRequest();
+
+        String paramData = getJsonFromObject(deliveryRequest);
+
+        Log.i("ParamData",paramData);
+
+        UploadService uploadService = RetrofitServiceFactory.createService(UploadService.class);
+
+        Call<InvoiceResponse> call = uploadService.uploadDelivery(paramData);
+
+        call.enqueue(new Callback<InvoiceResponse>() {
+            @Override
+            public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
+                if (response.code() == 200) {
+                    if (response.body().getAceplusStatusCode() == 200) {
+                        //Utils.cancelDialog();
+                        Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
+
+                       /* sqLiteDatabase.beginTransaction();
+
+                        if(deliveryRequest.getData() != null && deliveryRequest.getData().get(0).getDeliveryApiList().size() > 0) {
+                            deleteDataAfterUpload(DatabaseContract.DELIVERY_UPLOAD.TABLE, DatabaseContract.DELIVERY_UPLOAD.INVOICE_NO, deliveryRequest.getData().get(0).getDeliveryApiList().get(0).getInvoiceNo());
+                            deleteDataAfterUpload(DatabaseContract.DELIVERY_ITEM_UPLOAD.TABLE, DatabaseContract.DELIVERY_ITEM_UPLOAD.DELIVERY_ID, deliveryRequest.getData().get(0).getDeliveryApiList().get(0).getInvoiceNo());
+                        }
+
+                        sqLiteDatabase.setTransactionSuccessful();
+                        sqLiteDatabase.endTransaction();*/
+                    }
+                } else {
+                    onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<InvoiceResponse> call, Throwable t) {
+                Utils.cancelDialog();
+                Utils.commonDialog(t.getMessage(), SyncActivity.this);
+            }
+        });
+    }
+
+    /**
+     * Convert delivery date to json format
+     *
+     * @param deliveryRequest DeliveryRequest
+     * @return json string
+     */
+    private String getJsonFromObject(DeliveryRequest deliveryRequest) {
+        Gson gson = new GsonBuilder().serializeNulls().create();
+        String jsonString = gson.toJson(deliveryRequest);
+        return jsonString;
+    }
+
+    /**
+     * Set required delivery data to delivery request
+     *
+     * @return DeliveryRequest
+     */
+    private DeliveryRequest getDeliveryRequest() {
+
+        List<DeliveryRequestData> deliveryRequestDataList = new ArrayList<>();
+
+        List<DeliveryApi> deliveryApiList = getDeliveryApiFromDb();
+
+        for(DeliveryApi deliveryApi : deliveryApiList) {
+            deliveryApi.setDeliveryItemApi(getDeliveryItemApiFromDb(deliveryApi.getInvoiceNo()));
+        }
+
+        DeliveryRequestData deliveryRequestData = new DeliveryRequestData();
+        deliveryRequestData.setDeliveryApiList(deliveryApiList);
+        deliveryRequestDataList.add(deliveryRequestData);
+
+        DeliveryRequest deliveryRequest = new DeliveryRequest();
+        deliveryRequest.setData(deliveryRequestDataList);
+        deliveryRequest.setSiteActivationKey(Constant.SITE_ACTIVATION_KEY);
+        deliveryRequest.setTabletActivationKey(Constant.TABLET_ACTIVATION_KEY);
+        deliveryRequest.setUserId(saleman_Id);
+        deliveryRequest.setPassword("");
+        return deliveryRequest;
+
+    }
+
+    /**
+     * Get delivery from database
+     *
+     * @return deliveryApiList
+     */
+    private List<DeliveryApi> getDeliveryApiFromDb() {
+        List<DeliveryApi> deliveryApiList = new ArrayList<>();
+
+        Cursor cursorDeliveryApi = sqLiteDatabase.rawQuery("select * from DELIVERY_UPLOAD;", null);
+        while(cursorDeliveryApi.moveToNext()) {
+            DeliveryApi deliveryApi = new DeliveryApi();
+            deliveryApi.setInvoiceNo(cursorDeliveryApi.getString(cursorDeliveryApi.getColumnIndex(DatabaseContract.DELIVERY_UPLOAD.INVOICE_NO)));
+            deliveryApi.setInvoiceDate(cursorDeliveryApi.getString(cursorDeliveryApi.getColumnIndex(DatabaseContract.DELIVERY_UPLOAD.INVOICE_DATE)));
+            deliveryApi.setSaleId(cursorDeliveryApi.getString(cursorDeliveryApi.getColumnIndex(DatabaseContract.DELIVERY_UPLOAD.SALE_ID)));
+            deliveryApi.setRemark(cursorDeliveryApi.getString(cursorDeliveryApi.getColumnIndex(DatabaseContract.DELIVERY_UPLOAD.REMARK)));
+
+            deliveryApiList.add(deliveryApi);
+        }
+        return deliveryApiList;
+    }
+
+    /**
+     * Get delivery item from database.
+     *
+     * @param invoiceNo invoice number to retrieve delivery item
+     * @return deliveryItemApiList
+     */
+    private List<DeliveryItemApi> getDeliveryItemApiFromDb(String invoiceNo){
+        List<DeliveryItemApi> deliveryItemApiList = new ArrayList<>();
+
+        Cursor cursorDeliveryItemApi = sqLiteDatabase.rawQuery("select * from DELIVERY_ITEM_UPLOAD WHERE DELIVERY_ID = \'" + invoiceNo + "\'", null);
+
+        while(cursorDeliveryItemApi.moveToNext()){
+            DeliveryItemApi deliveryItemApi = new DeliveryItemApi();
+            deliveryItemApi.setDeliveryId(cursorDeliveryItemApi.getString(cursorDeliveryItemApi.getColumnIndex(DatabaseContract.DELIVERY_ITEM_UPLOAD.DELIVERY_ID)));
+            deliveryItemApi.setStockId(cursorDeliveryItemApi.getInt(cursorDeliveryItemApi.getColumnIndex(DatabaseContract.DELIVERY_ITEM_UPLOAD.STOCK_ID)));
+            deliveryItemApi.setDeliveryQty(cursorDeliveryItemApi.getInt(cursorDeliveryItemApi.getColumnIndex(DatabaseContract.DELIVERY_ITEM_UPLOAD.DELIVERY_QTY)));
+
+            deliveryItemApiList.add(deliveryItemApi);
+        }
+
+        return deliveryItemApiList;
+    }
     /***
      * PL
      ***/

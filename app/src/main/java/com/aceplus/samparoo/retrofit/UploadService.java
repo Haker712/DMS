@@ -32,4 +32,8 @@ public interface UploadService {
     @FormUrlEncoded
     @POST("upload/posmByCustomer")
     Call<InvoiceResponse> uploadPosm(@Field("param_data") String paramData);
+
+    @FormUrlEncoded
+    @POST("upload/delivery ")
+    Call<InvoiceResponse> uploadDelivery(@Field("param_data") String paramData);
 }
