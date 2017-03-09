@@ -20,6 +20,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aceplus.samparoo.R;
+import com.aceplus.samparoo.customer.FragmentDeliveryReport;
+import com.aceplus.samparoo.model.Customer;
+import com.aceplus.samparoo.model.Posm;
 import com.aceplus.samparoo.utils.Database;
 import com.aceplus.samparoo.utils.Utils;
 
@@ -39,6 +42,8 @@ public class ReportHomeActivity extends FragmentActivity {
 
     JSONObject userInfo;
 
+
+
     ImageView cancelImg;
     Spinner reportsSpinner;
 
@@ -46,7 +51,9 @@ public class ReportHomeActivity extends FragmentActivity {
 
     TextView reportTitle;
 
-    String cus_name,product_name,shop_name;
+    String cus_name, product_name, shop_name;
+
+    String cusName, address;
 
     @SuppressLint("NewApi")
     @Override
@@ -89,7 +96,8 @@ public class ReportHomeActivity extends FragmentActivity {
         final ArrayList<JSONObject> customerFeedbackReportsArrayList = new ArrayList<JSONObject>();
         final ArrayList<JSONObject> preOrderReportsArrayList = new ArrayList<JSONObject>();
         final ArrayList<JSONObject> saleReturnReportsArrayList = new ArrayList<>();
-        final ArrayList<JSONObject> POSMReportArrayList=new ArrayList<>();
+        final ArrayList<JSONObject> POSMReportArrayList = new ArrayList<>();
+        final ArrayList<JSONObject> DeliveryReportArrayList = new ArrayList<>();
 
 
         final String[] reportNames = {
@@ -102,6 +110,7 @@ public class ReportHomeActivity extends FragmentActivity {
                 , "Sale Return Report"
                 , "Sale Exchange Report"
                 , "POSM Report"
+                , "Deliver Report"
 
         };
         ArrayAdapter<String> reportsSpinnerAdapter
@@ -263,12 +272,30 @@ public class ReportHomeActivity extends FragmentActivity {
                     }
 
                     FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                    FragmentPOSMReport fragmentPOSMReport=new FragmentPOSMReport();
+                    FragmentPOSMReport fragmentPOSMReport = new FragmentPOSMReport();
                     fragmentPOSMReport.POSMReportArrayList = POSMReportArrayList;
-                    fragmentTransaction.replace(R.id.fragment_report,fragmentPOSMReport);
+                    fragmentTransaction.replace(R.id.fragment_report, fragmentPOSMReport);
                     fragmentTransaction.commit();
 
 
+                }else if (position == 9) {
+
+                    if (DeliveryReportArrayList.size()==0){
+
+                        for (JSONObject DeliveryJSONObject : getDeliveryInvoiceReports()){
+
+
+                            DeliveryReportArrayList.add(DeliveryJSONObject);
+
+                        }
+
+                    }
+
+                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    FragmentDeliveryInvoiceReport fragmentDeliveryInvoiceReport = new FragmentDeliveryInvoiceReport();
+                    fragmentDeliveryInvoiceReport.DeliveryReportArrayList = DeliveryReportArrayList;
+                    fragmentTransaction.replace(R.id.fragment_report, fragmentDeliveryInvoiceReport);
+                    fragmentTransaction.commit();
                 }
 
             }
@@ -617,46 +644,46 @@ public class ReportHomeActivity extends FragmentActivity {
         return preOrderReportsArrayList;
     }
 
-    private ArrayList<JSONObject> getPOSMReports(){
+    private ArrayList<JSONObject> getPOSMReports() {
 
-        ArrayList<JSONObject> POSMReportArrayList=new ArrayList<>();
+        ArrayList<JSONObject> POSMReportArrayList = new ArrayList<>();
 
-        Cursor cursor=database.rawQuery("select * from POSM_BY_CUSTOMER",null);
+        Cursor cursor = database.rawQuery("select * from POSM_BY_CUSTOMER", null);
 
-        while (cursor.moveToNext()){
+        while (cursor.moveToNext()) {
 
             JSONObject POSMReportJSONObject = new JSONObject();
 
 
-            String qty=cursor.getString(cursor.getColumnIndex("QUANTITY"));
-            String cus_Id=cursor.getString(cursor.getColumnIndex("CUSTOMER_ID"));
+            String qty = cursor.getString(cursor.getColumnIndex("QUANTITY"));
+            String cus_Id = cursor.getString(cursor.getColumnIndex("CUSTOMER_ID"));
 
-            Cursor cursor1=database.rawQuery("select * from CUSTOMER where id='"+cus_Id+"'",null);
+            Cursor cursor1 = database.rawQuery("select * from CUSTOMER where id='" + cus_Id + "'", null);
 
-            while (cursor1.moveToNext()){
+            while (cursor1.moveToNext()) {
 
-                cus_name=cursor1.getString(cursor1.getColumnIndex("CUSTOMER_NAME"));
-
-            }
-
-            String stock_Id=cursor.getString(cursor.getColumnIndex("STOCK_ID"));
-
-            Cursor cursor2=database.rawQuery("select * from PRODUCT where ID='"+stock_Id+"'",null);
-
-            while(cursor2.moveToNext()){
-
-                product_name=cursor2.getString(cursor2.getColumnIndex("PRODUCT_NAME"));
-                Log.i("ProductName",product_name);
+                cus_name = cursor1.getString(cursor1.getColumnIndex("CUSTOMER_NAME"));
 
             }
 
-            String shop_Id=cursor.getString(cursor.getColumnIndex("SHOP_TYPE_ID"));
+            String stock_Id = cursor.getString(cursor.getColumnIndex("STOCK_ID"));
 
-            Cursor cursor3=database.rawQuery("select * from SHOP_TYPE where ID='"+shop_Id+"'",null);
+            Cursor cursor2 = database.rawQuery("select * from PRODUCT where PRODUCT_ID='" + stock_Id + "'", null);
 
-            while (cursor3.moveToNext()){
+            while (cursor2.moveToNext()) {
 
-                shop_name=cursor3.getString(cursor3.getColumnIndex("SHOP_TYPE_NAME"));
+                product_name = cursor2.getString(cursor2.getColumnIndex("PRODUCT_NAME"));
+                Log.i("ProductName", product_name);
+
+            }
+
+            String shop_Id = cursor.getString(cursor.getColumnIndex("SHOP_TYPE_ID"));
+
+            Cursor cursor3 = database.rawQuery("select * from SHOP_TYPE where ID='" + shop_Id + "'", null);
+
+            while (cursor3.moveToNext()) {
+
+                shop_name = cursor3.getString(cursor3.getColumnIndex("SHOP_TYPE_NAME"));
 
 
             }
@@ -664,10 +691,10 @@ public class ReportHomeActivity extends FragmentActivity {
 
             try {
 
-                POSMReportJSONObject.put("CustomerName",cus_name);
-                POSMReportJSONObject.put("ProductName",product_name);
-                POSMReportJSONObject.put("ShopName",shop_name);
-                POSMReportJSONObject.put("Quantity",qty);
+                POSMReportJSONObject.put("CustomerName", cus_name);
+                POSMReportJSONObject.put("ProductName", product_name);
+                POSMReportJSONObject.put("ShopName", shop_name);
+                POSMReportJSONObject.put("Quantity", qty);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -678,6 +705,48 @@ public class ReportHomeActivity extends FragmentActivity {
         }
 
         return POSMReportArrayList;
+
+    }
+
+    private ArrayList<JSONObject> getDeliveryInvoiceReports() {
+
+
+        ArrayList<JSONObject> DeliveryReportArrayList = new ArrayList<>();
+
+        Cursor cursor = database.rawQuery("select * from DELIVERY_UPLOAD", null);
+
+        while (cursor.moveToNext()) {
+
+            JSONObject DeliveryReportJSONObject = new JSONObject();
+
+            String invoiceNo = cursor.getString(cursor.getColumnIndex("INVOICE_NO"));
+            String cus_Id = cursor.getString(cursor.getColumnIndex("CUSTOMER_ID"));
+
+            Cursor cursor1 = database.rawQuery("select * from CUSTOMER where id='" + cus_Id + "'", null);
+            while (cursor1.moveToNext()) {
+
+                cusName = cursor1.getString(cursor1.getColumnIndex("CUSTOMER_NAME"));
+                address = cursor1.getString(cursor1.getColumnIndex("ADDRESS"));
+
+            }
+
+
+            try {
+                DeliveryReportJSONObject.put("InvoiceNo", invoiceNo);
+                DeliveryReportJSONObject.put("CustomerName", cusName);
+                DeliveryReportJSONObject.put("Address", address);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            DeliveryReportArrayList.add(DeliveryReportJSONObject);
+
+
+        }
+
+
+        return DeliveryReportArrayList;
 
     }
 

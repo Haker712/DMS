@@ -9,7 +9,7 @@ public class Posm {
     /**
      * id
      */
-    String id;
+    public String id;
 
     /**
      * invoiceNo
