@@ -669,7 +669,7 @@ public class ReportHomeActivity extends FragmentActivity {
 
             String stock_Id = cursor.getString(cursor.getColumnIndex("STOCK_ID"));
 
-            Cursor cursor2 = database.rawQuery("select * from PRODUCT where PRODUCT_ID='" + stock_Id + "'", null);
+            Cursor cursor2 = database.rawQuery("select * from PRODUCT where ID='" + stock_Id + "'", null);
 
             while (cursor2.moveToNext()) {
 
