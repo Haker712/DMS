@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.aceplus.samparoo.R;
 import com.aceplus.samparoo.model.Route_Township;
 import com.aceplus.samparoo.model.Routedata;
+import com.aceplus.samparoo.model.forApi.Township;
 import com.aceplus.samparoo.utils.Database;
 
 import java.util.ArrayList;
@@ -47,6 +48,8 @@ public class ERouteListFragment extends Fragment {
     String township_Id, township_Name, Seleceted_TownshipId;
     String shop_type = "";
 
+    Cursor cur_Data;
+
     RouteAdapter routeAdapter;
 
     @Nullable
@@ -57,6 +60,11 @@ public class ERouteListFragment extends Fragment {
         database = new Database(getContext()).getDataBase();
         routedataArrayList = new ArrayList<>();
         routedataArrayList.clear();
+
+        Route_Township township=new Route_Township();
+        township.setTownship_Id(0+"");
+        township.setTownship_Name("All");
+        route_townships.add(township);
 
         townshipSpinner = (Spinner) view.findViewById(R.id.townshipspinner);
 
@@ -78,6 +86,7 @@ public class ERouteListFragment extends Fragment {
             route_townships.add(route_township);
 
         }
+
 
         for (int i = 0; i < route_townships.size(); i++) {
 
@@ -111,9 +120,15 @@ public class ERouteListFragment extends Fragment {
                     String cus_Id = cur_CustomerId.getString(cur_CustomerId.getColumnIndex("CustomerId"));
                     Log.i("Customer_Id>>>", cus_Id);
 
-                    Cursor cur_Data = database.rawQuery("select * from CUSTOMER where id='" + cus_Id + "'and township_number='" + Seleceted_TownshipId + "'", null);
+                    if (townshipSpinner.getSelectedItem().toString().equals("All")) {
 
+                        cur_Data = database.rawQuery("select * from CUSTOMER where id='" + cus_Id + "'", null);
 
+                    } else {
+
+                        cur_Data = database.rawQuery("select * from CUSTOMER where id='" + cus_Id + "'and township_number='" + Seleceted_TownshipId + "'", null);
+
+                    }
                     while (cur_Data.moveToNext()) {
 
                         routedata = new Routedata();
@@ -155,10 +170,8 @@ public class ERouteListFragment extends Fragment {
                         Log.i("ArraySize", routedataArrayList.size() + "");
 
 
-
-                            routeAdapter = new RouteAdapter(getActivity());
-                            routeListview.setAdapter(routeAdapter);
-
+                        routeAdapter = new RouteAdapter(getActivity());
+                        routeListview.setAdapter(routeAdapter);
 
 
                     }
@@ -246,7 +259,7 @@ public class ERouteListFragment extends Fragment {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
 
-            Routedata routedata1=routedataArrayList.get(position);
+            Routedata routedata1 = routedataArrayList.get(position);
 
             LayoutInflater layoutInflater = context.getLayoutInflater();
             View view = layoutInflater.inflate(R.layout.list_row_route, null, true);
