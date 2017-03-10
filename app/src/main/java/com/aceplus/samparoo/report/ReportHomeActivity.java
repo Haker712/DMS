@@ -351,7 +351,7 @@ public class ReportHomeActivity extends FragmentActivity {
 
         ArrayList<JSONObject> saleInvoiceReportsArrayList = new ArrayList<JSONObject>();
 
-        Cursor cursor = database.rawQuery("SELECT * FROM INVOICE", null);
+        Cursor cursor = database.rawQuery("SELECT * FROM INVOICE where INVOICE_ID not like 'SX%' and INVOICE_ID not like 'OS%'", null);
         while (cursor.moveToNext()) {
 
             JSONObject saleInvoiceReportJsonObject = new JSONObject();
@@ -372,6 +372,7 @@ public class ReportHomeActivity extends FragmentActivity {
 
                     double totalAmount = cursor.getDouble(cursor.getColumnIndex("TOTAL_AMOUNT"));
                     double discount = cursor.getDouble(cursor.getColumnIndex("TOTAL_DISCOUNT_AMOUNT"));
+                    Log.i("TotalDis",discount+"");
                     saleInvoiceReportJsonObject.put("totalAmount", totalAmount);
                     saleInvoiceReportJsonObject.put("discount", discount);
                     saleInvoiceReportJsonObject.put("netAmount", totalAmount - discount);

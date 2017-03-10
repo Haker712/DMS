@@ -66,7 +66,7 @@ public class SaleExchangeTab1 extends Fragment {
 
                 JSONObject saleReturnReportJsonObject = saleReturnReportsArrayList.get(position);
                 try {
-                    sale_return_id=saleReturnReportJsonObject.getString("saleReturnID");
+                    sale_return_id=saleReturnReportJsonObject.getString("saleReturnId");
                     Log.i("invoice_Id", sale_return_id);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -79,10 +79,11 @@ public class SaleExchangeTab1 extends Fragment {
                 Cursor cursor_sale_return_id= database.rawQuery("select * from SALE_RETURN_DETAIL WHERE SALE_RETURN_ID='"+sale_return_id+"'",null);
 
 
-                qty=cursor_sale_return_id.getString(cursor_sale_return_id.getColumnIndex("QUANTITY"));
-                remark=cursor_sale_return_id.getString(cursor_sale_return_id.getColumnIndex("REMARK"));
-
                 while (cursor_sale_return_id.moveToNext()){
+
+
+                    qty= cursor_sale_return_id.getString(cursor_sale_return_id.getColumnIndex("QUANTITY"));
+                    remark=cursor_sale_return_id.getString(cursor_sale_return_id.getColumnIndex("REMARK"));
 
                     String product_id=cursor_sale_return_id.getString(cursor_sale_return_id.getColumnIndex("PRODUCT_ID"));
 
@@ -203,7 +204,7 @@ public class SaleExchangeTab1 extends Fragment {
 
         ArrayList<JSONObject> saleReturnReportsArrayList = new ArrayList<JSONObject>();
 
-        Cursor cursor = database.rawQuery("SELECT * FROM SALE_RETURN WHERE SALE_RETURN_ID LIKE 'SX%' ", null);
+        Cursor cursor = database.rawQuery("SELECT S.SALE_RETURN_ID, S.RETURNED_DATE, S.PC_ADDRESS, CUSTOMER.CUSTOMER_NAME, CUSTOMER.ADDRESS FROM SALE_RETURN S INNER JOIN CUSTOMER ON CUSTOMER.ID = S.CUSTOMER_ID WHERE SALE_RETURN_ID LIKE 'SX%'", null);
         while (cursor.moveToNext()) {
 
             JSONObject saleReturnReportJsonObject = new JSONObject();
@@ -217,9 +218,9 @@ public class SaleExchangeTab1 extends Fragment {
                 //saleReturnReportJsonObject.put("returnProductList", cursor.getString(cursor.getColumnIndex("RETURN_PRODUCT")));*/
 
                 saleReturnReportJsonObject.put("saleReturnId", cursor.getString(cursor.getColumnIndex("SALE_RETURN_ID")));
-                saleReturnReportJsonObject.put("customerId", cursor.getString(cursor.getColumnIndex("CUSTOMER_ID")));
+                saleReturnReportJsonObject.put("customerName", cursor.getString(cursor.getColumnIndex("CUSTOMER_NAME")));
                 saleReturnReportJsonObject.put("returnedDate", cursor.getString(cursor.getColumnIndex("RETURNED_DATE")));
-                saleReturnReportJsonObject.put("address", cursor.getString(cursor.getColumnIndex("PC_ADDRESS")));
+                saleReturnReportJsonObject.put("address", cursor.getString(cursor.getColumnIndex("ADDRESS")));
 
             } catch (JSONException e) {
 
