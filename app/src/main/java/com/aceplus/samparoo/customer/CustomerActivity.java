@@ -32,11 +32,14 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.aceplus.samparoo.LoginActivity;
 import com.aceplus.samparoo.R;
 import com.aceplus.samparoo.model.Customer;
 import com.aceplus.samparoo.model.CustomerFeedback;
 import com.aceplus.samparoo.model.CustomerLocation;
+import com.aceplus.samparoo.utils.Constant;
 import com.aceplus.samparoo.utils.Database;
+import com.aceplus.samparoo.utils.DatabaseContract;
 import com.aceplus.samparoo.utils.Utils;
 
 import org.json.JSONException;
@@ -412,16 +415,16 @@ public class CustomerActivity extends AppCompatActivity {
 
                         final AlertDialog alertDialog = new AlertDialog.Builder(CustomerActivity.this)
                                 .setView(view)
-                                .setTitle("Feedback")
+                                .setTitle("Un-Sell Reason")
                                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
 
                                     @Override
                                     public void onClick(DialogInterface arg0, int arg1) {
 
 
-                                        String salemanId = "za";
+                                        String salemanId = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
                                         String deviceId = Utils.getDeviceId(CustomerActivity.this);
-                                        String invoiceNumber = Utils.getInvoiceID(getApplicationContext(), Utils.MODE_CUSTOMER_FEEDBACK, salemanId, "YGN");
+                                        String invoiceNumber = Utils.getInvoiceNo(getApplicationContext(), salemanId, String.valueOf(getLocationCode()), Utils.MODE_CUSTOMER_FEEDBACK);
                                         String invoiceDate = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
                                         String customerNumber = customer.getCustomerId();
                                         String locationNumber = "YGN";
@@ -686,6 +689,18 @@ public class CustomerActivity extends AppCompatActivity {
                 "HH:mm:ss", Locale.getDefault());
         Date date = new Date();
         return dateFormat.format(date);
+    }
+
+    private int getLocationCode() {
+        int locationCode = 0;
+        String locationCodeName = "";
+        Cursor cursorForLocation = database.rawQuery("select * from Location", null);
+        while (cursorForLocation.moveToNext()) {
+            locationCode = cursorForLocation.getInt(cursorForLocation.getColumnIndex(DatabaseContract.Location.id));
+            locationCodeName = cursorForLocation.getString(cursorForLocation.getColumnIndex(DatabaseContract.Location.no));
+        }
+
+        return locationCode;
     }
 
     private boolean didCustomerSelected() {

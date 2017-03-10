@@ -255,15 +255,19 @@ public class LoginActivity extends AppCompatActivity {
                             sqLiteDatabase.setTransactionSuccessful();
                             sqLiteDatabase.endTransaction();
 
-                            myEditor.putString(Constant.SALEMAN_ID, dataForLoginArrayList.get(0).getSaleMan().get(0).getId());
-                            myEditor.putString(Constant.SALEMAN_NO, dataForLoginArrayList.get(0).getSaleMan().get(0).getSaleManNo());
-                            myEditor.putString(Constant.SALEMAN_NAME, dataForLoginArrayList.get(0).getSaleMan().get(0).getSaleManName());
-                            myEditor.putString(Constant.SALEMAN_PWD, dataForLoginArrayList.get(0).getSaleMan().get(0).getPassword());
-                            myEditor.commit();
+                            if(dataForLoginArrayList.get(0).getSaleMan().size() != 0) {
+                                myEditor.putString(Constant.SALEMAN_ID, dataForLoginArrayList.get(0).getSaleMan().get(0).getId());
+                                myEditor.putString(Constant.SALEMAN_NO, dataForLoginArrayList.get(0).getSaleMan().get(0).getSaleManNo());
+                                myEditor.putString(Constant.SALEMAN_NAME, dataForLoginArrayList.get(0).getSaleMan().get(0).getSaleManName());
+                                myEditor.putString(Constant.SALEMAN_PWD, dataForLoginArrayList.get(0).getSaleMan().get(0).getPassword());
+                                myEditor.commit();
 
-                            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                            startActivity(intent);
-                            finish();
+                                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                                startActivity(intent);
+                                finish();
+                            } else {
+                                Utils.commonDialog(getResources().getString(R.string.server_error), LoginActivity.this);
+                            }
                         }
                         else {
                             Utils.commonDialog("You have no route.", LoginActivity.this);
@@ -272,7 +276,12 @@ public class LoginActivity extends AppCompatActivity {
 
                 }
                 else {
-                    onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    if(response.body() != null && response.body().getAceplusStatusMessage().length() != 0 ) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    } else {
+                        Utils.cancelDialog();
+                        Utils.commonDialog(getResources().getString(R.string.server_error), LoginActivity.this);
+                    }
                 }
             }
 
