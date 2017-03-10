@@ -64,9 +64,8 @@ public class FragmentSaleInvoiceReport extends Fragment {
         saleInvoiceReportsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getActivity(), "ggwp", Toast.LENGTH_SHORT).show();
 
-
+                saleInvoiceReportJsonObject = saleInvoiceReportsArrayList.get(position);
 
 
                 try {
@@ -95,12 +94,13 @@ public class FragmentSaleInvoiceReport extends Fragment {
                         product_name = cursor_product_Id.getString(cursor_product_Id.getColumnIndex("PRODUCT_NAME"));
                         Log.i("product_name", cursor_product_Id.getString(cursor_product_Id.getColumnIndex("PRODUCT_NAME")) + " aaa");
 
-                        saleinvoicedetail.setProductName(product_name);
-                        saleinvoicedetail.setQuantity(quantity);
-                        saleinvoicedetail.setDiscountAmount(dicount_amount);
-                        saleinvoicedetail.setTotalAmount(total_amount);
+
 
                     }
+                    saleinvoicedetail.setProductName(product_name);
+                    saleinvoicedetail.setQuantity(quantity);
+                    saleinvoicedetail.setDiscountAmount(dicount_amount);
+                    saleinvoicedetail.setTotalAmount(total_amount);
                     saleinvoicedetailList.add(saleinvoicedetail);
 
 //
