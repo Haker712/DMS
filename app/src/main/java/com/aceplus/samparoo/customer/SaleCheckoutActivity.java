@@ -145,6 +145,7 @@ public class SaleCheckoutActivity extends AppCompatActivity {
             check = intent.getExtras().getString("SaleExchange");
             if (check.equalsIgnoreCase("yes")) {
 
+                titleTextView.setText("SALE EXCHANGE");
                 invoiceIdTextView.setText(Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.FOR_SALE_EXCHANGE));
             } else {
 

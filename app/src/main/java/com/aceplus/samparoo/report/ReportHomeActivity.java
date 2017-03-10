@@ -103,10 +103,7 @@ public class ReportHomeActivity extends FragmentActivity {
         final String[] reportNames = {
                 "Product Balance Report"
                 , "Sale Invoice Report"
-                , "Promotion Report"
                 , "Unsell Reason Report"
-                , "Pre-Order Report"
-                , "Credit Collection Report"
                 , "Sale Return Report"
                 , "Sale Exchange Report"
                 , "POSM Report"
@@ -161,26 +158,28 @@ public class ReportHomeActivity extends FragmentActivity {
                     /*fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                     fragmentTransaction.addToBackStack(null);*/
                     fragmentTransaction.commit();
-                } else if (position == 2) {
-
-                    if (promotionReportsArrayList.size() == 0) {
-
-                        for (JSONObject promotionReportJsonObject : getPromotionReports()) {
-
-                            promotionReportsArrayList.add(promotionReportJsonObject);
-                        }
-                    }
-
-                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-
-                    FragmentPromotionReport promotionFragment = new FragmentPromotionReport();
-                    promotionFragment.promotionReportsArrayList = promotionReportsArrayList;
-                    fragmentTransaction.replace(R.id.fragment_report, promotionFragment);
-                    /*fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                    fragmentTransaction.addToBackStack(null);*/
-                    fragmentTransaction.commit();
-
-                } else if (position == 3) {
+                }
+//                else if (position == 2) {
+//
+//                    if (promotionReportsArrayList.size() == 0) {
+//
+//                        for (JSONObject promotionReportJsonObject : getPromotionReports()) {
+//
+//                            promotionReportsArrayList.add(promotionReportJsonObject);
+//                        }
+//                    }
+//
+//                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+//
+//                    FragmentPromotionReport promotionFragment = new FragmentPromotionReport();
+//                    promotionFragment.promotionReportsArrayList = promotionReportsArrayList;
+//                    fragmentTransaction.replace(R.id.fragment_report, promotionFragment);
+//                    /*fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+//                    fragmentTransaction.addToBackStack(null);*/
+//                    fragmentTransaction.commit();
+//
+//                }
+                else if (position == 2) {
 
                     if (customerFeedbackReportsArrayList.size() == 0) {
 
@@ -198,33 +197,36 @@ public class ReportHomeActivity extends FragmentActivity {
                     /*fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                     fragmentTransaction.addToBackStack(null);*/
                     fragmentTransaction.commit();
-                } else if (position == 4) {
-
-                    // Used lazy loading
-                    if (preOrderReportsArrayList.size() == 0) {
-
-                        // Need to add implicitly because preOrderReportsArrayList is final
-                        for (JSONObject preOrderReportJsonObject : getPreOrderReports()) {
-
-                            preOrderReportsArrayList.add(preOrderReportJsonObject);
-                        }
-                    }
-
-                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-
-                    FragmentPreOrderReport preOrderReportFragment = new FragmentPreOrderReport();
-                    preOrderReportFragment.preOrderReportsArrayList = preOrderReportsArrayList;
-                    fragmentTransaction.replace(R.id.fragment_report, preOrderReportFragment);
-                   /* fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                    fragmentTransaction.addToBackStack(null);*/
-                    fragmentTransaction.commit();
-                } else if (position == 5) {
-                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-
-                    FragmentCreditCollectionReport creditCollectionReport = new FragmentCreditCollectionReport();
-                    fragmentTransaction.replace(R.id.fragment_report, creditCollectionReport);
-                    fragmentTransaction.commit();
-                } else if (position == 6) {
+                }
+//                else if (position == 4) {
+//
+//                    // Used lazy loading
+//                    if (preOrderReportsArrayList.size() == 0) {
+//
+//                        // Need to add implicitly because preOrderReportsArrayList is final
+//                        for (JSONObject preOrderReportJsonObject : getPreOrderReports()) {
+//
+//                            preOrderReportsArrayList.add(preOrderReportJsonObject);
+//                        }
+//                    }
+//
+//                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+//
+//                    FragmentPreOrderReport preOrderReportFragment = new FragmentPreOrderReport();
+//                    preOrderReportFragment.preOrderReportsArrayList = preOrderReportsArrayList;
+//                    fragmentTransaction.replace(R.id.fragment_report, preOrderReportFragment);
+//                   /* fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+//                    fragmentTransaction.addToBackStack(null);*/
+//                    fragmentTransaction.commit();
+//                }
+//                else if (position == 5) {
+//                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+//
+//                    FragmentCreditCollectionReport creditCollectionReport = new FragmentCreditCollectionReport();
+//                    fragmentTransaction.replace(R.id.fragment_report, creditCollectionReport);
+//                    fragmentTransaction.commit();
+//                }
+                else if (position == 3) {
                     if (saleReturnReportsArrayList.size() == 0) {
 
                         for (JSONObject saleReturnReportJsonObject : getSaleReturnReports()) {
@@ -250,7 +252,7 @@ public class ReportHomeActivity extends FragmentActivity {
                     //fragmentTransaction.replace(R.id.fragment_report, fragmentSaleExchangeReport);
                     fragmentTransaction.replace(R.id.fragment_report, fragmentSaleExchangeReport);
                     fragmentTransaction.commit();
-                }*/ else if (position == 7) {
+                }*/ else if (position == 4) {
                     FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 
                     FragmentSaleExchangeReport fragmentSaleExchangeReport = new FragmentSaleExchangeReport();
@@ -260,7 +262,7 @@ public class ReportHomeActivity extends FragmentActivity {
 
                     fragmentTransaction.addToBackStack(null);
                     fragmentTransaction.commit();
-                } else if (position == 8) {
+                } else if (position == 5) {
 
                     if (POSMReportArrayList.size() == 0) {
 
@@ -278,7 +280,7 @@ public class ReportHomeActivity extends FragmentActivity {
                     fragmentTransaction.commit();
 
 
-                }else if (position == 9) {
+                }else if (position == 6) {
 
                     if (DeliveryReportArrayList.size()==0){
 
