@@ -177,6 +177,7 @@ public class PosmCheckOutActivity extends AppCompatActivity{
                         , PosmActivity.class);
                 intent.putExtra(PosmActivity.CUSTOMER_INFO_KEY, customer);
                 startActivity(intent);
+                finish();
             }
         });
     }

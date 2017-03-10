@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.aceplus.samparoo.R;
+import com.aceplus.samparoo.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -116,5 +117,10 @@ public class DeliveryActivity extends AppCompatActivity {
         Log.i("deliver_list_Count -> ", String.valueOf(deliverList.size()));
          return deliverList;
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        Utils.backToCustomerVisit(this);
     }
 }

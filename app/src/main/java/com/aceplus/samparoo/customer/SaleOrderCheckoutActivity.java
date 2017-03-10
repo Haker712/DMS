@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.aceplus.samparoo.LoginActivity;
 import com.aceplus.samparoo.R;
+import com.aceplus.samparoo.SyncActivity;
 import com.aceplus.samparoo.model.Customer;
 import com.aceplus.samparoo.model.Deliver;
 import com.aceplus.samparoo.model.DeliverItem;
@@ -717,7 +718,11 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
                         Utils.cancelDialog();
                     }
                 } else {
-                    onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    if(response.body() != null && response.body().getAceplusStatusMessage().length() != 0 ) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    } else {
+                        Utils.commonDialog(getResources().getString(R.string.server_error), SaleOrderCheckoutActivity.this);
+                    }
                 }
             }
 

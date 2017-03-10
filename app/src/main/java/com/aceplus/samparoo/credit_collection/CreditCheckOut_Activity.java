@@ -354,8 +354,7 @@ public class CreditCheckOut_Activity extends Activity {
         cancelImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(CreditCheckOut_Activity.this, CreditCollectActivity.class));
-                finish();
+                CreditCheckOut_Activity.this.onBackPressed();
             }
         });
         saveImg.setOnClickListener(new View.OnClickListener() {
@@ -535,5 +534,11 @@ public class CreditCheckOut_Activity extends Activity {
 
             return view;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(CreditCheckOut_Activity.this, CreditCollectActivity.class));
+        finish();
     }
 }

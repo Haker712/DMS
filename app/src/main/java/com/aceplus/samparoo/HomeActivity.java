@@ -100,9 +100,10 @@ public class HomeActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonMarketing)
     void marketing() {
-        Intent intent = new Intent(this, MarketingActivity.class);
+        Utils.commonDialog("No authorization", HomeActivity.this);
+        /*Intent intent = new Intent(this, MarketingActivity.class);
         startActivity(intent);
-        finish();
+        finish();*/
     }
 
     @OnClick(R.id.buttonReport)
