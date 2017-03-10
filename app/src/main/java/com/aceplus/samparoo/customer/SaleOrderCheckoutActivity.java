@@ -493,7 +493,6 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
                 if(isPreOrder) {
                     insertPreOrderInformation();
                     uploadPreOrderToServer();
-                    Utils.backToCustomer(SaleOrderCheckoutActivity.this);
                 } else if(isDelivery) {
                     if (SaleOrderCheckoutActivity.this.receiptPersonEditText.getText().length() == 0) {
 
@@ -714,8 +713,8 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
 
                         database.setTransactionSuccessful();
                         database.endTransaction();
-
                         Utils.cancelDialog();
+                        Utils.backToCustomer(SaleOrderCheckoutActivity.this);
                     }
                 } else {
                     if(response.body() != null && response.body().getAceplusStatusMessage().length() != 0 ) {

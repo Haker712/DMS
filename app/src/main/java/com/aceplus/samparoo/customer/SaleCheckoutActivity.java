@@ -535,8 +535,12 @@ public class SaleCheckoutActivity extends AppCompatActivity {
         confirmAndPrintImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveDatas();
-                Utils.backToCustomer(SaleCheckoutActivity.this);
+                if(isFullyPaid()) {
+                    saveDatas();
+                    Utils.backToCustomer(SaleCheckoutActivity.this);
+                } else {
+                    Utils.commonDialog("Insufficient Pay Amount!", SaleCheckoutActivity.this);
+                }
                 /*Intent intent = new Intent(SaleCheckoutActivity.this, SalePrintActivity.class);
                 intent.putExtra(SalePrintActivity.CUSTOMER_INFO_KEY, customer);
                 intent.putExtra(SalePrintActivity.SOLD_PRODUCT_LIST_KEY, soldProductList);
@@ -545,6 +549,24 @@ public class SaleCheckoutActivity extends AppCompatActivity {
                 finish();*/
             }
         });
+    }
+
+    private boolean isFullyPaid() {
+        double pay_amount = 0.0, net_amount = 0.0;
+
+        if(!payAmountEditText.getText().toString().equals("")) {
+            pay_amount = Double.parseDouble(payAmountEditText.getText().toString());
+        }
+
+        if(!netAmountTextView.getText().toString().equals("")) {
+            net_amount = Double.parseDouble(netAmountTextView.getText().toString().replace(",", ""));
+        }
+
+        if(pay_amount == 0.0 || pay_amount < net_amount) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     private void saveDatas() {
