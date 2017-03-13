@@ -106,7 +106,7 @@ public class SyncActivity extends AppCompatActivity {
 
     SQLiteDatabase sqLiteDatabase;
 
-    String services = "";
+    String services;
 
     @InjectView(R.id.textViewError)
     TextView textViewError;
@@ -146,13 +146,8 @@ public class SyncActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonUpload)
     void upload() {
-
+        services = "";
         uploadInvoiceToSever();
-        if (!services.equals("")) {
-            services += " are successfully uploaded";
-            Utils.commonDialog(services, SyncActivity.this);
-        }
-
     }
 
     private int getRouteID(String saleman_Id) {
@@ -1682,6 +1677,10 @@ public class SyncActivity extends AppCompatActivity {
 
                         sqLiteDatabase.beginTransaction();
 
+                        sqLiteDatabase.execSQL("DELETE FROM " + DatabaseContract.DELIVERY.TABLE);
+
+                        sqLiteDatabase.execSQL("DELETE FROM " + DatabaseContract.DELIVERY_ITEM.TABLE);
+
                         for(DeliveryForApi deliveryForApi : deliveryForApiList) {
                             insertDelivery(deliveryForApi);
                         }
@@ -1770,7 +1769,12 @@ public class SyncActivity extends AppCompatActivity {
                         if(!services.equals("")) {
                             services += ",";
                         }
+
                         services += " " + getResources().getString(R.string.delivery);
+                        if (!services.equals("")) {
+                            services += " are successfully uploaded";
+                            Utils.commonDialog(services, SyncActivity.this);
+                        }
                        /* sqLiteDatabase.beginTransaction();
 
                         if(deliveryRequest.getData() != null && deliveryRequest.getData().get(0).getDeliveryApiList().size() > 0) {
