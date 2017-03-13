@@ -148,7 +148,11 @@ public class SyncActivity extends AppCompatActivity {
     void upload() {
 
         uploadInvoiceToSever();
-        services += " are successfully uploaded";
+        if (!services.equals("")) {
+            services += " are successfully uploaded";
+            Utils.commonDialog(services, SyncActivity.this);
+        }
+
     }
 
     private int getRouteID(String saleman_Id) {
@@ -1011,7 +1015,7 @@ public class SyncActivity extends AppCompatActivity {
         customerData.setCustomerForApiList(getCustomerData());
         customerDatas.add(customerData);
 
-        Utils.callDialog("Please wait...", this);
+        //Utils.callDialog("Please wait...", this);
 
         AddnewCustomerRequest addnewCustomerRequest=new AddnewCustomerRequest();
 
@@ -1083,7 +1087,7 @@ public class SyncActivity extends AppCompatActivity {
      */
     private void uploadPreOrderToServer() {
 
-        Utils.callDialog("Please wait...", this);
+        //Utils.callDialog("Please wait...", this);
 
         final PreOrderRequest preOrderRequest = getPreOrderRequest();
 
@@ -1101,7 +1105,7 @@ public class SyncActivity extends AppCompatActivity {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
                         //Utils.cancelDialog();
-                        Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
 
                         sqLiteDatabase.beginTransaction();
 
@@ -1259,7 +1263,7 @@ public class SyncActivity extends AppCompatActivity {
      * Upload sale return to server.
      */
     private void uploadSaleReturnToServer() {
-        Utils.callDialog("Please wait...", this);
+        //Utils.callDialog("Please wait...", this);
 
         final SaleReturnRequest saleReturnRequest = getSaleReturnRequest();
 
@@ -1276,7 +1280,7 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
 
                         sqLiteDatabase.beginTransaction();
 
@@ -1544,7 +1548,7 @@ public class SyncActivity extends AppCompatActivity {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
                         //Utils.cancelDialog();
-                        Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
 
                         sqLiteDatabase.beginTransaction();
 
