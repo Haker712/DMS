@@ -63,7 +63,7 @@ public class ERouteListFragment extends Fragment {
 
         Route_Township township=new Route_Township();
         township.setTownship_Id(0+"");
-        township.setTownship_Name("All");
+        township.setTownship_Name("All Townships");
         route_townships.add(township);
 
         townshipSpinner = (Spinner) view.findViewById(R.id.townshipspinner);
@@ -120,7 +120,7 @@ public class ERouteListFragment extends Fragment {
                     String cus_Id = cur_CustomerId.getString(cur_CustomerId.getColumnIndex("CustomerId"));
                     Log.i("Customer_Id>>>", cus_Id);
 
-                    if (townshipSpinner.getSelectedItem().toString().equals("All")) {
+                    if (townshipSpinner.getSelectedItem().toString().equals("All Townships")) {
 
                         cur_Data = database.rawQuery("select * from CUSTOMER where id='" + cus_Id + "'", null);
 
