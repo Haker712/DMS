@@ -1104,21 +1104,24 @@ public class SyncActivity extends AppCompatActivity {
 
                         sqLiteDatabase.beginTransaction();
 
-                        if(preOrderRequest.getData() != null && preOrderRequest.getData().get(0).getData().size() > 0) {
-                            deleteDataAfterUpload("PRE_ORDER", "INVOICE_ID", preOrderRequest.getData().get(0).getData().get(0).getId());
-                            deleteDataAfterUpload("PRE_ORDER_PRODUCT", "SALE_ORDER_ID", preOrderRequest.getData().get(0).getData().get(0).getId());
+                        if (preOrderRequest.getData() != null && preOrderRequest.getData().get(0).getData().size() > 0) {
+                            updateDeleteFlag(DatabaseContract.PreOrder.tb, 1, DatabaseContract.PreOrder.invoice_id, preOrderRequest.getData().get(0).getData().get(0).getId());
+                            updateDeleteFlag(DatabaseContract.PreOrderDetail.tb, 1, DatabaseContract.PreOrderDetail.sale_order_id, preOrderRequest.getData().get(0).getData().get(0).getId());
+                            /*deleteDataAfterUpload("PRE_ORDER", "INVOICE_ID", preOrderRequest.getData().get(0).getData().get(0).getId());
+                            deleteDataAfterUpload("PRE_ORDER_PRODUCT", "SALE_ORDER_ID", preOrderRequest.getData().get(0).getData().get(0).getId());*/
                         }
 
                         sqLiteDatabase.setTransactionSuccessful();
                         sqLiteDatabase.endTransaction();
 
-                        if(!services.equals("")) {
+                        if (!services.equals("")) {
                             services += ",";
                         }
-                        services += " " + getResources().getString(R.string.sale_order);
 
-                        uploadSaleReturnToServer();
                     }
+                    services += " " + getResources().getString(R.string.sale_order);
+                    uploadSaleReturnToServer();
+
                 } else {
                     if(response.body() != null && response.body().getAceplusStatusMessage().length() != 0 ) {
                         onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
@@ -1280,8 +1283,11 @@ public class SyncActivity extends AppCompatActivity {
                         sqLiteDatabase.beginTransaction();
 
                         if(saleReturnRequest.getData() != null && saleReturnRequest.getData().get(0).getData().size() > 0) {
-                            deleteDataAfterUpload("SALE_RETURN", "SALE_RETURN_ID", saleReturnRequest.getData().get(0).getData().get(0).getInvoiceNo());
-                            deleteDataAfterUpload("SALE_RETURN_DETAIL", "SALE_RETURN_ID", saleReturnRequest.getData().get(0).getData().get(0).getInvoiceNo());
+                            updateDeleteFlag("SALE_RETURN", 1, "SALE_RETURN_ID", saleReturnRequest.getData().get(0).getData().get(0).getInvoiceNo());
+                            updateDeleteFlag("SALE_RETURN_DETAIL", 1, "SALE_RETURN_ID", saleReturnRequest.getData().get(0).getData().get(0).getInvoiceNo());
+
+                            /*deleteDataAfterUpload("SALE_RETURN", "SALE_RETURN_ID", saleReturnRequest.getData().get(0).getData().get(0).getInvoiceNo());
+                            deleteDataAfterUpload("SALE_RETURN_DETAIL", "SALE_RETURN_ID", saleReturnRequest.getData().get(0).getData().get(0).getInvoiceNo());*/
                         }
 
                         sqLiteDatabase.setTransactionSuccessful();
@@ -1548,7 +1554,8 @@ public class SyncActivity extends AppCompatActivity {
                         sqLiteDatabase.beginTransaction();
 
                         if(posmByCustomerRequest.getData() != null && posmByCustomerRequest.getData().get(0).getPosmByCustomerApiList().size() > 0) {
-                            deleteDataAfterUpload("POSM_BY_CUSTOMER", "INVOICE_NO", posmByCustomerRequest.getData().get(0).getPosmByCustomerApiList().get(0).getInvoiceNo());
+                            updateDeleteFlag("POSM_BY_CUSTOMER", 1, "INVOICE_NO", posmByCustomerRequest.getData().get(0).getPosmByCustomerApiList().get(0).getInvoiceNo());
+                            //deleteDataAfterUpload("POSM_BY_CUSTOMER", "INVOICE_NO", posmByCustomerRequest.getData().get(0).getPosmByCustomerApiList().get(0).getInvoiceNo());
                         }
 
                         sqLiteDatabase.setTransactionSuccessful();
@@ -1651,6 +1658,11 @@ public class SyncActivity extends AppCompatActivity {
     private void deleteDataAfterUpload(String tableName, String columnName, String columnValue) {
         String sql = "delete from " + tableName + " WHERE " + columnName + " = \'" + columnValue + "\';";
         sqLiteDatabase.execSQL(sql);
+    }
+
+    private void updateDeleteFlag(String tableName, int deleteFlg, String columnName, String columnValue) {
+        String query = "UPDATE " + tableName + " SET DELETE_FLAG = " + deleteFlg + " WHERE " + columnName + " = \'" + columnValue + "'";
+        sqLiteDatabase.execSQL(query);
     }
 
     /**

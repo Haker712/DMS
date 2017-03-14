@@ -405,7 +405,8 @@ public class SaleReturnActivity extends Activity {
                 + saleReturn.getAmt() + "\", \""
                 + saleReturn.getPayAmt() + "\", \""
                 + saleReturn.getPcAddress() + "\", \""
-                + saleReturn.getReturnedDate() + "\""
+                + saleReturn.getReturnedDate() + "\", "
+                + 0
                 + ")");
     }
 
@@ -420,7 +421,8 @@ public class SaleReturnActivity extends Activity {
                 + saleReturnDetail.getProductId() + "\", \""
                 + saleReturnDetail.getPrice() + "\", \""
                 + saleReturnDetail.getQuantity() + "\", \""
-                + saleReturnDetail.getRemark() + "\""
+                + saleReturnDetail.getRemark() + "\", "
+                + 0
                 + ")");
     }
 

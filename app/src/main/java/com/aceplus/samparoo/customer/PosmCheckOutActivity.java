@@ -220,7 +220,8 @@ public class PosmCheckOutActivity extends AppCompatActivity{
                 + posmByCustomer.getShopTypeId() + "\", \""
                 + posmByCustomer.getSaleManId() + "\", \""
                 + posmByCustomer.getQuantity() + "\", \""
-                + posmByCustomer.getPrice() + "\""
+                + posmByCustomer.getPrice() + "\", "
+                + 0
                 + ")");
 
             database.setTransactionSuccessful();
