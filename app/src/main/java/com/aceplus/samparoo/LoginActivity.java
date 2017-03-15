@@ -269,11 +269,11 @@ public class LoginActivity extends AppCompatActivity {
                             Utils.commonDialog("You have no route.", LoginActivity.this);
                         }
                     }
+                    else {
+                        onFailure(call, new Throwable());
+                    }
+                }
 
-                }
-                else {
-                    onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
-                }
             }
 
             @Override
