@@ -27,12 +27,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.aceplus.samparoo.LoginActivity;
 import com.aceplus.samparoo.R;
 import com.aceplus.samparoo.model.Category;
 import com.aceplus.samparoo.model.Customer;
 import com.aceplus.samparoo.model.Product;
 import com.aceplus.samparoo.model.Promotion;
 import com.aceplus.samparoo.model.SoldProduct;
+import com.aceplus.samparoo.utils.Constant;
 import com.aceplus.samparoo.utils.Database;
 import com.aceplus.samparoo.utils.DatabaseContract;
 import com.aceplus.samparoo.utils.Utils;
@@ -109,12 +111,17 @@ public class SaleActivity extends AppCompatActivity {
 
         sqLiteDatabase = new Database(this).getDataBase();
 
+        titleTextView = (TextView) findViewById(R.id.title);
 
-        Intent intent=this.getIntent();
+        Intent intent = this.getIntent();
 
-        if (intent!=null){
+        if (intent != null) {
 
-            check=intent.getExtras().getString("SaleExchange");
+            check = intent.getExtras().getString("SaleExchange");
+            if (check.equalsIgnoreCase("yes")) {
+
+                titleTextView.setText("SALE EXCHANGE");
+            }
 
         }
 
@@ -128,7 +135,7 @@ public class SaleActivity extends AppCompatActivity {
         // Hide keyboard on startup.
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-        titleTextView = (TextView) findViewById(R.id.title);
+
         searchProductTextView = (AutoCompleteTextView) findViewById(R.id.searchAutoCompleteTextView);
         previousCategoryButton = (Button) findViewById(R.id.previusCategoryButton);
         categoryTextView = (TextView) findViewById(R.id.categoryTextView);
@@ -311,14 +318,13 @@ public class SaleActivity extends AppCompatActivity {
                             , SaleActivity.this.orderedInvoice.toString());
                 }
 
-                if (check.equalsIgnoreCase("yes")){
+                if (check.equalsIgnoreCase("yes")) {
 
+                    intent.putExtra("SaleExchange", "yes");
 
-                    intent.putExtra("SaleExchange","yes");
+                } else {
 
-                }else{
-
-                    intent.putExtra("SaleExchange","no");
+                    intent.putExtra("SaleExchange", "no");
 
                 }
                 startActivity(intent);
@@ -453,26 +459,13 @@ public class SaleActivity extends AppCompatActivity {
 
         /*if (categories != null) {*/
 
-            Product tempProduct = null;
+        Product tempProduct = null;
 
-            if (categoryName != null && categoryName.length() > 0) {
+        if (categoryName != null && categoryName.length() > 0) {
 
-                for (Category category : categories) {
+            for (Category category : categories) {
 
-                    if (category.getName().equals(categoryName)) {
-
-                        for (Product product : category.getProducts()) {
-
-                            if (product.getName().equals(productName)) {
-
-                                tempProduct = product;
-                            }
-                        }
-                    }
-                }
-            } else if (productName != null && productName.length() > 0) {
-
-                for (Category category : categories) {
+                if (category.getName().equals(categoryName)) {
 
                     for (Product product : category.getProducts()) {
 
@@ -483,12 +476,25 @@ public class SaleActivity extends AppCompatActivity {
                     }
                 }
             }
+        } else if (productName != null && productName.length() > 0) {
 
-            if (tempProduct != null) {
+            for (Category category : categories) {
 
-                soldProductList.add(new SoldProduct(tempProduct, false));
-                soldProductListRowAdapter.notifyDataSetChanged();
+                for (Product product : category.getProducts()) {
+
+                    if (product.getName().equals(productName)) {
+
+                        tempProduct = product;
+                    }
+                }
             }
+        }
+
+        if (tempProduct != null) {
+
+            soldProductList.add(new SoldProduct(tempProduct, false));
+            soldProductListRowAdapter.notifyDataSetChanged();
+        }
         //}
     }
 
@@ -580,7 +586,6 @@ public class SaleActivity extends AppCompatActivity {
                                     soldProduct.setPromotionPrice(promotionPrice);
 
 
-
                                     alertDialog.dismiss();
 
 
@@ -600,7 +605,7 @@ public class SaleActivity extends AppCompatActivity {
 
             String um = "";
             Log.i("um_id", soldProduct.getProduct().getUm());
-            Cursor cursor = sqLiteDatabase.rawQuery("select * from UM where ID="+soldProduct.getProduct().getUm()+"", null);
+            Cursor cursor = sqLiteDatabase.rawQuery("select * from UM where ID=" + soldProduct.getProduct().getUm() + "", null);
             while (cursor.moveToNext()) {
                 um = cursor.getString(cursor.getColumnIndex(DatabaseContract.UM.code));
             }
@@ -625,8 +630,7 @@ public class SaleActivity extends AppCompatActivity {
             if (promotionPrice == 0.0) {
                 totalAmount = (soldProduct.getProduct().getPrice() * soldProduct.getQuantity());
                 Log.i("totalAmount1", totalAmount + "");
-            }
-            else {
+            } else {
                 totalAmount = promotionPrice * soldProduct.getQuantity();
                 Log.i("totalAmount2", totalAmount + "");
             }
@@ -696,7 +700,7 @@ public class SaleActivity extends AppCompatActivity {
 
             if (promotion_price == 0.0) {
                 Cursor cursorForPromotionGift = sqLiteDatabase.rawQuery("select * from " + DatabaseContract.PromotionGift.tb + " where " + DatabaseContract.PromotionGift.promotionPlanId + " = '" + promotionPlanId + "'" +
-                        " and " + buy_qty + " >= " +  DatabaseContract.PromotionGift.fromQuantity + " and " + + buy_qty + " <= " + DatabaseContract.PromotionGift.toQuantity  + " and " + DatabaseContract.PromotionGift.stockId + " = '" + stock_id_new + "'", null);
+                        " and " + buy_qty + " >= " + DatabaseContract.PromotionGift.fromQuantity + " and " + +buy_qty + " <= " + DatabaseContract.PromotionGift.toQuantity + " and " + DatabaseContract.PromotionGift.stockId + " = '" + stock_id_new + "'", null);
                 Log.i("GiftCount", cursorForPromotionGift.getCount() + "");
                 while (cursorForPromotionGift.moveToNext()) {
                     String promotionGiftId = cursorForPromotionGift.getString(cursorForPromotionGift.getColumnIndex(DatabaseContract.PromotionGift.id));

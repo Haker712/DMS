@@ -177,6 +177,7 @@ public class PosmCheckOutActivity extends AppCompatActivity{
                         , PosmActivity.class);
                 intent.putExtra(PosmActivity.CUSTOMER_INFO_KEY, customer);
                 startActivity(intent);
+                finish();
             }
         });
     }
@@ -219,7 +220,8 @@ public class PosmCheckOutActivity extends AppCompatActivity{
                 + posmByCustomer.getShopTypeId() + "\", \""
                 + posmByCustomer.getSaleManId() + "\", \""
                 + posmByCustomer.getQuantity() + "\", \""
-                + posmByCustomer.getPrice() + "\""
+                + posmByCustomer.getPrice() + "\", "
+                + 0
                 + ")");
 
             database.setTransactionSuccessful();

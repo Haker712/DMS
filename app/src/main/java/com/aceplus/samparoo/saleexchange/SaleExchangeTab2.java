@@ -32,11 +32,11 @@ import java.util.List;
 /**
  * Created by phonelin on 2/23/17.
  */
-public class SaleExchangeTab2 extends Fragment{
+public class SaleExchangeTab2 extends Fragment {
 
     ListView saleInvoiceReportsListView;
 
-    ArrayList<JSONObject> saleInvoiceReportsArrayList=new ArrayList<>();
+    ArrayList<JSONObject> saleInvoiceReportsArrayList = new ArrayList<>();
 
     JSONObject saleInvoiceReportJsonObject;
 
@@ -56,12 +56,10 @@ public class SaleExchangeTab2 extends Fragment{
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
 
-
-
         View view = inflater.inflate(R.layout.fragment_sale_invoice_report, container, false);
 
         database = new Database(getActivity()).getDataBase();
-        saleInvoiceReportsArrayList=getSaleInvoiceReports();
+        saleInvoiceReportsArrayList = getSaleInvoiceReports();
 
         saleInvoiceReportsListView = (ListView) view.findViewById(R.id.saleInvoceReports);
         ArrayAdapter<JSONObject> saleInvoiceReportsArrayAdapter = new SaleExchangeTab2.SaleInvoiceReportsArrayAdapter(getActivity());
@@ -69,10 +67,8 @@ public class SaleExchangeTab2 extends Fragment{
         saleInvoiceReportsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getActivity(), "ggwp", Toast.LENGTH_SHORT).show();
 
-
-
+                saleInvoiceReportJsonObject = saleInvoiceReportsArrayList.get(position);
 
                 try {
                     invoice_Id = saleInvoiceReportJsonObject.getString("invoiceId");
@@ -207,7 +203,7 @@ public class SaleExchangeTab2 extends Fragment{
 
         ArrayList<JSONObject> saleInvoiceReportsArrayList = new ArrayList<JSONObject>();
 
-         Cursor cursor = database.rawQuery("SELECT * FROM INVOICE", null);
+        Cursor cursor = database.rawQuery("SELECT * FROM INVOICE", null);
         while (cursor.moveToNext()) {
 
             JSONObject saleInvoiceReportJsonObject = new JSONObject();

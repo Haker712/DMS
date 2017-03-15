@@ -96,6 +96,8 @@ public class SaleReturnActivity extends Activity {
     Product[] products;
     private ArrayList<String> productsForSearch = new ArrayList<String>();
 
+    TextView titleTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,6 +109,8 @@ public class SaleReturnActivity extends Activity {
         customer = (Customer) getIntent().getSerializableExtra(CUSTOMER_INFO_KEY);
 
         database = new Database(this).getDataBase();
+
+        registerIDs();
 
         cursor = database.rawQuery("SELECT * FROM CUSTOMER WHERE CUSTOMER_ID = \'" + customer.getCustomerId() + "\';", null);
         while (cursor.moveToNext()) {
@@ -127,7 +131,8 @@ public class SaleReturnActivity extends Activity {
 
             if (check.equalsIgnoreCase("yes")) {
 
-                sale_return_id = Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), "YGN", Utils.FOR_SALE_EXCHANGE);
+               titleTextView.setText("Sale Exchange");
+                sale_return_id = Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), "YGN", Utils.FOR_SALE_RETURN_EXCHANGE);
 
             } else {
                 sale_return_id = Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), "YGN", Utils.FOR_SALE_RETURN);
@@ -136,7 +141,7 @@ public class SaleReturnActivity extends Activity {
 
         }
 
-        registerIDs();
+
 
         products = getProducts("");
 
@@ -196,6 +201,7 @@ public class SaleReturnActivity extends Activity {
     }
 
     private void registerIDs() {
+        this.titleTextView = (TextView) findViewById(R.id.title);
         searchProductTextView = (AutoCompleteTextView) findViewById(R.id.searchAutoCompleteTextView);
         productsInGivenCategoryListView = (ListView) findViewById(R.id.productsListView);
         saleDateTextView = (TextView) findViewById(R.id.saleDateTextView);
@@ -399,7 +405,8 @@ public class SaleReturnActivity extends Activity {
                 + saleReturn.getAmt() + "\", \""
                 + saleReturn.getPayAmt() + "\", \""
                 + saleReturn.getPcAddress() + "\", \""
-                + saleReturn.getReturnedDate() + "\""
+                + saleReturn.getReturnedDate() + "\", "
+                + 0
                 + ")");
     }
 
@@ -414,7 +421,8 @@ public class SaleReturnActivity extends Activity {
                 + saleReturnDetail.getProductId() + "\", \""
                 + saleReturnDetail.getPrice() + "\", \""
                 + saleReturnDetail.getQuantity() + "\", \""
-                + saleReturnDetail.getRemark() + "\""
+                + saleReturnDetail.getRemark() + "\", "
+                + 0
                 + ")");
     }
 

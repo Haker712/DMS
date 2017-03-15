@@ -53,7 +53,8 @@ public class Utils {
     public static final String FOR_DELIVERY = "for-delivery";
     public static final String FOR_OTHERS = "for-others";
     public static final String FOR_SALE_RETURN = "for-sale-return";
-    public static final String FOR_SALE_EXCHANGE = "for-sale_exchange";
+    public static final String FOR_SALE_RETURN_EXCHANGE = "for-sale_return_exchange";
+    public static final String FOR_SALE_EXCHANGE="for_sale_exchange";
 
     public static String getInvoiceID(Context context, String mode, String salemanID, String locationCode) {
 
@@ -275,7 +276,7 @@ public class Utils {
         } else if (mode.equals(Utils.FOR_SALE_RETURN)) {
 
             invoiceNo += "SR";
-        } else if (mode.equals(Utils.FOR_SALE_EXCHANGE)) {
+        } else if (mode.equals(Utils.FOR_SALE_EXCHANGE) || mode.equals(Utils.FOR_SALE_RETURN_EXCHANGE)) {
 
             invoiceNo += "SX";
 
@@ -320,6 +321,23 @@ public class Utils {
 
                 next += cursor.getInt(cursor.getColumnIndex("COUNT")) + 1;
             }
+
+        }else if (mode.equals(Utils.FOR_SALE_RETURN_EXCHANGE)){
+
+            Cursor cursor = database.rawQuery("SELECT COUNT(*) AS COUNT FROM SALE_RETURN", null);
+            if (cursor.moveToNext()) {
+
+                next += cursor.getInt(cursor.getColumnIndex("COUNT")) + 1;
+            }
+
+        }else if(mode.equals(Utils.FOR_SALE_EXCHANGE)){
+
+            Cursor cursor = database.rawQuery("SELECT COUNT(*) AS COUNT FROM INVOICE", null);
+            if (cursor.moveToNext()) {
+
+                next += cursor.getInt(cursor.getColumnIndex("COUNT")) + 1;
+            }
+
         }
 
         return invoiceNo + String.format("%0" + (idLength - invoiceNo.length()) + "d", next);

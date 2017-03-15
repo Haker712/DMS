@@ -92,9 +92,10 @@
     <string name="from_quantity">FROM QUANTITY</string>
     <string name="promotion_gift_quantity">PROMOTION GIFT QUANTITY</string>
 
-    <string name="delivery">Delivery</string>
-    <string name="delivery_checkout">Delivery Checkout</string>
+    <string name="delivery">DELIVERY</string>
+    <string name="delivery_checkout">DELIVERY CHECKOUT</string>
 
     <string name="connection_error">Can\'t connect to server</string>
+    <string name="server_error">Server error occurs. \n Please Try again</string>
     <string name="no_download_data_error">Please download information!</string>
 </resources>

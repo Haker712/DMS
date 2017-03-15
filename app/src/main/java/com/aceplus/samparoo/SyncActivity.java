@@ -106,6 +106,8 @@ public class SyncActivity extends AppCompatActivity {
 
     SQLiteDatabase sqLiteDatabase;
 
+    String services;
+
     @InjectView(R.id.textViewError)
     TextView textViewError;
 
@@ -144,13 +146,8 @@ public class SyncActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonUpload)
     void upload() {
-
-       uploadInvoiceToSever();
-        /* uploadCustomertoserver();
-        uploadPreOrderToServer();
-        uploadSaleReturnToServer();
-        uploadPosmByCustomerToServer();*/
-        uploadDeliveryToServer();
+        services = "";
+        uploadInvoiceToSever();
     }
 
     private int getRouteID(String saleman_Id) {
@@ -198,9 +195,14 @@ public class SyncActivity extends AppCompatActivity {
                     }
 
                 } else {
-                    onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
 
-                    textViewError.setText(response.body().getAceplusStatusMessage());
+                    if(response.body() != null && response.body().getAceplusStatusMessage().length() != 0 ) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                        textViewError.setText(response.body().getAceplusStatusMessage());
+                    } else {
+                        Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
+                    }
+
                 }
             }
 
@@ -318,7 +320,11 @@ public class SyncActivity extends AppCompatActivity {
                     }
 
                 } else {
-                    onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    if(response.body() != null && response.body().getAceplusStatusMessage().length() != 0 ) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    } else {
+                        Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
+                    }
                 }
             }
 
@@ -374,7 +380,11 @@ public class SyncActivity extends AppCompatActivity {
                     }
 
                 } else {
-                    onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    if(response.body() != null && response.body().getAceplusStatusMessage().length() != 0 ) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    } else {
+                        Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
+                    }
                 }
             }
 
@@ -488,7 +498,11 @@ public class SyncActivity extends AppCompatActivity {
                     }
 
                 } else {
-                    onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    if(response.body() != null && response.body().getAceplusStatusMessage().length() != 0 ) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    } else {
+                        Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
+                    }
                 }
             }
 
@@ -616,7 +630,11 @@ public class SyncActivity extends AppCompatActivity {
                     }
 
                 } else {
-                    onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    if(response.body() != null && response.body().getAceplusStatusMessage().length() != 0 ) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    } else {
+                        Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
+                    }
                 }
             }
 
@@ -790,14 +808,21 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        Utils.cancelDialog();
 
-                        Toast.makeText(SyncActivity.this, R.string.sale_upload_success, Toast.LENGTH_SHORT).show();
+                        if(!services.equals("")) {
+                            services += ",";
+                        }
+                        services += getResources().getString(R.string.sale);
 
+                        uploadCustomertoserver();
                     }
 
                 } else {
-                    onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    if(response.body() != null && response.body().getAceplusStatusMessage().length() != 0 ) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    } else {
+                        Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
+                    }
                 }
             }
 
@@ -985,7 +1010,7 @@ public class SyncActivity extends AppCompatActivity {
         customerData.setCustomerForApiList(getCustomerData());
         customerDatas.add(customerData);
 
-        Utils.callDialog("Please wait...", this);
+        //Utils.callDialog("Please wait...", this);
 
         AddnewCustomerRequest addnewCustomerRequest=new AddnewCustomerRequest();
 
@@ -1006,14 +1031,21 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        Utils.cancelDialog();
 
-                        Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
+                        if(!services.equals("")) {
+                            services += ",";
+                        }
+                        services += " " + getResources().getString(R.string.customer_title);
 
+                        uploadPreOrderToServer();
                     }
 
                 } else {
-                    onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    if(response.body() != null && response.body().getAceplusStatusMessage().length() != 0 ) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    } else {
+                        Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
+                    }
                 }
             }
 
@@ -1050,7 +1082,7 @@ public class SyncActivity extends AppCompatActivity {
      */
     private void uploadPreOrderToServer() {
 
-        Utils.callDialog("Please wait...", this);
+        //Utils.callDialog("Please wait...", this);
 
         final PreOrderRequest preOrderRequest = getPreOrderRequest();
 
@@ -1067,22 +1099,35 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        Utils.cancelDialog();
-                        Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
+                        //Utils.cancelDialog();
+                        //Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
 
                         sqLiteDatabase.beginTransaction();
 
-                        if(preOrderRequest.getData() != null && preOrderRequest.getData().get(0).getData().size() > 0) {
-                            deleteDataAfterUpload("PRE_ORDER", "INVOICE_ID", preOrderRequest.getData().get(0).getData().get(0).getId());
-                            deleteDataAfterUpload("PRE_ORDER_PRODUCT", "SALE_ORDER_ID", preOrderRequest.getData().get(0).getData().get(0).getId());
+                        if (preOrderRequest.getData() != null && preOrderRequest.getData().get(0).getData().size() > 0) {
+                            updateDeleteFlag(DatabaseContract.PreOrder.tb, 1, DatabaseContract.PreOrder.invoice_id, preOrderRequest.getData().get(0).getData().get(0).getId());
+                            updateDeleteFlag(DatabaseContract.PreOrderDetail.tb, 1, DatabaseContract.PreOrderDetail.sale_order_id, preOrderRequest.getData().get(0).getData().get(0).getId());
+                            /*deleteDataAfterUpload("PRE_ORDER", "INVOICE_ID", preOrderRequest.getData().get(0).getData().get(0).getId());
+                            deleteDataAfterUpload("PRE_ORDER_PRODUCT", "SALE_ORDER_ID", preOrderRequest.getData().get(0).getData().get(0).getId());*/
                         }
 
                         sqLiteDatabase.setTransactionSuccessful();
                         sqLiteDatabase.endTransaction();
+
+                        if (!services.equals("")) {
+                            services += ",";
+                        }
+
                     }
+                    services += " " + getResources().getString(R.string.sale_order);
+                    uploadSaleReturnToServer();
+
                 } else {
-                    onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
-                    //Log.e("UPLOAD PRE ORDER", "Server FAILURE");
+                    if(response.body() != null && response.body().getAceplusStatusMessage().length() != 0 ) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    } else {
+                        Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
+                    }
                 }
             }
 
@@ -1216,7 +1261,7 @@ public class SyncActivity extends AppCompatActivity {
      * Upload sale return to server.
      */
     private void uploadSaleReturnToServer() {
-        Utils.callDialog("Please wait...", this);
+        //Utils.callDialog("Please wait...", this);
 
         final SaleReturnRequest saleReturnRequest = getSaleReturnRequest();
 
@@ -1233,21 +1278,34 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        Utils.cancelDialog();
-                        Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
 
                         sqLiteDatabase.beginTransaction();
 
                         if(saleReturnRequest.getData() != null && saleReturnRequest.getData().get(0).getData().size() > 0) {
-                            deleteDataAfterUpload("SALE_RETURN", "SALE_RETURN_ID", saleReturnRequest.getData().get(0).getData().get(0).getInvoiceNo());
-                            deleteDataAfterUpload("SALE_RETURN_DETAIL", "SALE_RETURN_ID", saleReturnRequest.getData().get(0).getData().get(0).getInvoiceNo());
+                            updateDeleteFlag("SALE_RETURN", 1, "SALE_RETURN_ID", saleReturnRequest.getData().get(0).getData().get(0).getInvoiceNo());
+                            updateDeleteFlag("SALE_RETURN_DETAIL", 1, "SALE_RETURN_ID", saleReturnRequest.getData().get(0).getData().get(0).getInvoiceNo());
+
+                            /*deleteDataAfterUpload("SALE_RETURN", "SALE_RETURN_ID", saleReturnRequest.getData().get(0).getData().get(0).getInvoiceNo());
+                            deleteDataAfterUpload("SALE_RETURN_DETAIL", "SALE_RETURN_ID", saleReturnRequest.getData().get(0).getData().get(0).getInvoiceNo());*/
                         }
 
                         sqLiteDatabase.setTransactionSuccessful();
                         sqLiteDatabase.endTransaction();
+
+                        if(!services.equals("")) {
+                            services += ",";
+                        }
+                        services += " " + getResources().getString(R.string.sale_return);
+
+                        uploadPosmByCustomerToServer();
                     }
                 } else {
-                    onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    if(response.body() != null && response.body().getAceplusStatusMessage().length() != 0 ) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    } else {
+                        Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
+                    }
                 }
             }
 
@@ -1420,7 +1478,11 @@ public class SyncActivity extends AppCompatActivity {
                         downloadDeliveryFromApi(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
                     }
                 } else {
-                    onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    if(response.body() != null && response.body().getAceplusStatusMessage().length() != 0 ) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    } else {
+                        Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
+                    }
                 }
             }
 
@@ -1487,19 +1549,31 @@ public class SyncActivity extends AppCompatActivity {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
                         //Utils.cancelDialog();
-                        Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
 
                         sqLiteDatabase.beginTransaction();
 
                         if(posmByCustomerRequest.getData() != null && posmByCustomerRequest.getData().get(0).getPosmByCustomerApiList().size() > 0) {
-                            deleteDataAfterUpload("POSM_BY_CUSTOMER", "INVOICE_NO", posmByCustomerRequest.getData().get(0).getPosmByCustomerApiList().get(0).getInvoiceNo());
+                            updateDeleteFlag("POSM_BY_CUSTOMER", 1, "INVOICE_NO", posmByCustomerRequest.getData().get(0).getPosmByCustomerApiList().get(0).getInvoiceNo());
+                            //deleteDataAfterUpload("POSM_BY_CUSTOMER", "INVOICE_NO", posmByCustomerRequest.getData().get(0).getPosmByCustomerApiList().get(0).getInvoiceNo());
                         }
 
                         sqLiteDatabase.setTransactionSuccessful();
                         sqLiteDatabase.endTransaction();
+
+                        if(!services.equals("")) {
+                            services += ",";
+                        }
+                        services += " " + getResources().getString(R.string.posm);
+
+                        uploadDeliveryToServer();
                     }
                 } else {
-                    onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    if(response.body() != null && response.body().getAceplusStatusMessage().length() != 0 ) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    } else {
+                        Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
+                    }
                 }
             }
 
@@ -1586,6 +1660,11 @@ public class SyncActivity extends AppCompatActivity {
         sqLiteDatabase.execSQL(sql);
     }
 
+    private void updateDeleteFlag(String tableName, int deleteFlg, String columnName, String columnValue) {
+        String query = "UPDATE " + tableName + " SET DELETE_FLAG = " + deleteFlg + " WHERE " + columnName + " = \'" + columnValue + "'";
+        sqLiteDatabase.execSQL(query);
+    }
+
     /**
      * Download Delivery From Api
      *
@@ -1610,6 +1689,10 @@ public class SyncActivity extends AppCompatActivity {
 
                         sqLiteDatabase.beginTransaction();
 
+                        sqLiteDatabase.execSQL("DELETE FROM " + DatabaseContract.DELIVERY.TABLE);
+
+                        sqLiteDatabase.execSQL("DELETE FROM " + DatabaseContract.DELIVERY_ITEM.TABLE);
+
                         for(DeliveryForApi deliveryForApi : deliveryForApiList) {
                             insertDelivery(deliveryForApi);
                         }
@@ -1618,7 +1701,11 @@ public class SyncActivity extends AppCompatActivity {
                         sqLiteDatabase.endTransaction();
 
                     } else {
-                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                        if(response.body() != null && response.body().getAceplusStatusMessage().length() != 0 ) {
+                            onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                        } else {
+                            Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
+                        }
                     }
                 }
             }
@@ -1689,9 +1776,17 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        //Utils.cancelDialog();
-                        Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
+                        Utils.cancelDialog();
+                        //Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
+                        if(!services.equals("")) {
+                            services += ",";
+                        }
 
+                        services += " " + getResources().getString(R.string.delivery);
+                        if (!services.equals("")) {
+                            services += " are successfully uploaded";
+                            Utils.commonDialog(services, SyncActivity.this);
+                        }
                        /* sqLiteDatabase.beginTransaction();
 
                         if(deliveryRequest.getData() != null && deliveryRequest.getData().get(0).getDeliveryApiList().size() > 0) {
@@ -1703,7 +1798,11 @@ public class SyncActivity extends AppCompatActivity {
                         sqLiteDatabase.endTransaction();*/
                     }
                 } else {
-                    onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    if(response.body() != null && response.body().getAceplusStatusMessage().length() != 0 ) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    } else {
+                        Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
+                    }
                 }
             }
 

@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.aceplus.samparoo.LoginActivity;
 import com.aceplus.samparoo.R;
+import com.aceplus.samparoo.SyncActivity;
 import com.aceplus.samparoo.model.Customer;
 import com.aceplus.samparoo.model.Deliver;
 import com.aceplus.samparoo.model.DeliverItem;
@@ -492,7 +493,6 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
                 if(isPreOrder) {
                     insertPreOrderInformation();
                     uploadPreOrderToServer();
-                    Utils.backToCustomer(SaleOrderCheckoutActivity.this);
                 } else if(isDelivery) {
                     if (SaleOrderCheckoutActivity.this.receiptPersonEditText.getText().length() == 0) {
 
@@ -707,17 +707,24 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
                         database.beginTransaction();
 
                         if(preOrderRequest.getData() != null && preOrderRequest.getData().get(0).getData().size() > 0) {
-                            deletePreOrderAfterUpload(preOrderRequest.getData().get(0).getData().get(0).getId());
-                            deletePreOrderProductAfterUpload(preOrderRequest.getData().get(0).getData().get(0).getId());
+                            updateDeleteFlag(DatabaseContract.PreOrder.tb, 1, DatabaseContract.PreOrder.invoice_id, preOrderRequest.getData().get(0).getData().get(0).getId());
+                            updateDeleteFlag(DatabaseContract.PreOrderDetail.tb, 1, DatabaseContract.PreOrderDetail.sale_order_id, preOrderRequest.getData().get(0).getData().get(0).getId());
+
+                            /*deletePreOrderAfterUpload(preOrderRequest.getData().get(0).getData().get(0).getId());
+                            deletePreOrderProductAfterUpload(preOrderRequest.getData().get(0).getData().get(0).getId());*/
                         }
 
                         database.setTransactionSuccessful();
                         database.endTransaction();
-
                         Utils.cancelDialog();
+                        Utils.backToCustomer(SaleOrderCheckoutActivity.this);
                     }
                 } else {
-                    onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    if(response.body() != null && response.body().getAceplusStatusMessage().length() != 0 ) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    } else {
+                        Utils.commonDialog(getResources().getString(R.string.server_error), SaleOrderCheckoutActivity.this);
+                    }
                 }
             }
 
@@ -882,6 +889,11 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
      */
     private void deletePreOrderAfterUpload(String invoiceId) {
         database.execSQL("delete from PRE_ORDER WHERE INVOICE_ID = \'" + invoiceId + "\'");
+    }
+
+    private void updateDeleteFlag(String tableName, int deleteFlg, String columnName, String columnValue) {
+        String query = "UPDATE " + tableName + " SET DELETE_FLAG = " + deleteFlg + " WHERE " + columnName + " = \'" + columnValue + "'";
+        database.execSQL(query);
     }
 
     /**

@@ -81,6 +81,8 @@ public class SaleExchangeTab1 extends Fragment {
 
                 while (cursor_sale_return_id.moveToNext()){
 
+                    SaleReturnDetailreport saleReturnDetailreport=new SaleReturnDetailreport();
+
 
                     qty= cursor_sale_return_id.getString(cursor_sale_return_id.getColumnIndex("QUANTITY"));
                     remark=cursor_sale_return_id.getString(cursor_sale_return_id.getColumnIndex("REMARK"));
@@ -100,10 +102,11 @@ public class SaleExchangeTab1 extends Fragment {
                     saleReturnDetailreport.setProductName(product_name);
                     saleReturnDetailreport.setQuantity(qty);
                     saleReturnDetailreport.setRemark(remark);
+                    saleReturnDetailreports.add(saleReturnDetailreport);
 
                 }
 
-                saleReturnDetailreports.add(saleReturnDetailreport);
+
 
 
 
