@@ -1,5 +1,7 @@
 package com.aceplus.samparoo.retrofit;
 
+import android.util.Log;
+
 import com.aceplus.samparoo.utils.Constant;
 
 import java.io.IOException;
@@ -17,9 +19,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class RetrofitServiceFactory {
 
+    public static String url = Constant.BASE_URL;
+
     public static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
     public static Retrofit.Builder builder = new Retrofit.Builder()
-            .baseUrl(Constant.BASE_URL)
+            .baseUrl(url)
             .addConverterFactory(GsonConverterFactory.create());
 
     public static <T> T createService(Class<T> serviceClass) {

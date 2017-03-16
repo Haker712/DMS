@@ -239,15 +239,15 @@ public class ECalenderFragment extends Fragment {
                 break;
         }
 
-        switch (month) {
+        /*switch (month) {
             case "01": monthName = "January";
 
-                thirtyOne();
+                //thirtyOne();
 
                 break;
             case "02": monthName = "February";
 
-                twentyEight();
+                //twentyEight();
 
                 break;
             case "03": monthName = "March";
@@ -276,7 +276,9 @@ public class ECalenderFragment extends Fragment {
                 thirtyOne();
 
                 break;
-        }
+        }*/
+
+        thirty();
 
         textViewMonth.setText(monthName);
         textViewYear.setText(year);

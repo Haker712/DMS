@@ -1,6 +1,7 @@
 package com.aceplus.samparoo;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,7 +13,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aceplus.samparoo.model.forApi.DataForLogin;
@@ -69,6 +72,14 @@ public class LoginActivity extends AppCompatActivity {
     String saleman_Name = "";
     String saleman_Pwd = "";
 
+    View dialogBoxView;
+    AlertDialog.Builder builder;
+    AlertDialog dialog;
+
+    TextView textViewCurrentIP;
+    EditText editTextNewIP;
+    TextView textViewOk, textViewCancel;
+
     final int mode = Activity.MODE_PRIVATE;
     final String MyPREFS = "SamparooPreference";
     public static SharedPreferences mySharedPreference;
@@ -108,8 +119,14 @@ public class LoginActivity extends AppCompatActivity {
         mySharedPreference = getSharedPreferences(MyPREFS, mode);
         myEditor = mySharedPreference.edit();
 
-        //editTextUserID.setText("ACE");
-        //editTextPassword.setText("samparoo");
+        if (!mySharedPreference.getString(Constant.KEY_CHANGE_URL, "").equals("")) {
+            Constant.changeUrl(mySharedPreference.getString(Constant.KEY_CHANGE_URL, ""));
+            Log.i("Current URL1", Constant.BASE_URL);
+        }
+        Log.i("Current URL2", Constant.BASE_URL);
+
+        editTextUserID.setText("ACE");
+        editTextPassword.setText("samparoo");
 
         if (Utils.isOsMarshmallow()) {
             askPermission();
@@ -236,24 +253,9 @@ public class LoginActivity extends AppCompatActivity {
                         Utils.cancelDialog();
                         if (response.body().getRoute() != 0) {
 
-                            Toast.makeText(LoginActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
-
                             List<DataForLogin> dataForLoginArrayList = new ArrayList<DataForLogin>();
                             dataForLoginArrayList = response.body().getDataForLogin();
                          //   Log.i("dataForLoginArrayList>>>", dataForLoginArrayList.size() + "");
-
-                            sqLiteDatabase.beginTransaction();
-
-                            insertSaleMan(dataForLoginArrayList.get(0).getSaleMan());
-
-                            insertRouteScheduleAndItem(dataForLoginArrayList.get(0).getRouteSchedule());
-
-                            insertRouteAssign(dataForLoginArrayList.get(0).getRouteAssign());
-
-                            insertRoute(dataForLoginArrayList.get(0).getRoute());
-
-                            sqLiteDatabase.setTransactionSuccessful();
-                            sqLiteDatabase.endTransaction();
 
                             if(dataForLoginArrayList.get(0).getSaleMan().size() != 0) {
                                 myEditor.putString(Constant.SALEMAN_ID, dataForLoginArrayList.get(0).getSaleMan().get(0).getId());
@@ -261,6 +263,21 @@ public class LoginActivity extends AppCompatActivity {
                                 myEditor.putString(Constant.SALEMAN_NAME, dataForLoginArrayList.get(0).getSaleMan().get(0).getSaleManName());
                                 myEditor.putString(Constant.SALEMAN_PWD, dataForLoginArrayList.get(0).getSaleMan().get(0).getPassword());
                                 myEditor.commit();
+
+                                sqLiteDatabase.beginTransaction();
+
+                                insertSaleMan(dataForLoginArrayList.get(0).getSaleMan());
+
+                                insertRouteScheduleAndItem(dataForLoginArrayList.get(0).getRouteSchedule());
+
+                                insertRouteAssign(dataForLoginArrayList.get(0).getRouteAssign());
+
+                                insertRoute(dataForLoginArrayList.get(0).getRoute());
+
+                                sqLiteDatabase.setTransactionSuccessful();
+                                sqLiteDatabase.endTransaction();
+
+                                Toast.makeText(LoginActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
 
                                 Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                                 startActivity(intent);
@@ -393,5 +410,68 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Cannot Backup!", Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    @OnClick(R.id.textViewChangeIP)
+    void changeIP() {
+        dialogBoxView = null;
+        if (dialogBoxView == null) {
+            dialogBoxView = getLayoutInflater().inflate(R.layout.change_ip_layout, null);
+
+            builder = new AlertDialog.Builder(this);
+            builder.setView(dialogBoxView).setCancelable(false);
+
+            if (dialog == null) {
+                dialog = builder.create();
+            }
+            dialog.show();
+
+            dialogForChangeIP();
+        }
+    }
+
+    private void dialogForChangeIP() {
+        if (dialogBoxView == null) {
+            dialogBoxView = this.getLayoutInflater().inflate(R.layout.change_ip_layout, null);
+        }
+
+        textViewCurrentIP = ButterKnife.findById(dialogBoxView, R.id.textViewCurrentIP);
+        editTextNewIP = ButterKnife.findById(dialogBoxView, R.id.editTextNewIP);
+        textViewOk = ButterKnife.findById(dialogBoxView, R.id.textViewOk);
+        textViewCancel = ButterKnife.findById(dialogBoxView, R.id.textViewCancel);
+
+        textViewCurrentIP.setText(Constant.BASE_URL);
+
+        if (!mySharedPreference.getString(Constant.KEY_CHANGE_URL, "").equals("")) {
+            textViewCurrentIP.setText(mySharedPreference.getString(Constant.KEY_CHANGE_URL, ""));
+        }
+
+        editTextNewIP.setText("http://192.168.:9999/api/v1/");
+
+        textViewCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                dialogBoxView = null;
+                dialog = null;
+            }
+        });
+
+        textViewOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String new_ip = editTextNewIP.getText().toString();
+
+                myEditor.putString(Constant.KEY_CHANGE_URL, new_ip);
+                myEditor.commit();
+
+                Constant.changeUrl(new_ip);
+                Log.i("Current URL", Constant.BASE_URL);
+
+                dialog.dismiss();
+                dialogBoxView = null;
+                dialog = null;
+            }
+        });
     }
 }

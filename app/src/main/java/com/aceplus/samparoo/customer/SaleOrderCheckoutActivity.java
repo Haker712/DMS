@@ -707,8 +707,11 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
                         database.beginTransaction();
 
                         if(preOrderRequest.getData() != null && preOrderRequest.getData().get(0).getData().size() > 0) {
-                            deletePreOrderAfterUpload(preOrderRequest.getData().get(0).getData().get(0).getId());
-                            deletePreOrderProductAfterUpload(preOrderRequest.getData().get(0).getData().get(0).getId());
+                            updateDeleteFlag(DatabaseContract.PreOrder.tb, 1, DatabaseContract.PreOrder.invoice_id, preOrderRequest.getData().get(0).getData().get(0).getId());
+                            updateDeleteFlag(DatabaseContract.PreOrderDetail.tb, 1, DatabaseContract.PreOrderDetail.sale_order_id, preOrderRequest.getData().get(0).getData().get(0).getId());
+
+                            /*deletePreOrderAfterUpload(preOrderRequest.getData().get(0).getData().get(0).getId());
+                            deletePreOrderProductAfterUpload(preOrderRequest.getData().get(0).getData().get(0).getId());*/
                         }
 
                         database.setTransactionSuccessful();
@@ -886,6 +889,11 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
      */
     private void deletePreOrderAfterUpload(String invoiceId) {
         database.execSQL("delete from PRE_ORDER WHERE INVOICE_ID = \'" + invoiceId + "\'");
+    }
+
+    private void updateDeleteFlag(String tableName, int deleteFlg, String columnName, String columnValue) {
+        String query = "UPDATE " + tableName + " SET DELETE_FLAG = " + deleteFlg + " WHERE " + columnName + " = \'" + columnValue + "'";
+        database.execSQL(query);
     }
 
     /**
