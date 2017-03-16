@@ -81,7 +81,7 @@ public class TabFragment1 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        view = inflater.inflate(R.layout.tab_fragment_1, container, false);
+        view = inflater.inflate(R.layout.outlet_external_check_fragment, container, false);
         activity = (AppCompatActivity) getActivity();
         /*Toolbar toolbar = (Toolbar) view.findViewById(R.id.app_bar);
         activity.setSupportActionBar(toolbar);

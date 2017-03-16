@@ -291,4 +291,18 @@ public class DatabaseContract {
         public static final String STOCK_ID="STOCK_ID";
         public static final String DELIVERY_QTY="DELIVERY_QTY";
     }
+
+    public abstract class MARKETING{
+
+        public static final String TABLE="STANDARD_EXTERNAL_CHECK";
+        public static final String ID="ID";
+        public static final String IMAGE_NO="IMAGE_NO";
+        public static final String IMAGE_NAME="IMAGE_NAME";
+        public static final String INVOICE_DATE="INVOICE_DATE";
+        public static final String IMAGE="IMAGE";
+
+    }
+
+
+
 }

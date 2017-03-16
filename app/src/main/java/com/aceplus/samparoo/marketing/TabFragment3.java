@@ -752,63 +752,63 @@ public class TabFragment3 extends Fragment {
                     @Override
                     public void onClick(View v) {
 
-                        competitor_nameEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+                            competitor_nameEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
 
-                        if (competitor_nameEditText.getText().toString().length() == 0) {
+                            if (competitor_nameEditText.getText().toString().length() == 0) {
 
-                            messageTextView.setText("You must specify competitor's name.");
-                            return;
-                        }
+                                messageTextView.setText("You must specify competitor's name.");
+                                return;
+                            }
 
-                        if (noteEditText.getText().toString().length() == 0) {
+                            if (noteEditText.getText().toString().length() == 0) {
 
-                            messageTextView.setText("You must specify note.");
-                            return;
-                        }
+                                messageTextView.setText("You must specify note.");
+                                return;
+                            }
 
-                        database = new Database(activity).getDataBase();
+                            database = new Database(activity).getDataBase();
 
-                        String competitor_name = competitor_nameEditText.getText().toString();
-                        String note = noteEditText.getText().toString();
+                            String competitor_name = competitor_nameEditText.getText().toString();
+                            String note = noteEditText.getText().toString();
 
-                        cursor = database.rawQuery("SELECT * FROM COMPETITOR", null);
-                        int competitor_count = cursor.getCount();
-                        String competitor_id = "CPT" + competitor_count;
+                            cursor = database.rawQuery("SELECT * FROM COMPETITOR", null);
+                            int competitor_count = cursor.getCount();
+                            String competitor_id = "CPT" + competitor_count;
 
-                        database.beginTransaction();
-                        database.execSQL("INSERT INTO competitor VALUES (\""
-                                + MainFragmentActivity.customerId + "\", \""
-                                + competitor_id + "\", \""
-                                + competitor_name + "\", \""
-                                + note + "\", \'"
-                                + null + "\'"
-                                + ")");
+                            database.beginTransaction();
+                            database.execSQL("INSERT INTO competitor VALUES (\""
+                                    + MainFragmentActivity.customerId + "\", \""
+                                    + competitor_id + "\", \""
+                                    + competitor_name + "\", \""
+                                    + note + "\", \'"
+                                    + null + "\'"
+                                    + ")");
 
-                        database.setTransactionSuccessful();
-                        database.endTransaction();
+                            database.setTransactionSuccessful();
+                            database.endTransaction();
 
-                        cursor = database.rawQuery("SELECT * FROM COMPETITOR", null);
-                        int count = cursor.getCount();
-                        Log.e("Count>>>>>>Count>>>>>>>", count + "");
-                        if(count>0){
-                            Toast.makeText(getContext(),"Add Competitor's Details Successfully", Toast.LENGTH_LONG).show();
-                            rlayout.setVisibility(View.VISIBLE);
-                            message.setVisibility(View.GONE);
-                            cameraImg.setVisibility(View.VISIBLE);
-                        }
+                            cursor = database.rawQuery("SELECT * FROM COMPETITOR", null);
+                            int count = cursor.getCount();
+                            Log.e("Count>>>>>>Count>>>>>>>", count + "");
+                            if(count>0){
+                                Toast.makeText(getContext(),"Add Competitor's Details Successfully", Toast.LENGTH_LONG).show();
+                                rlayout.setVisibility(View.VISIBLE);
+                                message.setVisibility(View.GONE);
+                                cameraImg.setVisibility(View.VISIBLE);
+                            }
 
-                        comp_nameList.add(competitor_name);
-                        comp_idList.add(competitor_id);
+                            comp_nameList.add(competitor_name);
+                            comp_idList.add(competitor_id);
 
-                        //comp_nameSpinner = (Spinner) view.findViewById(R.id.comp_name_spinner);
+                            //comp_nameSpinner = (Spinner) view.findViewById(R.id.comp_name_spinner);
 
-                        ArrayAdapter<String> aa = new ArrayAdapter<String>(activity,android.R.layout.simple_spinner_item,comp_nameList);
-                        //aa.setDropDownViewResource(R.layout.spinner_layout);
-                        aa.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
-                        comp_nameSpinner.setAdapter(aa);
-                        aa.notifyDataSetChanged();
+                            ArrayAdapter<String> aa = new ArrayAdapter<String>(activity,android.R.layout.simple_spinner_item,comp_nameList);
+                            //aa.setDropDownViewResource(R.layout.spinner_layout);
+                            aa.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+                            comp_nameSpinner.setAdapter(aa);
+                            aa.notifyDataSetChanged();
 
-                        alertDialog.dismiss();
+                            alertDialog.dismiss();
                     }
                 });
 

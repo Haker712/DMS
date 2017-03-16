@@ -13,6 +13,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.aceplus.samparoo.R;
+import com.aceplus.samparoo.SyncActivity;
 import com.aceplus.samparoo.model.Customer;
 import com.aceplus.samparoo.utils.Utils;
 import com.firetrap.permissionhelper.action.OnDenyAction;
