@@ -59,6 +59,8 @@ public class SaleActivity extends AppCompatActivity {
     public static final String SOLD_PROUDCT_LIST_KEY = "sold-product-list-key";
     public static final String ORDERED_INVOICE_KEY = "ordered_invoice_key";
 
+    public static final String SALE_RETURN_INVOICEID_KEY = "sale_return_invoiceid_key";
+
     private boolean isPreOrder;
 
     private boolean isDelivery;
@@ -321,6 +323,7 @@ public class SaleActivity extends AppCompatActivity {
                 if (check.equalsIgnoreCase("yes")) {
 
                     intent.putExtra("SaleExchange", "yes");
+                    intent.putExtra(SALE_RETURN_INVOICEID_KEY, getIntent().getStringExtra(SALE_RETURN_INVOICEID_KEY));
 
                 } else {
 
