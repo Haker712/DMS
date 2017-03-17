@@ -291,4 +291,50 @@ public class DatabaseContract {
         public static final String STOCK_ID="STOCK_ID";
         public static final String DELIVERY_QTY="DELIVERY_QTY";
     }
+
+    public abstract class CREDIT {
+        public static final String TABLE = "CREDIT";
+        public static final String ID="ID";
+        public static final String INVOICE_NO="INVOICE_NO";
+        public static final String INVOICE_DATE="INVOICE_DATE";
+        public static final String CUSTOMER_ID="CUSTOMER_ID";
+        public static final String AMT="AMT";
+        public static final String PAY_AMT="PAY_AMT";
+        public static final String FIRST_PAY_AMT="FIRST_PAY_AMT";
+        public static final String EXTRA_AMT="EXTRA_AMT";
+        public static final String REFUND="REFUND";
+        public static final String SALE_STATUS="SALE_STATUS";
+        public static final String INVOICE_STATUS="INVOICE_STATUS";
+        public static final String SALE_MAN_ID="SALE_MAN_ID";
+    }
+
+    public abstract class CUSTOMER_BALANCE {
+        public static final String TABLE = "CUSTOMER_BALANCE";
+        public static final String ID ="ID";
+        public static final String CUSTOMER_ID ="CUSTOMER_ID";
+        public static final String CURRENCY_ID ="CURRENCY_ID";
+        public static final String OPENING_BALANCE ="OPENING_BALANCE";
+        public static final String BALANCE ="BALANCE";
+    }
+
+    public abstract class CASH_RECEIVE {
+        public static final String TABLE = "CASH_RECEIVE";
+        public static final String ID = "ID";
+        public static final String RECEIVE_NO = "RECEIVE_NO";
+        public static final String RECEIVE_DATE = "RECEIVE_DATE";
+        public static final String CUSTOMER_ID = "CUSTOMER_ID";
+        public static final String AMOUNT = "AMOUNT";
+        public static final String CURRENCY_ID = "CURRENCY_ID";
+        public static final String STATUS = "STATUS";
+        public static final String LOCATION_ID = "LOCATION_ID";
+        public static final String PAYMENT_TYPE = "PAYMENT_TYPE";
+        public static final String CASH_RECEIVE_TYPE = "CASH_RECEIVE_TYPE";
+        public static final String SALE_ID = "SALE_ID";
+    }
+
+    public abstract class CASH_RECEIVE_ITEM {
+        public static final String TABLE = "CASH_RECEIVE_ITEM";
+        public static final String RECEIVE_NO = "RECEIVE_NO";
+        public static final String SALE_ID = "SALE_ID";
+    }
 }

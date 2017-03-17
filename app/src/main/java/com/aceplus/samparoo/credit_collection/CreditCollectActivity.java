@@ -19,10 +19,14 @@ import android.widget.Toast;
 
 import com.aceplus.samparoo.R;
 import com.aceplus.samparoo.model.CustomerCredit;
+import com.aceplus.samparoo.model.forApi.CreditForApi;
+import com.aceplus.samparoo.model.forApi.CustomerBalanceForApi;
 import com.aceplus.samparoo.utils.Database;
+import com.aceplus.samparoo.utils.DatabaseContract;
 import com.aceplus.samparoo.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CreditCollectActivity extends Activity {
 
@@ -36,7 +40,7 @@ public class CreditCollectActivity extends Activity {
     SQLiteDatabase database;
     private CustomerCreditAdapter customerCreditAdapter;
 
-    ArrayList<CustomerCredit> customerCreitArrayList = new ArrayList<>();
+    List<CustomerCredit> customerCreditArrayList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,11 +48,60 @@ public class CreditCollectActivity extends Activity {
         setContentView(R.layout.activity_credit_collect);
         database = new Database(this).getDataBase();
         registerIDs();
-        getCreditData();
+
+        customerCreditArrayList = getCreditCollection();
+
+        if(customerCreditArrayList != null && customerCreditArrayList.size() > 0) {
+            customerCreditAdapter = new CustomerCreditAdapter(CreditCollectActivity.this);
+            customerCreditList.setAdapter(customerCreditAdapter);
+        } else {
+            Utils.commonDialog("No credit to pay", CreditCollectActivity.this);
+        }
+
         catchEvents();
     }
 
-    private void getCreditData() {
+    private List<CustomerCredit> getCreditCollection() {
+        String query = "SELECT * FROM " + DatabaseContract.CUSTOMER_BALANCE.TABLE;
+        Cursor customerBalanceCursor = database.rawQuery(query, null);
+        List<CustomerCredit> creditList = new ArrayList<>();
+
+        while(customerBalanceCursor.moveToNext()) {
+            double paidAmt = 0.0, unpaidAmt = 0.0;
+            String customerName = "", customerAddress = "";
+
+            int customerId = customerBalanceCursor.getInt(customerBalanceCursor.getColumnIndex(DatabaseContract.CUSTOMER_BALANCE.CUSTOMER_ID));
+            int currencyId = customerBalanceCursor.getInt(customerBalanceCursor.getColumnIndex(DatabaseContract.CUSTOMER_BALANCE.CURRENCY_ID));
+            double totalBalance = customerBalanceCursor.getInt(customerBalanceCursor.getColumnIndex(DatabaseContract.CUSTOMER_BALANCE.BALANCE));
+
+            String query1 = "SELECT C.PAY_AMT, CUS.CUSTOMER_NAME, CUS.ADDRESS FROM CREDIT AS C INNER JOIN CUSTOMER AS CUS ON CUS.ID = " + customerId;
+            Cursor creditCursor = database.rawQuery(query1, null);
+
+            while(creditCursor.moveToNext()) {
+                paidAmt += creditCursor.getDouble(creditCursor.getColumnIndex("PAY_AMT"));
+                customerName = creditCursor.getString(creditCursor.getColumnIndex("CUSTOMER_NAME"));
+                customerAddress = creditCursor.getString(creditCursor.getColumnIndex("ADDRESS"));
+            }
+            creditCursor.close();
+            unpaidAmt = totalBalance - paidAmt;
+
+            CustomerCredit customerCredit = new CustomerCredit();
+            customerCredit.setCustomerId(customerId);
+            customerCredit.setCurrencyId(currencyId);
+            customerCredit.setCustomerCreditname(customerName);
+            customerCredit.setCustomerAddress(customerAddress);
+            customerCredit.setCreditUnpaidAmt(unpaidAmt);
+            customerCredit.setCreditPaidAmt(paidAmt);
+            customerCredit.setCreditTotalAmt(totalBalance);
+
+            creditList.add(customerCredit);
+        }
+        customerBalanceCursor.close();
+
+        return creditList;
+    }
+
+    /*private void getCreditData() {
         database.beginTransaction();
         customerCreitArrayList.clear();
         Cursor cursor = database.rawQuery("SELECT * FROM CREDIT", null);
@@ -83,7 +136,7 @@ public class CreditCollectActivity extends Activity {
         cursor.close();
         database.setTransactionSuccessful();
         database.endTransaction();
-    }
+    }*/
 
     private void registerIDs() {
         customerCreditList = (ListView) findViewById(R.id.customer_credit_list);
@@ -98,24 +151,16 @@ public class CreditCollectActivity extends Activity {
             }
         });
 
-        customerCreditAdapter = new CustomerCreditAdapter(CreditCollectActivity.this);
-        customerCreditList.setAdapter(customerCreditAdapter);
         customerCreditList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                CustomerCredit customerCredit = customerCreitArrayList.get(position);
-                if (customerCredit.getCreditUnpaidAmt() != 0) {
-                    CreditCheckOut_Activity.creditId = customerCredit.getCreditId();
-                    CreditCheckOut_Activity.customerId = customerCredit.getCustomerId();
-                    CreditCheckOut_Activity.creditCustomer = customerCredit.getCustomerCreditname();
-                    CreditCheckOut_Activity.creditCustomerAddress = customerCredit.getCustomerAddress();
-                    CreditCheckOut_Activity.amount = customerCredit.getCreditTotalAmt();
-                    CreditCheckOut_Activity.paidAmount = customerCredit.getCreditPaidAmt();
-                    CreditCheckOut_Activity.unPaidAmount = customerCredit.getCreditUnpaidAmt();
-                    startActivity(new Intent(CreditCollectActivity.this, CreditCheckOut_Activity.class));
-                    finish();
+                CustomerCredit customerCredit = customerCreditArrayList.get(position);
+                if(customerCredit.getCreditUnpaidAmt() != 0.0) {
+                    Intent intent = new Intent(CreditCollectActivity.this, CreditCheckOut_Activity.class);
+                    intent.putExtra(CreditCheckOut_Activity.CREDIT_KEY, customerCredit);
+                    startActivity(intent);
                 } else {
-                    Toast.makeText(CreditCollectActivity.this, "You do not have pay Credit.Thank you!", Toast.LENGTH_LONG).show();
+                    Utils.commonDialog("No credit for this customer", CreditCollectActivity.this);
                 }
             }
         });
@@ -125,7 +170,7 @@ public class CreditCollectActivity extends Activity {
         private final Activity context;
 
         public CustomerCreditAdapter(Activity context) {
-            super(context, R.layout.customer_credit_list_row, customerCreitArrayList);
+            super(context, R.layout.customer_credit_list_row, customerCreditArrayList);
             this.context = context;
         }
 
@@ -139,7 +184,7 @@ public class CreditCollectActivity extends Activity {
             paidAmtTxt = (TextView) rowView.findViewById(R.id.credit_paidamt);
             unpaidAmtTxt = (TextView) rowView.findViewById(R.id.credit_unpaidamt);
 
-            CustomerCredit cusCredit = customerCreitArrayList.get(position);
+            CustomerCredit cusCredit = customerCreditArrayList.get(position);
 
             cusCreditTxt.setText(cusCredit.getCustomerCreditname());
             totalAmtTxt.setText(cusCredit.getCreditTotalAmt() + "");

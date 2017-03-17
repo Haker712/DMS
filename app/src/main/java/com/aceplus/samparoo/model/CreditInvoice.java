@@ -4,6 +4,151 @@ package com.aceplus.samparoo.model;
  * Created by ESeries on 12/1/2015.
  */
 public class CreditInvoice {
+
+    /**
+     * id
+     */
+    private int id;
+
+    /**
+     * invoiceNo
+     */
+    private String invoiceNo;
+
+    /**
+     * invoiceDate
+     */
+    private String invoiceDate;
+
+    /**
+     * customerId
+     */
+    private int customerId;
+
+    /**
+     * amt
+     */
+    private double amt;
+
+    /**
+     * payAmt
+     */
+    private double payAmt;
+
+    /**
+     * creditAmt
+     */
+    private double creditAmt;
+
+    /**
+     * refund
+     */
+    private double refund;
+
+    /**
+     * saleStatus
+     */
+    private String saleStatus;
+
+    /**
+     * invoiceStatus
+     */
+    private String invoiceStatus;
+
+    /**
+     * saleManId
+     */
+    private int saleManId;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getInvoiceNo() {
+        return invoiceNo;
+    }
+
+    public void setInvoiceNo(String invoiceNo) {
+        this.invoiceNo = invoiceNo;
+    }
+
+    public String getInvoiceDate() {
+        return invoiceDate;
+    }
+
+    public void setInvoiceDate(String invoiceDate) {
+        this.invoiceDate = invoiceDate;
+    }
+
+    public int getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
+    }
+
+    public double getAmt() {
+        return amt;
+    }
+
+    public void setAmt(double amt) {
+        this.amt = amt;
+    }
+
+    public double getPayAmt() {
+        return payAmt;
+    }
+
+    public void setPayAmt(double payAmt) {
+        this.payAmt = payAmt;
+    }
+
+    public double getCreditAmt() {
+        return creditAmt;
+    }
+
+    public void setCreditAmt(double creditAmt) {
+        this.creditAmt = creditAmt;
+    }
+
+    public double getRefund() {
+        return refund;
+    }
+
+    public void setRefund(double refund) {
+        this.refund = refund;
+    }
+
+    public String getSaleStatus() {
+        return saleStatus;
+    }
+
+    public void setSaleStatus(String saleStatus) {
+        this.saleStatus = saleStatus;
+    }
+
+    public String getInvoiceStatus() {
+        return invoiceStatus;
+    }
+
+    public void setInvoiceStatus(String invoiceStatus) {
+        this.invoiceStatus = invoiceStatus;
+    }
+
+    public int getSaleManId() {
+        return saleManId;
+    }
+
+    public void setSaleManId(int saleManId) {
+        this.saleManId = saleManId;
+    }
+
+    /*
     String customerName = null;
     String invoiceId = null;
     String invoiceDate = null;
@@ -66,5 +211,5 @@ public class CreditInvoice {
 
     public void setCreditAmount(double creditAmount) {
         this.creditAmount = creditAmount;
-    }
+    }*/
 }

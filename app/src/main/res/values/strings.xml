@@ -94,6 +94,7 @@
 
     <string name="delivery">DELIVERY</string>
     <string name="delivery_checkout">DELIVERY CHECKOUT</string>
+    <string name="cash_receive">CASH RECEIVE</string>
 
     <string name="connection_error">Can\'t connect to server</string>
     <string name="server_error">Server error occurs. \n Please Try again</string>
