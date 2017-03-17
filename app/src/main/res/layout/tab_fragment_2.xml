@@ -8,7 +8,8 @@
         android:id="@+id/headerLayout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/appbar_height"
-        android:background="@color/colorAccent" >
+        android:background="@color/colorAccent">
+
         <ImageView
             android:id="@+id/cancel_img"
             android:layout_width="@dimen/btn_appbar_width"
@@ -17,7 +18,8 @@
             android:layout_alignParentLeft="true"
             android:gravity="center"
             android:src="@drawable/ic_cancel_xh_btn"
-            android:layout_marginLeft="20dp"/>
+            android:layout_marginLeft="20dp" />
+
         <ImageView
             android:id="@+id/camera_img"
             android:layout_width="@dimen/btn_appbar_width"
@@ -26,7 +28,8 @@
             android:layout_toRightOf="@+id/cancel_img"
             android:gravity="center"
             android:src="@drawable/ic_camrea_hx_btn"
-            android:layout_marginLeft="20dp"/>
+            android:layout_marginLeft="20dp" />
+
         <ImageView
             android:id="@+id/save_img"
             android:layout_width="@dimen/btn_appbar_width"
@@ -35,7 +38,7 @@
             android:layout_toRightOf="@+id/camera_img"
             android:gravity="center"
             android:src="@drawable/ic_save_xh_btn"
-            android:layout_marginLeft="20dp"/>
+            android:layout_marginLeft="20dp" />
 
         <TextView
             android:id="@+id/title"
@@ -62,7 +65,7 @@
             android:textSize="22sp"
             android:textColor="#FF0000"
             android:layout_marginTop="20dp"
-            android:layout_marginLeft="20dp"/>
+            android:layout_marginLeft="20dp" />
 
         <GridView
             android:id="@+id/gridview"

@@ -99,4 +99,5 @@
     <string name="connection_error">Can\'t connect to server</string>
     <string name="server_error">Server error occurs. \n Please Try again</string>
     <string name="no_download_data_error">Please download information!</string>
+    <string name="sale_exchange">SALE EXCHANGE</string>
 </resources>

@@ -3,6 +3,7 @@ package com.aceplus.samparoo.retrofit;
 import com.aceplus.samparoo.model.forApi.CreditResponse;
 import com.aceplus.samparoo.model.forApi.CustomerResponse;
 import com.aceplus.samparoo.model.forApi.DeliveryResponse;
+import com.aceplus.samparoo.model.forApi.DownloadMarketing;
 import com.aceplus.samparoo.model.forApi.GeneralResponse;
 import com.aceplus.samparoo.model.forApi.LoginResponse;
 import com.aceplus.samparoo.model.forApi.PosmShopTypeResponse;
@@ -51,6 +52,12 @@ public interface DownloadService {
     @FormUrlEncoded
     @POST("delivery")
     Call<DeliveryResponse> getDeliveryFromApi(@Field("param_data") String paramData);
+
+    @FormUrlEncoded
+    @POST("standardExternalCheck")
+    Call<DownloadMarketing> getMarketingFromApi(@Field("param_data") String paramData);
+
+
 
     @FormUrlEncoded
     @POST("creditCollection")

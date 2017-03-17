@@ -59,6 +59,9 @@ public class SaleCheckoutActivity extends AppCompatActivity {
     public static final String PRESENT_PROUDCT_LIST_KEY = "presnet-product-list-key";
     public static final String ORDERED_INVOICE_KEY = "ordered_invoice_key";
 
+    public static final String SALE_EXCHANGE_INVOICEID_KEY = "sale_exchange_invoiceid_key";
+    public static final String DATE_KEY = "date_key";
+
     private TextView titleTextView;
     ListView soldProductsListView, promotionPlanItemListView, promotionPlanGiftListView;
     TextView invoiceIdTextView;
@@ -538,7 +541,18 @@ public class SaleCheckoutActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(isFullyPaid()) {
                     saveDatas();
-                    Utils.backToCustomer(SaleCheckoutActivity.this);
+                    if (check.equalsIgnoreCase("yes")) {
+                        Intent intent = new Intent(SaleCheckoutActivity.this, SaleExchangeInfoActivity.class);
+                        intent.putExtra(CUSTOMER_INFO_KEY, customer);
+                        intent.putExtra(SaleActivity.SALE_RETURN_INVOICEID_KEY, getIntent().getStringExtra(SaleActivity.SALE_RETURN_INVOICEID_KEY));
+                        intent.putExtra(SALE_EXCHANGE_INVOICEID_KEY, invoiceIdTextView.getText().toString());
+                        intent.putExtra(DATE_KEY, saleDateTextView.getText().toString());
+                        startActivity(intent);
+                        finish();
+                    }
+                    else {
+                        Utils.backToCustomer(SaleCheckoutActivity.this);
+                    }
                 } else {
                     Utils.commonDialog("Insufficient Pay Amount!", SaleCheckoutActivity.this);
                 }
