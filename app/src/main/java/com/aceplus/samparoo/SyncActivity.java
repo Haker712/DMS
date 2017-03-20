@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.aceplus.samparoo.model.Posm;
 import com.aceplus.samparoo.model.PosmByCustomer;
+import com.aceplus.samparoo.model.Promotion;
 import com.aceplus.samparoo.model.SaleReturn;
 import com.aceplus.samparoo.model.SaleReturnDetail;
 import com.aceplus.samparoo.model.ShopType;
@@ -58,6 +59,7 @@ import com.aceplus.samparoo.model.forApi.PosmForApi;
 import com.aceplus.samparoo.model.forApi.PosmShopTypeResponse;
 import com.aceplus.samparoo.model.forApi.PreOrderApi;
 import com.aceplus.samparoo.model.forApi.PreOrderDetailApi;
+import com.aceplus.samparoo.model.forApi.PreOrderPresentApi;
 import com.aceplus.samparoo.model.forApi.PreOrderRequest;
 import com.aceplus.samparoo.model.forApi.PreOrderRequestData;
 import com.aceplus.samparoo.model.forApi.ProductForApi;
@@ -149,7 +151,7 @@ public class SyncActivity extends AppCompatActivity {
         downloadCustomerFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
         //downloadProductsFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
         //downloadPromotionFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
-        //downloadVolumeDiscountFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
+        //downloadVolumeDismcountFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
         //downloadGenerarlfromSever(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
         //downloadVolumeDiscountFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
     }
@@ -894,6 +896,7 @@ public class SyncActivity extends AppCompatActivity {
                     }
 
                 } else {
+                    Utils.cancelDialog();
                     Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
                 }
             }
@@ -1113,6 +1116,7 @@ public class SyncActivity extends AppCompatActivity {
                     }
 
                 } else {
+                    Utils.cancelDialog();
                     Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
                 }
             }
@@ -1170,6 +1174,7 @@ public class SyncActivity extends AppCompatActivity {
                         if (preOrderRequest.getData() != null && preOrderRequest.getData().get(0).getData().size() > 0) {
                             updateDeleteFlag(DatabaseContract.PreOrder.tb, 1, DatabaseContract.PreOrder.invoice_id, preOrderRequest.getData().get(0).getData().get(0).getId());
                             updateDeleteFlag(DatabaseContract.PreOrderDetail.tb, 1, DatabaseContract.PreOrderDetail.sale_order_id, preOrderRequest.getData().get(0).getData().get(0).getId());
+                            updateDeleteFlag("PRE_ORDER_PRESENT", 1, "pre_order_id", preOrderRequest.getData().get(0).getData().get(0).getId());
                             /*deleteDataAfterUpload("PRE_ORDER", "INVOICE_ID", preOrderRequest.getData().get(0).getData().get(0).getId());
                             deleteDataAfterUpload("PRE_ORDER_PRODUCT", "SALE_ORDER_ID", preOrderRequest.getData().get(0).getData().get(0).getId());*/
                         }
@@ -1190,6 +1195,7 @@ public class SyncActivity extends AppCompatActivity {
 
 
                 } else {
+                    Utils.cancelDialog();
                     Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
                 }
 
@@ -1225,26 +1231,40 @@ public class SyncActivity extends AppCompatActivity {
 
         List<PreOrderApi> preOrderApiList = new ArrayList<>();
 
-        for (PreOrder preOrder : preOrderList) {
+        List<PreOrderPresentApi> preOrderPresentApiList = new ArrayList<>();
+
+        for(PreOrder preOrder : preOrderList) {
             PreOrderApi preOrderApi = new PreOrderApi();
             preOrderApi.setId(preOrder.getInvoiceId());
             preOrderApi.setCustomerId(preOrder.getCustomerId());
             preOrderApi.setSaleManId(preOrder.getSalePersonId());
-            //preOrderApi.setDeviceId(preOrder.getDeviceId());
-            preOrderApi.setDeviceId("");
+            preOrderApi.setDeviceId(preOrder.getDeviceId());
             preOrderApi.setSaleOrderDate(preOrder.getPreOrderDate());
             preOrderApi.setExpectedDeliveredDate(preOrder.getExpectedDeliveryDate());
             preOrderApi.setAdvancedPaymentAmt(preOrder.getAdvancedPaymentAmount());
             preOrderApi.setNetAmt(preOrder.getNetAmount());
+            preOrderApi.setLocationId(preOrder.getLocationId());
+            preOrderApi.setDiscount(preOrder.getDiscount());
+            preOrderApi.setDiscountPer(preOrder.getDiscountPer());
+            preOrderApi.setVolumeDiscount(preOrder.getVolumeDiscount());
+            preOrderApi.setVolumeDiscountPer(preOrder.getVolumeDiscountPer());
+
+            for (PreOrderPresentApi preOrderPresentApi : getPreOrderPresentFromDatabase(preOrder.getInvoiceId())) {
+                preOrderPresentApiList.add(preOrderPresentApi);
+            }
 
             List<PreOrderProduct> preOrderProductList = getPreOrderProductFromDatabase(preOrder.getInvoiceId());
 
             List<PreOrderDetailApi> preOrderDetailApiList = new ArrayList<>();
-            for (PreOrderProduct preOrderProduct : preOrderProductList) {
+            for(PreOrderProduct preOrderProduct : preOrderProductList) {
                 PreOrderDetailApi preOrderDetailApi = new PreOrderDetailApi();
                 preOrderDetailApi.setSaleOrderId(preOrderProduct.getSaleOrderId());
                 preOrderDetailApi.setProductId(preOrderProduct.getProductId());
                 preOrderDetailApi.setQty(preOrderProduct.getOrderQty());
+                preOrderDetailApi.setPromotionPrice(preOrderProduct.getPromotionPrice());
+                preOrderDetailApi.setVolumeDiscount(preOrderProduct.getVolumeDiscount());
+                preOrderDetailApi.setVolumeDiscountPer(preOrderProduct.getVolumeDiscountPer());
+                preOrderDetailApi.setExclude(preOrderProduct.getExclude());
                 preOrderDetailApiList.add(preOrderDetailApi);
             }
 
@@ -1256,6 +1276,7 @@ public class SyncActivity extends AppCompatActivity {
 
         PreOrderRequestData preOrderRequestData = new PreOrderRequestData();
         preOrderRequestData.setData(preOrderApiList);
+        preOrderRequestData.setPreorderPresent(preOrderPresentApiList);
         preOrderRequestDataList.add(preOrderRequestData);
 
         preOrderRequestData.setData(preOrderApiList);
@@ -1280,7 +1301,7 @@ public class SyncActivity extends AppCompatActivity {
     private List<PreOrder> getPreOrderFromDatabase() {
         List<PreOrder> preOrderList = new ArrayList<>();
 
-        Cursor cursorPreOrder = sqLiteDatabase.rawQuery("select * from PRE_ORDER", null);
+        Cursor cursorPreOrder = sqLiteDatabase.rawQuery("select * from PRE_ORDER WHERE DELETE_FLAG = 0", null);
 
         while (cursorPreOrder.moveToNext()) {
             PreOrder preOrder = new PreOrder();
@@ -1292,6 +1313,11 @@ public class SyncActivity extends AppCompatActivity {
             preOrder.setExpectedDeliveryDate(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("EXPECTED_DELIVERY_DATE")));
             preOrder.setAdvancedPaymentAmount(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex("ADVANCE_PAYMENT_AMOUNT")));
             preOrder.setNetAmount(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex("NET_AMOUNT")));
+            preOrder.setLocationId(cursorPreOrder.getInt(cursorPreOrder.getColumnIndex(DatabaseContract.PreOrder.location_id)));
+            preOrder.setDiscount(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex(DatabaseContract.PreOrder.discount)));
+            preOrder.setDiscountPer(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex(DatabaseContract.PreOrder.discount_per)));
+            preOrder.setVolumeDiscount(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex(DatabaseContract.PreOrder.volume_discount)));
+            preOrder.setVolumeDiscountPer(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex(DatabaseContract.PreOrder.volume_discount_per)));
             preOrderList.add(preOrder);
         }
 
@@ -1306,7 +1332,7 @@ public class SyncActivity extends AppCompatActivity {
     private List<PreOrderProduct> getPreOrderProductFromDatabase(String saleOrderId) {
         List<PreOrderProduct> preOrderProductList = new ArrayList<>();
 
-        Cursor cursorPreOrderProduct = sqLiteDatabase.rawQuery("select * from PRE_ORDER_PRODUCT WHERE SALE_ORDER_ID = \'" + saleOrderId + "\';", null);
+        Cursor cursorPreOrderProduct = sqLiteDatabase.rawQuery("select * from PRE_ORDER_PRODUCT WHERE SALE_ORDER_ID = \'" + saleOrderId + "\' AND DELETE_FLAG = 0;", null);
 
         while (cursorPreOrderProduct.moveToNext()) {
             PreOrderProduct preOrderProduct = new PreOrderProduct();
@@ -1315,10 +1341,34 @@ public class SyncActivity extends AppCompatActivity {
             preOrderProduct.setOrderQty(cursorPreOrderProduct.getInt(cursorPreOrderProduct.getColumnIndex("ORDER_QTY")));
             preOrderProduct.setPrice(cursorPreOrderProduct.getDouble(cursorPreOrderProduct.getColumnIndex("PRICE")));
             preOrderProduct.setTotalAmt(cursorPreOrderProduct.getDouble(cursorPreOrderProduct.getColumnIndex("TOTAL_AMT")));
+            preOrderProduct.setPromotionPrice(cursorPreOrderProduct.getDouble(cursorPreOrderProduct.getColumnIndex(DatabaseContract.PreOrderDetail.promotion_price)));
+            preOrderProduct.setVolumeDiscount(cursorPreOrderProduct.getDouble(cursorPreOrderProduct.getColumnIndex(DatabaseContract.PreOrderDetail.volume_discount)));
+            preOrderProduct.setVolumeDiscountPer(cursorPreOrderProduct.getDouble(cursorPreOrderProduct.getColumnIndex(DatabaseContract.PreOrderDetail.volume_discount_per)));
+            preOrderProduct.setExclude(cursorPreOrderProduct.getInt(cursorPreOrderProduct.getColumnIndex(DatabaseContract.PreOrderDetail.exclude)));
             preOrderProductList.add(preOrderProduct);
         }
 
         return preOrderProductList;
+    }
+
+    /**
+     * Retrieve pre order present from database.
+     *
+     * @return PreOrderPresentApi object list
+     */
+    private List<PreOrderPresentApi> getPreOrderPresentFromDatabase(String saleOrderId) {
+
+        List<PreOrderPresentApi> preOrderPresentList = new ArrayList<>();
+
+        Cursor cursorPreOrderPresent = sqLiteDatabase.rawQuery("select * from PRE_ORDER_PRESENT WHERE PRE_ORDER_ID = \'" + saleOrderId + "\' AND WHERE DELETE_FLAG = 0;", null);
+        while (cursorPreOrderPresent.moveToNext()) {
+            PreOrderPresentApi preOrderPresentApi = new PreOrderPresentApi();
+            preOrderPresentApi.setSaleOrderId(cursorPreOrderPresent.getString(cursorPreOrderPresent.getColumnIndex("pre_order_id")));
+            preOrderPresentApi.setProductId(cursorPreOrderPresent.getString(cursorPreOrderPresent.getColumnIndex("stock_id")));
+            preOrderPresentApi.setQuantity(cursorPreOrderPresent.getInt(cursorPreOrderPresent.getColumnIndex("quantity")));
+        }
+
+        return preOrderPresentList;
     }
 
     /**
@@ -1370,6 +1420,7 @@ public class SyncActivity extends AppCompatActivity {
                         }
                     }
                 } else {
+                    Utils.cancelDialog();
                     Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
                 }
             }
@@ -1447,7 +1498,7 @@ public class SyncActivity extends AppCompatActivity {
     private List<SaleReturn> getSaleReturnFromDatabase() {
         List<SaleReturn> saleReturnList = new ArrayList<>();
 
-        Cursor cursorSaleReturn = sqLiteDatabase.rawQuery("select * from SALE_RETURN", null);
+        Cursor cursorSaleReturn = sqLiteDatabase.rawQuery("select * from SALE_RETURN WHERE DELETE_FLAG = 0", null);
 
         while (cursorSaleReturn.moveToNext()) {
             SaleReturn saleReturn = new SaleReturn();
@@ -1472,7 +1523,7 @@ public class SyncActivity extends AppCompatActivity {
     private List<SaleReturnDetail> getSaleReturnDetailFromDatabase(String saleReturnId) {
         List<SaleReturnDetail> saleReturnDetailList = new ArrayList<>();
 
-        Cursor cursorSaleReturnDetail = sqLiteDatabase.rawQuery("select * from SALE_RETURN_DETAIL WHERE SALE_RETURN_ID = \'" + saleReturnId + "\';", null);
+        Cursor cursorSaleReturnDetail = sqLiteDatabase.rawQuery("select * from SALE_RETURN_DETAIL WHERE SALE_RETURN_ID = \'" + saleReturnId + "\' AND DELETE_FLAG = 0;", null);
 
         while (cursorSaleReturnDetail.moveToNext()) {
             SaleReturnDetail saleReturnDetail = new SaleReturnDetail();
@@ -1638,6 +1689,7 @@ public class SyncActivity extends AppCompatActivity {
                         }
                     }
                 } else {
+                    Utils.cancelDialog();
                     Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
                 }
             }
@@ -1683,7 +1735,7 @@ public class SyncActivity extends AppCompatActivity {
     private List<PosmByCustomerApi> getPosmByCustomerFromDatabase() {
         List<PosmByCustomerApi> posmByCustomerList = new ArrayList<>();
 
-        Cursor cursorPosmByCustomer = sqLiteDatabase.rawQuery("select * from POSM_BY_CUSTOMER;", null);
+        Cursor cursorPosmByCustomer = sqLiteDatabase.rawQuery("select * from POSM_BY_CUSTOMER WHERE DELETE_FLAG = 0;", null);
 
         while (cursorPosmByCustomer.moveToNext()) {
             PosmByCustomerApi posmByCustomerApi = new PosmByCustomerApi();
@@ -1864,6 +1916,7 @@ public class SyncActivity extends AppCompatActivity {
                         }
                     }
                 } else {
+                    Utils.cancelDialog();
                     Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
                 }
 
@@ -2078,6 +2131,7 @@ public class SyncActivity extends AppCompatActivity {
                         }
                     }
                 } else {
+                    Utils.cancelDialog();
                     Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
                 }
             }
