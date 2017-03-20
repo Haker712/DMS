@@ -165,6 +165,25 @@ public class SyncActivity extends AppCompatActivity {
         uploadInvoiceToSever();
     }
 
+    @OnClick(R.id.buttonClearData)
+    void clearAllData() {
+            Cursor c = sqLiteDatabase.rawQuery("SELECT name FROM sqlite_master WHERE type ='table'", null);
+            List<String> tables = new ArrayList<>();
+
+            while (c.moveToNext()) {
+                tables.add(c.getString(0));
+            }
+
+            Log.i("Table counts --> ", String.valueOf(tables.size()));
+            for (String table : tables) {
+                String clearQuery = "DELETE FROM " + table;
+                sqLiteDatabase.execSQL(clearQuery);
+                Log.i("DELETION SUCCESS --> ", "All data from " + table + " has been successfully deleted");
+            }
+
+            Utils.commonDialog("All clear !", SyncActivity.this);
+    }
+
     private int getRouteID(String saleman_Id) {
         int routeID = 0;
         Cursor cursor = sqLiteDatabase.rawQuery("select * from " + DatabaseContract.RouteScheduleItem.tb + " where " +
@@ -2111,7 +2130,9 @@ public class SyncActivity extends AppCompatActivity {
             deliveryApi.setInvoiceDate(cursorDeliveryApi.getString(cursorDeliveryApi.getColumnIndex(DatabaseContract.DELIVERY_UPLOAD.INVOICE_DATE)));
             deliveryApi.setSaleId(cursorDeliveryApi.getString(cursorDeliveryApi.getColumnIndex(DatabaseContract.DELIVERY_UPLOAD.SALE_ID)));
             deliveryApi.setRemark(cursorDeliveryApi.getString(cursorDeliveryApi.getColumnIndex(DatabaseContract.DELIVERY_UPLOAD.REMARK)));
-
+            deliveryApi.setCustomerId(cursorDeliveryApi.getInt(cursorDeliveryApi.getColumnIndex(DatabaseContract.DELIVERY_UPLOAD.CUSTOMER_ID)));
+            deliveryApi.setLocationId(getLocationCode());
+            deliveryApi.setSaleManId(Integer.parseInt(saleman_Id));
             deliveryApiList.add(deliveryApi);
         }
         return deliveryApiList;
@@ -2132,8 +2153,8 @@ public class SyncActivity extends AppCompatActivity {
             DeliveryItemApi deliveryItemApi = new DeliveryItemApi();
             deliveryItemApi.setDeliveryId(cursorDeliveryItemApi.getString(cursorDeliveryItemApi.getColumnIndex(DatabaseContract.DELIVERY_ITEM_UPLOAD.DELIVERY_ID)));
             deliveryItemApi.setStockId(cursorDeliveryItemApi.getInt(cursorDeliveryItemApi.getColumnIndex(DatabaseContract.DELIVERY_ITEM_UPLOAD.STOCK_ID)));
-            deliveryItemApi.setDeliveryQty(cursorDeliveryItemApi.getInt(cursorDeliveryItemApi.getColumnIndex(DatabaseContract.DELIVERY_ITEM_UPLOAD.DELIVERY_QTY)));
-
+            deliveryItemApi.setDeliveryQty(cursorDeliveryItemApi.getInt(cursorDeliveryItemApi.getColumnIndex(DatabaseContract.DELIVERY_ITEM_UPLOAD.QUANTITY)));
+            deliveryItemApi.setFoc(cursorDeliveryItemApi.getShort(cursorDeliveryItemApi.getColumnIndex(DatabaseContract.DELIVERY_ITEM_UPLOAD.FOC)));
             deliveryItemApiList.add(deliveryItemApi);
         }
 
@@ -2349,6 +2370,20 @@ public class SyncActivity extends AppCompatActivity {
         Gson gson = new GsonBuilder().serializeNulls().create();
         String jsonString = gson.toJson(cashReceiveRequest);
         return jsonString;
+    }
+
+    /**
+     * Get related location code
+     * @return locationCode
+     */
+    private int getLocationCode() {
+        int locationCode = 0;
+        Cursor cursorForLocation = sqLiteDatabase.rawQuery("select * from Location", null);
+        while (cursorForLocation.moveToNext()) {
+            locationCode = cursorForLocation.getInt(cursorForLocation.getColumnIndex(DatabaseContract.Location.id));
+        }
+
+        return locationCode;
     }
 
     /***

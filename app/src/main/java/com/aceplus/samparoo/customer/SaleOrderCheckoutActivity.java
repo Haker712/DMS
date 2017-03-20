@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -106,11 +107,13 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
 
     private TextView txt_invoiceId, txt_totalAmount, saleDateTextView, netAmountTextView;
 
-    private TextView txt_tableHeaderDiscount, txt_tableHeaderUM, txt_tableHeaderQty;
+    private TextView txt_tableHeaderDiscount, txt_tableHeaderUM, txt_tableHeaderQty, txt_table_header_foc;
 
     private LinearLayout advancedPaidAmountLayout, totalInfoForGeneralSaleLayout, totalInfoForPreOrderLayout, receiptPersonLayout, refundLayout, payAmountLayout, netAmountLayout, volumeDiscountLayout, volDisForPreOrderLayout;
 
     private EditText prepaidAmt, receiptPersonEditText;
+
+    private CheckBox checkBox_foc;
 
     private ListView lv_soldProductList, promotionPlanItemListView;
 
@@ -219,6 +222,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
         txt_tableHeaderUM = (TextView) findViewById(R.id.tableHeaderUM);
         txt_tableHeaderQty = (TextView) findViewById(R.id.tableHeaderQty);
         txt_tableHeaderDiscount = (TextView) findViewById(R.id.tableHeaderDiscount);
+        txt_table_header_foc = (TextView) findViewById(R.id.tableHeaderFoc);
 
         saleDateTextView = (TextView) findViewById(R.id.saleDateTextView);
         txt_invoiceId = (TextView) findViewById(R.id.invoiceId);
@@ -259,6 +263,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
             volDisForPreOrderLayout.setVisibility(View.GONE);
             advancedPaidAmountLayout.setVisibility(View.VISIBLE);
             receiptPersonLayout.setVisibility(View.VISIBLE);
+            txt_table_header_foc.setVisibility(View.VISIBLE);
         }
     }
 
@@ -305,7 +310,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
             Log.i("volDisFilterId", volDisFilterId);
             Cursor cusorForVolDisFilterItem = database.rawQuery("SELECT * FROM VOLUME_DISCOUNT_FILTER_ITEM WHERE VOLUME_DISCOUNT_ID = '" + volDisFilterId + "' " +
                     "and FROM_SALE_AMOUNT <= " + buy_amt + " and TO_SALE_AMOUNT >= " + buy_amt + " ", null);
-            Log.i("cusorForVolDisFilterItem", cusorForVolDisFilterItem.getCount() + "");
+            Log.i("cursorForVolDisFilterItem", cusorForVolDisFilterItem.getCount() + "");
             while (cusorForVolDisFilterItem.moveToNext()) {
                 category = cusorForVolDisFilterItem.getString(cusorForVolDisFilterItem.getColumnIndex(DatabaseContract.VolumeDiscountFilterItem.categoryId));
                 group = cusorForVolDisFilterItem.getString(cusorForVolDisFilterItem.getColumnIndex(DatabaseContract.VolumeDiscountFilterItem.groupCodeId));
@@ -1078,7 +1083,8 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
         ContentValues cvDeliveryUploadItem = new ContentValues();
         cvDeliveryUploadItem.put(DatabaseContract.DELIVERY_ITEM_UPLOAD.DELIVERY_ID, deliveryItemApi.getDeliveryId());
         cvDeliveryUploadItem.put(DatabaseContract.DELIVERY_ITEM_UPLOAD.STOCK_ID, deliveryItemApi.getStockId());
-        cvDeliveryUploadItem.put(DatabaseContract.DELIVERY_ITEM_UPLOAD.DELIVERY_QTY, deliveryItemApi.getDeliveryQty());
+        cvDeliveryUploadItem.put(DatabaseContract.DELIVERY_ITEM_UPLOAD.QUANTITY, deliveryItemApi.getDeliveryQty());
+        cvDeliveryUploadItem.put(DatabaseContract.DELIVERY_ITEM_UPLOAD.FOC, checkBox_foc.isChecked());
         database.insert(DatabaseContract.DELIVERY_ITEM_UPLOAD.TABLE, null, cvDeliveryUploadItem);
     }
 
@@ -1108,6 +1114,9 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
             final TextView txt_discount = (TextView) view.findViewById(R.id.discount);
             final TextView txt_amount = (TextView) view.findViewById(R.id.amount);
 
+            checkBox_foc = (CheckBox) view.findViewById(R.id.foc);
+
+            checkBox_foc.setVisibility(View.VISIBLE);
             txt_um.setVisibility(View.GONE);
             txt_discount.setVisibility(View.GONE);
 

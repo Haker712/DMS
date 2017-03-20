@@ -289,7 +289,8 @@ public class DatabaseContract {
         public static final String TABLE = "DELIVERY_ITEM_UPLOAD";
         public static final String DELIVERY_ID="DELIVERY_ID";
         public static final String STOCK_ID="STOCK_ID";
-        public static final String DELIVERY_QTY="DELIVERY_QTY";
+        public static final String QUANTITY="QUANTITY";
+        public static final String FOC = "FOC";
     }
 
     public abstract class CREDIT {
