@@ -100,6 +100,8 @@ public class Customer implements Serializable {
         this.visitRecord = visitRecord;
     }
 
+
+
     public int getId() {
         return id;
     }

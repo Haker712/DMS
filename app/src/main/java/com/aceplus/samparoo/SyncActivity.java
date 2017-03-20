@@ -34,6 +34,9 @@ import com.aceplus.samparoo.model.forApi.DeliveryItemForApi;
 import com.aceplus.samparoo.model.forApi.DeliveryRequest;
 import com.aceplus.samparoo.model.forApi.DeliveryRequestData;
 import com.aceplus.samparoo.model.forApi.DeliveryResponse;
+import com.aceplus.samparoo.model.forApi.DisplayAssessment;
+import com.aceplus.samparoo.model.forApi.DisplayAssessmentData;
+import com.aceplus.samparoo.model.forApi.DisplayAssessmentRequest;
 import com.aceplus.samparoo.model.forApi.District;
 import com.aceplus.samparoo.model.forApi.DownloadMarketing;
 import com.aceplus.samparoo.model.forApi.GeneralData;
@@ -676,31 +679,33 @@ public class SyncActivity extends AppCompatActivity {
 
     }
 
-    private void insertMarkting(List<DataforMarketing> dataforMarketingList){
+    private void insertMarkting(List<DataforMarketing> dataforMarketingList) {
 
-        for (DataforMarketing dataforMarketing : dataforMarketingList){
+        for (DataforMarketing dataforMarketing : dataforMarketingList) {
 
             insertStandardExternalCheck(dataforMarketing.getStandardExternalCheck());
 
         }
 
+
+        Log.i("ImageName", dataforMarketingList.get(0).getStandardExternalCheck().get(0).getImageName());
+
+
     }
 
-    private void insertStandardExternalCheck(List<StandardExternalCheck> standardExternalCheckList){
+    private void insertStandardExternalCheck(List<StandardExternalCheck> standardExternalCheckList) {
 
-        for (StandardExternalCheck standardExternalCheck:standardExternalCheckList){
+        for (StandardExternalCheck standardExternalCheck : standardExternalCheckList) {
 
             ContentValues contentValues = new ContentValues();
 
-            contentValues.put(DatabaseContract.MARKETING.ID,standardExternalCheck.getId());
-            contentValues.put(DatabaseContract.MARKETING.IMAGE_NO,standardExternalCheck.getImageNo());
-            contentValues.put(DatabaseContract.MARKETING.IMAGE_NAME,standardExternalCheck.getImageName());
-            contentValues.put(DatabaseContract.MARKETING.INVOICE_DATE,standardExternalCheck.getInvoiceDate());
-            contentValues.put(DatabaseContract.MARKETING.IMAGE,standardExternalCheck.getImage());
+            contentValues.put(DatabaseContract.MARKETING.ID, standardExternalCheck.getId());
+            contentValues.put(DatabaseContract.MARKETING.IMAGE_NO, standardExternalCheck.getImageNo());
+            contentValues.put(DatabaseContract.MARKETING.IMAGE_NAME, standardExternalCheck.getImageName());
+            contentValues.put(DatabaseContract.MARKETING.INVOICE_DATE, standardExternalCheck.getInvoiceDate());
+            contentValues.put(DatabaseContract.MARKETING.IMAGE, standardExternalCheck.getImage());
 
             sqLiteDatabase.insert(DatabaseContract.MARKETING.TABLE, null, contentValues);
-
-            sqLiteDatabase.execSQL("");
 
 
         }
@@ -715,9 +720,9 @@ public class SyncActivity extends AppCompatActivity {
         call.enqueue(new Callback<DownloadMarketing>() {
             @Override
             public void onResponse(Call<DownloadMarketing> call, Response<DownloadMarketing> response) {
-                if (response.code() == 200){
+                if (response.code() == 200) {
 
-                    if (response.body().getAceplusStatusCode() == 200){
+                    if (response.body().getAceplusStatusCode() == 200) {
 
                         sqLiteDatabase.beginTransaction();
 
@@ -727,7 +732,6 @@ public class SyncActivity extends AppCompatActivity {
                         sqLiteDatabase.endTransaction();
 
                     }
-
                 }
             }
 
@@ -1749,6 +1753,9 @@ public class SyncActivity extends AppCompatActivity {
                         sqLiteDatabase.setTransactionSuccessful();
                         sqLiteDatabase.endTransaction();
 
+                        downloadMarketingfromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
+
+
                     } else {
                         if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
                             onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
@@ -1845,6 +1852,7 @@ public class SyncActivity extends AppCompatActivity {
 
                         sqLiteDatabase.setTransactionSuccessful();
                         sqLiteDatabase.endTransaction();*/
+                        uploadDisplayAssessmenttosever();
                     }
                 } else {
                     if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
@@ -1861,6 +1869,125 @@ public class SyncActivity extends AppCompatActivity {
                 Utils.commonDialog(t.getMessage(), SyncActivity.this);
             }
         });
+    }
+
+    /**
+     * upload displayassessment data to server
+     */
+
+    private void uploadDisplayAssessmenttosever() {
+
+
+        final DisplayAssessmentRequest displayAssessmentRequest = displayAssessmentRequest();
+
+        String paramData = getJsonFromObject(displayAssessmentRequest);
+
+        UploadService uploadService = RetrofitServiceFactory.createService(UploadService.class);
+
+        Call<InvoiceResponse> call = uploadService.uploadDisplayAssessment(paramData);
+
+        call.enqueue(new Callback<InvoiceResponse>() {
+            @Override
+            public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
+
+                if (response.code() == 200) {
+                    if (response.body().getAceplusStatusCode() == 200) {
+                        Utils.cancelDialog();
+                        //Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
+                        if (!services.equals("")) {
+                            services += ",";
+                        }
+
+                        services += " " + getResources().getString(R.string.delivery);
+                        if (!services.equals("")) {
+                            services += " are successfully uploaded";
+                            Utils.commonDialog(services, SyncActivity.this);
+                        }
+
+                    }
+                } else {
+                    if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    } else {
+                        Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
+                    }
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<InvoiceResponse> call, Throwable t) {
+
+                Utils.cancelDialog();
+                Utils.commonDialog(t.getMessage(), SyncActivity.this);
+
+            }
+        });
+
+
+
+    }
+
+    private String getJsonFromObject(DisplayAssessmentRequest displayAssessmentRequest) {
+
+        Gson gson = new GsonBuilder().serializeNulls().create();
+        String jsonString = gson.toJson(displayAssessmentRequest);
+        return jsonString;
+
+    }
+
+
+
+    private List<DisplayAssessment> getDisplayAssessmentFromDB() {
+
+        List<DisplayAssessment> displayAssessmentList = new ArrayList<>();
+
+
+        Cursor cursor = sqLiteDatabase.rawQuery("select * from DISPLAY_ASSESSMENT", null);
+
+        while (cursor.moveToNext()) {
+
+            DisplayAssessment displayAssessment = new DisplayAssessment();
+            String invoice_No = cursor.getString(cursor.getColumnIndex("INVOICE_NO"));
+            String invoice_Date = cursor.getString(cursor.getColumnIndex("INVOICE_DATE"));
+            String customer_Id = cursor.getString(cursor.getColumnIndex("CUSTOMER_ID"));
+            String saleman_Id = cursor.getString(cursor.getColumnIndex("SALE_MAN_ID"));
+            String image = cursor.getString(cursor.getColumnIndex("IMAGE"));
+
+            displayAssessment.setInvoice_No(invoice_No);
+            displayAssessment.setInvoice_Date(invoice_Date);
+            displayAssessment.setCustomer_Id(customer_Id);
+            displayAssessment.setSaleman_Id(saleman_Id);
+            displayAssessment.setImage(image);
+
+            displayAssessmentList.add(displayAssessment);
+
+        }
+
+
+        return displayAssessmentList;
+    }
+
+
+    private DisplayAssessmentRequest displayAssessmentRequest(){
+
+        List<DisplayAssessment> displayAssessmentList = getDisplayAssessmentFromDB();
+        List<DisplayAssessmentData> displayAssessmentDataList = new ArrayList<>();
+
+        DisplayAssessmentData displayAssessmentData = new DisplayAssessmentData();
+        displayAssessmentData.setDisplayAssessment(displayAssessmentList);
+
+        displayAssessmentDataList.add(displayAssessmentData);
+
+        DisplayAssessmentRequest displayAssessmentRequest = new DisplayAssessmentRequest();
+        displayAssessmentRequest.setData(displayAssessmentDataList);
+        displayAssessmentRequest.setSiteActivationKey(Constant.SITE_ACTIVATION_KEY);
+        displayAssessmentRequest.setTabletActivationKey(Constant.TABLET_ACTIVATION_KEY);
+        displayAssessmentRequest.setUserId(saleman_Id);
+        displayAssessmentRequest.setPassword("");
+
+        return displayAssessmentRequest;
+
     }
 
     /**

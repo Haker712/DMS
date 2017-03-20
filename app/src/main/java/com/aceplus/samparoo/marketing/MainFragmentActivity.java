@@ -29,7 +29,7 @@ import org.json.JSONObject;
 
 public class MainFragmentActivity extends AppCompatActivity {
     public static final String CUSTOMER_INFO_KEY = "customer-info-key";
-    Customer customer;
+   public static Customer customer;
 
     public static final String USER_INFO_KEY = "user-info-key";
     public static JSONObject userInfo;
@@ -56,7 +56,7 @@ public class MainFragmentActivity extends AppCompatActivity {
     };
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected  void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_marketing);
 
@@ -75,9 +75,9 @@ public class MainFragmentActivity extends AppCompatActivity {
         myEditor.commit();
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        tabLayout.addTab(tabLayout.newTab().setText("Outlet External Check"));
+       // tabLayout.addTab(tabLayout.newTab().setText("Outlet External Check"));
         tabLayout.addTab(tabLayout.newTab().setText("Display Assessment"));
-        tabLayout.addTab(tabLayout.newTab().setText("Competitors' Activities"));
+       // tabLayout.addTab(tabLayout.newTab().setText("Competitors' Activities"));
         tabLayout.addTab(tabLayout.newTab().setText("Size in Store Share"));
         tabLayout.addTab(tabLayout.newTab().setText("Outlet Stock Availability"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
@@ -139,6 +139,8 @@ public class MainFragmentActivity extends AppCompatActivity {
 
             }
         });
+
+        customer = (Customer) getIntent().getSerializableExtra(CUSTOMER_INFO_KEY);
     }
 
     /*@Override

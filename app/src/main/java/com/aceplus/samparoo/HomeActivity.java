@@ -100,7 +100,7 @@ public class HomeActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonMarketing)
     void marketing() {
-        Utils.commonDialog("This function is under construction", HomeActivity.this);
+
         Intent intent = new Intent(this, MarketingActivity.class);
         startActivity(intent);
         finish();

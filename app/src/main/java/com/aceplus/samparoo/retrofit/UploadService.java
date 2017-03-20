@@ -36,4 +36,9 @@ public interface UploadService {
     @FormUrlEncoded
     @POST("upload/delivery ")
     Call<InvoiceResponse> uploadDelivery(@Field("param_data") String paramData);
+
+
+    @FormUrlEncoded
+    @POST("upload/displayAssessment ")
+    Call<InvoiceResponse> uploadDisplayAssessment(@Field("param_data") String paramData);
 }
