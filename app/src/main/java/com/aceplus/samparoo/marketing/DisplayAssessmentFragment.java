@@ -45,8 +45,10 @@ public class DisplayAssessmentFragment extends Fragment {
 
     public static final String CUSTOMER_INFO_KEY = "customer-info-key";
 
+    int locationCode = 0;
 
-    String invoice_Id;
+
+
 
 
 
@@ -98,6 +100,12 @@ public class DisplayAssessmentFragment extends Fragment {
 
         }
 
+        Cursor cursorForLocation = sqLiteDatabase.rawQuery("select * from Location", null);
+        while (cursorForLocation.moveToNext()) {
+            locationCode = cursorForLocation.getInt(cursorForLocation.getColumnIndex(DatabaseContract.Location.id));
+
+        }
+
 
         return view;
     }
@@ -129,13 +137,7 @@ public class DisplayAssessmentFragment extends Fragment {
             String customerId = customer.getCustomerId();
             String saleDate = Utils.getCurrentDate(true);
 
-            Cursor cursor = sqLiteDatabase.rawQuery("select * from INVOICE where CUSTOMER_ID='"+customerId+"' and SALE_DATE='"+saleDate+"'",null);
-
-            while (cursor.moveToNext()){
-
-                invoice_Id=cursor.getString(cursor.getColumnIndex("INVOICE_ID"));
-
-            }
+            String invoice_Id= Utils.getInvoiceNo(getActivity(), LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode+"", Utils.FOR_DISPLAY_ASSESSMENT);
 
 
             ContentValues contentValues = new ContentValues();

@@ -55,6 +55,7 @@ public class Utils {
     public static final String FOR_SALE_RETURN = "for-sale-return";
     public static final String FOR_SALE_RETURN_EXCHANGE = "for-sale_return_exchange";
     public static final String FOR_SALE_EXCHANGE="for_sale_exchange";
+    public static final String FOR_DISPLAY_ASSESSMENT="for_display_assessment";
 
     public static String getInvoiceID(Context context, String mode, String salemanID, String locationCode) {
 
@@ -280,6 +281,9 @@ public class Utils {
 
             invoiceNo += "SX";
 
+        }else if (mode.equals(Utils.FOR_DISPLAY_ASSESSMENT)){
+
+            invoiceNo +="DA";
         }
 
         invoiceNo += locationCode;
@@ -333,6 +337,13 @@ public class Utils {
         }else if(mode.equals(Utils.FOR_SALE_EXCHANGE)){
 
             Cursor cursor = database.rawQuery("SELECT COUNT(*) AS COUNT FROM INVOICE", null);
+            if (cursor.moveToNext()) {
+
+                next += cursor.getInt(cursor.getColumnIndex("COUNT")) + 1;
+            }
+
+        }else if (mode.equals(Utils.FOR_DISPLAY_ASSESSMENT)) {
+            Cursor cursor = database.rawQuery("SELECT COUNT(*) AS COUNT FROM DISPLAY_ASSESSMENT", null);
             if (cursor.moveToNext()) {
 
                 next += cursor.getInt(cursor.getColumnIndex("COUNT")) + 1;
