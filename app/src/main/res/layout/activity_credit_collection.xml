@@ -270,6 +270,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/side_total_amt_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
@@ -291,6 +292,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/side_pay_amt_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
@@ -313,6 +315,7 @@
 
 
                     <LinearLayout
+                        android:id="@+id/side_credit_amt_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"

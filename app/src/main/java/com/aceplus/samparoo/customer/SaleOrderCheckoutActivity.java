@@ -641,6 +641,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
             contentValues1.put("pc_address", preOrder.getDeviceId());
             contentValues1.put("location_id", locationCode);
             contentValues1.put("price", promotion.getPromotionPrice());
+            contentValues1.put("DELETE_FLAG", 0);
             database.insert("PRE_ORDER_PRESENT", null, contentValues1);
         }
 

@@ -305,7 +305,11 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
                 Utils.cancelDialog();
-                Utils.commonDialog(getResources().getString(R.string.connection_error), LoginActivity.this);
+                if(t.getMessage() == null) {
+                    Utils.commonDialog(getResources().getString(R.string.connection_error), LoginActivity.this);
+                } else {
+                    Utils.commonDialog(t.getMessage(), LoginActivity.this);
+                }
             }
         });
     }
