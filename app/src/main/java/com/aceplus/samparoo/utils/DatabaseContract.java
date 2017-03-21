@@ -350,6 +350,11 @@ public class DatabaseContract {
 
     }
 
-
+    public abstract class SMS_RECORD {
+        public static final String TABLE = "SMS_RECORD";
+        public static final String SEND_DATE = "SEND_DATE";
+        public static final String MSG_BODY = "MSG_BODY";
+        public static final String PHONE_NO = "PHONE_NO";
+    }
 
 }
