@@ -43,6 +43,7 @@
     <string name="price">Price</string>
     <string name="discount">Discount</string>
     <string name="amount">Amount</string>
+    <string name="foc">FOC</string>
     <string name="total_amount">Total Amount</string>
     <string name="net_amount">Net Amount:</string>
     <string name="available_quantity">Available Quantity:</string>

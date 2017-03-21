@@ -21,9 +21,21 @@ public class DeliveryApi {
     @Expose
     String invoiceDate;
 
-    @SerializedName("SaleId")
+    @SerializedName("SaleInvoiceNo")
     @Expose
     String saleId;
+
+    @SerializedName("CustomerId")
+    @Expose
+    int customerId;
+
+    @SerializedName("SaleManId")
+    @Expose
+    int saleManId;
+
+    @SerializedName("LocationId")
+    @Expose
+    int locationId;
 
     @SerializedName("Remark")
     @Expose
@@ -121,5 +133,29 @@ public class DeliveryApi {
      */
     public void setDeliveryItemApi(List<DeliveryItemApi> deliveryItemApi) {
         this.deliveryItemApi = deliveryItemApi;
+    }
+
+    public int getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
+    }
+
+    public int getLocationId() {
+        return locationId;
+    }
+
+    public void setLocationId(int locationId) {
+        this.locationId = locationId;
+    }
+
+    public int getSaleManId() {
+        return saleManId;
+    }
+
+    public void setSaleManId(int saleManId) {
+        this.saleManId = saleManId;
     }
 }
