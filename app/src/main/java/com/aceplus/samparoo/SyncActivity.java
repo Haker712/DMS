@@ -1916,7 +1916,7 @@ public class SyncActivity extends AppCompatActivity {
 
                         sqLiteDatabase.setTransactionSuccessful();
                         sqLiteDatabase.endTransaction();*/
-                        uploadDisplayAssessmenttosever();
+
                     }
                 } else {
                     if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
@@ -2145,7 +2145,7 @@ public class SyncActivity extends AppCompatActivity {
      *
      * @param paramData param data
      */
-    private void downloadCreditFromServer(String paramData) {
+    private void downloadCreditFromServer(final String paramData) {
         DownloadService downloadService = RetrofitServiceFactory.createService(DownloadService.class);
         Call<CreditResponse> call = downloadService.getCreditFromApi(paramData);
         call.enqueue(new Callback<CreditResponse>() {
@@ -2161,6 +2161,9 @@ public class SyncActivity extends AppCompatActivity {
                         Utils.cancelDialog();
                         textViewError.setText(response.body().getAceplusStatusMessage());
                     }
+
+                    downloadMarketingfromServer(paramData);
+
                 } else {
 
                     if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
@@ -2249,12 +2252,15 @@ public class SyncActivity extends AppCompatActivity {
                             services += " are successfully uploaded";
                             Utils.commonDialog(services, SyncActivity.this);
                         }
+                        uploadDisplayAssessmenttosever();
 
                     } else {
                         if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
                             onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
                         }
                     }
+
+
                 } else {
                     Utils.cancelDialog();
                     Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);

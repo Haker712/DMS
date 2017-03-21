@@ -56,6 +56,8 @@ public class Utils {
     public static final String FOR_SALE_RETURN_EXCHANGE = "for-sale_return_exchange";
     public static final String FOR_SALE_EXCHANGE="for_sale_exchange";
     public static final String FOR_DISPLAY_ASSESSMENT="for_display_assessment";
+    public static final String FOR_OUTLET_STOCK_AVAILABILITY="for_outlet_stock_availibility";
+    public static final String FOR_SIZE_IN_STORE_SHARE="for_size_in_store_share";
 
     public static String getInvoiceID(Context context, String mode, String salemanID, String locationCode) {
 
@@ -284,6 +286,14 @@ public class Utils {
         }else if (mode.equals(Utils.FOR_DISPLAY_ASSESSMENT)){
 
             invoiceNo +="DA";
+        }else if (mode.equals(Utils.FOR_OUTLET_STOCK_AVAILABILITY)){
+
+            invoiceNo +="OSA";
+
+        }else if (mode.equals(Utils.FOR_SIZE_IN_STORE_SHARE)){
+
+            invoiceNo +="SIS";
+
         }
 
         invoiceNo += locationCode;
@@ -344,6 +354,23 @@ public class Utils {
 
         }else if (mode.equals(Utils.FOR_DISPLAY_ASSESSMENT)) {
             Cursor cursor = database.rawQuery("SELECT COUNT(*) AS COUNT FROM DISPLAY_ASSESSMENT", null);
+            if (cursor.moveToNext()) {
+
+                next += cursor.getInt(cursor.getColumnIndex("COUNT")) + 1;
+            }
+
+        }else if (mode.equals(Utils.FOR_OUTLET_STOCK_AVAILABILITY)){
+
+            Cursor cursor=database.rawQuery("SELECT COUNT(*) AS COUNT FROM outlet_stock_availability", null);
+            if (cursor.moveToNext()) {
+
+                next += cursor.getInt(cursor.getColumnIndex("COUNT")) + 1;
+            }
+
+
+        }else if (mode.equals(Utils.FOR_SIZE_IN_STORE_SHARE)){
+
+            Cursor cursor=database.rawQuery("SELECT COUNT(*) AS COUNT FROM size_in_store_share", null);
             if (cursor.moveToNext()) {
 
                 next += cursor.getInt(cursor.getColumnIndex("COUNT")) + 1;

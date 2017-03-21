@@ -24,11 +24,14 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.aceplus.samparoo.LoginActivity;
 import com.aceplus.samparoo.R;
 import com.aceplus.samparoo.model.Category;
 import com.aceplus.samparoo.model.Product;
 import com.aceplus.samparoo.model.SoldProduct;
+import com.aceplus.samparoo.utils.Constant;
 import com.aceplus.samparoo.utils.Database;
+import com.aceplus.samparoo.utils.DatabaseContract;
 import com.aceplus.samparoo.utils.Utils;
 
 import org.json.JSONArray;
@@ -64,11 +67,13 @@ public class TabFragment5 extends Fragment {
 
     SQLiteDatabase database;
 
-    private ImageView cancelImg,saveImg;
+    private ImageView cancelImg, saveImg;
 
     String size_in_store_share_id;
     int count = 0;
     Cursor cursor;
+
+    int locationCode = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -92,6 +97,8 @@ public class TabFragment5 extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }*/
+        size_in_store_share_id = Utils.getInvoiceNo(getActivity(), LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.FOR_SIZE_IN_STORE_SHARE);
+
 
         // Hide keyboard on startup.
         activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
@@ -126,6 +133,12 @@ public class TabFragment5 extends Fragment {
         setAdapters();
 
         catchEvents();
+
+        Cursor cursorForLocation = database.rawQuery("select * from Location", null);
+        while (cursorForLocation.moveToNext()) {
+            locationCode = cursorForLocation.getInt(cursorForLocation.getColumnIndex(DatabaseContract.Location.id));
+
+        }
 
         return view;
     }
@@ -273,16 +286,16 @@ public class TabFragment5 extends Fragment {
 
     private void insertintoDB() {
 
-        String customerName = TabFragment1.customerName;
+        // String customerName = TabFragment1.customerName;
         String saleDate = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
 
         JSONArray saleProducts = new JSONArray();
         for (SoldProduct soldProduct : soldProductList) {
             JSONObject jsonObject = new JSONObject();
-            try{
+            try {
                 jsonObject.put("productName", soldProduct.getProduct().getName());
-                jsonObject.put("sizeinstoreShare",soldProduct.getSize_in_store_share());
-            }catch(JSONException e){
+                jsonObject.put("sizeinstoreShare", soldProduct.getSize_in_store_share());
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
             saleProducts.put(jsonObject);
@@ -297,10 +310,10 @@ public class TabFragment5 extends Fragment {
                 + saleDate + "\'"
                 + ")");
 
-        for(int i = 0; i < soldProductList.size(); i++) {
+        for (int i = 0; i < soldProductList.size(); i++) {
             database.execSQL("INSERT INTO size_in_store_share_detail VALUES (\""
                     + size_in_store_share_id + "\", \""
-                    + soldProductList.get(i).getProduct().getName()+ "\", \""
+                    + soldProductList.get(i).getProduct().getName() + "\", \""
                     + soldProductList.get(i).getSize_in_store_share() + "\""
                     + ")");
         }
@@ -453,7 +466,7 @@ public class TabFragment5 extends Fragment {
             final SoldProduct soldProduct = soldProductList.get(position);
 
             LayoutInflater layoutInflater = context.getLayoutInflater();
-            View view= layoutInflater.inflate(this.resource, null, true);
+            View view = layoutInflater.inflate(this.resource, null, true);
 
             final TextView nameTextView = (TextView) view.findViewById(R.id.name);
             final Button sizeInStoreShare = (Button) view.findViewById(R.id.qty);
@@ -502,7 +515,7 @@ public class TabFragment5 extends Fragment {
                     alertDialog.show();
                 }
             });
-            sizeInStoreShare.setText(soldProduct.getSize_in_store_share()+"");
+            sizeInStoreShare.setText(soldProduct.getSize_in_store_share() + "");
 
             return view;
         }

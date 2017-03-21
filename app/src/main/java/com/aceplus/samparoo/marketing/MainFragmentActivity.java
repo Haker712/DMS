@@ -80,6 +80,7 @@ public class MainFragmentActivity extends AppCompatActivity {
        // tabLayout.addTab(tabLayout.newTab().setText("Competitors' Activities"));
         tabLayout.addTab(tabLayout.newTab().setText("Size in Store Share"));
         tabLayout.addTab(tabLayout.newTab().setText("Outlet Stock Availability"));
+        tabLayout.addTab(tabLayout.newTab().setText("POSM"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
         tabLayout.setTabTextColors(Color.WHITE, Color.RED);
 
