@@ -1,6 +1,9 @@
 package com.aceplus.samparoo;
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -9,9 +12,15 @@ import android.support.annotation.IntegerRes;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.aceplus.samparoo.customer.SaleOrderCheckoutActivity;
 import com.aceplus.samparoo.model.Posm;
 import com.aceplus.samparoo.model.PosmByCustomer;
 import com.aceplus.samparoo.model.Promotion;
@@ -167,21 +176,71 @@ public class SyncActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonClearData)
     void clearAllData() {
-            Cursor c = sqLiteDatabase.rawQuery("SELECT name FROM sqlite_master WHERE type ='table'", null);
-            List<String> tables = new ArrayList<>();
+        showConfirmDialog();
+    }
 
-            while (c.moveToNext()) {
-                tables.add(c.getString(0));
+    /**
+     * Clear all data from database
+     */
+    private void clearAllTableData() {
+        Cursor c = sqLiteDatabase.rawQuery("SELECT name FROM sqlite_master WHERE type ='table'", null);
+        List<String> tables = new ArrayList<>();
+
+        while (c.moveToNext()) {
+            tables.add(c.getString(0));
+        }
+
+        Log.i("Table counts --> ", String.valueOf(tables.size()));
+        for (String table : tables) {
+            String clearQuery = "DELETE FROM " + table;
+            sqLiteDatabase.execSQL(clearQuery);
+            Log.i("DELETION SUCCESS --> ", "All data from " + table + " has been successfully deleted");
+        }
+    }
+
+    /**
+     * Confrim dialog before clearing all data.
+     */
+    private void showConfirmDialog() {
+        LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View view = layoutInflater.inflate(R.layout.dialog_box_sale_quantity, null);
+
+        LinearLayout availableQuantityLayout = (LinearLayout) view.findViewById(R.id.availableQuantityLayout);
+        TextView qtyTextView = (TextView) view.findViewById(R.id.dialog_sale_qty_txtView);
+        EditText phoneNoEditText = (EditText) view.findViewById(R.id.quantity);
+        TextView messageTextView = (TextView) view.findViewById(R.id.message);
+
+        availableQuantityLayout.setVisibility(View.GONE);
+        qtyTextView.setVisibility(View.GONE);
+        phoneNoEditText.setVisibility(View.GONE);
+        messageTextView.setVisibility(View.GONE);
+
+        final AlertDialog alertDialog = new AlertDialog.Builder(this)
+                .setView(view)
+                .setTitle("Are you sure want to clear all data ?")
+                .setPositiveButton("Confirm", null)
+                .setNegativeButton("Cancel", null)
+                .create();
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+
+            @Override
+            public void onShow(DialogInterface arg0) {
+
+                view.findViewById(R.id.availableQuantityLayout).setVisibility(View.GONE);
+
+                Button confirmButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                confirmButton.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View arg0) {
+                        clearAllTableData();
+                        alertDialog.dismiss();
+                        Utils.backToLogin(SyncActivity.this);
+                    }
+                });
             }
-
-            Log.i("Table counts --> ", String.valueOf(tables.size()));
-            for (String table : tables) {
-                String clearQuery = "DELETE FROM " + table;
-                sqLiteDatabase.execSQL(clearQuery);
-                Log.i("DELETION SUCCESS --> ", "All data from " + table + " has been successfully deleted");
-            }
-
-            Utils.commonDialog("All clear !", SyncActivity.this);
+        });
+        alertDialog.show();
     }
 
     private int getRouteID(String saleman_Id) {

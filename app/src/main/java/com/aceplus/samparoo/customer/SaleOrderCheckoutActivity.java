@@ -596,7 +596,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
 
         for(PreOrder preOrder : preOrderList) {
 
-            message += "\nSale Order Invoice Number : " + preOrder.getInvoiceId()
+            message += "Sale Order Invoice Number : " + preOrder.getInvoiceId()
                     + "\nCustomer Number : " + preOrder.getCustomerId()
                     + "\nSale Person Number : " + preOrder.getSalePersonId()
                     + "\nSale Order Date : " + preOrder.getPreOrderDate()
@@ -624,6 +624,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
 
             }
 
+            message += "\n";
         }
         return message;
     }
@@ -722,7 +723,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
 
         final AlertDialog alertDialog = new AlertDialog.Builder(this)
                 .setView(view)
-                .setTitle("Enter Phone Number")
+                .setTitle("No internet access !\nPlease enter Phone Number to send message")
                 .setPositiveButton("Confirm", null)
                 .setNegativeButton("Cancel", null)
                 .create();
@@ -751,9 +752,6 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
                         if(!phoneNo.equals("")) {
                             sendSMS(phoneNo, msg);
                             insertSMSRecord(phoneNo, msg);
-                        } else {
-                            messageTextView.setText("You must specify Phone Number.");
-                            return;
                         }
 
                         alertDialog.dismiss();
