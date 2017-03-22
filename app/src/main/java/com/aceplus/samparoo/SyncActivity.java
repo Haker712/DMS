@@ -2041,7 +2041,7 @@ public class SyncActivity extends AppCompatActivity {
                             services += ",";
                         }
 
-                        services += " " + getResources().getString(R.string.delivery);
+                        services += " " + getResources().getString(R.string.display_assessment);
                         if (!services.equals("")) {
                             services += " are successfully uploaded";
                             Utils.commonDialog(services, SyncActivity.this);
@@ -2328,10 +2328,7 @@ public class SyncActivity extends AppCompatActivity {
                         }
 
                         services += " " + getResources().getString(R.string.cash_receive);
-                        if (!services.equals("")) {
-                            services += " are successfully uploaded";
-                            Utils.commonDialog(services, SyncActivity.this);
-                        }
+
                         uploadDisplayAssessmenttosever();
 
                     } else {
