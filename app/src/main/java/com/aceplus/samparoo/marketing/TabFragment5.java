@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,6 +64,8 @@ public class TabFragment5 extends Fragment {
     private int currentCategoryIndex;
 
     private ArrayList<SoldProduct> soldProductList = new ArrayList<SoldProduct>();
+    private ArrayList<String> productsForSearch = new ArrayList<String>();
+
     private SoldProductListRowAdapter soldProductListRowAdapter;
 
     SQLiteDatabase database;
@@ -74,6 +77,8 @@ public class TabFragment5 extends Fragment {
     Cursor cursor;
 
     int locationCode = 0;
+
+    Product[] products;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -105,30 +110,46 @@ public class TabFragment5 extends Fragment {
 
         registerIDs();
 
-        initCategories();
+       // initCategories();
+        products = getProducts("");
 
-        if (categories.length > 0) {
+        Log.i("products length", products.length + "");
 
-            categoryTextView.setText(categories[0].getName());
-            currentCategoryIndex = 0;
-
-            setProductListView(categories[0].getName());
-
-            ArrayList<String> products = new ArrayList<String>();
-            for (Category category : categories) {
-
-                for (Product product : category.getProducts()) {
-
-                    products.add(product.getName());
-                }
-            }
-            searchProductTextView.setAdapter(new ArrayAdapter<String>(
-                    activity, android.R.layout.simple_list_item_1, products));
-            searchProductTextView.setThreshold(1);
-        } else {
-
-            categoryTextView.setText("No product");
+        for (int i = 0; i < products.length; i++) {
+            productsForSearch.add(products[i].getName());
         }
+
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.custom_simple_list_item_1, android.R.id.text1, productsForSearch);
+        productsInGivenCategoryListView.setAdapter(arrayAdapter);
+
+        searchProductTextView.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, productsForSearch));
+        searchProductTextView.setThreshold(1);
+
+
+
+//        if (categories.length > 0) {
+//
+//            categoryTextView.setText(categories[0].getName());
+//            currentCategoryIndex = 0;
+//
+//            setProductListView(categories[0].getName());
+//
+//            ArrayList<String> products = new ArrayList<String>();
+//            for (Category category : categories) {
+//
+//                for (Product product : category.getProducts()) {
+//
+//                    products.add(product.getName());
+//                }
+//            }
+//            searchProductTextView.setAdapter(new ArrayAdapter<String>(
+//                    activity, android.R.layout.simple_list_item_1, products));
+//            searchProductTextView.setThreshold(1);
+//        }
+//        else {
+//
+//            categoryTextView.setText("No product");
+//        }
 
         setAdapters();
 
@@ -165,47 +186,47 @@ public class TabFragment5 extends Fragment {
     private void catchEvents() {
         saleDateTextView.setText(Utils.getCurrentDate(false));
 
-        previousCategoryButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-
-                if (categories.length > 0) {
-
-                    if (currentCategoryIndex == 0) {
-
-                        currentCategoryIndex = categories.length - 1;
-                    } else {
-
-                        currentCategoryIndex--;
-                    }
-
-                    categoryTextView.setText(categories[currentCategoryIndex].getName());
-                    setProductListView(categories[currentCategoryIndex].getName());
-                }
-            }
-        });
-
-        nextCategoryButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-
-                if (categories.length > 0) {
-
-                    if (currentCategoryIndex == categories.length - 1) {
-
-                        currentCategoryIndex = 0;
-                    } else {
-
-                        currentCategoryIndex++;
-                    }
-
-                    categoryTextView.setText(categories[currentCategoryIndex].getName());
-                    setProductListView(categories[currentCategoryIndex].getName());
-                }
-            }
-        });
+//        previousCategoryButton.setOnClickListener(new View.OnClickListener() {
+//
+//            @Override
+//            public void onClick(View view) {
+//
+//                if (categories.length > 0) {
+//
+//                    if (currentCategoryIndex == 0) {
+//
+//                        currentCategoryIndex = categories.length - 1;
+//                    } else {
+//
+//                        currentCategoryIndex--;
+//                    }
+//
+//                    categoryTextView.setText(categories[currentCategoryIndex].getName());
+//                    setProductListView(categories[currentCategoryIndex].getName());
+//                }
+//            }
+//        });
+//
+//        nextCategoryButton.setOnClickListener(new View.OnClickListener() {
+//
+//            @Override
+//            public void onClick(View view) {
+//
+//                if (categories.length > 0) {
+//
+//                    if (currentCategoryIndex == categories.length - 1) {
+//
+//                        currentCategoryIndex = 0;
+//                    } else {
+//
+//                        currentCategoryIndex++;
+//                    }
+//
+//                    categoryTextView.setText(categories[currentCategoryIndex].getName());
+//                    setProductListView(categories[currentCategoryIndex].getName());
+//                }
+//            }
+//        });
 
         productsInGivenCategoryListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -213,7 +234,23 @@ public class TabFragment5 extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
 
-                sellProduct(categoryTextView.getText().toString(), parent.getItemAtPosition(position).toString());
+//                sellProduct(categoryTextView.getText().toString(), parent.getItemAtPosition(position).toString());
+                Product tempProduct = null;
+
+                for (Product product : products) {
+
+                    if (product.getName().equals(parent.getItemAtPosition(position).toString())) {
+
+                        tempProduct = product;
+                    }
+                }
+
+                if (tempProduct != null) {
+
+                    soldProductList.add(new SoldProduct(tempProduct, false));
+                    soldProductListRowAdapter.notifyDataSetChanged();
+                }
+
             }
         });
 
@@ -349,10 +386,13 @@ public class TabFragment5 extends Fragment {
 
         SQLiteDatabase db = (new Database(activity)).getDataBase();
 
+//        Cursor cursor = db.rawQuery(
+//                "SELECT PRODUCT_ID, PRODUCT_NAME, SELLING_PRICE"
+//                        + ", PURCHASE_PRICE, DISCOUNT_TYPE, REMAINING_QTY"
+//                        + " FROM PRODUCT WHERE CATEGORY_ID = '" + categoryId + "'", null);
+
         Cursor cursor = db.rawQuery(
-                "SELECT PRODUCT_ID, PRODUCT_NAME, SELLING_PRICE"
-                        + ", PURCHASE_PRICE, DISCOUNT_TYPE, REMAINING_QTY"
-                        + " FROM PRODUCT WHERE CATEGORY_ID = '" + categoryId + "'", null);
+                "SELECT * FROM PRODUCT", null);
 
         products = new Product[cursor.getCount()];
         while (cursor.moveToNext()) {

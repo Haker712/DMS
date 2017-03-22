@@ -489,7 +489,8 @@ public class POSMFragment extends Fragment {
                 netAmount += soldProduct.getNetAmount(getActivity());
             }
 
-            ((TextView) context.findViewById(R.id.netAmountTextView)).setText(Utils.formatAmount(netAmount));
+            ((TextView) view.findViewById(R.id.netAmountTextView)).setText(Utils.formatAmount(netAmount));
+            //((TextView) getActivity().findViewById(R.id.netAmountTextView)).setText("");
         }
     }
 }

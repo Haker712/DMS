@@ -47,6 +47,8 @@ public class DisplayAssessmentFragment extends Fragment {
 
     int locationCode = 0;
 
+    int Cus_id;
+
 
 
 
@@ -135,6 +137,15 @@ public class DisplayAssessmentFragment extends Fragment {
 
 
             String customerId = customer.getCustomerId();
+
+            Cursor cursor=sqLiteDatabase.rawQuery("select * from CUSTOMER where CUSTOMER_ID='"+customerId+"'",null);
+            while (cursor.moveToNext()){
+
+                Cus_id=cursor.getInt(cursor.getColumnIndex("id"));
+
+            }
+
+
             String saleDate = Utils.getCurrentDate(true);
 
             String invoice_Id= Utils.getInvoiceNo(getActivity(), LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode+"", Utils.FOR_DISPLAY_ASSESSMENT);
@@ -144,9 +155,9 @@ public class DisplayAssessmentFragment extends Fragment {
 
             contentValues.put("IMAGE", encodedImage);
             contentValues.put("SALE_MAN_ID",saleman_Id);
-            contentValues.put("CUSTOMER_ID",customerId);
+            contentValues.put("CUSTOMER_ID",Cus_id);
             contentValues.put("INVOICE_DATE",saleDate);
-            contentValues.put("INVOICE_ID",invoice_Id);
+            contentValues.put("INVOICE_NO",invoice_Id);
 
             sqLiteDatabase.beginTransaction();
 

@@ -70,40 +70,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"/>
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="10dp"
-                    android:paddingTop="10dp">
 
-                    <Button
-                        android:id="@+id/previusCategoryButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@android:color/transparent"
-                        android:padding="5dp"
-                        android:text="@string/category_previous"
-                        android:textSize="30sp" />
-
-                    <TextView
-                        android:id="@+id/categoryTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerHorizontal="true"
-                        android:layout_centerVertical="true"
-                        android:text="Class A"
-                        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-                    <Button
-                        android:id="@+id/nextCategoryButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:background="@android:color/transparent"
-                        android:padding="5dp"
-                        android:text="@string/category_next"
-                        android:textSize="30sp" />
-                </RelativeLayout>
 
                 <ListView
                     android:id="@+id/productsListView"
@@ -163,7 +130,7 @@
                         android:layout_marginRight="10dp"
                         android:layout_weight="2"
                         android:gravity="center_horizontal"
-                        android:text="Size in Store Share(Ks.)"
+                        android:text="Size in Store Share(%)"
                         android:textColor="#FFFFFF"
                         android:textStyle="bold" />
 

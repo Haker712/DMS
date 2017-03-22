@@ -44,4 +44,9 @@ public interface UploadService {
     @FormUrlEncoded
     @POST("upload/displayAssessment ")
     Call<InvoiceResponse> uploadDisplayAssessment(@Field("param_data") String paramData);
+
+    @FormUrlEncoded
+    @POST("upload/outletStockAndSizeInStore ")
+    Call<InvoiceResponse> uploadoutletsizeinstore(@Field("param_data") String paramData);
+
 }
