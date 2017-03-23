@@ -1,6 +1,9 @@
 package com.aceplus.samparoo;
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -9,9 +12,15 @@ import android.support.annotation.IntegerRes;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.aceplus.samparoo.customer.SaleOrderCheckoutActivity;
 import com.aceplus.samparoo.model.Posm;
 import com.aceplus.samparoo.model.PosmByCustomer;
 import com.aceplus.samparoo.model.Promotion;
@@ -176,6 +185,15 @@ public class SyncActivity extends AppCompatActivity {
     void clearAllData() {
         Cursor c = sqLiteDatabase.rawQuery("SELECT name FROM sqlite_master WHERE type ='table'", null);
         List<String> tables = new ArrayList<>();
+        showConfirmDialog();
+    }
+
+    /**
+     * Clear all data from database
+     */
+    private void clearAllTableData() {
+        Cursor c = sqLiteDatabase.rawQuery("SELECT name FROM sqlite_master WHERE type ='table'", null);
+        List<String> tables = new ArrayList<>();
 
         while (c.moveToNext()) {
             tables.add(c.getString(0));
@@ -187,8 +205,52 @@ public class SyncActivity extends AppCompatActivity {
             sqLiteDatabase.execSQL(clearQuery);
             Log.i("DELETION SUCCESS --> ", "All data from " + table + " has been successfully deleted");
         }
+    }
 
         Utils.commonDialog("All clear !", SyncActivity.this);
+    /**
+     * Confrim dialog before clearing all data.
+     */
+    private void showConfirmDialog() {
+        LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View view = layoutInflater.inflate(R.layout.dialog_box_sale_quantity, null);
+
+        LinearLayout availableQuantityLayout = (LinearLayout) view.findViewById(R.id.availableQuantityLayout);
+        TextView qtyTextView = (TextView) view.findViewById(R.id.dialog_sale_qty_txtView);
+        EditText phoneNoEditText = (EditText) view.findViewById(R.id.quantity);
+        TextView messageTextView = (TextView) view.findViewById(R.id.message);
+
+        availableQuantityLayout.setVisibility(View.GONE);
+        qtyTextView.setVisibility(View.GONE);
+        phoneNoEditText.setVisibility(View.GONE);
+        messageTextView.setVisibility(View.GONE);
+
+        final AlertDialog alertDialog = new AlertDialog.Builder(this)
+                .setView(view)
+                .setTitle("Are you sure want to clear all data ?")
+                .setPositiveButton("Confirm", null)
+                .setNegativeButton("Cancel", null)
+                .create();
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+
+            @Override
+            public void onShow(DialogInterface arg0) {
+
+                view.findViewById(R.id.availableQuantityLayout).setVisibility(View.GONE);
+
+                Button confirmButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                confirmButton.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View arg0) {
+                        clearAllTableData();
+                        alertDialog.dismiss();
+                        Utils.backToLogin(SyncActivity.this);
+                    }
+                });
+            }
+        });
+        alertDialog.show();
     }
 
     private int getRouteID(String saleman_Id) {
@@ -755,9 +817,9 @@ public class SyncActivity extends AppCompatActivity {
         call.enqueue(new Callback<DownloadMarketing>() {
             @Override
             public void onResponse(Call<DownloadMarketing> call, Response<DownloadMarketing> response) {
-                if (response.code() == 200) {
+                if (response.code() == 200){
 
-                    if (response.body().getAceplusStatusCode() == 200) {
+                    if (response.body().getAceplusStatusCode() == 200){
 
                         sqLiteDatabase.beginTransaction();
 
@@ -915,7 +977,7 @@ public class SyncActivity extends AppCompatActivity {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
 
-                        if (!services.equals("")) {
+                        if(!services.equals("")) {
                             services += ",";
                         }
                         services += getResources().getString(R.string.sale);
@@ -1264,7 +1326,7 @@ public class SyncActivity extends AppCompatActivity {
 
         List<PreOrderPresentApi> preOrderPresentApiList = new ArrayList<>();
 
-        for (PreOrder preOrder : preOrderList) {
+        for(PreOrder preOrder : preOrderList) {
             PreOrderApi preOrderApi = new PreOrderApi();
             preOrderApi.setId(preOrder.getInvoiceId());
             preOrderApi.setCustomerId(preOrder.getCustomerId());
@@ -1287,7 +1349,7 @@ public class SyncActivity extends AppCompatActivity {
             List<PreOrderProduct> preOrderProductList = getPreOrderProductFromDatabase(preOrder.getInvoiceId());
 
             List<PreOrderDetailApi> preOrderDetailApiList = new ArrayList<>();
-            for (PreOrderProduct preOrderProduct : preOrderProductList) {
+            for(PreOrderProduct preOrderProduct : preOrderProductList) {
                 PreOrderDetailApi preOrderDetailApi = new PreOrderDetailApi();
                 preOrderDetailApi.setSaleOrderId(preOrderProduct.getSaleOrderId());
                 preOrderDetailApi.setProductId(preOrderProduct.getProductId());
@@ -2019,6 +2081,7 @@ public class SyncActivity extends AppCompatActivity {
         });
 
 
+
     }
 
     private String getJsonFromObject(DisplayAssessmentRequest displayAssessmentRequest) {
@@ -2028,6 +2091,8 @@ public class SyncActivity extends AppCompatActivity {
         return jsonString;
 
     }
+
+
 
     private List<DisplayAssessment> getDisplayAssessmentFromDB() {
 
@@ -2585,7 +2650,7 @@ public class SyncActivity extends AppCompatActivity {
         List<CashReceiveApi> cashReceiveApiList = new ArrayList<>();
 
         Cursor cursorCashReceiveApi = sqLiteDatabase.rawQuery("select * from " + DatabaseContract.CASH_RECEIVE.TABLE, null);
-        while (cursorCashReceiveApi.moveToNext()) {
+        while(cursorCashReceiveApi.moveToNext()) {
             CashReceiveApi cashReceiveApi = new CashReceiveApi();
             cashReceiveApi.setReceiveNo(cursorCashReceiveApi.getString(cursorCashReceiveApi.getColumnIndex(DatabaseContract.CASH_RECEIVE.RECEIVE_NO)));
             cashReceiveApi.setReceiveDate(cursorCashReceiveApi.getString(cursorCashReceiveApi.getColumnIndex(DatabaseContract.CASH_RECEIVE.RECEIVE_DATE)));
@@ -2614,7 +2679,7 @@ public class SyncActivity extends AppCompatActivity {
         List<CashReceiveItemApi> cashReceiveItemApiList = new ArrayList<>();
 
         Cursor cursorCashReceiveItemApi = sqLiteDatabase.rawQuery("select * from " + DatabaseContract.CASH_RECEIVE_ITEM.TABLE + " WHERE " + DatabaseContract.CASH_RECEIVE_ITEM.RECEIVE_NO + " = \'" + invoiceNo + "\'", null);
-        while (cursorCashReceiveItemApi.moveToNext()) {
+        while(cursorCashReceiveItemApi.moveToNext()) {
             CashReceiveItemApi cashReceiveItemApi = new CashReceiveItemApi();
             cashReceiveItemApi.setReceiveNo(cursorCashReceiveItemApi.getString(cursorCashReceiveItemApi.getColumnIndex(DatabaseContract.CASH_RECEIVE_ITEM.RECEIVE_NO)));
             cashReceiveItemApi.setSaleId(cursorCashReceiveItemApi.getInt(cursorCashReceiveItemApi.getColumnIndex(DatabaseContract.CASH_RECEIVE_ITEM.SALE_ID)));
@@ -2637,7 +2702,6 @@ public class SyncActivity extends AppCompatActivity {
 
     /**
      * Get related location code
-     *
      * @return locationCode
      */
     private int getLocationCode() {

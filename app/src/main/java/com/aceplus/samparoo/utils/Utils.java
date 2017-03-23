@@ -15,6 +15,7 @@ import android.util.Log;
 
 import com.aceplus.samparoo.CustomerVisitActivity;
 import com.aceplus.samparoo.HomeActivity;
+import com.aceplus.samparoo.LoginActivity;
 import com.aceplus.samparoo.MarketingActivity;
 import com.aceplus.samparoo.customer.CustomerActivity;
 import com.aceplus.samparoo.marketing.MainFragmentActivity;
@@ -125,9 +126,20 @@ public class Utils {
         return prefix + String.format("%0" + (idLength - prefix.length()) + "d", currentInvoiceNumber);
     }
 
-
     public static void backToHome(Activity activity) {
         Intent intent = new Intent(activity, HomeActivity.class);
+        activity.startActivity(intent);
+        activity.finish();
+    }
+
+    /**
+     * Go to Login activity.
+     *
+     * @param activity current activity name
+     */
+    public static void backToLogin(Activity activity) {
+        Intent intent = new Intent(activity, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         activity.startActivity(intent);
         activity.finish();
     }
