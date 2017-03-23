@@ -129,6 +129,7 @@ public class SyncActivity extends AppCompatActivity {
 
     String services;
 
+
     @InjectView(R.id.textViewError)
     TextView textViewError;
 
@@ -1995,6 +1996,8 @@ public class SyncActivity extends AppCompatActivity {
                             Utils.commonDialog(services, SyncActivity.this);
                         }
 
+                        uploadOutletSizeinstortoserver();
+
                     }
                 } else {
                     if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
@@ -2087,6 +2090,7 @@ public class SyncActivity extends AppCompatActivity {
         final Outlet_Sizeinstore_request outlet_sizeinstore_request = outlet_sizeinstore_request();
 
         String paramData = getJsonFromObject(outlet_sizeinstore_request);
+        Log.i("PaRam", paramData);
 
         UploadService uploadService = RetrofitServiceFactory.createService(UploadService.class);
 
@@ -2159,6 +2163,8 @@ public class SyncActivity extends AppCompatActivity {
         outlet_sizeinstore_data.setSizeInStoreShare(setSizeinStoreData());
 
 
+        outlet_sizeinstore_dataList.add(outlet_sizeinstore_data);
+
         return outlet_sizeinstore_dataList;
 
     }
@@ -2166,19 +2172,29 @@ public class SyncActivity extends AppCompatActivity {
     private List<OutletStockAvailability> setOutLetData() {
 
         List<OutletStockAvailability> outletStockAvailabilityList = new ArrayList<>();
+        int Customer_Id = 0;
 
-        Cursor cursor = sqLiteDatabase.rawQuery("select * from outlet_stock_availability", null);
+        Cursor cursor1 = sqLiteDatabase.rawQuery("select * from outlet_stock_availability", null);
 
-        while (cursor.moveToNext()) {
+        while (cursor1.moveToNext()) {
 
             OutletStockAvailability outletStockAvailability = new OutletStockAvailability();
 
-            String availabilityNo = cursor.getString(cursor.getColumnIndex("outlet_stock_availability_id "));
-            int cus_Id = cursor.getInt(cursor.getColumnIndex("customer_id"));
-            String date = cursor.getString(cursor.getColumnIndex("date"));
+            String availabilityNo = cursor1.getString(cursor1.getColumnIndex("outlet_stock_availability_id"));
+            String cus_Id = cursor1.getString(cursor1.getColumnIndex("customer_id"));
+            String date = cursor1.getString(cursor1.getColumnIndex("date"));
+
+
+            Cursor cursor2 = sqLiteDatabase.rawQuery("select * from CUSTOMER where CUSTOMER_ID='" + cus_Id + "'", null);
+
+            while (cursor2.moveToNext()) {
+
+                Customer_Id = cursor2.getInt(cursor2.getColumnIndex("id"));
+
+            }
 
             outletStockAvailability.setOutletStockAvailabilityNo(availabilityNo);
-            outletStockAvailability.setCustomerId(cus_Id);
+            outletStockAvailability.setCustomerId(Customer_Id);
             outletStockAvailability.setDate(date);
 
             outletStockAvailability.setOutletStockAvailabilityItem(getOutletDetailDatafromDB());
@@ -2188,12 +2204,15 @@ public class SyncActivity extends AppCompatActivity {
 
         }
 
+        cursor1.close();
         return outletStockAvailabilityList;
 
     }
 
     private List<SizeInStoreShare> setSizeinStoreData() {
         List<SizeInStoreShare> sizeInStoreShareList = new ArrayList<>();
+
+        int Customer_Id = 0;
 
         Cursor cursor = sqLiteDatabase.rawQuery("select * from  size_in_store_share", null);
 
@@ -2202,11 +2221,20 @@ public class SyncActivity extends AppCompatActivity {
             SizeInStoreShare sizeInStoreShare = new SizeInStoreShare();
 
             String sizeInStoreShareNo = cursor.getString(cursor.getColumnIndex("size_in_store_share_id"));
-            int cus_Id = cursor.getInt(cursor.getColumnIndex("customer_id"));
+            String cus_Id = cursor.getString(cursor.getColumnIndex("customer_id"));
             String date = cursor.getString(cursor.getColumnIndex("date"));
 
+
+            Cursor cursor2 = sqLiteDatabase.rawQuery("select * from CUSTOMER where CUSTOMER_ID='" + cus_Id + "'", null);
+
+            while (cursor2.moveToNext()) {
+
+                Customer_Id = cursor2.getInt(cursor2.getColumnIndex("id"));
+
+            }
+
             sizeInStoreShare.setSizeInStoreShareNo(sizeInStoreShareNo);
-            sizeInStoreShare.setCustomerId(cus_Id);
+            sizeInStoreShare.setCustomerId(Customer_Id);
             sizeInStoreShare.setDate(date);
             sizeInStoreShare.setSizeInStoreShareItem(getSizeinStoreDetailfromDB());
 
@@ -2221,6 +2249,8 @@ public class SyncActivity extends AppCompatActivity {
 
     private List<OutletStockAvailabilityItem> getOutletDetailDatafromDB() {
 
+        int Stock_Id = 0;
+
         List<OutletStockAvailabilityItem> outletStockAvailabilityItemList = new ArrayList<>();
 
 
@@ -2230,44 +2260,65 @@ public class SyncActivity extends AppCompatActivity {
 
             OutletStockAvailabilityItem outletStockAvailabilityItem = new OutletStockAvailabilityItem();
 
-            String outletStockAvailabilityNo = cursor.getString(cursor.getColumnIndex("outlet_stock_availability_id "));
-            int stockId = cursor.getInt(cursor.getColumnIndex("product_id"));
+            String outletStockAvailabilityNo = cursor.getString(cursor.getColumnIndex("outlet_stock_availability_id"));
+            String product_id = cursor.getString(cursor.getColumnIndex("product_id"));
             int quantity = cursor.getInt(cursor.getColumnIndex("quantity"));
+
+            Cursor cursor1 = sqLiteDatabase.rawQuery("select * from PRODUCT where PRODUCT_ID='" + product_id + "'", null);
+
+            while (cursor1.moveToNext()) {
+
+                Stock_Id = cursor1.getInt(cursor1.getColumnIndex("ID"));
+
+            }
 
 
             outletStockAvailabilityItem.setOutletStockAvailabilityNo(outletStockAvailabilityNo);
-            outletStockAvailabilityItem.setStockId(stockId);
+            outletStockAvailabilityItem.setStockId(Stock_Id);
             outletStockAvailabilityItem.setQuantity(quantity);
 
             outletStockAvailabilityItemList.add(outletStockAvailabilityItem);
 
         }
 
-
+        cursor.close();
         return outletStockAvailabilityItemList;
     }
 
     private List<SizeInStoreShareItem> getSizeinStoreDetailfromDB() {
+
+        int Stock_Id = 0;
+
         List<SizeInStoreShareItem> sizeInStoreShareItemList = new ArrayList<>();
+
         Cursor cursor = sqLiteDatabase.rawQuery("select * from size_in_store_share_detail", null);
 
         while (cursor.moveToNext()) {
             SizeInStoreShareItem sizeInStoreShareItem = new SizeInStoreShareItem();
 
             String sizeInStoreShareNo = cursor.getString(cursor.getColumnIndex("size_in_store_share_id"));
-            int stockId = cursor.getInt(cursor.getColumnIndex("product_id"));
+            String productId = cursor.getString(cursor.getColumnIndex("product_id"));
             int sizeInStoreSharePercent = cursor.getInt(cursor.getColumnIndex("size_in_store_share_percent"));
 
 
+            Cursor cursor1 = sqLiteDatabase.rawQuery("select * from PRODUCT where PRODUCT_ID='" + productId + "'", null);
+
+            while (cursor1.moveToNext()) {
+
+                Stock_Id = cursor1.getInt(cursor1.getColumnIndex("ID"));
+
+            }
+
+
             sizeInStoreShareItem.setSizeInStoreShareNo(sizeInStoreShareNo);
-            sizeInStoreShareItem.setStockId(stockId);
+            sizeInStoreShareItem.setStockId(Stock_Id);
             sizeInStoreShareItem.setSizeInStoreSharePercent(sizeInStoreSharePercent);
 
             sizeInStoreShareItemList.add(sizeInStoreShareItem);
 
 
         }
-
+        cursor.close();
         return sizeInStoreShareItemList;
     }
 

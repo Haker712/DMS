@@ -355,7 +355,7 @@ public class TabFragment4 extends Fragment {
         for(int i = 0; i < soldProductList.size(); i++) {
             database.execSQL("INSERT INTO outlet_stock_availability_detail VALUES (\""
                     + outlet_stock_availability_id + "\", \""
-                    + soldProductList.get(i).getProduct().getName()+ "\", \""
+                    + soldProductList.get(i).getProduct().getId()+ "\", \""
                     + soldProductList.get(i).getQuantity() + "\""
                     + ")");
         }
