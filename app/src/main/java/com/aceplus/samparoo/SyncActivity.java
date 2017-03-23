@@ -207,7 +207,6 @@ public class SyncActivity extends AppCompatActivity {
         }
     }
 
-        Utils.commonDialog("All clear !", SyncActivity.this);
     /**
      * Confrim dialog before clearing all data.
      */
