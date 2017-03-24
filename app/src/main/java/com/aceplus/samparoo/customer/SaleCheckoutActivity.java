@@ -584,7 +584,7 @@ public class SaleCheckoutActivity extends AppCompatActivity {
         String where = DatabaseContract.SALE_VISIT_RECORD.CUSTOMER_ID + "=?";
         String[] whereArgs = new String[] {String.valueOf(customerId)};
         cv.put(DatabaseContract.SALE_VISIT_RECORD.SALE_FLG, 1);
-        database.update(DatabaseContract.SALE_VISIT_RECORD.TABLE, cv, where, whereArgs);
+        database.update(DatabaseContract.SALE_VISIT_RECORD.TABLE_UPLOAD, cv, where, whereArgs);
     }
 
     /**

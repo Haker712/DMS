@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aceplus.samparoo.customer.SaleOrderCheckoutActivity;
+import com.aceplus.samparoo.model.Customer;
 import com.aceplus.samparoo.model.Posm;
 import com.aceplus.samparoo.model.PosmByCustomer;
 import com.aceplus.samparoo.model.Promotion;
@@ -118,6 +119,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -784,8 +786,7 @@ public class SyncActivity extends AppCompatActivity {
         }
 
 
-        Log.i("ImageName", dataforMarketingList.get(0).getStandardExternalCheck().get(0).getImageName());
-
+    /* Log.i("ImageName", dataforMarketingList.get(0).getStandardExternalCheck().get(0).getImageName());*/
 
     }
 
@@ -1184,7 +1185,7 @@ public class SyncActivity extends AppCompatActivity {
         addnewCustomerRequest.setRoute(String.valueOf(getRouteID(saleman_Id)));
         addnewCustomerRequest.setData(customerDatas);
 
-        paramData = getJsonFromObject1(addnewCustomerRequest);
+        paramData = getJsonFromObject(addnewCustomerRequest);
         Log.i("Paramcus", paramData);
 
         UploadService uploadService = RetrofitServiceFactory.createService(UploadService.class);
@@ -1224,7 +1225,7 @@ public class SyncActivity extends AppCompatActivity {
         });
     }
 
-    private String getJsonFromObject(TsaleRequest tsaleRequest) {
+/*    private String getJsonFromObject(TsaleRequest tsaleRequest) {
         Gson gson = new GsonBuilder().serializeNulls().create();
         String jsonString = gson.toJson(tsaleRequest);
         return jsonString;
@@ -1234,7 +1235,7 @@ public class SyncActivity extends AppCompatActivity {
         Gson gson = new GsonBuilder().serializeNulls().create();
         String jsonString = gson.toJson(addnewCustomerRequest);
         return jsonString;
-    }
+    }*/
 
     /**
      * Upload pre order data to server
@@ -1307,11 +1308,11 @@ public class SyncActivity extends AppCompatActivity {
      * @param preOrderRequest PreOrderRequest
      * @return preOrderRequest pre order object for api request
      */
-    private String getJsonFromObject(PreOrderRequest preOrderRequest) {
+/*    private String getJsonFromObject(PreOrderRequest preOrderRequest) {
         Gson gson = new GsonBuilder().serializeNulls().create();
         String jsonString = gson.toJson(preOrderRequest);
         return jsonString;
-    }
+    }*/
 
     /**
      * Get all related data for pre order from database.
@@ -1635,11 +1636,11 @@ public class SyncActivity extends AppCompatActivity {
      * @param saleReturnRequest SaleReturnRequest
      * @return saleReturnRequest sale return object for api request
      */
-    private String getJsonFromObject(SaleReturnRequest saleReturnRequest) {
+/*    private String getJsonFromObject(SaleReturnRequest saleReturnRequest) {
         Gson gson = new GsonBuilder().serializeNulls().create();
         String jsonString = gson.toJson(saleReturnRequest);
         return jsonString;
-    }
+    }*/
 
     /**
      * Download posm and shop type from server.
@@ -1851,11 +1852,11 @@ public class SyncActivity extends AppCompatActivity {
      * @param posmByCustomerRequest PosmByCustomerRequest
      * @return PosmByCustomerRequest sale return object for api request
      */
-    String getJsonFromObject(PosmByCustomerRequest posmByCustomerRequest) {
+ /*   String getJsonFromObject(PosmByCustomerRequest posmByCustomerRequest) {
         Gson gson = new GsonBuilder().serializeNulls().create();
         String jsonString = gson.toJson(posmByCustomerRequest);
         return jsonString;
-    }
+    }*/
 
     /**
      * Delete data in table after uploading to server.
@@ -2083,13 +2084,13 @@ public class SyncActivity extends AppCompatActivity {
 
     }
 
-    private String getJsonFromObject(DisplayAssessmentRequest displayAssessmentRequest) {
+/*    private String getJsonFromObject(DisplayAssessmentRequest displayAssessmentRequest) {
 
         Gson gson = new GsonBuilder().serializeNulls().create();
         String jsonString = gson.toJson(displayAssessmentRequest);
         return jsonString;
 
-    }
+    }*/
 
 
 
@@ -2386,13 +2387,13 @@ public class SyncActivity extends AppCompatActivity {
         return sizeInStoreShareItemList;
     }
 
-    private String getJsonFromObject(Outlet_Sizeinstore_request outlet_sizeinstore_request) {
+/*    private String getJsonFromObject(Outlet_Sizeinstore_request outlet_sizeinstore_request) {
 
         Gson gson = new GsonBuilder().serializeNulls().create();
         String jsonString = gson.toJson(outlet_sizeinstore_request);
         return jsonString;
 
-    }
+    }*/
 
 
     /**
@@ -2401,11 +2402,11 @@ public class SyncActivity extends AppCompatActivity {
      * @param deliveryRequest DeliveryRequest
      * @return json string
      */
-    private String getJsonFromObject(DeliveryRequest deliveryRequest) {
+/*    private String getJsonFromObject(DeliveryRequest deliveryRequest) {
         Gson gson = new GsonBuilder().serializeNulls().create();
         String jsonString = gson.toJson(deliveryRequest);
         return jsonString;
-    }
+    }*/
 
     /**
      * Set required delivery data to delivery request
@@ -2690,12 +2691,12 @@ public class SyncActivity extends AppCompatActivity {
     /**
      * Convert CashReceive data to json format
      *
-     * @param cashReceiveRequest CashReceiveRequest
+     * @param object CashReceiveRequest
      * @return json string
      */
-    private String getJsonFromObject(CashReceiveRequest cashReceiveRequest) {
+    private String getJsonFromObject(Object object) {
         Gson gson = new GsonBuilder().serializeNulls().create();
-        String jsonString = gson.toJson(cashReceiveRequest);
+        String jsonString = gson.toJson(object);
         return jsonString;
     }
 
@@ -2711,6 +2712,23 @@ public class SyncActivity extends AppCompatActivity {
         }
 
         return locationCode;
+    }
+
+    /**
+     * Update SALE VISIT RECORD of related customer id
+     *
+     * @param customer customer number
+     */
+    private void insertSaleVisitRecord(Customer customer) {
+        ContentValues cv = new ContentValues();
+        cv.put(DatabaseContract.SALE_VISIT_RECORD.CUSTOMER_ID, customer.getId());
+        cv.put(DatabaseContract.SALE_VISIT_RECORD.SALEMAN_ID, saleman_Id);
+        cv.put(DatabaseContract.SALE_VISIT_RECORD.LATITUDE, customer.getLatitude());
+        cv.put(DatabaseContract.SALE_VISIT_RECORD.LONGITUDE, customer.getLongitude());
+        cv.put(DatabaseContract.SALE_VISIT_RECORD.VISIT_FLG, 1);
+        cv.put(DatabaseContract.SALE_VISIT_RECORD.SALE_FLG, 0);
+        cv.put(DatabaseContract.SALE_VISIT_RECORD.RECORD_DATE, new Date().toString());
+        sqLiteDatabase.insert(DatabaseContract.SALE_VISIT_RECORD.TABLE_UPLOAD, null, cv);
     }
 
     /***

@@ -358,7 +358,8 @@ public class DatabaseContract {
     }
 
     public abstract class SALE_VISIT_RECORD {
-        public static final String TABLE = "SALE_VISIT_RECORD";
+        public static final String TABLE_UPLOAD = "SALE_VISIT_RECORD_UPLOAD";
+        public static final String TABLE_DOWNLOAD = "SALE_VISIT_RECORD_DOWNLOAD";
         public static final String ID = "ID";
         public static final String SALEMAN_ID = "SALEMAN_ID";
         public static final String CUSTOMER_ID = "CUSTOMER_ID";
@@ -366,6 +367,6 @@ public class DatabaseContract {
         public static final String LONGITUDE = "LONGITUDE";
         public static final String VISIT_FLG = "VISIT_FLG";
         public static final String SALE_FLG = "SALE_FLG";
+        public static final String RECORD_DATE = "RECORD_DATE";
     }
-
 }

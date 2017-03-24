@@ -346,7 +346,8 @@ public class CustomerActivity extends AppCompatActivity {
         cv.put(DatabaseContract.SALE_VISIT_RECORD.LONGITUDE, customer.getLongitude());
         cv.put(DatabaseContract.SALE_VISIT_RECORD.VISIT_FLG, 1);
         cv.put(DatabaseContract.SALE_VISIT_RECORD.SALE_FLG, 0);
-        database.insert(DatabaseContract.SALE_VISIT_RECORD.TABLE, null, cv);
+        cv.put(DatabaseContract.SALE_VISIT_RECORD.RECORD_DATE, new Date().toString());
+        database.insert(DatabaseContract.SALE_VISIT_RECORD.TABLE_UPLOAD, null, cv);
     }
 
     /**
@@ -357,7 +358,7 @@ public class CustomerActivity extends AppCompatActivity {
     private void deleteSaleVisitRecord(int customerId) {
         String where = "CUSTOMER_ID = ?";
         String[] whereArgs = new String[] {String.valueOf(customerId)};
-        database.delete(DatabaseContract.SALE_VISIT_RECORD.TABLE, where, whereArgs);
+        database.delete(DatabaseContract.SALE_VISIT_RECORD.TABLE_UPLOAD, where, whereArgs);
     }
 
     /**

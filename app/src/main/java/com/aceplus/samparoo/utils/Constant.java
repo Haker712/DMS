@@ -6,7 +6,7 @@ package com.aceplus.samparoo.utils;
 public class Constant {
 
     public static String BASE_URL = "http://192.168.11.57:9292/api/v1/";
-    ///public static String BASE_URL = "http://192.168.137.1:9000/api/v1/";//test ip for bi2
+    //public static String BASE_URL = "http://192.168.137.1:9000/api/v1/";//test ip for bi2
 
     public static String KEY_CHANGE_URL = "change_url";
 
