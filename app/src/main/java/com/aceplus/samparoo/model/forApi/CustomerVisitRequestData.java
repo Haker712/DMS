@@ -11,7 +11,7 @@ import java.util.List;
  * CustomerVisitRequestData
  */
 
-class CustomerVisitRequestData {
+public class CustomerVisitRequestData {
 
     @SerializedName("CustomerVisit")
     @Expose

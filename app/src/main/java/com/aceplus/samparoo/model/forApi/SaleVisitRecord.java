@@ -47,14 +47,14 @@ public class SaleVisitRecord {
      */
     @SerializedName("VisitStatus")
     @Expose
-    boolean visitFlg;
+    short visitFlg;
 
     /**
      * saleFlg
      */
     @SerializedName("SaleStatus")
     @Expose
-    boolean saleFlg;
+    short saleFlg;
 
     /**
      * recorded date
@@ -158,7 +158,7 @@ public class SaleVisitRecord {
      *
      * @return visitFlg
      */
-    public boolean isVisitFlg() {
+    public short getVisitFlg() {
         return visitFlg;
     }
 
@@ -167,7 +167,7 @@ public class SaleVisitRecord {
      *
      * @param visitFlg visit flag
      */
-    public void setVisitFlg(boolean visitFlg) {
+    public void setVisitFlg(short visitFlg) {
         this.visitFlg = visitFlg;
     }
 
@@ -176,7 +176,7 @@ public class SaleVisitRecord {
      *
      * @return saleFlg
      */
-    public boolean isSaleFlg() {
+    public short getSaleFlg() {
         return saleFlg;
     }
 
@@ -185,7 +185,7 @@ public class SaleVisitRecord {
      *
      * @param saleFlg sale flag
      */
-    public void setSaleFlg(boolean saleFlg) {
+    public void setSaleFlg(short saleFlg) {
         this.saleFlg = saleFlg;
     }
 

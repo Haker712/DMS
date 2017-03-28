@@ -256,8 +256,11 @@ public class CustomerActivity extends AppCompatActivity {
                                     long id) {
 
                 if(isSameCustomer(customers.get(position).getId())) {
+                    database.beginTransaction();
                     deleteSaleVisitRecord(customers.get(position).getId());
                     insertSaleVisitRecord(customers.get(position));
+                    database.setTransactionSuccessful();
+                    database.endTransaction();
                 }
 
                 customer = customers.get(position);
@@ -346,7 +349,10 @@ public class CustomerActivity extends AppCompatActivity {
         cv.put(DatabaseContract.SALE_VISIT_RECORD.LONGITUDE, customer.getLongitude());
         cv.put(DatabaseContract.SALE_VISIT_RECORD.VISIT_FLG, 1);
         cv.put(DatabaseContract.SALE_VISIT_RECORD.SALE_FLG, 0);
-        cv.put(DatabaseContract.SALE_VISIT_RECORD.RECORD_DATE, new Date().toString());
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+        String currentDate = sdf.format(new Date());
+        cv.put(DatabaseContract.SALE_VISIT_RECORD.RECORD_DATE,currentDate);
         database.insert(DatabaseContract.SALE_VISIT_RECORD.TABLE_UPLOAD, null, cv);
     }
 

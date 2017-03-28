@@ -42,6 +42,9 @@ import com.aceplus.samparoo.model.forApi.CustomerBalanceForApi;
 import com.aceplus.samparoo.model.forApi.CustomerData;
 import com.aceplus.samparoo.model.forApi.CustomerForApi;
 import com.aceplus.samparoo.model.forApi.CustomerResponse;
+import com.aceplus.samparoo.model.forApi.CustomerVisitRequest;
+import com.aceplus.samparoo.model.forApi.CustomerVisitRequestData;
+import com.aceplus.samparoo.model.forApi.CustomerVisitResponse;
 import com.aceplus.samparoo.model.forApi.DataForVolumeDiscount;
 import com.aceplus.samparoo.model.forApi.DataforMarketing;
 import com.aceplus.samparoo.model.forApi.DataforSaleUpload;
@@ -92,6 +95,7 @@ import com.aceplus.samparoo.model.forApi.SaleReturnApi;
 import com.aceplus.samparoo.model.forApi.SaleReturnItem;
 import com.aceplus.samparoo.model.forApi.SaleReturnRequest;
 import com.aceplus.samparoo.model.forApi.SaleReturnRequestData;
+import com.aceplus.samparoo.model.forApi.SaleVisitRecord;
 import com.aceplus.samparoo.model.forApi.ShopTypeForApi;
 import com.aceplus.samparoo.model.forApi.SizeInStoreShare;
 import com.aceplus.samparoo.model.forApi.SizeInStoreShareItem;
@@ -169,6 +173,7 @@ public class SyncActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonDownload)
     void download() {
+        downloadCustomerVisitFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
         downloadCustomerFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
         //downloadProductsFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
         //downloadPromotionFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
@@ -180,7 +185,8 @@ public class SyncActivity extends AppCompatActivity {
     @OnClick(R.id.buttonUpload)
     void upload() {
         services = "";
-        uploadInvoiceToSever();
+        uploadCustomerVisitToServer();
+        //uploadInvoiceToSever();
     }
 
     @OnClick(R.id.buttonClearData)
@@ -2715,20 +2721,165 @@ public class SyncActivity extends AppCompatActivity {
     }
 
     /**
-     * Update SALE VISIT RECORD of related customer id
-     *
-     * @param customer customer number
+     * Upload custimer visit record.
      */
-    private void insertSaleVisitRecord(Customer customer) {
+    private void uploadCustomerVisitToServer() {
+
+        String paramData = "";
+
+       //Utils.callDialog("Please wait...", this);
+
+        CustomerVisitRequest customerVisitRequest = new CustomerVisitRequest();
+
+        customerVisitRequest.setSiteActivationKey(Constant.SITE_ACTIVATION_KEY);
+        customerVisitRequest.setTabletActivationKey(Constant.TABLET_ACTIVATION_KEY);
+        customerVisitRequest.setUserId(saleman_Id);
+        customerVisitRequest.setPassword("");//it is empty string bcoz json format using gson cannot accept encrypted
+        customerVisitRequest.setData(getCustomerVisit());
+
+        paramData = getJsonFromObject(customerVisitRequest);
+        Log.i("Param_CUS_VISIT", paramData);
+
+        UploadService uploadService = RetrofitServiceFactory.createService(UploadService.class);
+        Call<InvoiceResponse> call = uploadService.uploadCustomerVisit(paramData);
+        call.enqueue(new Callback<InvoiceResponse>() {
+            @Override
+            public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
+                if (response.code() == 200) {
+                    if (response.body().getAceplusStatusCode() == 200) {
+
+                        if (!services.equals("")) {
+                            services += ",";
+                        }
+                        services += "CUSTOMER VISIT RECORD ";
+                    } else {
+                        if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
+                            onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                        }
+                    }
+
+                } else {
+                    Utils.cancelDialog();
+                    Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<InvoiceResponse> call, Throwable t) {
+                Utils.cancelDialog();
+                Utils.commonDialog(t.getMessage(), SyncActivity.this);
+
+            }
+        });
+    }
+
+    /**
+     * Download customer visit from server.
+     */
+    public void downloadCustomerVisitFromServer(String paramData) {
+        DownloadService downloadService = RetrofitServiceFactory.createService(DownloadService.class);
+        Call<CustomerVisitResponse> call = downloadService.getCustomerVisitFromApi(paramData);
+        call.enqueue(new Callback<CustomerVisitResponse>() {
+            @Override
+            public void onResponse(Call<CustomerVisitResponse> call, Response<CustomerVisitResponse> response) {
+                if (response.code() == 200) {
+                    if (response.body().getAceplusStatusCode() == 200) {
+                        //Utils.cancelDialog();
+                        textViewError.setText("");
+
+                        //Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
+
+                        List<SaleVisitRecord> saleVisitRecordList = new ArrayList<>();
+                        saleVisitRecordList = response.body().getCustomerVisitRequestDataList().get(0).getSaleVisitRecordList();
+                        Log.i("saleVisitRecordList>>>", saleVisitRecordList.size() + "");
+
+                        sqLiteDatabase.beginTransaction();
+
+                        for(SaleVisitRecord saleVisitRecord :saleVisitRecordList) {
+                            deleteDataAfterUpload(DatabaseContract.SALE_VISIT_RECORD.TABLE_DOWNLOAD, null, null);
+                            insertSaleVisitRecord(saleVisitRecord);
+                        }
+
+                        sqLiteDatabase.setTransactionSuccessful();
+                        sqLiteDatabase.endTransaction();
+                    } else {
+                        Utils.cancelDialog();
+                        textViewError.setText(response.body().getAceplusStatusMessage());
+                    }
+
+                } else {
+
+                    if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                        textViewError.setText(response.body().getAceplusStatusMessage());
+                    } else {
+                        Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
+                    }
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<CustomerVisitResponse> call, Throwable t) {
+                Utils.cancelDialog();
+                Utils.commonDialog(t.getMessage(), SyncActivity.this);
+            }
+        });
+    }
+
+    /**
+     * Get customer visit request data for api
+     *
+     * @return CustomerVisitRequestData list
+     */
+    List<CustomerVisitRequestData> getCustomerVisit(){
+        List<CustomerVisitRequestData> customerVisitRequestDataList = new ArrayList<>();
+        CustomerVisitRequestData customerVisitRequestData = new CustomerVisitRequestData();
+        customerVisitRequestData.setSaleVisitRecordList(getSaleVisitRecord());
+        customerVisitRequestDataList.add(customerVisitRequestData);
+        return customerVisitRequestDataList;
+    }
+
+    /**
+     * Get sale visit record from database
+     *
+     * @return SaleVisitRecord list
+     */
+    private List<SaleVisitRecord> getSaleVisitRecord () {
+        List<SaleVisitRecord> saleVisitRecordList = new ArrayList<>();
+
+        Cursor cursorSaleVisitRecord = sqLiteDatabase.rawQuery("SELECT * FROM " + DatabaseContract.SALE_VISIT_RECORD.TABLE_UPLOAD, null);
+        while(cursorSaleVisitRecord.moveToNext()) {
+            SaleVisitRecord saleVisitRecord = new SaleVisitRecord();
+
+            saleVisitRecord.setId(cursorSaleVisitRecord.getInt(cursorSaleVisitRecord.getColumnIndex(DatabaseContract.SALE_VISIT_RECORD.ID)));
+            saleVisitRecord.setCustomerId(cursorSaleVisitRecord.getInt(cursorSaleVisitRecord.getColumnIndex(DatabaseContract.SALE_VISIT_RECORD.CUSTOMER_ID)));
+            saleVisitRecord.setLatitude(cursorSaleVisitRecord.getString(cursorSaleVisitRecord.getColumnIndex(DatabaseContract.SALE_VISIT_RECORD.LATITUDE)));
+            saleVisitRecord.setLongitude(cursorSaleVisitRecord.getString(cursorSaleVisitRecord.getColumnIndex(DatabaseContract.SALE_VISIT_RECORD.LONGITUDE)));
+            saleVisitRecord.setSalemanId(cursorSaleVisitRecord.getInt(cursorSaleVisitRecord.getColumnIndex(DatabaseContract.SALE_VISIT_RECORD.SALEMAN_ID)));
+            saleVisitRecord.setSaleFlg(cursorSaleVisitRecord.getShort(cursorSaleVisitRecord.getColumnIndex(DatabaseContract.SALE_VISIT_RECORD.SALE_FLG)));
+            saleVisitRecord.setVisitFlg(cursorSaleVisitRecord.getShort(cursorSaleVisitRecord.getColumnIndex(DatabaseContract.SALE_VISIT_RECORD.VISIT_FLG)));
+            saleVisitRecord.setRecordDate(cursorSaleVisitRecord.getString(cursorSaleVisitRecord.getColumnIndex(DatabaseContract.SALE_VISIT_RECORD.RECORD_DATE)));;
+            saleVisitRecordList.add(saleVisitRecord);
+        }
+        return saleVisitRecordList;
+    }
+
+    /**
+     * insert SALE VISIT RECORD to database.
+     *
+     * @param saleVisitRecord saleVisitRecord
+     */
+    private void insertSaleVisitRecord(SaleVisitRecord saleVisitRecord) {
         ContentValues cv = new ContentValues();
-        cv.put(DatabaseContract.SALE_VISIT_RECORD.CUSTOMER_ID, customer.getId());
-        cv.put(DatabaseContract.SALE_VISIT_RECORD.SALEMAN_ID, saleman_Id);
-        cv.put(DatabaseContract.SALE_VISIT_RECORD.LATITUDE, customer.getLatitude());
-        cv.put(DatabaseContract.SALE_VISIT_RECORD.LONGITUDE, customer.getLongitude());
-        cv.put(DatabaseContract.SALE_VISIT_RECORD.VISIT_FLG, 1);
-        cv.put(DatabaseContract.SALE_VISIT_RECORD.SALE_FLG, 0);
-        cv.put(DatabaseContract.SALE_VISIT_RECORD.RECORD_DATE, new Date().toString());
-        sqLiteDatabase.insert(DatabaseContract.SALE_VISIT_RECORD.TABLE_UPLOAD, null, cv);
+        cv.put(DatabaseContract.SALE_VISIT_RECORD.CUSTOMER_ID, saleVisitRecord.getCustomerId());
+        cv.put(DatabaseContract.SALE_VISIT_RECORD.SALEMAN_ID, saleVisitRecord.getSalemanId());
+        cv.put(DatabaseContract.SALE_VISIT_RECORD.LATITUDE, saleVisitRecord.getLatitude());
+        cv.put(DatabaseContract.SALE_VISIT_RECORD.LONGITUDE, saleVisitRecord.getLongitude());
+        cv.put(DatabaseContract.SALE_VISIT_RECORD.VISIT_FLG, saleVisitRecord.getVisitFlg());
+        cv.put(DatabaseContract.SALE_VISIT_RECORD.SALE_FLG, saleVisitRecord.getSaleFlg());
+        cv.put(DatabaseContract.SALE_VISIT_RECORD.RECORD_DATE, saleVisitRecord.getRecordDate());
+        sqLiteDatabase.insert(DatabaseContract.SALE_VISIT_RECORD.TABLE_DOWNLOAD, null, cv);
     }
 
     /***

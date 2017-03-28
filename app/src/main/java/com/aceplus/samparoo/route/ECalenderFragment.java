@@ -2,6 +2,7 @@ package com.aceplus.samparoo.route;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -20,6 +21,7 @@ import com.aceplus.samparoo.model.Customer;
 import com.aceplus.samparoo.model.ECalendar;
 import com.aceplus.samparoo.model.forApi.SaleVisitRecord;
 import com.aceplus.samparoo.utils.Database;
+import com.aceplus.samparoo.utils.DatabaseContract;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -150,6 +152,8 @@ public class ECalenderFragment extends Fragment {
     @InjectView(R.id.hideRow1)
     TableRow hideRow1;
 
+    List<SaleVisitRecord> saleVisitRecordList;
+
     String dateFormat = "yyyy-MM-dd";
     String currentDate = "";
     String day = "", month = "", year = "";
@@ -177,6 +181,7 @@ public class ECalenderFragment extends Fragment {
         List<ECalendar> eCalendarList = getLastThirtDays();
 
         Log.i("Size of eCalendar :", eCalendarList.size() + "");
+        setUpCustomerSpinner();
 
         int dayIndex = 0;
         for(int i=0; i < 7; i++) {
@@ -186,7 +191,11 @@ public class ECalenderFragment extends Fragment {
             }
         }
 
-        Button[] btnArr = new Button[35];
+        if(dayIndex != 6) {
+            hideRow1.setVisibility(View.GONE);
+        }
+
+        Button[] btnArr = new Button[42];
         btnArr[0] = day1;
         btnArr[1] = day2;
         btnArr[2] = day3;
@@ -232,6 +241,13 @@ public class ECalenderFragment extends Fragment {
 
         for(int i = dayIndex; i < 30 + dayIndex; i++) {
             btnArr[i].setText(eCalendarList.get(i-dayIndex).getDateNum() + "");
+            ECalendar eCalendar = eCalendarList.get(i-dayIndex);
+            for(int index = 0; index < saleVisitRecordList.size(); index++){
+                String saleVisitDate = saleVisitRecordList.get(index).getRecordDate().substring(0,10);
+                if(eCalendar.getDefaultFormat().equals(saleVisitDate)) {
+                    setColorByDate(btnArr[i]);
+                }
+            }
         }
 
         return view;
@@ -344,14 +360,16 @@ public class ECalenderFragment extends Fragment {
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_spinner_item, customerNameArr);
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         customerSpinner.setAdapter(arrayAdapter);
+        customerSpinner.setSelection(0);
+        saleVisitRecordList = getSaleVisitRecord(customerList.get(0).getId());
     }
 
     @OnItemSelected(R.id.ecalendar_spinner_customer)
     void chooseCustomer() {
         int selectedItemPosition = customerSpinner.getSelectedItemPosition();
         Log.i("SELECTED CUSTOMER -->", customerList.get(selectedItemPosition).getCustomerName());
-
-        setColorByDate(customerList.get(selectedItemPosition).getId());
+        saleVisitRecordList = getSaleVisitRecord(customerList.get(selectedItemPosition).getId());
+        //setColorByDate(customerList.get(selectedItemPosition).getId());
     }
 
     /**
@@ -374,19 +392,19 @@ public class ECalenderFragment extends Fragment {
         return customerList;
     }
 
-    private void setColorByDate(int customerId) {
+    private void setColorByDate(Button btn) {
 
-        List<SaleVisitRecord> saleVisitRecordList = getSaleVisitRecord(customerId);
-
-        for (SaleVisitRecord saleVisitRecord : saleVisitRecordList) {
+        //List<SaleVisitRecord> saleVisitRecordList = getSaleVisitRecord();
+        btn.setBackgroundColor(Color.GREEN);
+        //for (SaleVisitRecord saleVisitRecord : saleVisitRecordList) {
             /*if(saleVisitRecord.getRecordDate())*/
-        }
+        //}
     }
 
     private List<SaleVisitRecord> getSaleVisitRecord(int customerId) {
         List<SaleVisitRecord> saleVisitRecordList = new ArrayList<>();
 
-        /*Cursor cursorSaleVisitRecord = database.rawQuery("SELECT * FROM " + DatabaseContract.SALE_VISIT_RECORD_API.TABLE + " WHERE CUSTOMER_ID = " + customerId,null);
+        Cursor cursorSaleVisitRecord = database.rawQuery("SELECT * FROM " + DatabaseContract.SALE_VISIT_RECORD.TABLE_DOWNLOAD + " WHERE CUSTOMER_ID = " + customerId,null);
         while(cursorSaleVisitRecord.moveToNext()) {
             SaleVisitRecord saleVisitRecord = new SaleVisitRecord();
 
@@ -395,11 +413,11 @@ public class ECalenderFragment extends Fragment {
             saleVisitRecord.setLatitude(cursorSaleVisitRecord.getString(cursorSaleVisitRecord.getColumnIndex(DatabaseContract.SALE_VISIT_RECORD.LATITUDE)));
             saleVisitRecord.setLongitude(cursorSaleVisitRecord.getString(cursorSaleVisitRecord.getColumnIndex(DatabaseContract.SALE_VISIT_RECORD.LONGITUDE)));
             saleVisitRecord.setSalemanId(cursorSaleVisitRecord.getInt(cursorSaleVisitRecord.getColumnIndex(DatabaseContract.SALE_VISIT_RECORD.SALEMAN_ID)));
-            saleVisitRecord.setSaleFlg(cursorSaleVisitRecord.getInt(cursorSaleVisitRecord.getColumnIndex(DatabaseContract.SALE_VISIT_RECORD.SALE_FLG)) > 0);
-            saleVisitRecord.setVisitFlg(cursorSaleVisitRecord.getInt(cursorSaleVisitRecord.getColumnIndex(DatabaseContract.SALE_VISIT_RECORD.VISIT_FLG)) > 0);
+            saleVisitRecord.setSaleFlg(cursorSaleVisitRecord.getShort(cursorSaleVisitRecord.getColumnIndex(DatabaseContract.SALE_VISIT_RECORD.SALE_FLG)));
+            saleVisitRecord.setVisitFlg(cursorSaleVisitRecord.getShort(cursorSaleVisitRecord.getColumnIndex(DatabaseContract.SALE_VISIT_RECORD.VISIT_FLG)));
             saleVisitRecord.setRecordDate(cursorSaleVisitRecord.getString(cursorSaleVisitRecord.getColumnIndex(DatabaseContract.SALE_VISIT_RECORD.RECORD_DATE)));;
             saleVisitRecordList.add(saleVisitRecord);
-        }*/
+        }
         return saleVisitRecordList;
     }
 
