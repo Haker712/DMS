@@ -1,10 +1,12 @@
 package com.aceplus.samparoo;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.telephony.SmsManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -72,9 +74,15 @@ public class HomeActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonSync)
     void sync() {
-        Intent intent = new Intent(this, SyncActivity.class);
+        /*Intent intent = new Intent(this, SyncActivity.class);
         startActivity(intent);
-        finish();
+        finish();*/
+        //startActivity(new Intent(Intent.ACTION_SEND, Uri.fromParts("sms", "09790607837", null)));
+        /*Intent sendIntent = new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", "09790607837", null));
+        sendIntent.putExtra("sms_body", "default content");
+        sendIntent.setType("vnd.android-dir/mms-sms");
+        startActivity(sendIntent);*/
+
     }
 
     @OnClick(R.id.buttonRoute)
@@ -100,10 +108,10 @@ public class HomeActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonMarketing)
     void marketing() {
-        Utils.commonDialog("This function is under construction", HomeActivity.this);
-        Intent intent = new Intent(this, MarketingActivity.class);
+        Utils.commonDialog("This feature is not yet.", this);
+        /*Intent intent = new Intent(this, MarketingActivity.class);
         startActivity(intent);
-        finish();
+        finish();*/
     }
 
     @OnClick(R.id.buttonReport)
