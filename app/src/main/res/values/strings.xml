@@ -43,10 +43,11 @@
     <string name="price">Price</string>
     <string name="discount">Discount</string>
     <string name="amount">Amount</string>
+    <string name="foc">FOC</string>
     <string name="total_amount">Total Amount</string>
     <string name="net_amount">Net Amount:</string>
     <string name="available_quantity">Available Quantity:</string>
-    <string name="quantity">Quantity</string>
+    <string name="percent">Percent</string>
     <string name="quantity_label">Quantity:</string>
     <string name="general_sale_checkout">General Sale - Checkout</string>
     <string name="serial">Serial</string>
@@ -94,9 +95,12 @@
 
     <string name="delivery">DELIVERY</string>
     <string name="delivery_checkout">DELIVERY CHECKOUT</string>
+    <string name="cash_receive">CASH RECEIVE</string>
 
     <string name="connection_error">Can\'t connect to server</string>
     <string name="server_error">Server error occurs. \n Please Try again</string>
     <string name="no_download_data_error">Please download information!</string>
     <string name="sale_exchange">SALE EXCHANGE</string>
+
+
 </resources>

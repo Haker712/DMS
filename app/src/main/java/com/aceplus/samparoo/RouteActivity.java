@@ -37,8 +37,8 @@ public class RouteActivity extends FragmentActivity {
     @InjectView(R.id.spinnerRoute)
     Spinner spinnerRoute;
 
-    //String[] routes = {"e-Route : View By Map", "e-Route : View By List", "e-Calendar"};
-    String[] routes = {"e-Route : View By Map", "e-Route : View By List"};
+    String[] routes = {"e-Route : View By Map", "e-Route : View By List", "e-Calendar"};
+    //String[] routes = {"e-Route : View By Map", "e-Route : View By List"};
 
     String selected_route = "View By Map";
 

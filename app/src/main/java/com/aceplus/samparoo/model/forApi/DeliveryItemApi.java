@@ -28,9 +28,16 @@ public class DeliveryItemApi {
     /**
      * deliveryQty
      */
-    @SerializedName("DeliveryQty")
+    @SerializedName("Quantity")
     @Expose
     int deliveryQty;
+
+    /**
+     * FOC
+     */
+    @SerializedName("FOC")
+    @Expose
+    short foc;
 
     /**
      * Getter method for deliveryId
@@ -84,5 +91,23 @@ public class DeliveryItemApi {
      */
     public void setDeliveryQty(int deliveryQty) {
         this.deliveryQty = deliveryQty;
+    }
+
+    /**
+     * Getter method for foc
+     *
+     * @return foc
+     */
+    public short getFoc() {
+        return foc;
+    }
+
+    /**
+     * Setter method for foc
+     *
+     * @param foc 0 : no foc, 1 : foc
+     */
+    public void setFoc(short foc) {
+        this.foc = foc;
     }
 }

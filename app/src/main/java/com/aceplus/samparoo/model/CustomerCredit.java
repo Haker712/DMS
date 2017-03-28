@@ -1,30 +1,33 @@
 package com.aceplus.samparoo.model;
 
+import java.io.Serializable;
+
 /**
  * Created by ESeries on 10/8/2015.
  */
-public class CustomerCredit {
-    String creditId;
-    String customerId;
+public class CustomerCredit implements Serializable{
+    int creditId;
+    int customerId;
     String customerCreditname;
     String customerAddress;
     double creditTotalAmt;
     double creditPaidAmt;
     double creditUnpaidAmt;
+    int currencyId;
 
-    public String getCreditId() {
+    public int getCreditId() {
         return creditId;
     }
 
-    public void setCreditId(String creditId) {
+    public void setCreditId(int creditId) {
         this.creditId = creditId;
     }
 
-    public String getCustomerId() {
+    public int getCustomerId() {
         return customerId;
     }
 
-    public void setCustomerId(String customerId) {
+    public void setCustomerId(int customerId) {
         this.customerId = customerId;
     }
 
@@ -66,5 +69,13 @@ public class CustomerCredit {
 
     public void setCustomerAddress(String customerAddress) {
         this.customerAddress = customerAddress;
+    }
+
+    public int getCurrencyId() {
+        return currencyId;
+    }
+
+    public void setCurrencyId(int currencyId) {
+        this.currencyId = currencyId;
     }
 }

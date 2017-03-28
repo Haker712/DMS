@@ -24,18 +24,18 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
         switch (position) {
             case 0:
-                OutletExternalCheckFragment tab1 = new OutletExternalCheckFragment();
+                DisplayAssessmentFragment tab1 = new DisplayAssessmentFragment();
                 return tab1;
             case 1:
-                DisplayAssessmentFragment tab2 = new DisplayAssessmentFragment();
+                POSMFragment tab2 = new POSMFragment();
                 return tab2;
-            case 2:
+            /*case 2:
                 TabFragment3 tab3 = new TabFragment3();
-                return tab3;
-            case 3:
+                return tab3;*/
+            case 2:
                 TabFragment5 tab4 = new TabFragment5();
                 return tab4;
-            case 4:
+            case 3:
                 TabFragment4 tab5 = new TabFragment4();
                 return tab5;
             default:

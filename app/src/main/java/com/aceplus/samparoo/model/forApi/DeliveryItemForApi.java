@@ -28,7 +28,7 @@ public class DeliveryItemForApi {
     /**
      * stockNo
      */
-    @SerializedName("StockNo")
+    @SerializedName("StockId")
     @Expose
     private String stockNo;
 

@@ -1,16 +1,29 @@
 package com.aceplus.samparoo.customer;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.SmsManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -19,6 +32,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -56,6 +71,8 @@ import com.google.gson.GsonBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -71,6 +88,7 @@ import retrofit2.Response;
  */
 public class SaleOrderCheckoutActivity extends AppCompatActivity{
 
+    public static final int REQUEST_SEND_SMS = 101;
     public static final String REMAINING_AMOUNT_KEY = "remaining-amount-key";
     public static final String IS_PRE_ORDER = "is-pre-order";
     public static final String IS_DELIVERY = "is-delivery";
@@ -93,7 +111,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
 
     private boolean isPreOrder;
 
-    private boolean isDelivery;
+    private boolean isDelivery, access;
 
     private ArrayList<SoldProduct> soldProductList = new ArrayList<SoldProduct>();
 
@@ -106,15 +124,17 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
 
     private TextView txt_invoiceId, txt_totalAmount, saleDateTextView, netAmountTextView;
 
-    private TextView txt_tableHeaderDiscount, txt_tableHeaderUM, txt_tableHeaderQty;
+    private TextView txt_tableHeaderDiscount, txt_tableHeaderUM, txt_tableHeaderQty, txt_table_header_foc;
 
     private LinearLayout advancedPaidAmountLayout, totalInfoForGeneralSaleLayout, totalInfoForPreOrderLayout, receiptPersonLayout, refundLayout, payAmountLayout, netAmountLayout, volumeDiscountLayout, volDisForPreOrderLayout;
 
     private EditText prepaidAmt, receiptPersonEditText;
 
+    private CheckBox checkBox_foc;
+
     private ListView lv_soldProductList, promotionPlanItemListView;
 
-    private String saleman_Id = "", saleman_No = "", saleman_Pwd = "";
+    private String saleman_Id = "", saleman_No = "", saleman_Pwd = "", phoneNo = "";
 
     TextView titleTextView;
 
@@ -219,6 +239,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
         txt_tableHeaderUM = (TextView) findViewById(R.id.tableHeaderUM);
         txt_tableHeaderQty = (TextView) findViewById(R.id.tableHeaderQty);
         txt_tableHeaderDiscount = (TextView) findViewById(R.id.tableHeaderDiscount);
+        txt_table_header_foc = (TextView) findViewById(R.id.tableHeaderFoc);
 
         saleDateTextView = (TextView) findViewById(R.id.saleDateTextView);
         txt_invoiceId = (TextView) findViewById(R.id.invoiceId);
@@ -259,6 +280,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
             volDisForPreOrderLayout.setVisibility(View.GONE);
             advancedPaidAmountLayout.setVisibility(View.VISIBLE);
             receiptPersonLayout.setVisibility(View.VISIBLE);
+            txt_table_header_foc.setVisibility(View.VISIBLE);
         }
     }
 
@@ -305,7 +327,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
             Log.i("volDisFilterId", volDisFilterId);
             Cursor cusorForVolDisFilterItem = database.rawQuery("SELECT * FROM VOLUME_DISCOUNT_FILTER_ITEM WHERE VOLUME_DISCOUNT_ID = '" + volDisFilterId + "' " +
                     "and FROM_SALE_AMOUNT <= " + buy_amt + " and TO_SALE_AMOUNT >= " + buy_amt + " ", null);
-            Log.i("cusorForVolDisFilterItem", cusorForVolDisFilterItem.getCount() + "");
+            Log.i("cursorForVolDisFilterItem", cusorForVolDisFilterItem.getCount() + "");
             while (cusorForVolDisFilterItem.moveToNext()) {
                 category = cusorForVolDisFilterItem.getString(cusorForVolDisFilterItem.getColumnIndex(DatabaseContract.VolumeDiscountFilterItem.categoryId));
                 group = cusorForVolDisFilterItem.getString(cusorForVolDisFilterItem.getColumnIndex(DatabaseContract.VolumeDiscountFilterItem.groupCodeId));
@@ -474,6 +496,140 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
     }
 
     /**
+     * Check internet access in the device.
+     *
+     * @return true : if there is internet access, otherwise return false.
+     */
+    public boolean isOnline() {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            Process ipProcess = runtime.exec("/system/bin/ping -c 1 www.google.com.mm");
+            int exitValue = ipProcess.waitFor();
+            return (exitValue == 0);
+        } catch (IOException e)          { e.printStackTrace(); }
+        catch (InterruptedException e) { e.printStackTrace(); }
+        return false;
+    }
+
+    /**
+     * Request Sending SMS permission to user.
+     */
+    void sendSMSMessage() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.SEND_SMS)
+                != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.SEND_SMS)) {
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.SEND_SMS},
+                        REQUEST_SEND_SMS);
+            }
+        } else {
+            showDialogForPhoneNumber();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_SEND_SMS: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    showDialogForPhoneNumber();
+                } else {
+                    Toast.makeText(getApplicationContext(),
+                            "SMS failed, please try again.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+            }
+        }
+
+    }
+
+    private void insertSMSRecord(String phoneNo, String msg) {
+        database.beginTransaction();
+        ContentValues cv = new ContentValues();
+        cv.put(DatabaseContract.SMS_RECORD.SEND_DATE, new Date().toString());
+        cv.put(DatabaseContract.SMS_RECORD.MSG_BODY, msg);
+        cv.put(DatabaseContract.SMS_RECORD.PHONE_NO, phoneNo);
+        database.insert(DatabaseContract.SMS_RECORD.TABLE, null, cv);
+        database.setTransactionSuccessful();
+        database.endTransaction();
+    }
+    /**
+     * Send SMS to the phone
+     *
+     * @param phoneNumber phone number
+     * @param message message body
+     */
+    private void sendSMS(String phoneNumber, String message) {
+        ArrayList<PendingIntent> sentPendingIntents = new ArrayList<PendingIntent>();
+        ArrayList<PendingIntent> deliveredPendingIntents = new ArrayList<PendingIntent>();
+        PendingIntent sentPI = PendingIntent.getBroadcast(this, 0,
+                new Intent(this, SmsSentReceiver.class), 0);
+        PendingIntent deliveredPI = PendingIntent.getBroadcast(this, 0,
+                new Intent(this, SmsDeliveredReceiver.class), 0);
+        try {
+            SmsManager sms = SmsManager.getDefault();
+            ArrayList<String> mSMSMessage = sms.divideMessage(message);
+            for (int i = 0; i < mSMSMessage.size(); i++) {
+                sentPendingIntents.add(i, sentPI);
+                deliveredPendingIntents.add(i, deliveredPI);
+            }
+
+            sms.sendMultipartTextMessage(phoneNumber, null, mSMSMessage, sentPendingIntents, deliveredPendingIntents);
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            Toast.makeText(getBaseContext(), "SMS sending failed...",Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    private String getMessageInfo() {
+        String message = "";
+        List<PreOrder> preOrderList = getPreOrderFromDatabase();
+
+        List<PreOrderApi> preOrderApiList = new ArrayList<>();
+
+        List<PreOrderPresentApi> preOrderPresentApiList = new ArrayList<>();
+
+        for(PreOrder preOrder : preOrderList) {
+
+            message += "Sale Order Invoice Number : " + preOrder.getInvoiceId()
+                    + "\nCustomer Number : " + preOrder.getCustomerId()
+                    + "\nSale Person Number : " + preOrder.getSalePersonId()
+                    + "\nSale Order Date : " + preOrder.getPreOrderDate()
+                    + "\nAdvanced Payment Amount : " + preOrder.getAdvancedPaymentAmount();
+
+            for (Promotion promotion : promotionArrayList) {
+                PreOrderPresentApi preOrderPresentApi = new PreOrderPresentApi();
+                preOrderPresentApi.setSaleOrderId(preOrder.getInvoiceId());
+                preOrderPresentApi.setProductId(promotion.getPromotionProductId());
+                preOrderPresentApi.setQuantity(promotion.getPromotionQty());
+
+                message += "\nPresent Product Stock Number : " + promotion.getPromotionProductId()
+                        + "\nPresent Product Quantity : " + promotion.getPromotionQty();
+
+                preOrderPresentApiList.add(preOrderPresentApi);
+            }
+
+            List<PreOrderProduct> preOrderProductList = getPreOrderProductFromDatabase(preOrder.getInvoiceId());
+
+            List<PreOrderDetailApi> preOrderDetailApiList = new ArrayList<>();
+            for(PreOrderProduct preOrderProduct : preOrderProductList) {
+
+                message += "\nSale Order Stock Number : " + preOrderProduct.getProductId()
+                        + "\nOrder Quantity : " + preOrderProduct.getOrderQty();
+
+            }
+
+            message += "\n";
+        }
+        return message;
+    }
+
+    /**
      * Action to events
      */
     private void catchEvents() {
@@ -492,7 +648,11 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
             public void onClick(View v) {
                 if(isPreOrder) {
                     insertPreOrderInformation();
-                    uploadPreOrderToServer();
+                    if(isOnline()) {
+                        uploadPreOrderToServer();
+                    } else {
+                        sendSMSMessage();
+                    }
                 } else if(isDelivery) {
                     if (SaleOrderCheckoutActivity.this.receiptPersonEditText.getText().length() == 0) {
 
@@ -545,6 +705,63 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
             public void afterTextChanged(Editable editable) {
             }
         });
+    }
+
+    private void showDialogForPhoneNumber() {
+
+        LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View view = layoutInflater.inflate(R.layout.dialog_box_sale_quantity, null);
+
+        LinearLayout availableQuantityLayout = (LinearLayout) view.findViewById(R.id.availableQuantityLayout);
+        TextView qtyTextView = (TextView) view.findViewById(R.id.dialog_sale_qty_txtView);
+
+        availableQuantityLayout.setVisibility(View.GONE);
+        qtyTextView.setVisibility(View.GONE);
+
+        final EditText phoneNoEditText = (EditText) view.findViewById(R.id.quantity);
+        final TextView messageTextView = (TextView) view.findViewById(R.id.message);
+
+        final AlertDialog alertDialog = new AlertDialog.Builder(this)
+                .setView(view)
+                .setTitle("No internet access !\nPlease enter Phone Number to send message")
+                .setPositiveButton("Confirm", null)
+                .setNegativeButton("Cancel", null)
+                .create();
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+
+            @Override
+            public void onShow(DialogInterface arg0) {
+
+                view.findViewById(R.id.availableQuantityLayout).setVisibility(View.GONE);
+
+                Button confirmButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                confirmButton.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View arg0) {
+
+                        if (phoneNoEditText.getText().toString().length() == 0) {
+
+                            messageTextView.setText("You must specify Phone Number.");
+                            return;
+                        }
+
+                        phoneNo = phoneNoEditText.getText().toString();
+                        String msg = getMessageInfo();
+
+                        if(!phoneNo.equals("")) {
+                            sendSMS(phoneNo, msg);
+                            insertSMSRecord(phoneNo, msg);
+                        }
+
+                        alertDialog.dismiss();
+                        Utils.backToCustomer(SaleOrderCheckoutActivity.this);
+                    }
+                });
+            }
+        });
+        alertDialog.show();
+
     }
 
     /**
@@ -641,6 +858,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
             contentValues1.put("pc_address", preOrder.getDeviceId());
             contentValues1.put("location_id", locationCode);
             contentValues1.put("price", promotion.getPromotionPrice());
+            contentValues1.put("DELETE_FLAG", 0);
             database.insert("PRE_ORDER_PRESENT", null, contentValues1);
         }
 
@@ -833,7 +1051,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
     private List<PreOrder> getPreOrderFromDatabase() {
         List<PreOrder> preOrderList = new ArrayList<>();
 
-        Cursor cursorPreOrder = database.rawQuery("select * from PRE_ORDER", null);
+        Cursor cursorPreOrder = database.rawQuery("select * from PRE_ORDER WHERE DELETE_FLAG = 0", null);
 
         while (cursorPreOrder.moveToNext()) {
             PreOrder preOrder = new PreOrder();
@@ -864,7 +1082,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
     private List<PreOrderProduct> getPreOrderProductFromDatabase(String saleOrderId) {
         List<PreOrderProduct> preOrderProductList = new ArrayList<>();
 
-        Cursor cursorPreOrderProduct = database.rawQuery("select * from PRE_ORDER_PRODUCT WHERE SALE_ORDER_ID = \'" + saleOrderId + "\';", null);
+        Cursor cursorPreOrderProduct = database.rawQuery("select * from PRE_ORDER_PRODUCT WHERE SALE_ORDER_ID = \'" + saleOrderId + "\' AND DELETE_FLAG = 0;", null);
 
         while (cursorPreOrderProduct.moveToNext()) {
             PreOrderProduct preOrderProduct = new PreOrderProduct();
@@ -1077,7 +1295,8 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
         ContentValues cvDeliveryUploadItem = new ContentValues();
         cvDeliveryUploadItem.put(DatabaseContract.DELIVERY_ITEM_UPLOAD.DELIVERY_ID, deliveryItemApi.getDeliveryId());
         cvDeliveryUploadItem.put(DatabaseContract.DELIVERY_ITEM_UPLOAD.STOCK_ID, deliveryItemApi.getStockId());
-        cvDeliveryUploadItem.put(DatabaseContract.DELIVERY_ITEM_UPLOAD.DELIVERY_QTY, deliveryItemApi.getDeliveryQty());
+        cvDeliveryUploadItem.put(DatabaseContract.DELIVERY_ITEM_UPLOAD.QUANTITY, deliveryItemApi.getDeliveryQty());
+        cvDeliveryUploadItem.put(DatabaseContract.DELIVERY_ITEM_UPLOAD.FOC, checkBox_foc.isChecked());
         database.insert(DatabaseContract.DELIVERY_ITEM_UPLOAD.TABLE, null, cvDeliveryUploadItem);
     }
 
@@ -1106,6 +1325,12 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
             final TextView txt_price = (TextView) view.findViewById(R.id.price);
             final TextView txt_discount = (TextView) view.findViewById(R.id.discount);
             final TextView txt_amount = (TextView) view.findViewById(R.id.amount);
+
+            checkBox_foc = (CheckBox) view.findViewById(R.id.foc);
+
+            if(isDelivery) {
+                checkBox_foc.setVisibility(View.VISIBLE);
+            }
 
             txt_um.setVisibility(View.GONE);
             txt_discount.setVisibility(View.GONE);
@@ -1177,4 +1402,46 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
         }
     }
 
+    public class SmsDeliveredReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent arg1) {
+            switch (getResultCode()) {
+                case Activity.RESULT_OK:
+                    Toast.makeText(context, "SMS delivered", Toast.LENGTH_SHORT).show();
+                    break;
+                case Activity.RESULT_CANCELED:
+                    Toast.makeText(context, "SMS not delivered", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    }
+
+    public class SmsSentReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent arg1) {
+            switch (getResultCode()) {
+                case Activity.RESULT_OK:
+                    Toast.makeText(context, "SMS Sent", Toast.LENGTH_SHORT).show();
+
+                    break;
+                case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
+                    Toast.makeText(context, "SMS generic failure", Toast.LENGTH_SHORT)
+                            .show();
+
+                    break;
+                case SmsManager.RESULT_ERROR_NO_SERVICE:
+                    Toast.makeText(context, "SMS no service", Toast.LENGTH_SHORT)
+                            .show();
+
+                    break;
+                case SmsManager.RESULT_ERROR_NULL_PDU:
+                    Toast.makeText(context, "SMS null PDU", Toast.LENGTH_SHORT).show();
+                    break;
+                case SmsManager.RESULT_ERROR_RADIO_OFF:
+                    Toast.makeText(context, "SMS radio off", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+
+    }
 }

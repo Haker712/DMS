@@ -29,7 +29,7 @@ import org.json.JSONObject;
 
 public class MainFragmentActivity extends AppCompatActivity {
     public static final String CUSTOMER_INFO_KEY = "customer-info-key";
-    Customer customer;
+    public static Customer customer;
 
     public static final String USER_INFO_KEY = "user-info-key";
     public static JSONObject userInfo;
@@ -43,15 +43,15 @@ public class MainFragmentActivity extends AppCompatActivity {
 
     private PermissionHelper.PermissionBuilder permissionRequest;
     private static final int REQUEST_CAMERA = 411;
-    private OnDenyAction onDenyAction = new OnDenyAction(){
+    private OnDenyAction onDenyAction = new OnDenyAction() {
         @Override
-        public void call (int i, boolean b) {
+        public void call(int i, boolean b) {
             Toast.makeText(MainFragmentActivity.this, "Camera Access Denied", Toast.LENGTH_SHORT).show();
         }
     };
-    private OnGrantAction onGrantAction = new OnGrantAction(){
+    private OnGrantAction onGrantAction = new OnGrantAction() {
         @Override
-        public void call (int i) {
+        public void call(int i) {
         }
     };
 
@@ -75,11 +75,13 @@ public class MainFragmentActivity extends AppCompatActivity {
         myEditor.commit();
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        tabLayout.addTab(tabLayout.newTab().setText("Outlet External Check"));
+        // tabLayout.addTab(tabLayout.newTab().setText("Outlet External Check"));
         tabLayout.addTab(tabLayout.newTab().setText("Display Assessment"));
-        tabLayout.addTab(tabLayout.newTab().setText("Competitors' Activities"));
+        tabLayout.addTab(tabLayout.newTab().setText("POSM"));
+        // tabLayout.addTab(tabLayout.newTab().setText("Competitors' Activities"));
         tabLayout.addTab(tabLayout.newTab().setText("Size in Store Share"));
         tabLayout.addTab(tabLayout.newTab().setText("Outlet Stock Availability"));
+
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
         tabLayout.setTabTextColors(Color.WHITE, Color.RED);
 
@@ -127,8 +129,6 @@ public class MainFragmentActivity extends AppCompatActivity {
             }
 
 
-
-
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
 
@@ -139,6 +139,8 @@ public class MainFragmentActivity extends AppCompatActivity {
 
             }
         });
+
+        customer = (Customer) getIntent().getSerializableExtra(CUSTOMER_INFO_KEY);
     }
 
     /*@Override
@@ -157,7 +159,7 @@ public class MainFragmentActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }*/
 
-    void askPermission () {
+    void askPermission() {
         permissionRequest = PermissionHelper.with(MainFragmentActivity.this).build(Manifest.permission.CAMERA).onPermissionsGranted(onGrantAction).onPermissionsDenied(onDenyAction).request(REQUEST_CAMERA);
     }
 

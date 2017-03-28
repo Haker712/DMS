@@ -74,15 +74,9 @@ public class HomeActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonSync)
     void sync() {
-        /*Intent intent = new Intent(this, SyncActivity.class);
+        Intent intent = new Intent(this, SyncActivity.class);
         startActivity(intent);
-        finish();*/
-        //startActivity(new Intent(Intent.ACTION_SEND, Uri.fromParts("sms", "09790607837", null)));
-        /*Intent sendIntent = new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", "09790607837", null));
-        sendIntent.putExtra("sms_body", "default content");
-        sendIntent.setType("vnd.android-dir/mms-sms");
-        startActivity(sendIntent);*/
-
+        finish();
     }
 
     @OnClick(R.id.buttonRoute)
@@ -108,10 +102,10 @@ public class HomeActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonMarketing)
     void marketing() {
-        Utils.commonDialog("This feature is not yet.", this);
-        /*Intent intent = new Intent(this, MarketingActivity.class);
+        Utils.commonDialog("This function is under construction", HomeActivity.this);
+        Intent intent = new Intent(this, MarketingActivity.class);
         startActivity(intent);
-        finish();*/
+        finish();
     }
 
     @OnClick(R.id.buttonReport)

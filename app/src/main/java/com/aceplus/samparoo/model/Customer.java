@@ -77,6 +77,8 @@ public class Customer implements Serializable {
     @Expose
     private int shopTypeId;
 
+    public Customer(){}
+
     public Customer(String customerId, String customerName, String customerTypeId, String customerTypeName, String address
             , String phone, String township, String creditTerms, double creditLimit, double creditAmt, double dueAmt
             , double prepaidAmt, String paymentType, String isInRoute, double latitude, double longitude, int visitRecord) {
@@ -99,6 +101,8 @@ public class Customer implements Serializable {
         this.longitude = longitude;
         this.visitRecord = visitRecord;
     }
+
+
 
     public int getId() {
         return id;

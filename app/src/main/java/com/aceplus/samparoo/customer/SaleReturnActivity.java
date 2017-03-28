@@ -131,7 +131,7 @@ public class SaleReturnActivity extends Activity {
 
             if (check.equalsIgnoreCase("yes")) {
 
-               titleTextView.setText("Sale Exchange");
+               titleTextView.setText(R.string.sale_exchange);
                 sale_return_id = Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), "YGN", Utils.FOR_SALE_RETURN_EXCHANGE);
 
             } else {
@@ -407,7 +407,7 @@ public class SaleReturnActivity extends Activity {
                 + saleReturn.getPayAmt() + "\", \""
                 + saleReturn.getPcAddress() + "\", \""
                 + saleReturn.getReturnedDate() + "\""
-                + ")");
+                + ", 0)");
     }
 
     /**
@@ -422,7 +422,7 @@ public class SaleReturnActivity extends Activity {
                 + saleReturnDetail.getPrice() + "\", \""
                 + saleReturnDetail.getQuantity() + "\", \""
                 + saleReturnDetail.getRemark() + "\""
-                + ")");
+                + ", 0)");
     }
 
     private void initCategories() {
