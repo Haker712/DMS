@@ -130,9 +130,25 @@ public class ECalenderFragment extends Fragment {
     Button day34;
     @InjectView(R.id.day35)
     Button day35;
+    @InjectView(R.id.day36)
+    Button day36;
+    @InjectView(R.id.day37)
+    Button day37;
+    @InjectView(R.id.day38)
+    Button day38;
+    @InjectView(R.id.day39)
+    Button day39;
+    @InjectView(R.id.day40)
+    Button day40;
+    @InjectView(R.id.day41)
+    Button day41;
+    @InjectView(R.id.day42)
+    Button day42;
 
     @InjectView(R.id.hideRow)
     TableRow hideRow;
+    @InjectView(R.id.hideRow1)
+    TableRow hideRow1;
 
     String dateFormat = "yyyy-MM-dd";
     String currentDate = "";
@@ -206,6 +222,13 @@ public class ECalenderFragment extends Fragment {
         btnArr[32] = day33;
         btnArr[33] = day34;
         btnArr[34] = day35;
+        btnArr[35] = day36;
+        btnArr[36] = day37;
+        btnArr[37] = day38;
+        btnArr[38] = day39;
+        btnArr[39] = day40;
+        btnArr[40] = day41;
+        btnArr[41] = day42;
 
         for(int i = dayIndex; i < 30 + dayIndex; i++) {
             btnArr[i].setText(eCalendarList.get(i-dayIndex).getDateNum() + "");
