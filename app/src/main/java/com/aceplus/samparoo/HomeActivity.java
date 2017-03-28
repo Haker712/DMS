@@ -101,10 +101,10 @@ public class HomeActivity extends AppCompatActivity {
     @OnClick(R.id.buttonMarketing)
     void marketing() {
 
-        Utils.commonDialog("Under construction", HomeActivity.this);
-        /*Intent intent = new Intent(this, MarketingActivity.class);
+        //Utils.commonDialog("Under construction", HomeActivity.this);
+        Intent intent = new Intent(this, MarketingActivity.class);
         startActivity(intent);
-        finish();*/
+        finish();
     }
 
     @OnClick(R.id.buttonReport)
