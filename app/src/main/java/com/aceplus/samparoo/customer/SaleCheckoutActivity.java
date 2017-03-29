@@ -5,6 +5,8 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.Location;
+import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -577,6 +579,12 @@ public class SaleCheckoutActivity extends AppCompatActivity {
                         finish();
                     }
                     else {
+
+                        if(isSameCustomer(customer.getId())) {
+
+                            updateSaleVisitRecord(customer.getId());
+                        }
+
                         Utils.backToCustomer(SaleCheckoutActivity.this);
                     }
                 } else {
@@ -592,6 +600,69 @@ public class SaleCheckoutActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Update SALE VISIT RECORD of related customer id
+     *
+     * @param customerId customer number
+     */
+    private void updateSaleVisitRecord(int customerId) {
+        ContentValues cv = new ContentValues();
+        String where = DatabaseContract.SALE_VISIT_RECORD.CUSTOMER_ID + "=?";
+        String[] whereArgs = new String[] {String.valueOf(customerId)};
+        cv.put(DatabaseContract.SALE_VISIT_RECORD.SALE_FLG, 1);
+        database.update(DatabaseContract.SALE_VISIT_RECORD.TABLE_UPLOAD, cv, where, whereArgs);
+    }
+
+    /**
+     * Check it is the same location for customer.
+     *
+     * @param customerId customer row number
+     *
+     * @return true: if that location is correct; otherwise false.
+     */
+    private boolean isSameCustomer(int customerId) {
+        Cursor locationCursor = database.rawQuery("SELECT LATITUDE, LONGITUDE FROM CUSTOMER WHERE ID = " + customerId, null);
+        String latiString = "", longiString = "";
+        Double latitude = 0.0, longitude = 0.0, latiDouble = 0.0, longDouble = 0.0;
+
+        while(locationCursor.moveToNext()) {
+            latiString = locationCursor.getString(locationCursor.getColumnIndex("LATITUDE"));
+            longiString = locationCursor.getString(locationCursor.getColumnIndex("LONGITUDE"));
+        }
+
+        if(latiString != null && longiString != null) {
+            latiDouble = Double.parseDouble(latiString.substring(0, 6));
+            longDouble = Double.parseDouble(longiString.substring(0, 6));
+        }
+
+        GPSTracker gpsTracker = new GPSTracker(SaleCheckoutActivity.this);
+        if (gpsTracker.canGetLocation()) {
+            String lat = String.valueOf(gpsTracker.getLatitude());
+            String lon = String.valueOf(gpsTracker.getLongitude());
+
+            if(!lat.equals(null) && !lon.equals(null) && lat.length() > 5 && lon.length() > 5){
+                latitude = Double.parseDouble(lat.substring(0,6));
+                longitude = Double.parseDouble(lon.substring(0,6));
+            }
+        } else {
+            gpsTracker.showSettingsAlert();
+        }
+
+        if(latiDouble != null && longDouble !=null && latitude != null && longitude != null) {
+
+            if(latitude >= (latiDouble - 0.001) && latitude <= (latiDouble + 0.001) && longitude >= (longDouble - 0.001) && longitude <= (longDouble + 0.001)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    /**
+     * Check for fully paid
+     *
+     * @return true : fully paid; false : not fully paid
+     */
     private boolean isFullyPaid() {
         double pay_amount = 0.0, net_amount = 0.0;
 

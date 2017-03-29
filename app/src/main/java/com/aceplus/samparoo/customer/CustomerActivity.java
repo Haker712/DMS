@@ -2,6 +2,7 @@ package com.aceplus.samparoo.customer;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -106,6 +107,7 @@ public class CustomerActivity extends AppCompatActivity {
     private int visitRecord = 0;
 
     Cursor cursor;
+    String saleManId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,6 +127,7 @@ public class CustomerActivity extends AppCompatActivity {
 
         ButterKnife.inject(this);
 
+        saleManId = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
 
         registerIDs();
 
@@ -238,6 +241,7 @@ public class CustomerActivity extends AppCompatActivity {
                     , cursor.getDouble(cursor.getColumnIndex("LONGITUDE"))
                     , cursor.getInt(cursor.getColumnIndex("VISIT_RECORD")));
             customer.setShopTypeId(cursor.getInt(cursor.getColumnIndex("shop_type_id")));
+            customer.setId(cursor.getInt(cursor.getColumnIndex("id")));
             customers.add(customer);
             customerListForArrayAdapter.add(customer);
 
@@ -252,6 +256,14 @@ public class CustomerActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
+
+                if(isSameCustomer(customers.get(position).getId())) {
+                    database.beginTransaction();
+                    deleteSaleVisitRecord(customers.get(position).getId());
+                    insertSaleVisitRecord(customers.get(position));
+                    database.setTransactionSuccessful();
+                    database.endTransaction();
+                }
 
                 customer = customers.get(position);
 
@@ -325,6 +337,83 @@ public class CustomerActivity extends AppCompatActivity {
             }
         });
     }
+
+    /**
+     * Update SALE VISIT RECORD of related customer id
+     *
+     * @param customer customer number
+     */
+    private void insertSaleVisitRecord(Customer customer) {
+        ContentValues cv = new ContentValues();
+        cv.put(DatabaseContract.SALE_VISIT_RECORD.CUSTOMER_ID, customer.getId());
+        cv.put(DatabaseContract.SALE_VISIT_RECORD.SALEMAN_ID, saleManId);
+        cv.put(DatabaseContract.SALE_VISIT_RECORD.LATITUDE, customer.getLatitude());
+        cv.put(DatabaseContract.SALE_VISIT_RECORD.LONGITUDE, customer.getLongitude());
+        cv.put(DatabaseContract.SALE_VISIT_RECORD.VISIT_FLG, 1);
+        cv.put(DatabaseContract.SALE_VISIT_RECORD.SALE_FLG, 0);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+        String currentDate = sdf.format(new Date());
+        cv.put(DatabaseContract.SALE_VISIT_RECORD.RECORD_DATE,currentDate);
+        database.insert(DatabaseContract.SALE_VISIT_RECORD.TABLE_UPLOAD, null, cv);
+    }
+
+    /**
+     * Before inserting, if there is duplicate customer, delete record
+     *
+     * @param customerId customer number
+     */
+    private void deleteSaleVisitRecord(int customerId) {
+        String where = "CUSTOMER_ID = ?";
+        String[] whereArgs = new String[] {String.valueOf(customerId)};
+        database.delete(DatabaseContract.SALE_VISIT_RECORD.TABLE_UPLOAD, where, whereArgs);
+    }
+
+    /**
+     * Check it is the same location for customer.
+     *
+     * @param customerId customer row number
+     *
+     * @return true: if that location is correct; otherwise false.
+     */
+    private boolean isSameCustomer(int customerId) {
+        Cursor locationCursor = database.rawQuery("SELECT LATITUDE, LONGITUDE FROM CUSTOMER WHERE ID = " + customerId, null);
+        String latiString = "", longiString = "";
+        Double latitude = 0.0, longitude = 0.0, latiDouble = 0.0, longDouble = 0.0;
+
+        while(locationCursor.moveToNext()) {
+            latiString = locationCursor.getString(locationCursor.getColumnIndex("LATITUDE"));
+            longiString = locationCursor.getString(locationCursor.getColumnIndex("LONGITUDE"));
+        }
+
+        if(latiString != null && longiString != null) {
+            latiDouble = Double.parseDouble(latiString.substring(0, 6));
+            longDouble = Double.parseDouble(longiString.substring(0, 6));
+        }
+
+        GPSTracker gpsTracker = new GPSTracker(CustomerActivity.this);
+        if (gpsTracker.canGetLocation()) {
+            String lat = String.valueOf(gpsTracker.getLatitude());
+            String lon = String.valueOf(gpsTracker.getLongitude());
+
+            if(!lat.equals(null) && !lon.equals(null) && lat.length() > 5 && lon.length() > 5){
+                latitude = Double.parseDouble(lat.substring(0,6));
+                longitude = Double.parseDouble(lon.substring(0,6));
+            }
+        } else {
+            gpsTracker.showSettingsAlert();
+        }
+
+        if(latiDouble != null && longDouble !=null && latitude != null && longitude != null) {
+
+            if(latitude >= (latiDouble - 0.001) && latitude <= (latiDouble + 0.001) && longitude >= (longDouble - 0.001) && longitude <= (longDouble + 0.001)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 
     private void catchEvents() {
 

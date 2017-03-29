@@ -1,5 +1,6 @@
 package com.aceplus.samparoo;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentValues;
@@ -133,9 +134,20 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Request permissions related to storage and location services
+     * to user from application.
+     */
     void askPermission() {
+        String [] permissionArr = new String[5];
+        permissionArr[0] = android.Manifest.permission.READ_EXTERNAL_STORAGE;
+        permissionArr[1] = Manifest.permission.ACCESS_COARSE_LOCATION;
+        permissionArr[2] = Manifest.permission.ACCESS_FINE_LOCATION;
+        permissionArr[3] = Manifest.permission.ACCESS_NETWORK_STATE;
+        permissionArr[4] = Manifest.permission.ACCESS_WIFI_STATE;
+
         permissionRequest = PermissionHelper.with(LoginActivity.this)
-                .build(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                .build(permissionArr)
                 .onPermissionsGranted(onGrantAction)
                 .onPermissionsDenied(onDenyAction)
                 .request(REQUEST_STORAGE);

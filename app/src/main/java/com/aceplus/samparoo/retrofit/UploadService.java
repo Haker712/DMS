@@ -49,4 +49,7 @@ public interface UploadService {
     @POST("upload/outletStockAndSizeInStore ")
     Call<InvoiceResponse> uploadoutletsizeinstore(@Field("param_data") String paramData);
 
+    @FormUrlEncoded
+    @POST("upload/customerVisit")
+    Call<InvoiceResponse> uploadCustomerVisit(@Field("param_data") String paramData);
 }
