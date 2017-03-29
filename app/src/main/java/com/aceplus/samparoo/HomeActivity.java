@@ -1,6 +1,8 @@
 package com.aceplus.samparoo;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +14,7 @@ import android.widget.Toast;
 import com.aceplus.samparoo.customer.CustomerActivity;
 import com.aceplus.samparoo.model.Promotion;
 import com.aceplus.samparoo.utils.Constant;
+import com.aceplus.samparoo.utils.Database;
 import com.aceplus.samparoo.utils.Utils;
 import com.aceplus.samparoo.report.ReportHomeActivity;
 
@@ -48,6 +51,8 @@ public class HomeActivity extends AppCompatActivity {
     @InjectView(R.id.date)
     TextView textViewDate;
 
+    SQLiteDatabase sqLiteDatabase;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,13 +60,15 @@ public class HomeActivity extends AppCompatActivity {
 
         ButterKnife.inject(this);
 
+        sqLiteDatabase = new Database(this).getDataBase();
+
         //toolbarTitle.setText(R.string.home_label);
         //Toast.makeText(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, ""), Toast.LENGTH_SHORT).show();
 
-        if(LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NAME, "") != null) {
+        if (LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NAME, "") != null) {
             textViewUserName.setText(LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NAME, ""));
         }
-        
+
         textViewDate.setText(Utils.getCurrentDate(false));
     }
 
@@ -79,9 +86,11 @@ public class HomeActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonRoute)
     void route() {
-        Intent intent = new Intent(this, RouteActivity.class);
-        startActivity(intent);
-        finish();
+        if (isNoCustomer() > 0) {
+            Intent intent = new Intent(this, RouteActivity.class);
+            startActivity(intent);
+            finish();
+        }else {Utils.commonDialog("NO CUSTOMER",this);}
     }
 
     @OnClick(R.id.buttonCustomerVisit)
@@ -119,5 +128,12 @@ public class HomeActivity extends AppCompatActivity {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    private int isNoCustomer() {
+        sqLiteDatabase = new Database(this).getDataBase();
+        Cursor cursorCustomerCount = sqLiteDatabase.rawQuery("SELECT * FROM CUSTOMER", null);
+        int count = cursorCustomerCount.getCount();
+        return count;
     }
 }
