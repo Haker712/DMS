@@ -85,10 +85,10 @@ public class RouteActivity extends FragmentActivity {
                 break;
 
             case "e-Calendar" :
-                Toast.makeText(this, "Under Construction", Toast.LENGTH_SHORT).show();
-               /* fragmentClass = ECalenderFragment.class;
+                //Toast.makeText(this, "Under Construction", Toast.LENGTH_SHORT).show();
+                fragmentClass = ECalenderFragment.class;
                 textViewTitle.setText("E-CALENDAR");
-                Log.i("Cal", "Cal");*/
+                Log.i("Cal", "Cal");
                 break;
 
             default: fragmentClass = ERouteMapFragment.class;
