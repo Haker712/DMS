@@ -173,7 +173,7 @@ public class SyncActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonDownload)
     void download() {
-        downloadCustomerVisitFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
+
         downloadCustomerFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
         //downloadProductsFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
         //downloadPromotionFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
@@ -185,8 +185,7 @@ public class SyncActivity extends AppCompatActivity {
     @OnClick(R.id.buttonUpload)
     void upload() {
         services = "";
-        uploadCustomerVisitToServer();
-        //uploadInvoiceToSever();
+        uploadInvoiceToSever();
     }
 
     @OnClick(R.id.buttonClearData)
@@ -307,6 +306,7 @@ public class SyncActivity extends AppCompatActivity {
                         onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
                         textViewError.setText(response.body().getAceplusStatusMessage());
                     } else {
+                        Utils.cancelDialog();
                         Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
                     }
 
@@ -424,14 +424,21 @@ public class SyncActivity extends AppCompatActivity {
                         sqLiteDatabase.endTransaction();
 
                         downloadPromotionFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
+                    } else {
+                        Utils.cancelDialog();
+                        textViewError.setText(response.body().getAceplusStatusMessage());
                     }
 
                 } else {
+
                     if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
                         onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                        textViewError.setText(response.body().getAceplusStatusMessage());
                     } else {
+                        Utils.cancelDialog();
                         Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
                     }
+
                 }
             }
 
@@ -484,14 +491,21 @@ public class SyncActivity extends AppCompatActivity {
                         sqLiteDatabase.endTransaction();
 
                         downloadVolumeDiscountFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
+                    } else {
+                        Utils.cancelDialog();
+                        textViewError.setText(response.body().getAceplusStatusMessage());
                     }
 
                 } else {
+
                     if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
                         onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                        textViewError.setText(response.body().getAceplusStatusMessage());
                     } else {
+                        Utils.cancelDialog();
                         Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
                     }
+
                 }
             }
 
@@ -602,14 +616,21 @@ public class SyncActivity extends AppCompatActivity {
                         sqLiteDatabase.endTransaction();
 
                         downloadGenerarlfromSever(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
+                    } else {
+                        Utils.cancelDialog();
+                        textViewError.setText(response.body().getAceplusStatusMessage());
                     }
 
                 } else {
+
                     if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
                         onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                        textViewError.setText(response.body().getAceplusStatusMessage());
                     } else {
+                        Utils.cancelDialog();
                         Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
                     }
+
                 }
             }
 
@@ -734,14 +755,21 @@ public class SyncActivity extends AppCompatActivity {
                         sqLiteDatabase.setTransactionSuccessful();
                         sqLiteDatabase.endTransaction();
                         downloadPosmShopTypeFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
+                    } else {
+                        Utils.cancelDialog();
+                        textViewError.setText(response.body().getAceplusStatusMessage());
                     }
 
                 } else {
+
                     if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
                         onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                        textViewError.setText(response.body().getAceplusStatusMessage());
                     } else {
+                        Utils.cancelDialog();
                         Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
                     }
+
                 }
             }
 
@@ -813,7 +841,7 @@ public class SyncActivity extends AppCompatActivity {
 
     }
 
-    private void downloadMarketingfromServer(String paramData) {
+    private void downloadMarketingfromServer(final String paramData) {
 
 
         DownloadService downloadService = RetrofitServiceFactory.createService(DownloadService.class);
@@ -821,9 +849,9 @@ public class SyncActivity extends AppCompatActivity {
         call.enqueue(new Callback<DownloadMarketing>() {
             @Override
             public void onResponse(Call<DownloadMarketing> call, Response<DownloadMarketing> response) {
-                if (response.code() == 200){
+                if (response.code() == 200) {
 
-                    if (response.body().getAceplusStatusCode() == 200){
+                    if (response.body().getAceplusStatusCode() == 200) {
 
                         sqLiteDatabase.beginTransaction();
 
@@ -831,7 +859,20 @@ public class SyncActivity extends AppCompatActivity {
 
                         sqLiteDatabase.setTransactionSuccessful();
                         sqLiteDatabase.endTransaction();
+                        downloadCustomerVisitFromServer(paramData);
+                    } else {
+                        Utils.cancelDialog();
+                        textViewError.setText(response.body().getAceplusStatusMessage());
+                    }
 
+                } else {
+
+                    if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                        textViewError.setText(response.body().getAceplusStatusMessage());
+                    } else {
+                        Utils.cancelDialog();
+                        Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
                     }
 
                 }
@@ -839,7 +880,8 @@ public class SyncActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<DownloadMarketing> call, Throwable t) {
-
+                Utils.cancelDialog();
+                Utils.commonDialog(t.getMessage(), SyncActivity.this);
             }
         });
 
@@ -981,7 +1023,7 @@ public class SyncActivity extends AppCompatActivity {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
 
-                        if(!services.equals("")) {
+                        if (!services.equals("")) {
                             services += ",";
                         }
                         services += getResources().getString(R.string.sale);
@@ -1330,7 +1372,7 @@ public class SyncActivity extends AppCompatActivity {
 
         List<PreOrderPresentApi> preOrderPresentApiList = new ArrayList<>();
 
-        for(PreOrder preOrder : preOrderList) {
+        for (PreOrder preOrder : preOrderList) {
             PreOrderApi preOrderApi = new PreOrderApi();
             preOrderApi.setId(preOrder.getInvoiceId());
             preOrderApi.setCustomerId(preOrder.getCustomerId());
@@ -1353,7 +1395,7 @@ public class SyncActivity extends AppCompatActivity {
             List<PreOrderProduct> preOrderProductList = getPreOrderProductFromDatabase(preOrder.getInvoiceId());
 
             List<PreOrderDetailApi> preOrderDetailApiList = new ArrayList<>();
-            for(PreOrderProduct preOrderProduct : preOrderProductList) {
+            for (PreOrderProduct preOrderProduct : preOrderProductList) {
                 PreOrderDetailApi preOrderDetailApi = new PreOrderDetailApi();
                 preOrderDetailApi.setSaleOrderId(preOrderProduct.getSaleOrderId());
                 preOrderDetailApi.setProductId(preOrderProduct.getProductId());
@@ -1689,13 +1731,21 @@ public class SyncActivity extends AppCompatActivity {
                         sqLiteDatabase.endTransaction();
 
                         downloadDeliveryFromApi(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
+                    } else {
+                        Utils.cancelDialog();
+                        textViewError.setText(response.body().getAceplusStatusMessage());
                     }
+
                 } else {
+
                     if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
                         onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                        textViewError.setText(response.body().getAceplusStatusMessage());
                     } else {
+                        Utils.cancelDialog();
                         Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
                     }
+
                 }
             }
 
@@ -1915,12 +1965,20 @@ public class SyncActivity extends AppCompatActivity {
                         sqLiteDatabase.endTransaction();
                         downloadCreditFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
                     } else {
-                        if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
-                            onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
-                        } else {
-                            Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
-                        }
+                        Utils.cancelDialog();
+                        textViewError.setText(response.body().getAceplusStatusMessage());
                     }
+
+                } else {
+
+                    if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                        textViewError.setText(response.body().getAceplusStatusMessage());
+                    } else {
+                        Utils.cancelDialog();
+                        Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
+                    }
+
                 }
             }
 
@@ -2050,17 +2108,13 @@ public class SyncActivity extends AppCompatActivity {
 
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        Utils.cancelDialog();
+                        //Utils.cancelDialog();
                         //Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
                         if (!services.equals("")) {
                             services += ",";
                         }
 
-                        services += " " + getResources().getString(R.string.delivery);
-                        if (!services.equals("")) {
-                            services += " are successfully uploaded";
-                            Utils.commonDialog(services, SyncActivity.this);
-                        }
+                        services += " " + getResources().getString(R.string.display_assessment);
 
                         uploadOutletSizeinstortoserver();
 
@@ -2085,7 +2139,6 @@ public class SyncActivity extends AppCompatActivity {
         });
 
 
-
     }
 
 /*    private String getJsonFromObject(DisplayAssessmentRequest displayAssessmentRequest) {
@@ -2095,7 +2148,6 @@ public class SyncActivity extends AppCompatActivity {
         return jsonString;
 
     }*/
-
 
 
     private List<DisplayAssessment> getDisplayAssessmentFromDB() {
@@ -2158,7 +2210,7 @@ public class SyncActivity extends AppCompatActivity {
 
         final Outlet_Sizeinstore_request outlet_sizeinstore_request = outlet_sizeinstore_request();
 
-        String paramData = getJsonFromObject(outlet_sizeinstore_request);
+        final String paramData = getJsonFromObject(outlet_sizeinstore_request);
         Log.i("PaRam", paramData);
 
         UploadService uploadService = RetrofitServiceFactory.createService(UploadService.class);
@@ -2171,18 +2223,15 @@ public class SyncActivity extends AppCompatActivity {
 
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        Utils.cancelDialog();
+
                         //Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
                         if (!services.equals("")) {
                             services += ",";
                         }
 
-                        services += " " + getResources().getString(R.string.delivery);
-                        if (!services.equals("")) {
-                            services += " are successfully uploaded";
-                            Utils.commonDialog(services, SyncActivity.this);
-                        }
+                        services += " " + getResources().getString(R.string.outlet_stock_availability);
 
+                        uploadCustomerVisitToServer();
                     }
                 } else {
                     if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
@@ -2503,13 +2552,12 @@ public class SyncActivity extends AppCompatActivity {
 
                         insertCreditToDB(response.body().getDataForCreditList().get(0).getCreditForApiList());
                         insertCustomerBalanceToDB(response.body().getDataForCreditList().get(0).getCustomerBalanceList());
-
+                        downloadMarketingfromServer(paramData);
                     } else {
                         Utils.cancelDialog();
                         textViewError.setText(response.body().getAceplusStatusMessage());
                     }
 
-                    downloadMarketingfromServer(paramData);
 
                 } else {
 
@@ -2517,8 +2565,10 @@ public class SyncActivity extends AppCompatActivity {
                         onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
                         textViewError.setText(response.body().getAceplusStatusMessage());
                     } else {
+                        Utils.cancelDialog();
                         Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
                     }
+
 
                 }
             }
@@ -2589,16 +2639,12 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        Utils.cancelDialog();
+                        //Utils.cancelDialog();
                         if (!services.equals("")) {
                             services += ",";
                         }
 
                         services += " " + getResources().getString(R.string.cash_receive);
-                        if (!services.equals("")) {
-                            services += " are successfully uploaded";
-                            Utils.commonDialog(services, SyncActivity.this);
-                        }
                         uploadDisplayAssessmenttosever();
 
                     } else {
@@ -2654,7 +2700,7 @@ public class SyncActivity extends AppCompatActivity {
         List<CashReceiveApi> cashReceiveApiList = new ArrayList<>();
 
         Cursor cursorCashReceiveApi = sqLiteDatabase.rawQuery("select * from " + DatabaseContract.CASH_RECEIVE.TABLE, null);
-        while(cursorCashReceiveApi.moveToNext()) {
+        while (cursorCashReceiveApi.moveToNext()) {
             CashReceiveApi cashReceiveApi = new CashReceiveApi();
             cashReceiveApi.setReceiveNo(cursorCashReceiveApi.getString(cursorCashReceiveApi.getColumnIndex(DatabaseContract.CASH_RECEIVE.RECEIVE_NO)));
             cashReceiveApi.setReceiveDate(cursorCashReceiveApi.getString(cursorCashReceiveApi.getColumnIndex(DatabaseContract.CASH_RECEIVE.RECEIVE_DATE)));
@@ -2683,7 +2729,7 @@ public class SyncActivity extends AppCompatActivity {
         List<CashReceiveItemApi> cashReceiveItemApiList = new ArrayList<>();
 
         Cursor cursorCashReceiveItemApi = sqLiteDatabase.rawQuery("select * from " + DatabaseContract.CASH_RECEIVE_ITEM.TABLE + " WHERE " + DatabaseContract.CASH_RECEIVE_ITEM.RECEIVE_NO + " = \'" + invoiceNo + "\'", null);
-        while(cursorCashReceiveItemApi.moveToNext()) {
+        while (cursorCashReceiveItemApi.moveToNext()) {
             CashReceiveItemApi cashReceiveItemApi = new CashReceiveItemApi();
             cashReceiveItemApi.setReceiveNo(cursorCashReceiveItemApi.getString(cursorCashReceiveItemApi.getColumnIndex(DatabaseContract.CASH_RECEIVE_ITEM.RECEIVE_NO)));
             cashReceiveItemApi.setSaleId(cursorCashReceiveItemApi.getInt(cursorCashReceiveItemApi.getColumnIndex(DatabaseContract.CASH_RECEIVE_ITEM.SALE_ID)));
@@ -2706,6 +2752,7 @@ public class SyncActivity extends AppCompatActivity {
 
     /**
      * Get related location code
+     *
      * @return locationCode
      */
     private int getLocationCode() {
@@ -2725,7 +2772,7 @@ public class SyncActivity extends AppCompatActivity {
 
         String paramData = "";
 
-       //Utils.callDialog("Please wait...", this);
+        //Utils.callDialog("Please wait...", this);
 
         CustomerVisitRequest customerVisitRequest = new CustomerVisitRequest();
 
@@ -2745,11 +2792,15 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-
+                        Utils.cancelDialog();
                         if (!services.equals("")) {
                             services += ",";
                         }
                         services += "CUSTOMER VISIT RECORD ";
+                        if (!services.equals("")) {
+                            services += " are successfully uploaded";
+                            Utils.commonDialog(services, SyncActivity.this);
+                        }
                     } else {
                         if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
                             onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
@@ -2793,7 +2844,7 @@ public class SyncActivity extends AppCompatActivity {
 
                         sqLiteDatabase.beginTransaction();
 
-                        for(SaleVisitRecord saleVisitRecord :saleVisitRecordList) {
+                        for (SaleVisitRecord saleVisitRecord : saleVisitRecordList) {
                             deleteDataAfterUpload(DatabaseContract.SALE_VISIT_RECORD.TABLE_DOWNLOAD, null, null);
                             insertSaleVisitRecord(saleVisitRecord);
                         }
@@ -2811,6 +2862,7 @@ public class SyncActivity extends AppCompatActivity {
                         onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
                         textViewError.setText(response.body().getAceplusStatusMessage());
                     } else {
+                        Utils.cancelDialog();
                         Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
                     }
 
@@ -2830,7 +2882,7 @@ public class SyncActivity extends AppCompatActivity {
      *
      * @return CustomerVisitRequestData list
      */
-    List<CustomerVisitRequestData> getCustomerVisit(){
+    List<CustomerVisitRequestData> getCustomerVisit() {
         List<CustomerVisitRequestData> customerVisitRequestDataList = new ArrayList<>();
         CustomerVisitRequestData customerVisitRequestData = new CustomerVisitRequestData();
         customerVisitRequestData.setSaleVisitRecordList(getSaleVisitRecord());
@@ -2843,11 +2895,11 @@ public class SyncActivity extends AppCompatActivity {
      *
      * @return SaleVisitRecord list
      */
-    private List<SaleVisitRecord> getSaleVisitRecord () {
+    private List<SaleVisitRecord> getSaleVisitRecord() {
         List<SaleVisitRecord> saleVisitRecordList = new ArrayList<>();
 
         Cursor cursorSaleVisitRecord = sqLiteDatabase.rawQuery("SELECT * FROM " + DatabaseContract.SALE_VISIT_RECORD.TABLE_UPLOAD, null);
-        while(cursorSaleVisitRecord.moveToNext()) {
+        while (cursorSaleVisitRecord.moveToNext()) {
             SaleVisitRecord saleVisitRecord = new SaleVisitRecord();
 
             saleVisitRecord.setId(cursorSaleVisitRecord.getInt(cursorSaleVisitRecord.getColumnIndex(DatabaseContract.SALE_VISIT_RECORD.ID)));
@@ -2857,7 +2909,8 @@ public class SyncActivity extends AppCompatActivity {
             saleVisitRecord.setSalemanId(cursorSaleVisitRecord.getInt(cursorSaleVisitRecord.getColumnIndex(DatabaseContract.SALE_VISIT_RECORD.SALEMAN_ID)));
             saleVisitRecord.setSaleFlg(cursorSaleVisitRecord.getShort(cursorSaleVisitRecord.getColumnIndex(DatabaseContract.SALE_VISIT_RECORD.SALE_FLG)));
             saleVisitRecord.setVisitFlg(cursorSaleVisitRecord.getShort(cursorSaleVisitRecord.getColumnIndex(DatabaseContract.SALE_VISIT_RECORD.VISIT_FLG)));
-            saleVisitRecord.setRecordDate(cursorSaleVisitRecord.getString(cursorSaleVisitRecord.getColumnIndex(DatabaseContract.SALE_VISIT_RECORD.RECORD_DATE)));;
+            saleVisitRecord.setRecordDate(cursorSaleVisitRecord.getString(cursorSaleVisitRecord.getColumnIndex(DatabaseContract.SALE_VISIT_RECORD.RECORD_DATE)));
+            ;
             saleVisitRecordList.add(saleVisitRecord);
         }
         return saleVisitRecordList;
