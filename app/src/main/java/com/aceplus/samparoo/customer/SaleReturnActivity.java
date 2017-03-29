@@ -374,10 +374,13 @@ public class SaleReturnActivity extends Activity {
 
         if (check.equalsIgnoreCase("yes")){
 
+            Double netAmount=0.0;
+
             Intent intent = new Intent(SaleReturnActivity.this, SaleActivity.class);
             intent.putExtra("SaleExchange","yes");
             intent.putExtra(SaleActivity.CUSTOMER_INFO_KEY, customer);
             intent.putExtra(SaleActivity.SALE_RETURN_INVOICEID_KEY, sale_return_id);
+            intent.putExtra(Constant.KEY_SALE_RETURN_AMOUNT,Utils.formatAmount(netAmount));
             startActivity(intent);
 
         }else {

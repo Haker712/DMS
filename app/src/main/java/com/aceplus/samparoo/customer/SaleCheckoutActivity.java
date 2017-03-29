@@ -1,10 +1,7 @@
 package com.aceplus.samparoo.customer;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ContentValues;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -18,9 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -39,12 +34,10 @@ import com.aceplus.samparoo.utils.Database;
 import com.aceplus.samparoo.utils.DatabaseContract;
 import com.aceplus.samparoo.utils.Utils;
 
-import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Created by haker on 2/3/17.
@@ -148,8 +141,41 @@ public class SaleCheckoutActivity extends AppCompatActivity {
             check = intent.getExtras().getString("SaleExchange");
             if (check.equalsIgnoreCase("yes")) {
 
+                double totalItemDiscountAmount = 0.0;
+
                 titleTextView.setText("SALE EXCHANGE");
                 invoiceIdTextView.setText(Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.FOR_SALE_EXCHANGE));
+                View layout=findViewById(R.id.SaleExchangeLayout);
+                layout.setVisibility(View.VISIBLE);
+
+                TextView textView_salereturnAmount= (TextView) findViewById(R.id.salereturnAmount);
+                TextView textView_payAmtfromCustomer= (TextView) findViewById(R.id.payamountfromcustomer);
+                TextView textView_refundtoCustomer= (TextView) findViewById(R.id.refundtocustomer);
+
+                Double salereturnAmount=getIntent().getDoubleExtra(Constant.KEY_SALE_RETURN_AMOUNT,0.0);
+                Double saleexchangeAmount= Double.valueOf(Utils.formatAmount(totalAmount - totalItemDiscountAmount - totalVolumeDiscount));
+
+                textView_salereturnAmount.setText(salereturnAmount+"");
+
+                if (saleexchangeAmount>salereturnAmount){
+
+                    Double payAmtfromCustomer=saleexchangeAmount-salereturnAmount;
+                    textView_payAmtfromCustomer.setText(payAmtfromCustomer+"");
+
+                }else {
+
+                    double refundAmount=salereturnAmount-saleexchangeAmount;
+
+                    textView_refundtoCustomer.setText(refundAmount+"");
+
+                }
+
+//                textView_salereturnAmount.setText((int) getIntent().getDoubleExtra(Constant.KEY_SALE_RETURN_AMOUNT,0.0));
+
+
+
+
+
             } else {
 
                 invoiceIdTextView.setText(Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.FOR_OTHERS));

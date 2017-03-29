@@ -52,6 +52,7 @@ import java.util.Locale;
 import java.util.prefs.Preferences;
 
 import butterknife.ButterKnife;
+import butterknife.InjectView;
 import butterknife.OnClick;
 
 public class CustomerActivity extends AppCompatActivity {
@@ -96,6 +97,7 @@ public class CustomerActivity extends AppCompatActivity {
 
     View buttongp;
     String check;
+    @InjectView(R.id.ok)
     Button btnOk;
 //    SimpleDateFormat fmtForTodayStr = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -200,7 +202,7 @@ public class CustomerActivity extends AppCompatActivity {
 
         posmButton = (Button) findViewById(R.id.btn_posm);
         buttongp = findViewById(R.id.customer_buttonGp);
-        btnOk = (Button) findViewById(R.id.ok);
+
     }
 
     private void customerDatas() {
@@ -211,7 +213,7 @@ public class CustomerActivity extends AppCompatActivity {
         while (cursor.moveToNext()) {
             String township_name = "";
             String township_id = cursor.getString(cursor.getColumnIndex("township_number"));
-            Cursor cursorForTownship = database.rawQuery("select * from TOWNSHIP where TOWNSHIP_ID = '"+township_id+"'", null);
+            Cursor cursorForTownship = database.rawQuery("select * from TOWNSHIP where TOWNSHIP_ID = '" + township_id + "'", null);
             while (cursorForTownship.moveToNext()) {
                 township_name = cursorForTownship.getString(cursorForTownship.getColumnIndex("TOWNSHIP_NAME"));
             }
@@ -332,7 +334,7 @@ public class CustomerActivity extends AppCompatActivity {
                 if (didCustomerSelected()) {
                     Intent intent = new Intent(CustomerActivity.this, SaleActivity.class);
                     intent.putExtra(SaleActivity.CUSTOMER_INFO_KEY, customer);
-                    intent.putExtra("SaleExchange","no");
+                    intent.putExtra("SaleExchange", "no");
                     startActivity(intent);
                     finish();
                 }
@@ -481,7 +483,7 @@ public class CustomerActivity extends AppCompatActivity {
                 if (didCustomerSelected()) {
                     Intent intent = new Intent(CustomerActivity.this, SaleReturnActivity.class);
                     intent.putExtra(SaleActivity.CUSTOMER_INFO_KEY, customer);
-                    intent.putExtra("SaleExchange","no");
+                    intent.putExtra("SaleExchange", "no");
                     startActivity(intent);
                     finish();
                 }

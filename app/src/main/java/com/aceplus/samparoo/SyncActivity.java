@@ -183,8 +183,6 @@ public class SyncActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonClearData)
     void clearAllData() {
-        Cursor c = sqLiteDatabase.rawQuery("SELECT name FROM sqlite_master WHERE type ='table'", null);
-        List<String> tables = new ArrayList<>();
         showConfirmDialog();
     }
 
@@ -207,7 +205,6 @@ public class SyncActivity extends AppCompatActivity {
         }
     }
 
-        Utils.commonDialog("All clear !", SyncActivity.this);
     /**
      * Confrim dialog before clearing all data.
      */

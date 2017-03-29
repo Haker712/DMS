@@ -26,6 +26,8 @@ public class Constant {
 
     public static String KEY_MAX_ZOOM = "12";
 
+    public static String KEY_SALE_RETURN_AMOUNT="sale_return_amount";
+
     public static void changeUrl(String ip) {
         BASE_URL = "";
         BASE_URL = ip;
