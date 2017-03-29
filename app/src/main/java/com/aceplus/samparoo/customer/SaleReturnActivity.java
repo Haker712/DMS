@@ -374,13 +374,19 @@ public class SaleReturnActivity extends Activity {
 
         if (check.equalsIgnoreCase("yes")){
 
-            Double netAmount=0.0;
+           Double netAmount=0.0;
+
+            for (SoldProduct soldProduct : soldProductList) {
+                netAmount += soldProduct.getNetAmount(SaleReturnActivity.this);
+
+                //Log.e("Tot Amt>>>", soldProduct.getTotalAmount() + "");
+            }
 
             Intent intent = new Intent(SaleReturnActivity.this, SaleActivity.class);
             intent.putExtra("SaleExchange","yes");
             intent.putExtra(SaleActivity.CUSTOMER_INFO_KEY, customer);
             intent.putExtra(SaleActivity.SALE_RETURN_INVOICEID_KEY, sale_return_id);
-            intent.putExtra(Constant.KEY_SALE_RETURN_AMOUNT,Utils.formatAmount(netAmount));
+            intent.putExtra(Constant.KEY_SALE_RETURN_AMOUNT,netAmount);
             startActivity(intent);
 
         }else {

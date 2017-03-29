@@ -328,6 +328,8 @@ public class SaleActivity extends AppCompatActivity {
                     intent.putExtra(SALE_RETURN_INVOICEID_KEY, getIntent().getStringExtra(SALE_RETURN_INVOICEID_KEY));
                     intent.putExtra(Constant.KEY_SALE_RETURN_AMOUNT,getIntent().getDoubleExtra(Constant.KEY_SALE_RETURN_AMOUNT,0.0));
 
+
+
                 } else {
 
                     intent.putExtra("SaleExchange", "no");

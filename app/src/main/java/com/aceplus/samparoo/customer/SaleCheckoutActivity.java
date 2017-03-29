@@ -155,7 +155,9 @@ public class SaleCheckoutActivity extends AppCompatActivity {
                 TextView textView_refundtoCustomer= (TextView) findViewById(R.id.refundtocustomer);
 
                 Double salereturnAmount=getIntent().getDoubleExtra(Constant.KEY_SALE_RETURN_AMOUNT,0.0);
-                Double saleexchangeAmount= Double.valueOf(Utils.formatAmount(totalAmount - totalItemDiscountAmount - totalVolumeDiscount));
+                Log.i("salereturnAmount",salereturnAmount+"");
+               // Double saleexchangeAmount= Double.valueOf(Utils.formatAmount(totalAmount - totalItemDiscountAmount - totalVolumeDiscount));
+                Double saleexchangeAmount= Double.parseDouble(Utils.formatAmount(totalAmount - totalItemDiscountAmount - totalVolumeDiscount).replaceAll(",",""));
 
                 textView_salereturnAmount.setText(salereturnAmount+"");
 
@@ -163,12 +165,16 @@ public class SaleCheckoutActivity extends AppCompatActivity {
 
                     Double payAmtfromCustomer=saleexchangeAmount-salereturnAmount;
                     textView_payAmtfromCustomer.setText(payAmtfromCustomer+"");
+                    textView_refundtoCustomer.setText("0");
+
 
                 }else {
 
                     double refundAmount=salereturnAmount-saleexchangeAmount;
 
                     textView_refundtoCustomer.setText(refundAmount+"");
+                    textView_payAmtfromCustomer.setText("0");
+
 
                 }
 
