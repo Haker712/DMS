@@ -1184,7 +1184,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
     private void insertDeliveryDataToDatabase(Deliver deliver) {
 
         String saleDate = Utils.getCurrentDate(true);
-        String invoiceId = Utils.getInvoiceNo(SaleOrderCheckoutActivity.this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), "YGN", Utils.FOR_DELIVERY);
+        String invoiceId = Utils.getInvoiceNo(SaleOrderCheckoutActivity.this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), String.valueOf(getLocationCode()), Utils.FOR_DELIVERY);
         double totalAmount = deliver.getAmount();
         double paidAmount = deliver.getPaidAmount();
         String salePersonId = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
