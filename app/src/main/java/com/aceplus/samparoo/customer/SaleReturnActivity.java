@@ -132,10 +132,10 @@ public class SaleReturnActivity extends Activity {
             if (check.equalsIgnoreCase("yes")) {
 
                titleTextView.setText(R.string.sale_exchange);
-                sale_return_id = Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), "YGN", Utils.FOR_SALE_RETURN_EXCHANGE);
+                sale_return_id = Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), String.valueOf(getLocationCode()), Utils.FOR_SALE_RETURN_EXCHANGE);
 
             } else {
-                sale_return_id = Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), "YGN", Utils.FOR_SALE_RETURN);
+                sale_return_id = Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), String.valueOf(getLocationCode()), Utils.FOR_SALE_RETURN);
 
             }
 
@@ -559,6 +559,23 @@ public class SaleReturnActivity extends Activity {
                 soldProductListRowAdapter.notifyDataSetChanged();
             }
         }
+    }
+
+    /**
+     * Get location code from database.
+     *
+     * @return location code
+     */
+    private int getLocationCode() {
+        int locationCode = 0;
+        String locationCodeName = "";
+        Cursor cursorForLocation = database.rawQuery("select * from Location", null);
+        while (cursorForLocation.moveToNext()) {
+            locationCode = cursorForLocation.getInt(cursorForLocation.getColumnIndex(DatabaseContract.Location.id));
+            locationCodeName = cursorForLocation.getString(cursorForLocation.getColumnIndex(DatabaseContract.Location.no));
+        }
+
+        return locationCode;
     }
 
     @Override
