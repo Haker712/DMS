@@ -61,6 +61,8 @@ public class SaleActivity extends AppCompatActivity {
 
     public static final String SALE_RETURN_INVOICEID_KEY = "sale_return_invoiceid_key";
 
+
+
     private boolean isPreOrder;
 
     private boolean isDelivery;
@@ -324,6 +326,9 @@ public class SaleActivity extends AppCompatActivity {
 
                     intent.putExtra("SaleExchange", "yes");
                     intent.putExtra(SALE_RETURN_INVOICEID_KEY, getIntent().getStringExtra(SALE_RETURN_INVOICEID_KEY));
+                    intent.putExtra(Constant.KEY_SALE_RETURN_AMOUNT,getIntent().getDoubleExtra(Constant.KEY_SALE_RETURN_AMOUNT,0.0));
+
+
 
                 } else {
 

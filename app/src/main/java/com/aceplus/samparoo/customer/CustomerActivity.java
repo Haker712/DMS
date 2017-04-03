@@ -53,6 +53,7 @@ import java.util.Locale;
 import java.util.prefs.Preferences;
 
 import butterknife.ButterKnife;
+import butterknife.InjectView;
 import butterknife.OnClick;
 
 public class CustomerActivity extends AppCompatActivity {
@@ -97,6 +98,7 @@ public class CustomerActivity extends AppCompatActivity {
 
     View buttongp;
     String check;
+    @InjectView(R.id.ok)
     Button btnOk;
 //    SimpleDateFormat fmtForTodayStr = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -203,7 +205,7 @@ public class CustomerActivity extends AppCompatActivity {
 
         posmButton = (Button) findViewById(R.id.btn_posm);
         buttongp = findViewById(R.id.customer_buttonGp);
-        btnOk = (Button) findViewById(R.id.ok);
+
     }
 
     private void customerDatas() {
@@ -214,7 +216,7 @@ public class CustomerActivity extends AppCompatActivity {
         while (cursor.moveToNext()) {
             String township_name = "";
             String township_id = cursor.getString(cursor.getColumnIndex("township_number"));
-            Cursor cursorForTownship = database.rawQuery("select * from TOWNSHIP where TOWNSHIP_ID = '"+township_id+"'", null);
+            Cursor cursorForTownship = database.rawQuery("select * from TOWNSHIP where TOWNSHIP_ID = '" + township_id + "'", null);
             while (cursorForTownship.moveToNext()) {
                 township_name = cursorForTownship.getString(cursorForTownship.getColumnIndex("TOWNSHIP_NAME"));
             }
@@ -254,11 +256,6 @@ public class CustomerActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
-
-                if(isSameCustomer(customers.get(position).getId())) {
-                    deleteSaleVisitRecord(customers.get(position).getId());
-                    insertSaleVisitRecord(customers.get(position));
-                }
 
                 customer = customers.get(position);
 
@@ -346,7 +343,10 @@ public class CustomerActivity extends AppCompatActivity {
         cv.put(DatabaseContract.SALE_VISIT_RECORD.LONGITUDE, customer.getLongitude());
         cv.put(DatabaseContract.SALE_VISIT_RECORD.VISIT_FLG, 1);
         cv.put(DatabaseContract.SALE_VISIT_RECORD.SALE_FLG, 0);
-        cv.put(DatabaseContract.SALE_VISIT_RECORD.RECORD_DATE, new Date().toString());
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+        String currentDate = sdf.format(new Date());
+        cv.put(DatabaseContract.SALE_VISIT_RECORD.RECORD_DATE,currentDate);
         database.insert(DatabaseContract.SALE_VISIT_RECORD.TABLE_UPLOAD, null, cv);
     }
 
@@ -415,7 +415,7 @@ public class CustomerActivity extends AppCompatActivity {
                 if (didCustomerSelected()) {
                     Intent intent = new Intent(CustomerActivity.this, SaleActivity.class);
                     intent.putExtra(SaleActivity.CUSTOMER_INFO_KEY, customer);
-                    intent.putExtra("SaleExchange","no");
+                    intent.putExtra("SaleExchange", "no");
                     startActivity(intent);
                     finish();
                 }
@@ -510,7 +510,7 @@ public class CustomerActivity extends AppCompatActivity {
                                         String invoiceNumber = Utils.getInvoiceNo(getApplicationContext(), salemanId, String.valueOf(getLocationCode()), Utils.MODE_CUSTOMER_FEEDBACK);
                                         String invoiceDate = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
                                         String customerNumber = customer.getCustomerId();
-                                        String locationNumber = "YGN";
+                                        String locationNumber = String.valueOf(getLocationCode());
                                         String feedbackNumber = customerFeedbacks.get(descriptionsSpinner.getSelectedItemPosition()).getInvoiceNumber();
                                         String feedbackDate = customerFeedbacks.get(descriptionsSpinner.getSelectedItemPosition()).getInvoiceDate();
                                         String serialNumber = customerFeedbacks.get(descriptionsSpinner.getSelectedItemPosition()).getSerialNumber();
@@ -530,6 +530,12 @@ public class CustomerActivity extends AppCompatActivity {
                                                 + "\"" + serialNumber + "\","
                                                 + "\"" + description + "\","
                                                 + "\"" + remark + "\")");
+
+                                        if(isSameCustomer(customer.getId())) {
+                                            deleteSaleVisitRecord(customer.getId());
+                                            insertSaleVisitRecord(customer);
+                                        }
+
                                         database.setTransactionSuccessful();
                                         database.endTransaction();
 
@@ -564,7 +570,7 @@ public class CustomerActivity extends AppCompatActivity {
                 if (didCustomerSelected()) {
                     Intent intent = new Intent(CustomerActivity.this, SaleReturnActivity.class);
                     intent.putExtra(SaleActivity.CUSTOMER_INFO_KEY, customer);
-                    intent.putExtra("SaleExchange","no");
+                    intent.putExtra("SaleExchange", "no");
                     startActivity(intent);
                     finish();
                 }

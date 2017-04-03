@@ -55,6 +55,7 @@
     <string name="total_amount_">Total Amount:</string>
     <string name="discount_">Discount:</string>
     <string name="pay_amount">Pay Amount:</string>
+    <string name="payment_method">Payment :</string>
     <string name="refund">Refund:</string>
     <string name="change_due_label">Change Due:</string>
     <string name="receipt_person">Receipt Person:</string>

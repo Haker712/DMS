@@ -333,6 +333,93 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="3"
                         android:text="100,000" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/SaleExchangeLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:id="@+id/SaleReturnAmountLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="10dp"
+                            android:layout_weight="2"
+                            android:gravity="right"
+                            android:text="SaleReturn Amount" />
+
+                        <TextView
+                            android:id="@+id/salereturnAmount"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="3"
+                            android:text="100,000" />
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/PayAmountFromCustomerLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="10dp"
+                            android:layout_weight="2"
+                            android:gravity="right"
+                            android:text="PayAmount From Customer" />
+
+                        <TextView
+                            android:id="@+id/payamountfromcustomer"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="3"
+                            android:text="100,000" />
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/RefundtoCutomerLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="10dp"
+                            android:layout_weight="2"
+                            android:gravity="right"
+                            android:text="Refund to Customer" />
+
+                        <TextView
+                            android:id="@+id/refundtocustomer"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="3"
+                            android:text="100,000" />
+
+
+                    </LinearLayout>
+
+
+
+
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -355,6 +442,42 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="3"
                         android:inputType="number" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/paymentMethodLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:layout_weight="2"
+                        android:gravity="right"
+                        android:text="@string/payment_method" />
+
+                    <RadioGroup
+                        android:id="@+id/activity_sale_checkout_radio_group"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_weight="3">
+
+                        <RadioButton
+                            android:id="@+id/activity_sale_checkout_radio_bank"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Bank"/>
+
+                        <RadioButton
+                            android:id="@+id/activity_sale_checkout_radio_cash"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Cash"/>
+
+                    </RadioGroup>
                 </LinearLayout>
 
                 <LinearLayout

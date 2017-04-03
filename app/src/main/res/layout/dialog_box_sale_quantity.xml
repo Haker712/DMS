@@ -38,7 +38,7 @@
             android:layout_marginRight="10dp"
             android:layout_weight="1"
             android:gravity="right"
-            android:text="@string/percent" />
+            android:text="@string/quantity_label" />
 
         <EditText
             android:id="@+id/quantity"

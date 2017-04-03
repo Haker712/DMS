@@ -26,6 +26,8 @@ public class SoldProduct implements Serializable {
 
     double totalAmt;
 
+    boolean focStatus;
+
     public SoldProduct(Product product, Boolean isForPackage) {
 
         this.product = product;
@@ -207,5 +209,17 @@ public class SoldProduct implements Serializable {
 
     public void setTotalAmt(double totalAmt) {
         this.totalAmt = totalAmt;
+    }
+
+    public double getDiscount() {
+        return discount;
+    }
+
+    public boolean isFocStatus() {
+        return focStatus;
+    }
+
+    public void setFocStatus(boolean focStatus) {
+        this.focStatus = focStatus;
     }
 }

@@ -13,6 +13,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.aceplus.samparoo.route.ECalenderFragment;
 import com.aceplus.samparoo.route.ERouteListFragment;
@@ -83,7 +84,9 @@ public class RouteActivity extends FragmentActivity {
                 Log.i("List", "List");
                 break;
 
-            case "e-Calendar" : fragmentClass = ECalenderFragment.class;
+            case "e-Calendar" :
+                //Toast.makeText(this, "Under Construction", Toast.LENGTH_SHORT).show();
+                fragmentClass = ECalenderFragment.class;
                 textViewTitle.setText("E-CALENDAR");
                 Log.i("Cal", "Cal");
                 break;
