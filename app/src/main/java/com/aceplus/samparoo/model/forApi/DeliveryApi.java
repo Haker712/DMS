@@ -41,6 +41,10 @@ public class DeliveryApi {
     @Expose
     String remark;
 
+    @SerializedName("PayAmount")
+    @Expose
+    double payAmt;
+
     @SerializedName("DeliveryItem")
     @Expose
     List<DeliveryItemApi> deliveryItemApi;
@@ -157,5 +161,13 @@ public class DeliveryApi {
 
     public void setSaleManId(int saleManId) {
         this.saleManId = saleManId;
+    }
+
+    public double getPayAmt() {
+        return payAmt;
+    }
+
+    public void setPayAmt(double payAmt) {
+        this.payAmt = payAmt;
     }
 }

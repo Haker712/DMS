@@ -22,6 +22,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.aceplus.samparoo.LoginActivity;
@@ -70,6 +72,9 @@ public class SaleCheckoutActivity extends AppCompatActivity {
     EditText receiptPersonEditText;
     private EditText prepaidAmountEditText;
     ImageView backImg, confirmAndPrintImg;
+    String paymentMethod = "", bankCardNo = "";
+    RadioGroup bankOrCashRadioGroup;
+    RadioButton bankRadio, cashRadio;
 
     SQLiteDatabase database;
     SoldProductListRowAdapter soldProductListRowAdapter;
@@ -155,9 +160,7 @@ public class SaleCheckoutActivity extends AppCompatActivity {
                 TextView textView_refundtoCustomer= (TextView) findViewById(R.id.refundtocustomer);
 
                 Double salereturnAmount=getIntent().getDoubleExtra(Constant.KEY_SALE_RETURN_AMOUNT,0.0);
-                Log.i("salereturnAmount",salereturnAmount+"");
-               // Double saleexchangeAmount= Double.valueOf(Utils.formatAmount(totalAmount - totalItemDiscountAmount - totalVolumeDiscount));
-                Double saleexchangeAmount= Double.parseDouble(Utils.formatAmount(totalAmount - totalItemDiscountAmount - totalVolumeDiscount).replaceAll(",",""));
+                Double saleexchangeAmount= Double.valueOf(Utils.formatAmount(totalAmount - totalItemDiscountAmount - totalVolumeDiscount));
 
                 textView_salereturnAmount.setText(salereturnAmount+"");
 
@@ -165,16 +168,12 @@ public class SaleCheckoutActivity extends AppCompatActivity {
 
                     Double payAmtfromCustomer=saleexchangeAmount-salereturnAmount;
                     textView_payAmtfromCustomer.setText(payAmtfromCustomer+"");
-                    textView_refundtoCustomer.setText("0");
-
 
                 }else {
 
                     double refundAmount=salereturnAmount-saleexchangeAmount;
 
                     textView_refundtoCustomer.setText(refundAmount+"");
-                    textView_payAmtfromCustomer.setText("0");
-
 
                 }
 
@@ -378,7 +377,9 @@ public class SaleCheckoutActivity extends AppCompatActivity {
 
         backImg = (ImageView) findViewById(R.id.back_img);
         confirmAndPrintImg = (ImageView) findViewById(R.id.confirmAndPrint_img);
-
+        bankOrCashRadioGroup = (RadioGroup) findViewById(R.id.activity_sale_checkout_radio_group);
+        bankRadio = (RadioButton) findViewById(R.id.activity_sale_checkout_radio_bank);
+        cashRadio = (RadioButton) findViewById(R.id.activity_sale_checkout_radio_cash);
     }
 
     private void initCategories() {
@@ -573,37 +574,71 @@ public class SaleCheckoutActivity extends AppCompatActivity {
         confirmAndPrintImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isFullyPaid()) {
-                    saveDatas();
-                    if (check.equalsIgnoreCase("yes")) {
-                        Intent intent = new Intent(SaleCheckoutActivity.this, SaleExchangeInfoActivity.class);
-                        intent.putExtra(CUSTOMER_INFO_KEY, customer);
-                        intent.putExtra(SaleActivity.SALE_RETURN_INVOICEID_KEY, getIntent().getStringExtra(SaleActivity.SALE_RETURN_INVOICEID_KEY));
-                        intent.putExtra(SALE_EXCHANGE_INVOICEID_KEY, invoiceIdTextView.getText().toString());
-                        intent.putExtra(DATE_KEY, saleDateTextView.getText().toString());
-                        startActivity(intent);
-                        finish();
-                    }
-                    else {
 
-                        if(isSameCustomer(customer.getId())) {
+                String cashOrBank = getPaymentMethod();
 
-                            updateSaleVisitRecord(customer.getId());
-                        }
-
-                        Utils.backToCustomer(SaleCheckoutActivity.this);
-                    }
+                if (isFullyPaid()) {
+                    saveDatas(cashOrBank);
+                    saleOrExchange();
                 } else {
-                    Utils.commonDialog("Insufficient Pay Amount!", SaleCheckoutActivity.this);
+                    if (!canLoan(customer.getId()) || cashOrBank.equals("B")) {
+                        Utils.commonDialog("Insufficient Pay Amount!", SaleCheckoutActivity.this);
+                    }
+
+                    if (canLoan(customer.getId())) {
+                        saveDatas(cashOrBank);
+                        saleOrExchange();
+                    }
                 }
-                /*Intent intent = new Intent(SaleCheckoutActivity.this, SalePrintActivity.class);
-                intent.putExtra(SalePrintActivity.CUSTOMER_INFO_KEY, customer);
-                intent.putExtra(SalePrintActivity.SOLD_PRODUCT_LIST_KEY, soldProductList);
-                intent.putExtra(SalePrintActivity.INVOICE_ID_KEY, invoiceIdTextView.getText().toString());
-                startActivity(intent);
-                finish();*/
             }
         });
+    }
+
+    /**
+     * Sale or sale exchange
+     */
+    private void saleOrExchange() {
+        if (check.equalsIgnoreCase("yes")) {
+            toSaleExchange();
+        } else {
+
+            if(isSameCustomer(customer.getId())) {
+
+                updateSaleVisitRecord(customer.getId());
+            }
+
+            Utils.backToCustomer(SaleCheckoutActivity.this);
+        }
+    }
+
+    /**
+     * Go to sale Exchange.
+     */
+    private void toSaleExchange() {
+        Intent intent = new Intent(SaleCheckoutActivity.this, SaleExchangeInfoActivity.class);
+        intent.putExtra(CUSTOMER_INFO_KEY, customer);
+        intent.putExtra(SaleActivity.SALE_RETURN_INVOICEID_KEY, getIntent().getStringExtra(SaleActivity.SALE_RETURN_INVOICEID_KEY));
+        intent.putExtra(SALE_EXCHANGE_INVOICEID_KEY, invoiceIdTextView.getText().toString());
+        intent.putExtra(DATE_KEY, saleDateTextView.getText().toString());
+        startActivity(intent);
+        finish();
+    }
+
+    /**
+     * Get customer payment method.
+     *
+     * @return C : cash, B : bank, R : Credit
+     */
+    private String getPaymentMethod(){
+        int selectedRadio = bankOrCashRadioGroup.getCheckedRadioButtonId();
+
+        if(selectedRadio == R.id.activity_sale_checkout_radio_bank) {
+            return "B";
+        } else if(selectedRadio == R.id.activity_sale_checkout_radio_cash) {
+            return "C";
+        } else {
+            return "R";
+        }
     }
 
     /**
@@ -687,7 +722,30 @@ public class SaleCheckoutActivity extends AppCompatActivity {
         }
     }
 
-    private void saveDatas() {
+    /**
+     * Check the customer can pay credit or not
+     * @param customerId customer id
+     *
+     * @return true : credit; otherwise: no credit
+     */
+    private boolean canLoan(int customerId) {
+        Cursor cursorLoan = database.rawQuery("SELECT PAYMENT_TYPE FROM CUSTOMER WHERE ID = " + customerId, null);
+        String loanStatus = "";
+        while(cursorLoan.moveToNext()) {
+            loanStatus = cursorLoan.getString(cursorLoan.getColumnIndex("PAYMENT_TYPE"));
+        }
+
+        if(loanStatus.equals("R")) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Save data to database
+     */
+    private void saveDatas(String cashOrLoanOrBank) {
         String customerId = customer.getCustomerId();
         String saleDate = Utils.getCurrentDate(true);
 
@@ -722,8 +780,6 @@ public class SaleCheckoutActivity extends AppCompatActivity {
         Log.i("invoiceTime", invoiceTime);
 
         String dueDate = saleDate;
-        String cashOrCredit = "C";
-
 
         String deviceId = Utils.getDeviceId(this);
 
@@ -763,7 +819,7 @@ public class SaleCheckoutActivity extends AppCompatActivity {
                 + receiptPersonName + "\", \""
                 + salePersonId + "\", \""
                 + dueDate + "\", \""
-                + cashOrCredit + "\", \""
+                + cashOrLoanOrBank + "\", \""
                 + locationCode + "\", \""
                 + deviceId + "\", \""
                 + invoiceTime + "\", "

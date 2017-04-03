@@ -518,7 +518,7 @@ public class CustomerActivity extends AppCompatActivity {
                                         String invoiceNumber = Utils.getInvoiceNo(getApplicationContext(), salemanId, String.valueOf(getLocationCode()), Utils.MODE_CUSTOMER_FEEDBACK);
                                         String invoiceDate = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
                                         String customerNumber = customer.getCustomerId();
-                                        String locationNumber = "YGN";
+                                        String locationNumber = String.valueOf(getLocationCode());
                                         String feedbackNumber = customerFeedbacks.get(descriptionsSpinner.getSelectedItemPosition()).getInvoiceNumber();
                                         String feedbackDate = customerFeedbacks.get(descriptionsSpinner.getSelectedItemPosition()).getInvoiceDate();
                                         String serialNumber = customerFeedbacks.get(descriptionsSpinner.getSelectedItemPosition()).getSerialNumber();
