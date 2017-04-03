@@ -145,7 +145,7 @@ public class SaleCheckoutActivity extends AppCompatActivity {
 
                 double totalItemDiscountAmount = 0.0;
 
-                titleTextView.setText("SALE EXCHANGE");
+              //  titleTextView.setText("SALE EXCHANGE");
                 invoiceIdTextView.setText(Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.FOR_SALE_EXCHANGE));
                 View layout=findViewById(R.id.SaleExchangeLayout);
                 layout.setVisibility(View.VISIBLE);

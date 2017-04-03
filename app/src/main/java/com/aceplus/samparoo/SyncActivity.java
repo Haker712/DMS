@@ -852,14 +852,14 @@ public class SyncActivity extends AppCompatActivity {
                 if (response.code() == 200) {
 
                     if (response.body().getAceplusStatusCode() == 200) {
-
+                        Utils.cancelDialog();
                         sqLiteDatabase.beginTransaction();
 
                         insertMarkting(response.body().getData());
 
                         sqLiteDatabase.setTransactionSuccessful();
                         sqLiteDatabase.endTransaction();
-                        downloadCustomerVisitFromServer(paramData);
+                        //downloadCustomerVisitFromServer(paramData);
                     } else {
                         Utils.cancelDialog();
                         textViewError.setText(response.body().getAceplusStatusMessage());
@@ -2223,7 +2223,7 @@ public class SyncActivity extends AppCompatActivity {
 
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-
+                        Utils.cancelDialog();
                         //Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
                         if (!services.equals("")) {
                             services += ",";
@@ -2231,7 +2231,7 @@ public class SyncActivity extends AppCompatActivity {
 
                         services += " " + getResources().getString(R.string.outlet_stock_availability);
 
-                        uploadCustomerVisitToServer();
+                        //uploadCustomerVisitToServer();
                     }
                 } else {
                     if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
