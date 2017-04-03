@@ -581,12 +581,10 @@ public class SaleCheckoutActivity extends AppCompatActivity {
                     saveDatas(cashOrBank);
                     saleOrExchange();
                 } else {
-                    if (!canLoan(customer.getId()) || cashOrBank.equals("B")) {
+                    if (cashOrBank.equals("B")) {
                         Utils.commonDialog("Insufficient Pay Amount!", SaleCheckoutActivity.this);
-                    }
-
-                    if (canLoan(customer.getId())) {
-                        saveDatas(cashOrBank);
+                    } else {
+                        saveDatas("R");
                         saleOrExchange();
                     }
                 }
@@ -631,14 +629,13 @@ public class SaleCheckoutActivity extends AppCompatActivity {
      */
     private String getPaymentMethod(){
         int selectedRadio = bankOrCashRadioGroup.getCheckedRadioButtonId();
-
+        String paymentMethod = "";
         if(selectedRadio == R.id.activity_sale_checkout_radio_bank) {
-            return "B";
+            paymentMethod = "B";
         } else if(selectedRadio == R.id.activity_sale_checkout_radio_cash) {
-            return "C";
-        } else {
-            return "R";
+            paymentMethod = "C";
         }
+        return paymentMethod;
     }
 
     /**
@@ -720,26 +717,6 @@ public class SaleCheckoutActivity extends AppCompatActivity {
         } else {
             return true;
         }
-    }
-
-    /**
-     * Check the customer can pay credit or not
-     * @param customerId customer id
-     *
-     * @return true : credit; otherwise: no credit
-     */
-    private boolean canLoan(int customerId) {
-        Cursor cursorLoan = database.rawQuery("SELECT PAYMENT_TYPE FROM CUSTOMER WHERE ID = " + customerId, null);
-        String loanStatus = "";
-        while(cursorLoan.moveToNext()) {
-            loanStatus = cursorLoan.getString(cursorLoan.getColumnIndex("PAYMENT_TYPE"));
-        }
-
-        if(loanStatus.equals("R")) {
-            return true;
-        }
-
-        return false;
     }
 
     /**
