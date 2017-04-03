@@ -647,6 +647,7 @@ public class SaleCheckoutActivity extends AppCompatActivity {
         ContentValues cv = new ContentValues();
         String where = DatabaseContract.SALE_VISIT_RECORD.CUSTOMER_ID + "=?";
         String[] whereArgs = new String[] {String.valueOf(customerId)};
+        cv.put(DatabaseContract.SALE_VISIT_RECORD.VISIT_FLG, 1);
         cv.put(DatabaseContract.SALE_VISIT_RECORD.SALE_FLG, 1);
         database.update(DatabaseContract.SALE_VISIT_RECORD.TABLE_UPLOAD, cv, where, whereArgs);
     }

@@ -257,14 +257,6 @@ public class CustomerActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
 
-                if(isSameCustomer(customers.get(position).getId())) {
-                    database.beginTransaction();
-                    deleteSaleVisitRecord(customers.get(position).getId());
-                    insertSaleVisitRecord(customers.get(position));
-                    database.setTransactionSuccessful();
-                    database.endTransaction();
-                }
-
                 customer = customers.get(position);
 
                 customerNameTextView.setText(customer.getCustomerName());
@@ -538,6 +530,12 @@ public class CustomerActivity extends AppCompatActivity {
                                                 + "\"" + serialNumber + "\","
                                                 + "\"" + description + "\","
                                                 + "\"" + remark + "\")");
+
+                                        if(isSameCustomer(customer.getId())) {
+                                            deleteSaleVisitRecord(customer.getId());
+                                            insertSaleVisitRecord(customer);
+                                        }
+
                                         database.setTransactionSuccessful();
                                         database.endTransaction();
 
