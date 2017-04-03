@@ -206,9 +206,11 @@ public class SyncActivity extends AppCompatActivity {
 
         Log.i("Table counts --> ", String.valueOf(tables.size()));
         for (String table : tables) {
-            String clearQuery = "DELETE FROM " + table;
-            sqLiteDatabase.execSQL(clearQuery);
-            Log.i("DELETION SUCCESS --> ", "All data from " + table + " has been successfully deleted");
+            if(!table.equals("CLASS")) {
+                String clearQuery = "DELETE FROM " + table;
+                sqLiteDatabase.execSQL(clearQuery);
+                Log.i("DELETION SUCCESS --> ", "All data from " + table + " has been successfully deleted");
+            }
         }
     }
 
