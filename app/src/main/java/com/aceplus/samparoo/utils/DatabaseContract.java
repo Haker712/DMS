@@ -374,8 +374,8 @@ public class DatabaseContract {
 
         public static final String tb="CUSTOMER_FEEDBACK";
         public static final String ID="ID";
-        public static final String INVOICE_NO="INVOICE_NO";
-        public static final String INVOICE_DATE="INVOICE_DATE";
+        public static final String INVOICE_NO="INV_NO";
+        public static final String INVOICE_DATE="INV_DATE";
         public static final String REMARK="REMARK";
     }
 

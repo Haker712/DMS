@@ -645,10 +645,9 @@ public class CustomerActivity extends AppCompatActivity {
                         while (cursor.moveToNext()) {
 
                             customerFeedbacks.add(new CustomerFeedback(
-                                    cursor.getString(cursor.getColumnIndex("INV_NO"))
-                                    , cursor.getString(cursor.getColumnIndex("INV_DATE"))
-                                    , cursor.getString(cursor.getColumnIndex("SERIAL_NO"))
-                                    , cursor.getString(cursor.getColumnIndex("DESCRIPTION"))));
+                                    cursor.getString(cursor.getColumnIndex(DatabaseContract.CustomerFeedback.INVOICE_NO))
+                                    , cursor.getString(cursor.getColumnIndex(DatabaseContract.CustomerFeedback.INVOICE_DATE))
+                                    , cursor.getString(cursor.getColumnIndex(DatabaseContract.CustomerFeedback.REMARK))));
                         }
 
                         final AlertDialog alertDialog = new AlertDialog.Builder(CustomerActivity.this)
@@ -668,7 +667,7 @@ public class CustomerActivity extends AppCompatActivity {
                                         String locationNumber = String.valueOf(getLocationCode());
                                         String feedbackNumber = customerFeedbacks.get(descriptionsSpinner.getSelectedItemPosition()).getInvoiceNumber();
                                         String feedbackDate = customerFeedbacks.get(descriptionsSpinner.getSelectedItemPosition()).getInvoiceDate();
-                                        String serialNumber = customerFeedbacks.get(descriptionsSpinner.getSelectedItemPosition()).getSerialNumber();
+                                        String serialNumber = "";
                                         String description = customerFeedbacks.get(descriptionsSpinner.getSelectedItemPosition()).getDescription();
                                         String remark = remarkEditText.getText().toString();
 
