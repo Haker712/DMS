@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -70,7 +72,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
     TextView netAmountTextView;
     EditText payAmountEditText;
     TextView refundTextView;
-    EditText receiptPersonEditText;
+    EditText receiptPersonEditText, branchEditText, accountEditText;
     private EditText prepaidAmountEditText;
     ImageView backImg, confirmAndPrintImg;
     String paymentMethod = "", bankCardNo = "";
@@ -103,6 +105,8 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
     String locationCodeName = "";
 
     String check;
+
+    LinearLayout layoutBranch, layoutBankAcc;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -384,6 +388,11 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         bankOrCashRadioGroup = (RadioGroup) findViewById(R.id.activity_sale_checkout_radio_group);
         bankRadio = (RadioButton) findViewById(R.id.activity_sale_checkout_radio_bank);
         cashRadio = (RadioButton) findViewById(R.id.activity_sale_checkout_radio_cash);
+        layoutBranch = (LinearLayout) findViewById(R.id.bank_branch_layout);
+        layoutBankAcc = (LinearLayout) findViewById(R.id.bank_account_layout);
+        accountEditText = (EditText) findViewById(R.id.edit_txt_account_name);
+        branchEditText = (EditText) findViewById(R.id.edit_txt_branch_name);
+
     }
 
     private void initCategories() {
@@ -582,6 +591,25 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                 Utils.askConfirmationDialog("Save", "Do you want to confirm?", "", SaleCheckoutActivity.this);
             }
         });
+
+
+        bankRadio.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    layoutBranch.setVisibility(View.VISIBLE);
+                    layoutBankAcc.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        bankRadio.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                layoutBranch.setVisibility(View.VISIBLE);
+                layoutBankAcc.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     /**
@@ -624,6 +652,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         String paymentMethod = "";
         if(selectedRadio == R.id.activity_sale_checkout_radio_bank) {
             paymentMethod = "B";
+
         } else if(selectedRadio == R.id.activity_sale_checkout_radio_cash) {
             paymentMethod = "C";
         }

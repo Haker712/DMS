@@ -166,7 +166,7 @@ public class CustomerActivity extends AppCompatActivity {
         }
 
         //new Thread(new Task()).start();
-        startTimer();
+        //startTimer();
 
     }
 
@@ -229,7 +229,7 @@ public class CustomerActivity extends AppCompatActivity {
             String lon = String.valueOf(gpsTracker.getLongitude());
 
             Log.i("Lat & Long : ", lat + ", " + lon);
-            Toast.makeText(this, "Lat & Long : " + lat + ", " + lon, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Lat & Long : " + lat + ", " + lon, Toast.LENGTH_SHORT).show();
             Cursor cursorForSaleManRouteCount = database.rawQuery("select * from " + DatabaseContract.temp_for_saleman_route.TABLE +
                     " where " + DatabaseContract.temp_for_saleman_route.LATITUDE + " = "+Double.parseDouble(lat)+"" +
                     " and " + DatabaseContract.temp_for_saleman_route.LONGITUDE + " = "+Double.parseDouble(lon)+"", null);

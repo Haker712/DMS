@@ -1031,23 +1031,6 @@ public class SyncActivity extends AppCompatActivity {
 
         dataforSaleUploads.add(dataforSaleUpload);
 
-        /*JSONObject jsonObject = new JSONObject();
-
-
-        try {
-
-            jsonObject.put("site_activation_key", Constant.SITE_ACTIVATION_KEY);
-            jsonObject.put("tablet_activation_key", Constant.TABLET_ACTIVATION_KEY);
-            jsonObject.put("user_id", saleman_No);
-            jsonObject.put("password",saleman_Pwd);
-            jsonObject.put("route", getRouteID(saleman_Id));
-            jsonObject.put("data",dataforSaleUploads);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        paramData = jsonObject.toString();*/
-
-
         TsaleRequest tsaleRequest = new TsaleRequest();
         tsaleRequest.setSiteActivationKey(Constant.SITE_ACTIVATION_KEY);
         tsaleRequest.setTabletActivationKey(Constant.TABLET_ACTIVATION_KEY);
@@ -1317,18 +1300,6 @@ public class SyncActivity extends AppCompatActivity {
         });
     }
 
-/*    private String getJsonFromObject(TsaleRequest tsaleRequest) {
-        Gson gson = new GsonBuilder().serializeNulls().create();
-        String jsonString = gson.toJson(tsaleRequest);
-        return jsonString;
-    }
-
-    private String getJsonFromObject1(AddnewCustomerRequest addnewCustomerRequest) {
-        Gson gson = new GsonBuilder().serializeNulls().create();
-        String jsonString = gson.toJson(addnewCustomerRequest);
-        return jsonString;
-    }*/
-
     /**
      * Upload pre order data to server
      */
@@ -1393,18 +1364,6 @@ public class SyncActivity extends AppCompatActivity {
             }
         });
     }
-
-    /**
-     * Transform preOrderRequest to json.
-     *
-     * @param preOrderRequest PreOrderRequest
-     * @return preOrderRequest pre order object for api request
-     */
-/*    private String getJsonFromObject(PreOrderRequest preOrderRequest) {
-        Gson gson = new GsonBuilder().serializeNulls().create();
-        String jsonString = gson.toJson(preOrderRequest);
-        return jsonString;
-    }*/
 
     /**
      * Get all related data for pre order from database.
@@ -1723,18 +1682,6 @@ public class SyncActivity extends AppCompatActivity {
     }
 
     /**
-     * Transform saleReturnRequest to json.
-     *
-     * @param saleReturnRequest SaleReturnRequest
-     * @return saleReturnRequest sale return object for api request
-     */
-/*    private String getJsonFromObject(SaleReturnRequest saleReturnRequest) {
-        Gson gson = new GsonBuilder().serializeNulls().create();
-        String jsonString = gson.toJson(saleReturnRequest);
-        return jsonString;
-    }*/
-
-    /**
      * Download posm and shop type from server.
      *
      * @param param request param
@@ -1945,18 +1892,6 @@ public class SyncActivity extends AppCompatActivity {
 
         return posmByCustomerList;
     }
-
-    /**
-     * Transform PosmByCustomerRequest to json.
-     *
-     * @param posmByCustomerRequest PosmByCustomerRequest
-     * @return PosmByCustomerRequest sale return object for api request
-     */
- /*   String getJsonFromObject(PosmByCustomerRequest posmByCustomerRequest) {
-        Gson gson = new GsonBuilder().serializeNulls().create();
-        String jsonString = gson.toJson(posmByCustomerRequest);
-        return jsonString;
-    }*/
 
     /**
      * Delete data in table after uploading to server.
@@ -2187,15 +2122,6 @@ public class SyncActivity extends AppCompatActivity {
 
 
     }
-
-/*    private String getJsonFromObject(DisplayAssessmentRequest displayAssessmentRequest) {
-
-        Gson gson = new GsonBuilder().serializeNulls().create();
-        String jsonString = gson.toJson(displayAssessmentRequest);
-        return jsonString;
-
-    }*/
-
 
     private List<DisplayAssessment> getDisplayAssessmentFromDB() {
 
@@ -2678,36 +2604,6 @@ public class SyncActivity extends AppCompatActivity {
         cursor.close();
         return sizeInStoreShareItemList;
     }
-
-
-    /**
-     * upload out competitorsizeinstoreshare to server by BL
-     */
-
-
-
-
-
-/*    private String getJsonFromObject(Outlet_Sizeinstore_request outlet_sizeinstore_request) {
-
-        Gson gson = new GsonBuilder().serializeNulls().create();
-        String jsonString = gson.toJson(outlet_sizeinstore_request);
-        return jsonString;
-
-    }*/
-
-
-    /**
-     * Convert delivery date to json format
-     *
-     * @param deliveryRequest DeliveryRequest
-     * @return json string
-     */
-/*    private String getJsonFromObject(DeliveryRequest deliveryRequest) {
-        Gson gson = new GsonBuilder().serializeNulls().create();
-        String jsonString = gson.toJson(deliveryRequest);
-        return jsonString;
-    }*/
 
     /**
      * Set required delivery data to delivery request
@@ -3256,6 +3152,63 @@ public class SyncActivity extends AppCompatActivity {
             eRouteReportArrayList.add(eRouteReport);
         }
         return eRouteReportArrayList;
+    }
+
+    /**
+     * Download sale target data from api.
+     */
+    private void downloadSaleTargetFromServer() {
+        DownloadService downloadService = RetrofitServiceFactory.createService(DownloadService.class);
+        /*Call<SaleTargetResponse> call = downloadService.getCustomerVisitFromApi(paramData);
+        call.enqueue(new Callback<SaleTargetResponse>() {
+            @Override
+            public void onResponse(Call<SaleTargetResponse> call, Response<SaleTargetResponse> response) {
+                if (response.code() == 200) {
+                    if (response.body().getAceplusStatusCode() == 200) {
+                        //Utils.cancelDialog();
+                        textViewError.setText("");
+
+                        //Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
+
+                        List<SaleTargetForCustomer> saleTargetCustomerList = response.body().getDataForSaleTargetList().get(0).getSaleTargetForCustomerList();
+                        List<SaleTargetForSaleMan> saleTargetSaleMenList = response.body().getDataForSaleTargetList().get(0).getSaleTargetForSaleManList();
+
+                        *//*Log.i("saleTargetRecordList>>>", saleTargetResponseList.size() + "");
+
+                        sqLiteDatabase.beginTransaction();
+
+                        for (DataForSaleTarget saleTarget : saleTargetResponseList) {
+                            deleteDataAfterUpload(DatabaseContract.SALE_TARGET.TABLE, null, null);
+
+                            insertSaleTarget(saleTarget);
+                        }*//*
+
+                        sqLiteDatabase.setTransactionSuccessful();
+                        sqLiteDatabase.endTransaction();
+                    } else {
+                        Utils.cancelDialog();
+                        textViewError.setText(response.body().getAceplusStatusMessage());
+                    }
+
+                } else {
+
+                    if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                        textViewError.setText(response.body().getAceplusStatusMessage());
+                    } else {
+                        Utils.cancelDialog();
+                        Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
+                    }
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SaleTargetResponse> call, Throwable t) {
+                Utils.cancelDialog();
+                Utils.commonDialog(t.getMessage(), SyncActivity.this);
+            }
+        });*/
     }
 
     @OnClick(R.id.cancel_img)

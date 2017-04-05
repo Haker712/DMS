@@ -399,4 +399,22 @@ public class DatabaseContract {
         public static final String DEPARTURE_TIME = "departure_time";
         public static final String ROUTE_ID = "route_id";
     }
+
+    public abstract class SALE_TARGET {
+        public static final String TABLE_FOR_CUS = "sale_target_customer";
+        public static final String TABLE_FOR_saleman = "sale_target_saleman";
+        public static final String ID = "ID";
+        public static final String FROM_DATE = "FROM_DATE";
+        public static final String TO_DATE = "TO_DATE";
+        public static final String CUSTOMER_ID = "CUSTOMER_ID";
+        public static final String SALE_MAN_ID = "SALE_MAN_ID";
+        public static final String CATEGORY_ID = "CATEGORY_ID";
+        public static final String GROUP_CODE_ID = "GROUP_CODE_ID";
+        public static final String STOCK_ID = "STOCK_ID";
+        public static final String TARGET_AMOUNT = "TARGET_AMOUNT";
+        public static final String DATE = "DATE";
+        public static final String DAY = "DAY";
+        public static final String DATE_STATUS = "DATE_STATUS";
+        public static final String INVOICE_NO = "INVOICE_NO";
+    }
 }
