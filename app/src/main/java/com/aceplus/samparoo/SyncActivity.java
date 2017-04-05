@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aceplus.samparoo.customer.SaleOrderCheckoutActivity;
+import com.aceplus.samparoo.model.CompetitorActivity;
 import com.aceplus.samparoo.model.Customer;
 import com.aceplus.samparoo.model.Posm;
 import com.aceplus.samparoo.model.PosmByCustomer;
@@ -36,10 +37,14 @@ import com.aceplus.samparoo.model.forApi.CashReceiveItemApi;
 import com.aceplus.samparoo.model.forApi.CashReceiveRequest;
 import com.aceplus.samparoo.model.forApi.CashReceiveRequestData;
 import com.aceplus.samparoo.model.forApi.ClassOfProduct;
+import com.aceplus.samparoo.model.forApi.CompetitorSizeinstoreshareData;
+import com.aceplus.samparoo.model.forApi.CompetitorSizeinstoreshareRequest;
+import com.aceplus.samparoo.model.forApi.Competitor_Activity;
 import com.aceplus.samparoo.model.forApi.CreditForApi;
 import com.aceplus.samparoo.model.forApi.CreditResponse;
 import com.aceplus.samparoo.model.forApi.CustomerBalanceForApi;
 import com.aceplus.samparoo.model.forApi.CustomerData;
+import com.aceplus.samparoo.model.forApi.CustomerFeedback;
 import com.aceplus.samparoo.model.forApi.CustomerForApi;
 import com.aceplus.samparoo.model.forApi.CustomerResponse;
 import com.aceplus.samparoo.model.forApi.CustomerVisitRequest;
@@ -793,6 +798,8 @@ public class SyncActivity extends AppCompatActivity {
         sqLiteDatabase.execSQL("delete from " + DatabaseContract.Township.tb);
         sqLiteDatabase.execSQL("delete from " + DatabaseContract.UM.tb);
         sqLiteDatabase.execSQL("delete from " + DatabaseContract.Location.tb);
+        sqLiteDatabase.execSQL("delete from " + DatabaseContract.CustomerFeedback.tb);
+
 
         for (GeneralData generalData : generalDataList) {
 
@@ -804,6 +811,7 @@ public class SyncActivity extends AppCompatActivity {
             insertTownship(generalData.getTownship());
             insertUM(generalData.getUM());
             insertLocation(generalData.getLocation());
+            insertCustomerFeedback(generalData.getCustomerFeedbacks());
         }
 
 
@@ -970,6 +978,18 @@ public class SyncActivity extends AppCompatActivity {
 
             sqLiteDatabase.insert(DatabaseContract.Location.tb, null, contentValues);
         }
+    }
+
+    private void insertCustomerFeedback(List<CustomerFeedback> customerFeedbackList) {
+
+        for (CustomerFeedback customerFeedback : customerFeedbackList) {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(DatabaseContract.CustomerFeedback.ID, customerFeedback.getId());
+            contentValues.put(DatabaseContract.CustomerFeedback.INVOICE_NO, customerFeedback.getInvoiceNo());
+            contentValues.put(DatabaseContract.CustomerFeedback.INVOICE_DATE, customerFeedback.getInvoiceDate());
+            contentValues.put(DatabaseContract.CustomerFeedback.REMARK, customerFeedback.getRemark());
+        }
+
     }
 
     private void uploadInvoiceToSever() {
@@ -2116,7 +2136,8 @@ public class SyncActivity extends AppCompatActivity {
 
                         services += " " + getResources().getString(R.string.display_assessment);
 
-                        uploadOutletSizeinstortoserver();
+//                        uploadOutletSizeinstortoserver();
+                        uploadCompetitorSizeinstoresharetoserver();
 
                     }
                 } else {
@@ -2206,16 +2227,260 @@ public class SyncActivity extends AppCompatActivity {
      * upload out outletandsizeinstore to server by BL
      */
 
-    private void uploadOutletSizeinstortoserver() {
+//    private void uploadOutletSizeinstortoserver() {
+//
+//        final Outlet_Sizeinstore_request outlet_sizeinstore_request = outlet_sizeinstore_request();
+//
+//        final String paramData = getJsonFromObject(outlet_sizeinstore_request);
+//        Log.i("PaRam", paramData);
+//
+//        UploadService uploadService = RetrofitServiceFactory.createService(UploadService.class);
+//
+//        Call<InvoiceResponse> call = uploadService.uploadcompetitorsizeinstore(paramData);
+//
+//        call.enqueue(new Callback<InvoiceResponse>() {
+//            @Override
+//            public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
+//
+//                if (response.code() == 200) {
+//                    if (response.body().getAceplusStatusCode() == 200) {
+//                        Utils.cancelDialog();
+//                        //Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
+//                        if (!services.equals("")) {
+//                            services += ",";
+//                        }
+//
+//                        services += " " + getResources().getString(R.string.outlet_stock_availability);
+//
+//                        //uploadCustomerVisitToServer();
+//                    }
+//                } else {
+//                    if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
+//                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+//                    } else {
+//                        Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
+//                    }
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onFailure(Call<InvoiceResponse> call, Throwable t) {
+//
+//                Utils.cancelDialog();
+//                Utils.commonDialog(t.getMessage(), SyncActivity.this);
+//
+//            }
+//        });
+//
+//
+//    }
+//
+//    private Outlet_Sizeinstore_request outlet_sizeinstore_request() {
+//
+//        Outlet_Sizeinstore_request outlet_sizeinstore_request = new Outlet_Sizeinstore_request();
+//
+//        outlet_sizeinstore_request.setData(setOutLetSizeinStoreData());
+//        outlet_sizeinstore_request.setPassword("");
+//        outlet_sizeinstore_request.setSiteActivationKey(Constant.SITE_ACTIVATION_KEY);
+//        outlet_sizeinstore_request.setTabletActivationKey(Constant.TABLET_ACTIVATION_KEY);
+//        outlet_sizeinstore_request.setUserId(saleman_Id);
+//
+//
+//        return outlet_sizeinstore_request;
+//
+//    }
+//
+//    private List<Outlet_Sizeinstore_Data> setOutLetSizeinStoreData() {
+//
+//
+//        List<Outlet_Sizeinstore_Data> outlet_sizeinstore_dataList = new ArrayList<>();
+//
+//        Outlet_Sizeinstore_Data outlet_sizeinstore_data = new Outlet_Sizeinstore_Data();
+//
+//        outlet_sizeinstore_data.setOutletStockAvailability(setOutLetData());
+//        outlet_sizeinstore_data.setSizeInStoreShare(setSizeinStoreData());
+//
+//
+//        outlet_sizeinstore_dataList.add(outlet_sizeinstore_data);
+//
+//        return outlet_sizeinstore_dataList;
+//
+//    }
+//
+//    private List<OutletStockAvailability> setOutLetData() {
+//
+//        List<OutletStockAvailability> outletStockAvailabilityList = new ArrayList<>();
+//        int Customer_Id = 0;
+//
+//        Cursor cursor1 = sqLiteDatabase.rawQuery("select * from outlet_stock_availability", null);
+//
+//        while (cursor1.moveToNext()) {
+//
+//            OutletStockAvailability outletStockAvailability = new OutletStockAvailability();
+//
+//            String availabilityNo = cursor1.getString(cursor1.getColumnIndex("outlet_stock_availability_id"));
+//            String cus_Id = cursor1.getString(cursor1.getColumnIndex("customer_id"));
+//            String date = cursor1.getString(cursor1.getColumnIndex("date"));
+//
+//
+//            Cursor cursor2 = sqLiteDatabase.rawQuery("select * from CUSTOMER where CUSTOMER_ID='" + cus_Id + "'", null);
+//
+//            while (cursor2.moveToNext()) {
+//
+//                Customer_Id = cursor2.getInt(cursor2.getColumnIndex("id"));
+//
+//            }
+//
+//            outletStockAvailability.setOutletStockAvailabilityNo(availabilityNo);
+//            outletStockAvailability.setCustomerId(Customer_Id);
+//            outletStockAvailability.setDate(date);
+//
+//            outletStockAvailability.setOutletStockAvailabilityItem(getOutletDetailDatafromDB());
+//
+//            outletStockAvailabilityList.add(outletStockAvailability);
+//
+//
+//        }
+//
+//        cursor1.close();
+//        return outletStockAvailabilityList;
+//
+//    }
+//
+//    private List<OutletStockAvailabilityItem> getOutletDetailDatafromDB() {
+//
+//        int Stock_Id = 0;
+//
+//        List<OutletStockAvailabilityItem> outletStockAvailabilityItemList = new ArrayList<>();
+//
+//
+//        Cursor cursor = sqLiteDatabase.rawQuery("select * from outlet_stock_availability_detail", null);
+//
+//        while (cursor.moveToNext()) {
+//
+//            OutletStockAvailabilityItem outletStockAvailabilityItem = new OutletStockAvailabilityItem();
+//
+//            String outletStockAvailabilityNo = cursor.getString(cursor.getColumnIndex("outlet_stock_availability_id"));
+//            String product_id = cursor.getString(cursor.getColumnIndex("product_id"));
+//            int quantity = cursor.getInt(cursor.getColumnIndex("quantity"));
+//
+//            Cursor cursor1 = sqLiteDatabase.rawQuery("select * from PRODUCT where PRODUCT_ID='" + product_id + "'", null);
+//
+//            while (cursor1.moveToNext()) {
+//
+//                Stock_Id = cursor1.getInt(cursor1.getColumnIndex("ID"));
+//
+//            }
+//
+//
+//            outletStockAvailabilityItem.setOutletStockAvailabilityNo(outletStockAvailabilityNo);
+//            outletStockAvailabilityItem.setStockId(Stock_Id);
+//            outletStockAvailabilityItem.setQuantity(quantity);
+//
+//            outletStockAvailabilityItemList.add(outletStockAvailabilityItem);
+//
+//        }
+//
+//        cursor.close();
+//        return outletStockAvailabilityItemList;
+//    }
+//
+//    private List<SizeInStoreShare> setSizeinStoreData() {
+//        List<SizeInStoreShare> sizeInStoreShareList = new ArrayList<>();
+//
+//        int Customer_Id = 0;
+//
+//        Cursor cursor = sqLiteDatabase.rawQuery("select * from  size_in_store_share", null);
+//
+//        while (cursor.moveToNext()) {
+//
+//            SizeInStoreShare sizeInStoreShare = new SizeInStoreShare();
+//
+//            String sizeInStoreShareNo = cursor.getString(cursor.getColumnIndex("size_in_store_share_id"));
+//            String cus_Id = cursor.getString(cursor.getColumnIndex("customer_id"));
+//            String date = cursor.getString(cursor.getColumnIndex("date"));
+//
+//
+//            Cursor cursor2 = sqLiteDatabase.rawQuery("select * from CUSTOMER where CUSTOMER_ID='" + cus_Id + "'", null);
+//
+//            while (cursor2.moveToNext()) {
+//
+//                Customer_Id = cursor2.getInt(cursor2.getColumnIndex("id"));
+//
+//            }
+//
+//            sizeInStoreShare.setSizeInStoreShareNo(sizeInStoreShareNo);
+//            sizeInStoreShare.setCustomerId(Customer_Id);
+//            sizeInStoreShare.setDate(date);
+//            sizeInStoreShare.setSizeInStoreShareItem(getSizeinStoreDetailfromDB());
+//
+//
+//            sizeInStoreShareList.add(sizeInStoreShare);
+//
+//        }
+//
+//        return sizeInStoreShareList;
+//
+//    }
+//
+//    private List<SizeInStoreShareItem> getSizeinStoreDetailfromDB() {
+//
+//        int Stock_Id = 0;
+//
+//        List<SizeInStoreShareItem> sizeInStoreShareItemList = new ArrayList<>();
+//
+//        Cursor cursor = sqLiteDatabase.rawQuery("select * from size_in_store_share_detail", null);
+//
+//        while (cursor.moveToNext()) {
+//            SizeInStoreShareItem sizeInStoreShareItem = new SizeInStoreShareItem();
+//
+//            String sizeInStoreShareNo = cursor.getString(cursor.getColumnIndex("size_in_store_share_id"));
+//            String productId = cursor.getString(cursor.getColumnIndex("product_id"));
+//            int sizeInStoreSharePercent = cursor.getInt(cursor.getColumnIndex("size_in_store_share_percent"));
+//
+//
+//            Cursor cursor1 = sqLiteDatabase.rawQuery("select * from PRODUCT where PRODUCT_ID='" + productId + "'", null);
+//
+//            while (cursor1.moveToNext()) {
+//
+//                Stock_Id = cursor1.getInt(cursor1.getColumnIndex("ID"));
+//
+//            }
+//
+//
+//            sizeInStoreShareItem.setSizeInStoreShareNo(sizeInStoreShareNo);
+//            sizeInStoreShareItem.setStockId(Stock_Id);
+//            sizeInStoreShareItem.setSizeInStoreSharePercent(sizeInStoreSharePercent);
+//
+//            sizeInStoreShareItemList.add(sizeInStoreShareItem);
+//
+//
+//        }
+//        cursor.close();
+//        return sizeInStoreShareItemList;
+//    }
 
-        final Outlet_Sizeinstore_request outlet_sizeinstore_request = outlet_sizeinstore_request();
+    /**
+     * upload out outletandsizeinstore to server by BL
+     */
 
-        final String paramData = getJsonFromObject(outlet_sizeinstore_request);
+
+    /**
+     * upload out competitorsizeinstoreshare to server by BL
+     */
+
+
+    public void uploadCompetitorSizeinstoresharetoserver() {
+
+        final CompetitorSizeinstoreshareRequest competitorSizeinstoreshareRequest = competitorSizeinstoreshareRequest();
+
+        final String paramData = getJsonFromObject(competitorSizeinstoreshareRequest);
         Log.i("PaRam", paramData);
 
         UploadService uploadService = RetrofitServiceFactory.createService(UploadService.class);
 
-        Call<InvoiceResponse> call = uploadService.uploadoutletsizeinstore(paramData);
+        Call<InvoiceResponse> call = uploadService.uploadcompetitorsizeinstore(paramData);
 
         call.enqueue(new Callback<InvoiceResponse>() {
             @Override
@@ -2252,79 +2517,65 @@ public class SyncActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private CompetitorSizeinstoreshareRequest competitorSizeinstoreshareRequest() {
+
+        CompetitorSizeinstoreshareRequest competitorSizeinstoreshareRequest = new CompetitorSizeinstoreshareRequest();
+
+        competitorSizeinstoreshareRequest.setData(setCompetitorSizeinstoreData());
+        competitorSizeinstoreshareRequest.setPassword("");
+        competitorSizeinstoreshareRequest.setSiteActivationKey(Constant.SITE_ACTIVATION_KEY);
+        competitorSizeinstoreshareRequest.setTabletActivationKey(Constant.TABLET_ACTIVATION_KEY);
+        competitorSizeinstoreshareRequest.setUserId(saleman_Id);
+
+
+        return competitorSizeinstoreshareRequest;
+    }
+
+    private List<CompetitorSizeinstoreshareData> setCompetitorSizeinstoreData() {
+
+        List<CompetitorSizeinstoreshareData> competitorSizeinstoreshareDataList = new ArrayList<>();
+
+        CompetitorSizeinstoreshareData competitorSizeinstoreshareData = new CompetitorSizeinstoreshareData();
+
+        competitorSizeinstoreshareData.setCompetitorActivities(setCompetitorData());
+        competitorSizeinstoreshareData.setSizeInStoreShare(setSizeinStoreData());
+
+        competitorSizeinstoreshareDataList.add(competitorSizeinstoreshareData);
+
+        return competitorSizeinstoreshareDataList;
 
     }
 
-    private Outlet_Sizeinstore_request outlet_sizeinstore_request() {
+    private List<Competitor_Activity> setCompetitorData() {
 
-        Outlet_Sizeinstore_request outlet_sizeinstore_request = new Outlet_Sizeinstore_request();
-
-        outlet_sizeinstore_request.setData(setOutLetSizeinStoreData());
-        outlet_sizeinstore_request.setPassword("");
-        outlet_sizeinstore_request.setSiteActivationKey(Constant.SITE_ACTIVATION_KEY);
-        outlet_sizeinstore_request.setTabletActivationKey(Constant.TABLET_ACTIVATION_KEY);
-        outlet_sizeinstore_request.setUserId(saleman_Id);
+        List<Competitor_Activity> competitor_activityList = new ArrayList<>();
 
 
-        return outlet_sizeinstore_request;
+        Cursor cursor = sqLiteDatabase.rawQuery("select * from COMPETITOR_ACTIVITY ", null);
 
-    }
+        while (cursor.moveToNext()) {
 
-    private List<Outlet_Sizeinstore_Data> setOutLetSizeinStoreData() {
+            Competitor_Activity competitor_activity = new Competitor_Activity();
 
+            String competitor_activityNo = cursor.getString(cursor.getColumnIndex("ID"));
+            int customer_Id = cursor.getInt(cursor.getColumnIndex("CUSTOMER_ID"));
+            String competitorName = cursor.getString(cursor.getColumnIndex("COMPETITOR_NAME"));
+            String activity = cursor.getString(cursor.getColumnIndex("ACTIVITY"));
 
-        List<Outlet_Sizeinstore_Data> outlet_sizeinstore_dataList = new ArrayList<>();
+            competitor_activity.setCompetitorActivitiesNo(competitor_activityNo);
+            competitor_activity.setCustomerId(customer_Id);
+            competitor_activity.setCompetitorName(competitorName);
+            competitor_activity.setActivities(activity);
 
-        Outlet_Sizeinstore_Data outlet_sizeinstore_data = new Outlet_Sizeinstore_Data();
-
-        outlet_sizeinstore_data.setOutletStockAvailability(setOutLetData());
-        outlet_sizeinstore_data.setSizeInStoreShare(setSizeinStoreData());
-
-
-        outlet_sizeinstore_dataList.add(outlet_sizeinstore_data);
-
-        return outlet_sizeinstore_dataList;
-
-    }
-
-    private List<OutletStockAvailability> setOutLetData() {
-
-        List<OutletStockAvailability> outletStockAvailabilityList = new ArrayList<>();
-        int Customer_Id = 0;
-
-        Cursor cursor1 = sqLiteDatabase.rawQuery("select * from outlet_stock_availability", null);
-
-        while (cursor1.moveToNext()) {
-
-            OutletStockAvailability outletStockAvailability = new OutletStockAvailability();
-
-            String availabilityNo = cursor1.getString(cursor1.getColumnIndex("outlet_stock_availability_id"));
-            String cus_Id = cursor1.getString(cursor1.getColumnIndex("customer_id"));
-            String date = cursor1.getString(cursor1.getColumnIndex("date"));
-
-
-            Cursor cursor2 = sqLiteDatabase.rawQuery("select * from CUSTOMER where CUSTOMER_ID='" + cus_Id + "'", null);
-
-            while (cursor2.moveToNext()) {
-
-                Customer_Id = cursor2.getInt(cursor2.getColumnIndex("id"));
-
-            }
-
-            outletStockAvailability.setOutletStockAvailabilityNo(availabilityNo);
-            outletStockAvailability.setCustomerId(Customer_Id);
-            outletStockAvailability.setDate(date);
-
-            outletStockAvailability.setOutletStockAvailabilityItem(getOutletDetailDatafromDB());
-
-            outletStockAvailabilityList.add(outletStockAvailability);
+            competitor_activityList.add(competitor_activity);
 
 
         }
 
-        cursor1.close();
-        return outletStockAvailabilityList;
 
+        return competitor_activityList;
     }
 
     private List<SizeInStoreShare> setSizeinStoreData() {
@@ -2365,44 +2616,6 @@ public class SyncActivity extends AppCompatActivity {
 
     }
 
-    private List<OutletStockAvailabilityItem> getOutletDetailDatafromDB() {
-
-        int Stock_Id = 0;
-
-        List<OutletStockAvailabilityItem> outletStockAvailabilityItemList = new ArrayList<>();
-
-
-        Cursor cursor = sqLiteDatabase.rawQuery("select * from outlet_stock_availability_detail", null);
-
-        while (cursor.moveToNext()) {
-
-            OutletStockAvailabilityItem outletStockAvailabilityItem = new OutletStockAvailabilityItem();
-
-            String outletStockAvailabilityNo = cursor.getString(cursor.getColumnIndex("outlet_stock_availability_id"));
-            String product_id = cursor.getString(cursor.getColumnIndex("product_id"));
-            int quantity = cursor.getInt(cursor.getColumnIndex("quantity"));
-
-            Cursor cursor1 = sqLiteDatabase.rawQuery("select * from PRODUCT where PRODUCT_ID='" + product_id + "'", null);
-
-            while (cursor1.moveToNext()) {
-
-                Stock_Id = cursor1.getInt(cursor1.getColumnIndex("ID"));
-
-            }
-
-
-            outletStockAvailabilityItem.setOutletStockAvailabilityNo(outletStockAvailabilityNo);
-            outletStockAvailabilityItem.setStockId(Stock_Id);
-            outletStockAvailabilityItem.setQuantity(quantity);
-
-            outletStockAvailabilityItemList.add(outletStockAvailabilityItem);
-
-        }
-
-        cursor.close();
-        return outletStockAvailabilityItemList;
-    }
-
     private List<SizeInStoreShareItem> getSizeinStoreDetailfromDB() {
 
         int Stock_Id = 0;
@@ -2439,6 +2652,15 @@ public class SyncActivity extends AppCompatActivity {
         cursor.close();
         return sizeInStoreShareItemList;
     }
+
+
+    /**
+     * upload out competitorsizeinstoreshare to server by BL
+     */
+
+
+
+
 
 /*    private String getJsonFromObject(Outlet_Sizeinstore_request outlet_sizeinstore_request) {
 

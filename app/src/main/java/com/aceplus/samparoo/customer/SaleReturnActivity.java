@@ -132,7 +132,7 @@ public class SaleReturnActivity extends Activity {
             if (check.equalsIgnoreCase("yes")) {
 
               // titleTextView.setText(R.string.sale_return);
-                sale_return_id = Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), "YGN", Utils.FOR_SALE_RETURN_EXCHANGE);
+//                sale_return_id = Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), "YGN", Utils.FOR_SALE_RETURN_EXCHANGE);
                titleTextView.setText(R.string.sale_exchange);
                 sale_return_id = Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), String.valueOf(getLocationCode()), Utils.FOR_SALE_RETURN_EXCHANGE);
 

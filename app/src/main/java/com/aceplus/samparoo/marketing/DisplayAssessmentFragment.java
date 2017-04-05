@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,6 +49,8 @@ public class DisplayAssessmentFragment extends Fragment {
     int locationCode = 0;
 
     int Cus_id;
+
+    AppCompatActivity activity;
 
 
 
@@ -107,6 +110,13 @@ public class DisplayAssessmentFragment extends Fragment {
             locationCode = cursorForLocation.getInt(cursorForLocation.getColumnIndex(DatabaseContract.Location.id));
 
         }
+
+        cancelImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Utils.backToMarketingActivity(activity);
+            }
+        });
 
 
         return view;
