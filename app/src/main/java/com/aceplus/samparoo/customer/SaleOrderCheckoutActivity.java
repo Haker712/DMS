@@ -39,8 +39,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -136,9 +134,6 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
     private EditText prepaidAmt, receiptPersonEditText;
 
     private ListView lv_soldProductList, promotionPlanItemListView;
-
-    RadioGroup bankOrCashRadioGroup;
-    RadioButton bankRadio, cashRadio;
 
     private String saleman_Id = "", saleman_No = "", saleman_Pwd = "", phoneNo = "";
 
@@ -264,8 +259,6 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
         netAmountLayout = (LinearLayout) findViewById(R.id.netAmountLayout);
         volumeDiscountLayout = (LinearLayout) findViewById(R.id.volumeDiscountLayout2);
         receiptPersonLayout = (LinearLayout) findViewById(R.id.layout_receipt_person);
-        paymentMethodLayout = (LinearLayout) findViewById(R.id.paymentMethodLayout);
-
         prepaidAmt = (EditText) findViewById(R.id.prepaidAmount);
         receiptPersonEditText = (EditText) findViewById(R.id.receiptPerson);
         lv_soldProductList = (ListView) findViewById(R.id.soldProductList);
@@ -273,10 +266,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
         promotionPlanItemListView = (ListView) findViewById(R.id.promotion_plan_item_listview);
         volDisForPreOrderLayout = (LinearLayout) findViewById(R.id.volDisForPreOrderLayout);
         volDisForPreOrder = (TextView) findViewById(R.id.volumeDiscount);
-
-        bankOrCashRadioGroup = (RadioGroup) findViewById(R.id.activity_sale_checkout_radio_group);
-        bankRadio = (RadioButton) findViewById(R.id.activity_sale_checkout_radio_bank);
-        cashRadio = (RadioButton) findViewById(R.id.activity_sale_checkout_radio_cash);
+        paymentMethodLayout = (LinearLayout) findViewById(R.id.paymentMethodLayout);
     }
 
     /**
@@ -285,6 +275,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
     private void hideUnnecessaryView() {
         txt_tableHeaderUM.setVisibility(View.GONE);
         txt_tableHeaderDiscount.setVisibility(View.GONE);
+        advancedPaidAmountLayout.setVisibility(View.GONE);
         netAmountLayout.setVisibility(View.VISIBLE);
         refundLayout.setVisibility(View.GONE);
         payAmountLayout.setVisibility(View.GONE);
@@ -295,70 +286,10 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
             totalInfoForPreOrderLayout.setVisibility(View.GONE);
             volumeDiscountLayout.setVisibility(View.GONE);
             volDisForPreOrderLayout.setVisibility(View.GONE);
-            payAmountLayout.setVisibility(View.VISIBLE);
+            advancedPaidAmountLayout.setVisibility(View.VISIBLE);
             receiptPersonLayout.setVisibility(View.VISIBLE);
             txt_table_header_foc.setVisibility(View.VISIBLE);
         }
-    }
-
-    /**
-     * Check for fully paid
-     *
-     * @return true : fully paid; false : not fully paid
-     */
-    private boolean isFullyPaid() {
-        double pay_amount = 0.0, net_amount = 0.0;
-
-        if(!prepaidAmt.getText().toString().equals("")) {
-            pay_amount = Double.parseDouble(netAmountTextView.getText().toString().replace(",", ""));
-        }
-
-        if(!netAmountTextView.getText().toString().equals("")) {
-            net_amount = Double.parseDouble(netAmountTextView.getText().toString().replace(",", ""));
-        }
-
-        if(pay_amount == 0.0 || pay_amount < net_amount) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    /**
-     * Get customer payment method.
-     *
-     * @return C : cash, B : bank, R : Credit
-     */
-    private String getPaymentMethod(){
-        int selectedRadio = bankOrCashRadioGroup.getCheckedRadioButtonId();
-
-        if(selectedRadio == R.id.activity_sale_checkout_radio_bank) {
-            return "B";
-        } else if(selectedRadio == R.id.activity_sale_checkout_radio_cash) {
-            return "C";
-        } else {
-            return "R";
-        }
-    }
-
-    /**
-     * Check the customer can pay credit or not
-     * @param customerId customer id
-     *
-     * @return true : credit; otherwise: no credit
-     */
-    private boolean canLoan(int customerId) {
-        Cursor cursorLoan = database.rawQuery("SELECT PAYMENT_TYPE FROM CUSTOMER WHERE ID = " + customerId, null);
-        String loanStatus = "";
-        while(cursorLoan.moveToNext()) {
-            loanStatus = cursorLoan.getString(cursorLoan.getColumnIndex("PAYMENT_TYPE"));
-        }
-
-        if(loanStatus.equals("R")) {
-            return true;
-        }
-
-        return false;
     }
 
     /**
@@ -748,21 +679,8 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
                         return;
                     }
 
-                    String cashOrBank = getPaymentMethod();
-
-                    if(isFullyPaid()) {
-                        insertDeliveryDataToDatabase(orderedInvoice, cashOrBank);
-                        toDeliveryActivity();
-                    } else {
-                        if (!canLoan(customer.getId()) || cashOrBank.equals("B")) {
-                            Utils.commonDialog("Insufficient Pay Amount!", SaleOrderCheckoutActivity.this);
-                        }
-
-                        if (canLoan(customer.getId())) {
-                            insertDeliveryDataToDatabase(orderedInvoice, cashOrBank);
-                            toDeliveryActivity();
-                        }
-                    }
+                    insertDeliveryDataToDatabase(orderedInvoice);
+                    toDeliveryActivity();
                 }
             }
         });
@@ -1271,12 +1189,12 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
         finish();
     }
 
-    private void insertDeliveryDataToDatabase(Deliver deliver, String paymentMethod) {
+    private void insertDeliveryDataToDatabase(Deliver deliver) {
 
         String saleDate = Utils.getCurrentDate(true);
-        String invoiceId = Utils.getInvoiceNo(SaleOrderCheckoutActivity.this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), String.valueOf(getLocationCode()), Utils.FOR_DELIVERY);
+        String invoiceId = Utils.getInvoiceNo(SaleOrderCheckoutActivity.this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), String.valueOf(locationCode), Utils.FOR_DELIVERY);
         double totalAmount = deliver.getAmount();
-        double paidAmount = prepaidAmt.getText().length() > 0 ? Double.parseDouble(prepaidAmt.getText().toString().replace(",", "")) : 0;
+        double paidAmount = deliver.getPaidAmount();
         String salePersonId = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
         String dueDate = Utils.getCurrentDate(true);
         String invoiceTime = Utils.getCurrentDate(true);
@@ -1294,7 +1212,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
                 + receiptPersonEditText.getText().toString() + "\", \""
                 + salePersonId + "\", \""
                 + dueDate + "\", \""
-                + paymentMethod + "\", \""
+                + "" + "\", \""
                 + getLocationCode() + "\", \""
                 + Utils.getDeviceId(SaleOrderCheckoutActivity.this) + "\", \""
                 + invoiceTime + "\","
@@ -1310,7 +1228,6 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
         deliveryApi.setInvoiceNo(invoiceId);
         deliveryApi.setInvoiceDate(saleDate);
         deliveryApi.setSaleId(invoiceId);
-        deliveryApi.setPayAmt(paidAmount);
         deliveryApi.setRemark("");
         insertDeliveryUpload(deliveryApi);
 
@@ -1350,7 +1267,8 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
             deliveryItemApi.setDeliveryId(invoiceId);
             deliveryItemApi.setStockId(soldProduct.getProduct().getStockId());
             deliveryItemApi.setDeliveryQty(soldProduct.getQuantity());
-            insertDeliveryItemUpload(deliveryItemApi, soldProduct.isFocStatus());
+            deliveryItemApi.setFoc(Short.parseShort(soldProduct.isFocStatus() ? "1" : "0"));
+            insertDeliveryItemUpload(deliveryItemApi);
 
             database.execSQL("UPDATE PRODUCT SET REMAINING_QTY = REMAINING_QTY - " + soldProduct.getQuantity()
                     + ", DELIVERY_QTY = DELIVERY_QTY + " + soldProduct.getQuantity() + " WHERE PRODUCT_ID = \'" + soldProduct.getProduct().getId() + "\'");
@@ -1382,12 +1300,12 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
      *
      * @param deliveryItemApi Delivery item model for upload
      */
-    void insertDeliveryItemUpload(DeliveryItemApi deliveryItemApi, boolean focStatus) {
+    void insertDeliveryItemUpload(DeliveryItemApi deliveryItemApi) {
         ContentValues cvDeliveryUploadItem = new ContentValues();
         cvDeliveryUploadItem.put(DatabaseContract.DELIVERY_ITEM_UPLOAD.DELIVERY_ID, deliveryItemApi.getDeliveryId());
         cvDeliveryUploadItem.put(DatabaseContract.DELIVERY_ITEM_UPLOAD.STOCK_ID, deliveryItemApi.getStockId());
         cvDeliveryUploadItem.put(DatabaseContract.DELIVERY_ITEM_UPLOAD.QUANTITY, deliveryItemApi.getDeliveryQty());
-        cvDeliveryUploadItem.put(DatabaseContract.DELIVERY_ITEM_UPLOAD.FOC, focStatus);
+        cvDeliveryUploadItem.put(DatabaseContract.DELIVERY_ITEM_UPLOAD.FOC, deliveryItemApi.getFoc());
         database.insert(DatabaseContract.DELIVERY_ITEM_UPLOAD.TABLE, null, cvDeliveryUploadItem);
     }
 
@@ -1426,31 +1344,21 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
             checkBox_foc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                    double totalAmt = txt_totalAmount.getText().length() > 0 ? Double.parseDouble(txt_totalAmount.getText().toString().replace(",", "")) : 0;
+                    double volumeDiscount = volDisForPreOrder.getText().length() > 0 ? Double.parseDouble(volDisForPreOrder.getText().toString().replace(",", "")) : 0;
+                    double productPrice = txt_amount.getText().length() > 0 ? Double.parseDouble(txt_amount.getText().toString().replace(",", "")) : 0;
+
                     if(isChecked) {
-                        Double totalAmt = 0.0;
-                        if (soldProduct.getPromotionPrice() == 0.0) {
-                            totalAmt = soldProduct.getProduct().getPrice() * soldProduct.getQuantity();
-                        }
-                        else {
-                            totalAmt = soldProduct.getPromotionPrice() * soldProduct.getQuantity();
-                        }
-
-                        totalAmountForProduct = 0.0;
-                        txt_totalAmount.setText(Utils.formatAmount(totalAmount - totalAmt));
-                        txt_amount.setText(Utils.formatAmount(totalAmountForProduct));
-
-                        netAmountTextView.setText(Utils.formatAmount(netAmtTotal - totalAmt));
+                        double netAmt = totalAmt - volumeDiscount - productPrice;
+                        txt_totalAmount.setText(String.valueOf(totalAmt - productPrice));
+                        netAmountTextView.setText(String.valueOf(netAmt));
+                        soldProduct.setFocStatus(true);
                     } else {
-                        if (soldProduct.getPromotionPrice() == 0.0) {
-                            totalAmountForProduct = soldProduct.getProduct().getPrice() * soldProduct.getQuantity();
-                        }
-                        else {
-                            totalAmountForProduct = soldProduct.getPromotionPrice() * soldProduct.getQuantity();
-                        }
-
-                        txt_totalAmount.setText(Utils.formatAmount(totalAmountForProduct));
-                        txt_amount.setText(Utils.formatAmount(totalAmountForProduct));
-                        calculateNetAmount();
+                        double netAmt = (totalAmt - volumeDiscount) + productPrice;
+                        txt_totalAmount.setText(String.valueOf(totalAmt + productPrice));
+                        netAmountTextView.setText(String.valueOf(netAmt));
+                        soldProduct.setFocStatus(false);
                     }
                 }
             });

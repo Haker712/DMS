@@ -1,12 +1,14 @@
 package com.aceplus.samparoo;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.telephony.SmsManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -110,10 +112,10 @@ public class HomeActivity extends AppCompatActivity {
     @OnClick(R.id.buttonMarketing)
     void marketing() {
 
-        //Utils.commonDialog("Under construction", HomeActivity.this);
-        Intent intent = new Intent(this, MarketingActivity.class);
+        Utils.commonDialog("Under construction", HomeActivity.this);
+        /*Intent intent = new Intent(this, MarketingActivity.class);
         startActivity(intent);
-        finish();
+        finish();*/
     }
 
     @OnClick(R.id.buttonReport)

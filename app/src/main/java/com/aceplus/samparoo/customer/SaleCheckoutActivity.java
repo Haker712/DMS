@@ -581,12 +581,10 @@ public class SaleCheckoutActivity extends AppCompatActivity {
                     saveDatas(cashOrBank);
                     saleOrExchange();
                 } else {
-                    if (!canLoan(customer.getId()) || cashOrBank.equals("B")) {
+                    if (cashOrBank.equals("B")) {
                         Utils.commonDialog("Insufficient Pay Amount!", SaleCheckoutActivity.this);
-                    }
-
-                    if (canLoan(customer.getId())) {
-                        saveDatas(cashOrBank);
+                    } else {
+                        saveDatas("R");
                         saleOrExchange();
                     }
                 }
@@ -631,14 +629,13 @@ public class SaleCheckoutActivity extends AppCompatActivity {
      */
     private String getPaymentMethod(){
         int selectedRadio = bankOrCashRadioGroup.getCheckedRadioButtonId();
-
+        String paymentMethod = "";
         if(selectedRadio == R.id.activity_sale_checkout_radio_bank) {
-            return "B";
+            paymentMethod = "B";
         } else if(selectedRadio == R.id.activity_sale_checkout_radio_cash) {
-            return "C";
-        } else {
-            return "R";
+            paymentMethod = "C";
         }
+        return paymentMethod;
     }
 
     /**
@@ -650,6 +647,7 @@ public class SaleCheckoutActivity extends AppCompatActivity {
         ContentValues cv = new ContentValues();
         String where = DatabaseContract.SALE_VISIT_RECORD.CUSTOMER_ID + "=?";
         String[] whereArgs = new String[] {String.valueOf(customerId)};
+        cv.put(DatabaseContract.SALE_VISIT_RECORD.VISIT_FLG, 1);
         cv.put(DatabaseContract.SALE_VISIT_RECORD.SALE_FLG, 1);
         database.update(DatabaseContract.SALE_VISIT_RECORD.TABLE_UPLOAD, cv, where, whereArgs);
     }
@@ -672,8 +670,8 @@ public class SaleCheckoutActivity extends AppCompatActivity {
         }
 
         if(latiString != null && longiString != null) {
-            latiDouble = Double.parseDouble(latiString.substring(0, 6));
-            longDouble = Double.parseDouble(longiString.substring(0, 6));
+            latiDouble = Double.parseDouble(latiString.substring(0, 7));
+            longDouble = Double.parseDouble(longiString.substring(0, 7));
         }
 
         GPSTracker gpsTracker = new GPSTracker(SaleCheckoutActivity.this);
@@ -681,9 +679,9 @@ public class SaleCheckoutActivity extends AppCompatActivity {
             String lat = String.valueOf(gpsTracker.getLatitude());
             String lon = String.valueOf(gpsTracker.getLongitude());
 
-            if(!lat.equals(null) && !lon.equals(null) && lat.length() > 5 && lon.length() > 5){
-                latitude = Double.parseDouble(lat.substring(0,6));
-                longitude = Double.parseDouble(lon.substring(0,6));
+            if(!lat.equals(null) && !lon.equals(null) && lat.length() > 6 && lon.length() > 6){
+                latitude = Double.parseDouble(lat.substring(0,7));
+                longitude = Double.parseDouble(lon.substring(0,7));
             }
         } else {
             gpsTracker.showSettingsAlert();
@@ -691,11 +689,11 @@ public class SaleCheckoutActivity extends AppCompatActivity {
 
         if(latiDouble != null && longDouble !=null && latitude != null && longitude != null) {
 
-            if(latitude >= (latiDouble - 0.001) && latitude <= (latiDouble + 0.001) && longitude >= (longDouble - 0.001) && longitude <= (longDouble + 0.001)) {
+            if(latitude >= (latiDouble - 0.0001) && latitude <= (latiDouble + 0.0001) && longitude >= (longDouble - 0.0001) && longitude <= (longDouble + 0.0001)) {
                 return true;
             }
         }
-        
+
         return false;
     }
 
@@ -720,26 +718,6 @@ public class SaleCheckoutActivity extends AppCompatActivity {
         } else {
             return true;
         }
-    }
-
-    /**
-     * Check the customer can pay credit or not
-     * @param customerId customer id
-     *
-     * @return true : credit; otherwise: no credit
-     */
-    private boolean canLoan(int customerId) {
-        Cursor cursorLoan = database.rawQuery("SELECT PAYMENT_TYPE FROM CUSTOMER WHERE ID = " + customerId, null);
-        String loanStatus = "";
-        while(cursorLoan.moveToNext()) {
-            loanStatus = cursorLoan.getString(cursorLoan.getColumnIndex("PAYMENT_TYPE"));
-        }
-
-        if(loanStatus.equals("R")) {
-            return true;
-        }
-
-        return false;
     }
 
     /**

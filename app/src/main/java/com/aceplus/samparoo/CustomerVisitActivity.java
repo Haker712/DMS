@@ -43,14 +43,14 @@ public class CustomerVisitActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonCreditCollections)
     void creditCollections() {
-        Intent intent = new Intent(this, CreditCollectActivity.class);
+        Utils.commonDialog("This feature is not yet.", this);
+        /*Intent intent = new Intent(this, CreditCollectActivity.class);
         startActivity(intent);
-        finish();
+        finish();*/
     }
 
     @OnClick(R.id.buttonSaleExchange)
     void saleExchange() {
-
         Intent intent=new Intent(this,CustomerActivity.class);
         intent.putExtra("SaleExchange","yes");
         startActivity(intent);

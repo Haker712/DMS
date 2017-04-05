@@ -126,8 +126,8 @@ public class LoginActivity extends AppCompatActivity {
         }
         Log.i("Current URL2", Constant.BASE_URL);
 
-        editTextUserID.setText("KKT");
-        editTextPassword.setText("aceplus");
+        //editTextUserID.setText("ACE");
+        //editTextPassword.setText("samparoo");
 
         if (Utils.isOsMarshmallow()) {
             askPermission();
@@ -163,7 +163,7 @@ public class LoginActivity extends AppCompatActivity {
                     myEditor.putString(Constant.SALEMAN_NAME, saleman_Name);
                     myEditor.putString(Constant.SALEMAN_PWD, saleman_Pwd);
                     myEditor.commit();
-
+                    Toast.makeText(LoginActivity.this, "Successfully Login", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                     startActivity(intent);
                     finish();
@@ -289,7 +289,7 @@ public class LoginActivity extends AppCompatActivity {
                                 sqLiteDatabase.setTransactionSuccessful();
                                 sqLiteDatabase.endTransaction();
 
-                                Toast.makeText(LoginActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(LoginActivity.this, "Successfully Login", Toast.LENGTH_SHORT).show();
 
                                 Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                                 startActivity(intent);
