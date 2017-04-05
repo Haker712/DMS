@@ -370,6 +370,17 @@ public class DatabaseContract {
         public static final String RECORD_DATE = "RECORD_DATE";
     }
 
+    public abstract class CustomerFeedback{
+
+        public static final String tb="CUSTOMER_FEEDBACK";
+        public static final String ID="ID";
+        public static final String INVOICE_NO="INVOICE_NO";
+        public static final String INVOICE_DATE="INVOICE_DATE";
+        public static final String REMARK="REMARK";
+
+
+    }
+
     public abstract class temp_for_saleman_route {
         public static final String TABLE = "temp_for_saleman_route";
         public static final String SALEMAN_ID = "saleman_id";

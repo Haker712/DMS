@@ -154,7 +154,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
                 double totalItemDiscountAmount = 0.0;
 
-                titleTextView.setText("SALE EXCHANGE");
+              //  titleTextView.setText("SALE EXCHANGE");
                 invoiceIdTextView.setText(Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.FOR_SALE_EXCHANGE));
                 View layout=findViewById(R.id.SaleExchangeLayout);
                 layout.setVisibility(View.VISIBLE);
@@ -662,8 +662,8 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         }
 
         if(latiString != null && longiString != null) {
-            latiDouble = Double.parseDouble(latiString.substring(0, 6));
-            longDouble = Double.parseDouble(longiString.substring(0, 6));
+            latiDouble = Double.parseDouble(latiString.substring(0, 7));
+            longDouble = Double.parseDouble(longiString.substring(0, 7));
         }
 
         GPSTracker gpsTracker = new GPSTracker(SaleCheckoutActivity.this);
@@ -671,9 +671,9 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             String lat = String.valueOf(gpsTracker.getLatitude());
             String lon = String.valueOf(gpsTracker.getLongitude());
 
-            if(!lat.equals(null) && !lon.equals(null) && lat.length() > 5 && lon.length() > 5){
-                latitude = Double.parseDouble(lat.substring(0,6));
-                longitude = Double.parseDouble(lon.substring(0,6));
+            if(!lat.equals(null) && !lon.equals(null) && lat.length() > 6 && lon.length() > 6){
+                latitude = Double.parseDouble(lat.substring(0,7));
+                longitude = Double.parseDouble(lon.substring(0,7));
             }
         } else {
             gpsTracker.showSettingsAlert();
@@ -681,11 +681,11 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
         if(latiDouble != null && longDouble !=null && latitude != null && longitude != null) {
 
-            if(latitude >= (latiDouble - 0.001) && latitude <= (latiDouble + 0.001) && longitude >= (longDouble - 0.001) && longitude <= (longDouble + 0.001)) {
+            if(latitude >= (latiDouble - 0.0001) && latitude <= (latiDouble + 0.0001) && longitude >= (longDouble - 0.0001) && longitude <= (longDouble + 0.0001)) {
                 return true;
             }
         }
-        
+
         return false;
     }
 

@@ -62,6 +62,7 @@ public class Utils {
     public static final String FOR_DISPLAY_ASSESSMENT="for_display_assessment";
     public static final String FOR_OUTLET_STOCK_AVAILABILITY="for_outlet_stock_availibility";
     public static final String FOR_SIZE_IN_STORE_SHARE="for_size_in_store_share";
+    public static final String FOR_COMPETITORACTIVITY="for_competitoractivity";
 
     public static String getInvoiceID(Context context, String mode, String salemanID, String locationCode) {
 
@@ -309,6 +310,10 @@ public class Utils {
 
             invoiceNo +="SIS";
 
+        }else if(mode.equals(Utils.FOR_COMPETITORACTIVITY)){
+
+            invoiceNo +="CA";
+
         }
 
         invoiceNo += locationCode;
@@ -389,6 +394,15 @@ public class Utils {
             if (cursor.moveToNext()) {
 
                 next += cursor.getInt(cursor.getColumnIndex("COUNT")) + 1;
+            }
+
+        }else if (mode.equals(Utils.FOR_COMPETITORACTIVITY)){
+
+            Cursor cursor=database.rawQuery("SELECT COUNT(*) AS COUNT FROM COMPETITOR_ACTIVITY",null);
+            if (cursor.moveToNext()){
+
+                next += cursor.getInt(cursor.getColumnIndex("COUNT")) + 1;
+
             }
 
         }

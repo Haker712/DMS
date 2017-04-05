@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_marginBottom="60dp">
+
+    <RelativeLayout
+        android:id="@+id/headerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/appbar_height"
+        android:background="@color/colorAccent" >
+
+        <ImageView
+            android:id="@+id/cancel_img"
+            android:layout_width="@dimen/btn_appbar_width"
+            android:layout_height="@dimen/btn_appbar_height"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:gravity="center"
+            android:src="@drawable/ic_cancel_xh_btn"
+            android:layout_marginLeft="20dp"/>
+
+        <ImageView
+            android:id="@+id/add_img"
+            android:layout_width="@dimen/btn_appbar_width"
+            android:layout_height="@dimen/btn_appbar_height"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/cancel_img"
+            android:gravity="center"
+            android:src="@drawable/ic_add_xh_btn"
+            android:layout_marginLeft="20dp"/>
+        <ImageView
+            android:id="@+id/camera_img"
+            android:layout_width="@dimen/btn_appbar_width"
+            android:layout_height="@dimen/btn_appbar_height"
+            android:layout_toRightOf="@+id/add_img"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:src="@drawable/ic_camrea_hx_btn"
+            android:layout_marginLeft="20dp"/>
+        <ImageView
+            android:id="@+id/save_img"
+            android:layout_width="@dimen/btn_appbar_width"
+            android:layout_height="@dimen/btn_appbar_height"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/camera_img"
+            android:gravity="center"
+            android:src="@drawable/ic_save_xh_btn"
+            android:layout_marginLeft="20dp"/>
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="@string/competitor_activitites"
+            android:textSize="@dimen/appbar_title_size"
+            android:textColor="#ffffff" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/headerLayout"
+        android:layout_margin="10dp"
+        android:padding="10dp"
+        android:background="#898989"
+        >
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+           android:layout_gravity="center"
+            android:gravity="center"
+            android:text="CompetitorName"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Activity"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF" />
+
+    </LinearLayout>
+
+
+
+
+
+    <ListView
+        android:id="@+id/competitoractivityList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:padding="10dp"
+        android:descendantFocusability="blocksDescendants"
+        android:layout_below="@+id/header" />
+
+</RelativeLayout>

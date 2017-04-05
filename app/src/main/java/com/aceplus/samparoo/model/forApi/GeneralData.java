@@ -40,6 +40,9 @@ public class GeneralData {
     @SerializedName("Location")
     @Expose
     private List<Location> location = null;
+    @SerializedName("CustomerFeedback")
+    @Expose
+    private List<CustomerFeedback> customerFeedbacks = null;
 
     public List<District> getDistrict() {
         return district;
@@ -111,5 +114,13 @@ public class GeneralData {
 
     public void setLocation(List<Location> location) {
         this.location = location;
+    }
+
+    public List<CustomerFeedback> getCustomerFeedbacks() {
+        return customerFeedbacks;
+    }
+
+    public void setCustomerFeedbacks(List<CustomerFeedback> customerFeedbacks) {
+        this.customerFeedbacks = customerFeedbacks;
     }
 }

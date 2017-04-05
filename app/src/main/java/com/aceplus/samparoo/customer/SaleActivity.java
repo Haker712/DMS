@@ -124,7 +124,7 @@ public class SaleActivity extends AppCompatActivity {
             check = intent.getExtras().getString("SaleExchange");
             if (check.equalsIgnoreCase("yes")) {
 
-                titleTextView.setText("SALE EXCHANGE");
+                //titleTextView.setText("SALE EXCHANGE");
             }
 
         }

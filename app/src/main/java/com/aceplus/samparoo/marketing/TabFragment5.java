@@ -519,6 +519,9 @@ public class TabFragment5 extends Fragment {
                     LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                     final View view = layoutInflater.inflate(R.layout.dialog_box_sale_quantity, null);
 
+                    final TextView qtytxtview= (TextView) view.findViewById(R.id.dialog_sale_qty_txtView);
+                    qtytxtview.setText("Percent");
+
                     final TextView sizeinstoreshare = (TextView) view.findViewById(R.id.availableQuantity);
                     sizeinstoreshare.setText("Size in Store Share");
                     final EditText quantityEditText = (EditText) view.findViewById(R.id.quantity);
