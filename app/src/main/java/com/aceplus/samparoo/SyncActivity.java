@@ -42,6 +42,7 @@ import com.aceplus.samparoo.model.forApi.CompetitorSizeinstoreshareRequest;
 import com.aceplus.samparoo.model.forApi.Competitor_Activity;
 import com.aceplus.samparoo.model.forApi.CreditForApi;
 import com.aceplus.samparoo.model.forApi.CreditResponse;
+import com.aceplus.samparoo.model.forApi.Currency;
 import com.aceplus.samparoo.model.forApi.CustomerBalanceForApi;
 import com.aceplus.samparoo.model.forApi.CustomerData;
 import com.aceplus.samparoo.model.forApi.CustomerFeedback;
@@ -265,6 +266,11 @@ public class SyncActivity extends AppCompatActivity {
             }
         });
         alertDialog.show();
+
+        TextView textViewYes = (TextView) alertDialog.findViewById(android.R.id.button1);
+        textViewYes.setTextSize(25);
+        TextView textViewNo = (TextView) alertDialog.findViewById(android.R.id.button2);
+        textViewNo.setTextSize(25);
     }
 
     private int getRouteID(String saleman_Id) {
@@ -804,7 +810,7 @@ public class SyncActivity extends AppCompatActivity {
         sqLiteDatabase.execSQL("delete from " + DatabaseContract.UM.tb);
         sqLiteDatabase.execSQL("delete from " + DatabaseContract.Location.tb);
         sqLiteDatabase.execSQL("delete from " + DatabaseContract.CustomerFeedback.tb);
-
+        sqLiteDatabase.execSQL("delete from " + DatabaseContract.Currency.tb);
 
         for (GeneralData generalData : generalDataList) {
 
@@ -817,6 +823,7 @@ public class SyncActivity extends AppCompatActivity {
             insertUM(generalData.getUM());
             insertLocation(generalData.getLocation());
             insertCustomerFeedback(generalData.getCustomerFeedbacks());
+            insertCurrency(generalData.getCurrencyList());
         }
 
 
@@ -993,8 +1000,22 @@ public class SyncActivity extends AppCompatActivity {
             contentValues.put(DatabaseContract.CustomerFeedback.INVOICE_NO, customerFeedback.getInvoiceNo());
             contentValues.put(DatabaseContract.CustomerFeedback.INVOICE_DATE, customerFeedback.getInvoiceDate());
             contentValues.put(DatabaseContract.CustomerFeedback.REMARK, customerFeedback.getRemark());
+
+            sqLiteDatabase.insert(DatabaseContract.CustomerFeedback.tb, null, contentValues);
         }
 
+    }
+
+    private void insertCurrency(List<Currency> currencyList) {
+        for (Currency currency : currencyList) {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(DatabaseContract.Currency.ID, currency.getId());
+            contentValues.put(DatabaseContract.Currency.CURRENCY, currency.getCurrency());
+            contentValues.put(DatabaseContract.Currency.DESCRIPTION, currency.getDescription());
+            contentValues.put(DatabaseContract.Currency.COUPON_STATUS, currency.getCuponStatus());
+
+            sqLiteDatabase.insert(DatabaseContract.Currency.tb, null, contentValues);
+        }
     }
 
     private void uploadInvoiceToSever() {

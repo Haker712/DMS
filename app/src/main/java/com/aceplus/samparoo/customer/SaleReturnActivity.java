@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,6 +37,7 @@ import com.aceplus.samparoo.model.forApi.SaleReturnApi;
 import com.aceplus.samparoo.model.forApi.SaleReturnItem;
 import com.aceplus.samparoo.model.forApi.SaleReturnRequest;
 import com.aceplus.samparoo.model.forApi.SaleReturnRequestData;
+import com.aceplus.samparoo.myinterface.OnActionClickListener;
 import com.aceplus.samparoo.retrofit.RetrofitServiceFactory;
 import com.aceplus.samparoo.retrofit.UploadService;
 import com.aceplus.samparoo.utils.Constant;
@@ -61,7 +63,7 @@ import retrofit2.Response;
 /**
  * Created by i'm lovin' her on 10/21/15.
  */
-public class SaleReturnActivity extends Activity {
+public class SaleReturnActivity extends AppCompatActivity implements OnActionClickListener {
 
     public static final String USER_INFO_KEY = "user-info-key";
     public static final String CUSTOMER_INFO_KEY = "customer-info-key";
@@ -109,6 +111,8 @@ public class SaleReturnActivity extends Activity {
         customer = (Customer) getIntent().getSerializableExtra(CUSTOMER_INFO_KEY);
 
         database = new Database(this).getDataBase();
+
+        Utils.setOnActionClickListener(this);
 
         registerIDs();
 
@@ -265,51 +269,8 @@ public class SaleReturnActivity extends Activity {
             @Override
             public void onClick(View v) {
 
+            Utils.askConfirmationDialog("Save", "Do you want to confirm?", "", SaleReturnActivity.this);
 
-                if (soldProductList.size() == 0) {
-
-                    new AlertDialog.Builder(SaleReturnActivity.this)
-                            .setTitle("Alert")
-                            .setMessage("You must specify at least one product.")
-                            .setPositiveButton("OK", null)
-                            .show();
-
-                    return;
-                }
-
-                for (SoldProduct soldProduct : soldProductList) {
-
-                    if (soldProduct.getQuantity() == 0) {
-
-                        new AlertDialog.Builder(SaleReturnActivity.this)
-                                .setTitle("Alert")
-                                .setMessage("Quantity must not be zero.")
-                                .setPositiveButton("OK", null)
-                                .show();
-
-                        return;
-                    }
-                }
-
-                if (returnCashAmtEditText.getText().length() == 0 || returnCashAmtEditText.getText().toString().equals("")) {
-                    new AlertDialog.Builder(SaleReturnActivity.this)
-                            .setTitle("Alert")
-                            .setMessage("Return Cash Amount must be required.")
-                            .setPositiveButton("OK", null)
-                            .show();
-
-                    return;
-                } else if(!Utils.isNumeric(returnCashAmtEditText.getText().toString())) {
-                    new AlertDialog.Builder(SaleReturnActivity.this)
-                            .setTitle("Alert")
-                            .setMessage("Please enter valid amount.")
-                            .setPositiveButton("OK", null)
-                            .show();
-
-                    return;
-                }
-
-                insertintoDB();
             }
         });
     }
@@ -590,6 +551,54 @@ public class SaleReturnActivity extends Activity {
         } else {
             Utils.backToCustomer(this);
         }
+    }
+
+    @Override
+    public void onActionClick(String type) {
+        if (soldProductList.size() == 0) {
+
+            new AlertDialog.Builder(SaleReturnActivity.this)
+                    .setTitle("Alert")
+                    .setMessage("You must specify at least one product.")
+                    .setPositiveButton("OK", null)
+                    .show();
+
+            return;
+        }
+
+        for (SoldProduct soldProduct : soldProductList) {
+
+            if (soldProduct.getQuantity() == 0) {
+
+                new AlertDialog.Builder(SaleReturnActivity.this)
+                        .setTitle("Alert")
+                        .setMessage("Quantity must not be zero.")
+                        .setPositiveButton("OK", null)
+                        .show();
+
+                return;
+            }
+        }
+
+        if (returnCashAmtEditText.getText().length() == 0 || returnCashAmtEditText.getText().toString().equals("")) {
+            new AlertDialog.Builder(SaleReturnActivity.this)
+                    .setTitle("Alert")
+                    .setMessage("Return Cash Amount must be required.")
+                    .setPositiveButton("OK", null)
+                    .show();
+
+            return;
+        } else if(!Utils.isNumeric(returnCashAmtEditText.getText().toString())) {
+            new AlertDialog.Builder(SaleReturnActivity.this)
+                    .setTitle("Alert")
+                    .setMessage("Please enter valid amount.")
+                    .setPositiveButton("OK", null)
+                    .show();
+
+            return;
+        }
+
+        insertintoDB();
     }
 
     private class SoldProductListRowAdapter extends ArrayAdapter<SoldProduct> {

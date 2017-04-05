@@ -377,8 +377,15 @@ public class DatabaseContract {
         public static final String INVOICE_NO="INVOICE_NO";
         public static final String INVOICE_DATE="INVOICE_DATE";
         public static final String REMARK="REMARK";
+    }
 
+    public abstract class Currency{
 
+        public static final String tb="currency";
+        public static final String ID="id";
+        public static final String CURRENCY="currency";
+        public static final String DESCRIPTION="description";
+        public static final String COUPON_STATUS="coupon_status";
     }
 
     public abstract class temp_for_saleman_route {

@@ -70,6 +70,7 @@ public class DisplayAssessmentFragment extends Fragment {
         cancelImg = (ImageView) view.findViewById(R.id.cancel_img);
         cameraImg = (ImageView) view.findViewById(R.id.camera_img);
         saveImg = (ImageView) view.findViewById(R.id.save_img);
+        saveImg.setVisibility(View.GONE);
 
 
         Cursor cursor = sqLiteDatabase.rawQuery("select * from STANDARD_EXTERNAL_CHECK", null);
