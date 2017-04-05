@@ -369,4 +369,16 @@ public class DatabaseContract {
         public static final String SALE_FLG = "SALE_FLG";
         public static final String RECORD_DATE = "RECORD_DATE";
     }
+
+    public abstract class temp_for_saleman_route {
+        public static final String TABLE = "temp_for_saleman_route";
+        public static final String SALEMAN_ID = "saleman_id";
+        public static final String CUSTOMER_ID = "customer_id";
+        public static final String LATITUDE = "latitude";
+        public static final String LONGITUDE = "longitude";
+        public static final String ARRIVAL_TIME = "arrival_time";
+        public static final String ADDED_TIME = "added_time";
+        public static final String DEPARTURE_TIME = "departure_time";
+        public static final String ROUTE_ID = "route_id";
+    }
 }

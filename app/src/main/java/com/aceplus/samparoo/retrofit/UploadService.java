@@ -52,4 +52,8 @@ public interface UploadService {
     @FormUrlEncoded
     @POST("upload/customerVisit")
     Call<InvoiceResponse> uploadCustomerVisit(@Field("param_data") String paramData);
+
+    @FormUrlEncoded
+    @POST("upload/eRoute")
+    Call<InvoiceResponse> uploadSaleManRoute(@Field("param_data") String paramData);
 }

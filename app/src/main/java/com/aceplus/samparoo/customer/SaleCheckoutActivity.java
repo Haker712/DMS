@@ -33,6 +33,7 @@ import com.aceplus.samparoo.model.Customer;
 import com.aceplus.samparoo.model.Product;
 import com.aceplus.samparoo.model.Promotion;
 import com.aceplus.samparoo.model.SoldProduct;
+import com.aceplus.samparoo.myinterface.OnActionClickListener;
 import com.aceplus.samparoo.utils.Constant;
 import com.aceplus.samparoo.utils.Database;
 import com.aceplus.samparoo.utils.DatabaseContract;
@@ -46,7 +47,7 @@ import java.util.ArrayList;
 /**
  * Created by haker on 2/3/17.
  */
-public class SaleCheckoutActivity extends AppCompatActivity {
+public class SaleCheckoutActivity extends AppCompatActivity implements OnActionClickListener {
 
     public static final String REMAINING_AMOUNT_KEY = "remaining-amount-key";
 
@@ -115,6 +116,9 @@ public class SaleCheckoutActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }*/
+
+        Utils.setOnActionClickListener(this);
+
 
         customer = (Customer) getIntent().getSerializableExtra(CUSTOMER_INFO_KEY);
         soldProductList = (ArrayList<SoldProduct>) getIntent().getSerializableExtra(SOLD_PROUDCT_LIST_KEY);
@@ -575,19 +579,7 @@ public class SaleCheckoutActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                String cashOrBank = getPaymentMethod();
-
-                if (isFullyPaid()) {
-                    saveDatas(cashOrBank);
-                    saleOrExchange();
-                } else {
-                    if (cashOrBank.equals("B")) {
-                        Utils.commonDialog("Insufficient Pay Amount!", SaleCheckoutActivity.this);
-                    } else {
-                        saveDatas("R");
-                        saleOrExchange();
-                    }
-                }
+                Utils.askConfirmationDialog("Save", "Do you want to confirm?", "", SaleCheckoutActivity.this);
             }
         });
     }
@@ -836,6 +828,25 @@ public class SaleCheckoutActivity extends AppCompatActivity {
         }*/
         intent.putExtra("SaleExchange", "no");
         startActivity(intent);
+        finish();
+    }
+
+    @Override
+    public void onActionClick(String type) {
+
+        String cashOrBank = getPaymentMethod();
+
+        if (isFullyPaid()) {
+            saveDatas(cashOrBank);
+            saleOrExchange();
+        } else {
+            if (cashOrBank.equals("B")) {
+                Utils.commonDialog("Insufficient Pay Amount!", SaleCheckoutActivity.this);
+            } else {
+                saveDatas("R");
+                saleOrExchange();
+            }
+        }
     }
 
     private class SoldProductListRowAdapter extends ArrayAdapter<SoldProduct> {

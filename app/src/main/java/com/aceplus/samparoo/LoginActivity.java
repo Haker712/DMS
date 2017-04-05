@@ -126,8 +126,8 @@ public class LoginActivity extends AppCompatActivity {
         }
         Log.i("Current URL2", Constant.BASE_URL);
 
-        //editTextUserID.setText("ACE");
-        //editTextPassword.setText("samparoo");
+        editTextUserID.setText("TA");
+        editTextPassword.setText("aceplus");
 
         if (Utils.isOsMarshmallow()) {
             askPermission();

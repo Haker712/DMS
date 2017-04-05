@@ -45,6 +45,7 @@ import com.aceplus.samparoo.model.forApi.CustomerResponse;
 import com.aceplus.samparoo.model.forApi.CustomerVisitRequest;
 import com.aceplus.samparoo.model.forApi.CustomerVisitRequestData;
 import com.aceplus.samparoo.model.forApi.CustomerVisitResponse;
+import com.aceplus.samparoo.model.forApi.DataForSaleManRoute;
 import com.aceplus.samparoo.model.forApi.DataForVolumeDiscount;
 import com.aceplus.samparoo.model.forApi.DataforMarketing;
 import com.aceplus.samparoo.model.forApi.DataforSaleUpload;
@@ -60,6 +61,7 @@ import com.aceplus.samparoo.model.forApi.DisplayAssessmentData;
 import com.aceplus.samparoo.model.forApi.DisplayAssessmentRequest;
 import com.aceplus.samparoo.model.forApi.District;
 import com.aceplus.samparoo.model.forApi.DownloadMarketing;
+import com.aceplus.samparoo.model.forApi.ERouteReport;
 import com.aceplus.samparoo.model.forApi.GeneralData;
 import com.aceplus.samparoo.model.forApi.GeneralResponse;
 import com.aceplus.samparoo.model.forApi.GroupCode;
@@ -91,6 +93,7 @@ import com.aceplus.samparoo.model.forApi.PromotionGift;
 import com.aceplus.samparoo.model.forApi.PromotionGiftItem;
 import com.aceplus.samparoo.model.forApi.PromotionPrice;
 import com.aceplus.samparoo.model.forApi.PromotionResponse;
+import com.aceplus.samparoo.model.forApi.SaleManRouteRequest;
 import com.aceplus.samparoo.model.forApi.SaleReturnApi;
 import com.aceplus.samparoo.model.forApi.SaleReturnItem;
 import com.aceplus.samparoo.model.forApi.SaleReturnRequest;
@@ -2792,15 +2795,16 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        Utils.cancelDialog();
+                        //Utils.cancelDialog();
                         if (!services.equals("")) {
                             services += ",";
                         }
                         services += "CUSTOMER VISIT RECORD ";
-                        if (!services.equals("")) {
+                        uploadSaleManRoute();
+                        /*if (!services.equals("")) {
                             services += " are successfully uploaded";
                             Utils.commonDialog(services, SyncActivity.this);
-                        }
+                        }*/
                     } else {
                         if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
                             onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
@@ -2936,6 +2940,78 @@ public class SyncActivity extends AppCompatActivity {
     /***
      * PL
      ***/
+
+    private void uploadSaleManRoute() {
+        String paramData = "";
+        SaleManRouteRequest saleManRouteRequest = new SaleManRouteRequest();
+        saleManRouteRequest.setSiteActivationKey(Constant.SITE_ACTIVATION_KEY);
+        saleManRouteRequest.setTabletActivationKey(Constant.TABLET_ACTIVATION_KEY);
+        saleManRouteRequest.setUserId(saleman_Id);
+        saleManRouteRequest.setPassword("");//it is empty string bcoz json format using gson cannot accept encrypted
+
+        List<ERouteReport> eRouteReportList = getDatasForSaleManRoute();
+        List<DataForSaleManRoute> dataForSaleManRouteList = new ArrayList<>();
+        DataForSaleManRoute dataForSaleManRoute = new DataForSaleManRoute();
+        dataForSaleManRoute.setERouteReport(eRouteReportList);
+        dataForSaleManRouteList.add(dataForSaleManRoute);
+        saleManRouteRequest.setData(dataForSaleManRouteList);
+
+        paramData = getJsonFromObject(saleManRouteRequest);
+        Log.i("Param_SAL_ROUTE", paramData);
+
+        UploadService uploadService = RetrofitServiceFactory.createService(UploadService.class);
+        Call<InvoiceResponse> call = uploadService.uploadSaleManRoute(paramData);
+        call.enqueue(new Callback<InvoiceResponse>() {
+            @Override
+            public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
+                if (response.code() == 200) {
+                    if (response.body().getAceplusStatusCode() == 200) {
+                        Utils.cancelDialog();
+                        if (!services.equals("")) {
+                            services += ",";
+                        }
+                        services += "E ROUTE REPORT ";
+                        if (!services.equals("")) {
+                            services += " are successfully uploaded";
+                            Utils.commonDialog(services, SyncActivity.this);
+                        }
+                    } else {
+                        if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
+                            onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                        }
+                    }
+
+                } else {
+                    Utils.cancelDialog();
+                    Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<InvoiceResponse> call, Throwable t) {
+                Utils.cancelDialog();
+                Utils.commonDialog(t.getMessage(), SyncActivity.this);
+            }
+        });
+    }
+
+    private ArrayList<ERouteReport> getDatasForSaleManRoute() {
+        ArrayList<ERouteReport> eRouteReportArrayList = new ArrayList<>();
+        Cursor cursor = sqLiteDatabase.rawQuery("select * from " + DatabaseContract.temp_for_saleman_route.TABLE, null);
+        while (cursor.moveToNext()) {
+            ERouteReport eRouteReport = new ERouteReport();
+            eRouteReport.setCustomerId(cursor.getInt(cursor.getColumnIndex(DatabaseContract.temp_for_saleman_route.CUSTOMER_ID)));
+            eRouteReport.setSaleManId(cursor.getInt(cursor.getColumnIndex(DatabaseContract.temp_for_saleman_route.SALEMAN_ID)));
+            eRouteReport.setRouteId(cursor.getInt(cursor.getColumnIndex(DatabaseContract.temp_for_saleman_route.ROUTE_ID)));
+            eRouteReport.setArrivalTime(cursor.getString(cursor.getColumnIndex(DatabaseContract.temp_for_saleman_route.ARRIVAL_TIME)));
+            eRouteReport.setDepartureTime(cursor.getString(cursor.getColumnIndex(DatabaseContract.temp_for_saleman_route.DEPARTURE_TIME)));
+            eRouteReport.setLatitude(cursor.getDouble(cursor.getColumnIndex(DatabaseContract.temp_for_saleman_route.LATITUDE)));
+            eRouteReport.setLongitude(cursor.getDouble(cursor.getColumnIndex(DatabaseContract.temp_for_saleman_route.LONGITUDE)));
+
+            eRouteReportArrayList.add(eRouteReport);
+        }
+        return eRouteReportArrayList;
+    }
 
     @OnClick(R.id.cancel_img)
     void back() {
