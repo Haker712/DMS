@@ -93,6 +93,7 @@ import com.aceplus.samparoo.model.forApi.PreOrderDetailApi;
 import com.aceplus.samparoo.model.forApi.PreOrderPresentApi;
 import com.aceplus.samparoo.model.forApi.PreOrderRequest;
 import com.aceplus.samparoo.model.forApi.PreOrderRequestData;
+import com.aceplus.samparoo.model.forApi.ProductCategory;
 import com.aceplus.samparoo.model.forApi.ProductForApi;
 import com.aceplus.samparoo.model.forApi.ProductResponse;
 import com.aceplus.samparoo.model.forApi.ProductType;
@@ -814,6 +815,8 @@ public class SyncActivity extends AppCompatActivity {
         sqLiteDatabase.execSQL("delete from " + DatabaseContract.Location.tb);
         sqLiteDatabase.execSQL("delete from " + DatabaseContract.CustomerFeedback.tb);
         sqLiteDatabase.execSQL("delete from " + DatabaseContract.Currency.tb);
+        sqLiteDatabase.execSQL("delete from " + DatabaseContract.Product_Category.tb);
+
 
         for (GeneralData generalData : generalDataList) {
 
@@ -827,6 +830,7 @@ public class SyncActivity extends AppCompatActivity {
             insertLocation(generalData.getLocation());
             insertCustomerFeedback(generalData.getCustomerFeedbacks());
             insertCurrency(generalData.getCurrencyList());
+            insertProductCategory(generalData.getProductCategory());
         }
 
 
@@ -903,7 +907,7 @@ public class SyncActivity extends AppCompatActivity {
 
     private void insertCompanyInformationData(ArrayList<CompanyInfromationData> companyInfromationDataList) {
 
-Log.i("DataListSize",companyInfromationDataList.size()+"");
+        Log.i("DataListSize", companyInfromationDataList.size() + "");
 
 //        for (CompanyInfromationData companyInfromationData : companyInfromationDataList) {
 //
@@ -918,7 +922,7 @@ Log.i("DataListSize",companyInfromationDataList.size()+"");
 
     private void insertCompanyInformation(ArrayList<CompanyInformation> companyInformationList) {
 
-        Log.i("ListsIZE",companyInformationList.size()+"listsize");
+        Log.i("ListsIZE", companyInformationList.size() + "listsize");
 
         for (CompanyInformation companyInformation : companyInformationList) {
             ContentValues contentValues = new ContentValues();
@@ -1176,6 +1180,22 @@ Log.i("DataListSize",companyInfromationDataList.size()+"");
 
             sqLiteDatabase.insert(DatabaseContract.Currency.tb, null, contentValues);
         }
+    }
+
+    private void insertProductCategory(List<ProductCategory> productCategoryList){
+
+        for (ProductCategory productCategory : productCategoryList){
+
+            ContentValues contentValues=new ContentValues();
+            contentValues.put(DatabaseContract.Product_Category.CATEGORY_ID,productCategory.getCategory_Id());
+            contentValues.put(DatabaseContract.Product_Category.CATEGORY_NAME,productCategory.getCategory_Name());
+
+            sqLiteDatabase.insert(DatabaseContract.Product_Category.tb,null,contentValues);
+
+
+
+        }
+
     }
 
     private void uploadInvoiceToSever() {

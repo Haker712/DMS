@@ -68,7 +68,7 @@ public interface DownloadService {
     Call<CustomerVisitResponse> getCustomerVisitFromApi(@Field("param_data") String paramData);
 
     @FormUrlEncoded
-    @POST("customerVisit")
+    @POST("companyInfo")
     Call<CompanyInformationResponse> getCompanyInformationFromApi(@Field("param_data") String paramData);
 
 }
