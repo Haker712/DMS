@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.aceplus.samparoo.customer.CustomerActivity;
 import com.aceplus.samparoo.model.Promotion;
+import com.aceplus.samparoo.myinterface.OnActionClickListener;
 import com.aceplus.samparoo.utils.Constant;
 import com.aceplus.samparoo.utils.Database;
 import com.aceplus.samparoo.utils.Utils;
@@ -27,7 +28,7 @@ import butterknife.OnClick;
 /**
  * Created by haker on 1/24/17.
  */
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements OnActionClickListener {
 
     @InjectView(R.id.buttonSync)
     Button buttonSync;
@@ -61,6 +62,8 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         ButterKnife.inject(this);
+
+        Utils.setOnActionClickListener(this);
 
         sqLiteDatabase = new Database(this).getDataBase();
 
@@ -127,9 +130,7 @@ public class HomeActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
-        finish();
+        Utils.askConfirmationDialog("Logout", "Do you want to logout?", "", this);
     }
 
     private int isNoCustomer() {
@@ -137,5 +138,12 @@ public class HomeActivity extends AppCompatActivity {
         Cursor cursorCustomerCount = sqLiteDatabase.rawQuery("SELECT * FROM CUSTOMER", null);
         int count = cursorCustomerCount.getCount();
         return count;
+    }
+
+    @Override
+    public void onActionClick(String type) {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

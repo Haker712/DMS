@@ -26,6 +26,7 @@ import com.aceplus.samparoo.model.Customer;
 import com.aceplus.samparoo.model.Posm;
 import com.aceplus.samparoo.model.PosmByCustomer;
 import com.aceplus.samparoo.model.SoldProduct;
+import com.aceplus.samparoo.myinterface.OnActionClickListener;
 import com.aceplus.samparoo.utils.Constant;
 import com.aceplus.samparoo.utils.Database;
 import com.aceplus.samparoo.utils.DatabaseContract;
@@ -43,7 +44,7 @@ import java.util.List;
  * PosmCheckOutActivity
  */
 
-public class PosmCheckOutActivity extends AppCompatActivity{
+public class PosmCheckOutActivity extends AppCompatActivity implements OnActionClickListener {
 
     public static final String CUSTOMER_INFO_KEY = "customer-info-key";
     public static final String SOLD_PROUDCT_LIST_KEY = "sold-product-list-key";
@@ -77,6 +78,8 @@ public class PosmCheckOutActivity extends AppCompatActivity{
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sale_checkout);
+
+        Utils.setOnActionClickListener(this);
 
         soldProductList = (ArrayList<SoldProduct>) getIntent().getSerializableExtra(this.SOLD_PROUDCT_LIST_KEY);
 
@@ -172,12 +175,7 @@ public class PosmCheckOutActivity extends AppCompatActivity{
         img_confirmAndPrint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                insertPosmByCustomer();
-                Intent intent = new Intent(PosmCheckOutActivity.this
-                        , PosmActivity.class);
-                intent.putExtra(PosmActivity.CUSTOMER_INFO_KEY, customer);
-                startActivity(intent);
-                finish();
+                Utils.askConfirmationDialog("Save", "Do you want to confirm?", "", PosmCheckOutActivity.this);
             }
         });
     }
@@ -257,6 +255,16 @@ public class PosmCheckOutActivity extends AppCompatActivity{
             productId = cursor.getInt(cursor.getColumnIndex("SHOP_TYPE_ID"));
         }
         return productId;
+    }
+
+    @Override
+    public void onActionClick(String type) {
+        insertPosmByCustomer();
+        Intent intent = new Intent(PosmCheckOutActivity.this
+                , PosmActivity.class);
+        intent.putExtra(PosmActivity.CUSTOMER_INFO_KEY, customer);
+        startActivity(intent);
+        finish();
     }
 
     /**

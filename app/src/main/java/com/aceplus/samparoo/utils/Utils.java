@@ -3,6 +3,7 @@ package com.aceplus.samparoo.utils;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
@@ -12,6 +13,7 @@ import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.util.Base64;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.aceplus.samparoo.CustomerVisitActivity;
 import com.aceplus.samparoo.HomeActivity;
@@ -20,6 +22,7 @@ import com.aceplus.samparoo.MarketingActivity;
 import com.aceplus.samparoo.customer.CustomerActivity;
 import com.aceplus.samparoo.marketing.MainFragmentActivity;
 import com.aceplus.samparoo.model.forApi.LoginRequest;
+import com.aceplus.samparoo.myinterface.OnActionClickListener;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -443,6 +446,33 @@ public class Utils {
             return false;
         }
         return true;
+    }
+
+    public static OnActionClickListener onActionClickListener;
+
+    public static void setOnActionClickListener(OnActionClickListener onActionClickListener) {
+        Utils.onActionClickListener = onActionClickListener;
+    }
+
+    public static void askConfirmationDialog(String title, String message, final String type, Activity activity) {
+
+        AlertDialog alertDialog = new AlertDialog.Builder(activity)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                        onActionClickListener.onActionClick(type);
+                    }
+                })
+                .setNegativeButton("No", null)
+                .show();
+
+        TextView textViewYes = (TextView) alertDialog.findViewById(android.R.id.button1);
+        textViewYes.setTextSize(25);
+        TextView textViewNo = (TextView) alertDialog.findViewById(android.R.id.button2);
+        textViewNo.setTextSize(25);
     }
 
 }

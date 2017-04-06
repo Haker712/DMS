@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -33,6 +35,7 @@ import com.aceplus.samparoo.model.Customer;
 import com.aceplus.samparoo.model.Product;
 import com.aceplus.samparoo.model.Promotion;
 import com.aceplus.samparoo.model.SoldProduct;
+import com.aceplus.samparoo.myinterface.OnActionClickListener;
 import com.aceplus.samparoo.utils.Constant;
 import com.aceplus.samparoo.utils.Database;
 import com.aceplus.samparoo.utils.DatabaseContract;
@@ -46,7 +49,7 @@ import java.util.ArrayList;
 /**
  * Created by haker on 2/3/17.
  */
-public class SaleCheckoutActivity extends AppCompatActivity {
+public class SaleCheckoutActivity extends AppCompatActivity implements OnActionClickListener {
 
     public static final String REMAINING_AMOUNT_KEY = "remaining-amount-key";
 
@@ -69,7 +72,7 @@ public class SaleCheckoutActivity extends AppCompatActivity {
     TextView netAmountTextView;
     EditText payAmountEditText;
     TextView refundTextView;
-    EditText receiptPersonEditText;
+    EditText receiptPersonEditText, branchEditText, accountEditText;
     private EditText prepaidAmountEditText;
     ImageView backImg, confirmAndPrintImg;
     String paymentMethod = "", bankCardNo = "";
@@ -103,6 +106,8 @@ public class SaleCheckoutActivity extends AppCompatActivity {
 
     String check;
 
+    LinearLayout layoutBranch, layoutBankAcc;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,6 +120,9 @@ public class SaleCheckoutActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }*/
+
+        Utils.setOnActionClickListener(this);
+
 
         customer = (Customer) getIntent().getSerializableExtra(CUSTOMER_INFO_KEY);
         soldProductList = (ArrayList<SoldProduct>) getIntent().getSerializableExtra(SOLD_PROUDCT_LIST_KEY);
@@ -380,6 +388,11 @@ public class SaleCheckoutActivity extends AppCompatActivity {
         bankOrCashRadioGroup = (RadioGroup) findViewById(R.id.activity_sale_checkout_radio_group);
         bankRadio = (RadioButton) findViewById(R.id.activity_sale_checkout_radio_bank);
         cashRadio = (RadioButton) findViewById(R.id.activity_sale_checkout_radio_cash);
+        layoutBranch = (LinearLayout) findViewById(R.id.bank_branch_layout);
+        layoutBankAcc = (LinearLayout) findViewById(R.id.bank_account_layout);
+        accountEditText = (EditText) findViewById(R.id.edit_txt_account_name);
+        branchEditText = (EditText) findViewById(R.id.edit_txt_branch_name);
+
     }
 
     private void initCategories() {
@@ -575,19 +588,26 @@ public class SaleCheckoutActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                String cashOrBank = getPaymentMethod();
+                Utils.askConfirmationDialog("Save", "Do you want to confirm?", "", SaleCheckoutActivity.this);
+            }
+        });
 
-                if (isFullyPaid()) {
-                    saveDatas(cashOrBank);
-                    saleOrExchange();
-                } else {
-                    if (cashOrBank.equals("B")) {
-                        Utils.commonDialog("Insufficient Pay Amount!", SaleCheckoutActivity.this);
-                    } else {
-                        saveDatas("R");
-                        saleOrExchange();
-                    }
+
+        bankRadio.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    layoutBranch.setVisibility(View.VISIBLE);
+                    layoutBankAcc.setVisibility(View.VISIBLE);
                 }
+            }
+        });
+
+        bankRadio.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                layoutBranch.setVisibility(View.VISIBLE);
+                layoutBankAcc.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -632,6 +652,7 @@ public class SaleCheckoutActivity extends AppCompatActivity {
         String paymentMethod = "";
         if(selectedRadio == R.id.activity_sale_checkout_radio_bank) {
             paymentMethod = "B";
+
         } else if(selectedRadio == R.id.activity_sale_checkout_radio_cash) {
             paymentMethod = "C";
         }
@@ -836,6 +857,25 @@ public class SaleCheckoutActivity extends AppCompatActivity {
         }*/
         intent.putExtra("SaleExchange", "no");
         startActivity(intent);
+        finish();
+    }
+
+    @Override
+    public void onActionClick(String type) {
+
+        String cashOrBank = getPaymentMethod();
+
+        if (isFullyPaid()) {
+            saveDatas(cashOrBank);
+            saleOrExchange();
+        } else {
+            if (cashOrBank.equals("B")) {
+                Utils.commonDialog("Insufficient Pay Amount!", SaleCheckoutActivity.this);
+            } else {
+                saveDatas("R");
+                saleOrExchange();
+            }
+        }
     }
 
     private class SoldProductListRowAdapter extends ArrayAdapter<SoldProduct> {

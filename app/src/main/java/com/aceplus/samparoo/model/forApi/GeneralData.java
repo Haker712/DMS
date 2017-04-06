@@ -43,6 +43,9 @@ public class GeneralData {
     @SerializedName("CustomerFeedback")
     @Expose
     private List<CustomerFeedback> customerFeedbacks = null;
+    @SerializedName("Currency")
+    @Expose
+    private List<Currency> currencyList = null;
 
     public List<District> getDistrict() {
         return district;
@@ -122,5 +125,13 @@ public class GeneralData {
 
     public void setCustomerFeedbacks(List<CustomerFeedback> customerFeedbacks) {
         this.customerFeedbacks = customerFeedbacks;
+    }
+
+    public List<Currency> getCurrencyList() {
+        return currencyList;
+    }
+
+    public void setCurrencyList(List<Currency> currencyList) {
+        this.currencyList = currencyList;
     }
 }

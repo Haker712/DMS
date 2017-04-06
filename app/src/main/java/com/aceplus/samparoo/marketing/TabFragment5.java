@@ -30,6 +30,7 @@ import com.aceplus.samparoo.R;
 import com.aceplus.samparoo.model.Category;
 import com.aceplus.samparoo.model.Product;
 import com.aceplus.samparoo.model.SoldProduct;
+import com.aceplus.samparoo.myinterface.OnActionClickListener;
 import com.aceplus.samparoo.utils.Constant;
 import com.aceplus.samparoo.utils.Database;
 import com.aceplus.samparoo.utils.DatabaseContract;
@@ -46,7 +47,7 @@ import java.util.Date;
 /**
  * Created by i'm lovin' her on 3/31/16.
  */
-public class TabFragment5 extends Fragment {
+public class TabFragment5 extends Fragment implements OnActionClickListener {
 
     AppCompatActivity activity;
     View view;
@@ -92,6 +93,8 @@ public class TabFragment5 extends Fragment {
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
 
         activity = (AppCompatActivity) getActivity();
+
+        Utils.setOnActionClickListener(this);
 
         database = new Database(activity).getDataBase();
 
@@ -290,32 +293,8 @@ public class TabFragment5 extends Fragment {
         saveImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (soldProductList.size() == 0) {
+                Utils.askConfirmationDialog("Save", "Do you want to save?", "", activity);
 
-                    new AlertDialog.Builder(activity)
-                            .setTitle("Alert")
-                            .setMessage("You must specify at least one product.")
-                            .setPositiveButton("OK", null)
-                            .show();
-
-                    return;
-                }
-
-                for (SoldProduct soldProduct : soldProductList) {
-
-                    if (soldProduct.getSize_in_store_share() == 0) {
-
-                        new AlertDialog.Builder(activity)
-                                .setTitle("Alert")
-                                .setMessage("Size in Store Share must not be zero.")
-                                .setPositiveButton("OK", null)
-                                .show();
-
-                        return;
-                    }
-                }
-
-                insertintoDB();
             }
         });
 
@@ -485,6 +464,36 @@ public class TabFragment5 extends Fragment {
                 soldProductListRowAdapter.notifyDataSetChanged();
             }
         }
+    }
+
+    @Override
+    public void onActionClick(String type) {
+        if (soldProductList.size() == 0) {
+
+            new AlertDialog.Builder(activity)
+                    .setTitle("Alert")
+                    .setMessage("You must specify at least one product.")
+                    .setPositiveButton("OK", null)
+                    .show();
+
+            return;
+        }
+
+        for (SoldProduct soldProduct : soldProductList) {
+
+            if (soldProduct.getSize_in_store_share() == 0) {
+
+                new AlertDialog.Builder(activity)
+                        .setTitle("Alert")
+                        .setMessage("Size in Store Share must not be zero.")
+                        .setPositiveButton("OK", null)
+                        .show();
+
+                return;
+            }
+        }
+
+        insertintoDB();
     }
 
 

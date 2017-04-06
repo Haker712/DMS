@@ -9,8 +9,11 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Paint;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.text.Editable;
@@ -48,8 +51,11 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.prefs.Preferences;
 
 import butterknife.ButterKnife;
@@ -109,6 +115,11 @@ public class CustomerActivity extends AppCompatActivity {
     Cursor cursor;
     String saleManId;
 
+    Timer timer;
+    TimerTask timerTask;
+
+    final Handler handler = new Handler();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -154,6 +165,113 @@ public class CustomerActivity extends AppCompatActivity {
             }
         }
 
+        //new Thread(new Task()).start();
+        //startTimer();
+
+    }
+
+    class Task implements Runnable {
+        @Override
+        public void run() {
+            Looper.prepare();
+            for (int i = 0; i < 10; i++) {
+                Log.i("Thread", "run");
+                Toast.makeText(CustomerActivity.this, "Thread", Toast.LENGTH_SHORT).show();
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
+
+    public void startTimer() {
+        timer = new Timer();
+
+        initializeTimerTask();
+
+        //timer.schedule(timerTask, 1000, 300000);//time interval = 5 min & delay time = 1 sec
+        timer.schedule(timerTask, 1000, 5000);//time interval = 5 sec & delay time = 1 sec
+    }
+
+    public void initializeTimerTask() {
+        timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        /*Log.i("Thread", "run");
+                        Toast.makeText(CustomerActivity.this, "Thread", Toast.LENGTH_SHORT).show();*/
+
+                        checkSaleManCurrentLocation();
+                    }
+                });
+            }
+        };
+    }
+
+    public void stopTimerTask() {
+        if (timer != null) {
+            Log.e("stop>>>", "Timer");
+            timer.cancel();
+            timer = null;
+        }
+    }
+
+    private void checkSaleManCurrentLocation() {
+        int customer_id = 0;
+        GPSTracker gpsTracker = new GPSTracker(CustomerActivity.this);
+        if (gpsTracker.canGetLocation()) {
+            String lat = String.valueOf(gpsTracker.getLatitude());
+            String lon = String.valueOf(gpsTracker.getLongitude());
+
+            Log.i("Lat & Long : ", lat + ", " + lon);
+            //Toast.makeText(this, "Lat & Long : " + lat + ", " + lon, Toast.LENGTH_SHORT).show();
+            Cursor cursorForSaleManRouteCount = database.rawQuery("select * from " + DatabaseContract.temp_for_saleman_route.TABLE +
+                    " where " + DatabaseContract.temp_for_saleman_route.LATITUDE + " = "+Double.parseDouble(lat)+"" +
+                    " and " + DatabaseContract.temp_for_saleman_route.LONGITUDE + " = "+Double.parseDouble(lon)+"", null);
+            if (cursorForSaleManRouteCount.getCount() == 0) {
+                Cursor cursorForSaleManRoute = database.rawQuery("select * from " + DatabaseContract.temp_for_saleman_route.TABLE, null);
+                while (cursorForSaleManRoute.moveToNext()) {
+                    double lat_from_db = cursorForSaleManRoute.getDouble(cursorForSaleManRoute.getColumnIndex(DatabaseContract.temp_for_saleman_route.LATITUDE));
+                    double long_from_db = cursorForSaleManRoute.getDouble(cursorForSaleManRoute.getColumnIndex(DatabaseContract.temp_for_saleman_route.LONGITUDE));
+                    customer_id = cursorForSaleManRoute.getInt(cursorForSaleManRoute.getColumnIndex(DatabaseContract.temp_for_saleman_route.CUSTOMER_ID));
+
+                    Location locationA = new Location("point A");
+
+                    locationA.setLatitude(latitude);
+                    locationA.setLongitude(longitude);
+
+                    Location locationB = new Location("point B");
+
+                    locationB.setLatitude(lat_from_db);
+                    locationB.setLongitude(long_from_db);
+
+                    float distance = locationA.distanceTo(locationB);
+                    Log.i("distance", distance + "");
+
+                    if (distance >= 50) {
+                        updateDepartureTimeForSalemanRoute(customer_id);
+                    }
+                }
+            }
+            else {
+                Toast.makeText(CustomerActivity.this, "Same Place", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            gpsTracker.showSettingsAlert();
+        }
+    }
+
+    private void updateDepartureTimeForSalemanRoute(int customerId) {
+        database.beginTransaction();
+        database.execSQL("update " + DatabaseContract.temp_for_saleman_route.TABLE + " set " + DatabaseContract.temp_for_saleman_route.DEPARTURE_TIME + " = '"+Utils.getCurrentDate(true)+"'" +
+                " where " + DatabaseContract.temp_for_saleman_route.CUSTOMER_ID + " = "+customerId+"");
+        database.setTransactionSuccessful();
+        database.endTransaction();
     }
 
     @OnClick(R.id.cancel_img)
@@ -175,6 +293,7 @@ public class CustomerActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Utils.backToCustomerVisit(this);
+        stopTimerTask();
     }
 
     private void registerIDs() {
@@ -212,7 +331,7 @@ public class CustomerActivity extends AppCompatActivity {
         // Initial setup customers list view
         customers = new ArrayList<Customer>();
         customerListForArrayAdapter = new ArrayList<Customer>();
-        Cursor cursor = database.rawQuery("SELECT * FROM CUSTOMER", null);
+        final Cursor cursor = database.rawQuery("SELECT * FROM CUSTOMER", null);
         while (cursor.moveToNext()) {
             String township_name = "";
             String township_id = cursor.getString(cursor.getColumnIndex("township_number"));
@@ -273,6 +392,16 @@ public class CustomerActivity extends AppCompatActivity {
                 longitude = customer.getLongitude();
                 Log.i("lat & lon", latitude + " & " + longitude);
                 visitRecord = customer.getVisitRecord();
+
+                if (isSameCustomer(customer.getId())) {
+                    String saleman_id = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
+                    Cursor cursorForSaleManRoute = database.rawQuery("select * from " + DatabaseContract.temp_for_saleman_route.TABLE +
+                            " where " + DatabaseContract.temp_for_saleman_route.SALEMAN_ID + " = "+saleman_id+"" +
+                            " and " + DatabaseContract.temp_for_saleman_route.CUSTOMER_ID + " = "+customer.getId()+"", null);
+                    if (cursorForSaleManRoute.getCount() == 0) {
+                        insertFirstDataForSalemanRoute(saleman_id, customer.getId());
+                    }
+                }
             }
         });
 
@@ -328,6 +457,32 @@ public class CustomerActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void insertFirstDataForSalemanRoute(String saleman_id, int customer_id) {
+        database.beginTransaction();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DatabaseContract.temp_for_saleman_route.SALEMAN_ID, saleman_id);
+        contentValues.put(DatabaseContract.temp_for_saleman_route.CUSTOMER_ID, customer_id);
+        contentValues.put(DatabaseContract.temp_for_saleman_route.LATITUDE, customer.getLatitude());
+        contentValues.put(DatabaseContract.temp_for_saleman_route.LONGITUDE, customer.getLongitude());
+        contentValues.put(DatabaseContract.temp_for_saleman_route.ARRIVAL_TIME, Utils.getCurrentDate(true));
+        contentValues.put(DatabaseContract.temp_for_saleman_route.DEPARTURE_TIME, "");
+        contentValues.put(DatabaseContract.temp_for_saleman_route.ROUTE_ID, getRouteID(String.valueOf(saleman_id)));
+        database.insert(DatabaseContract.temp_for_saleman_route.TABLE, null, contentValues);
+        database.setTransactionSuccessful();
+        database.endTransaction();
+    }
+
+    private int getRouteID(String saleman_Id) {
+        int routeID = 0;
+        Cursor cursor = database.rawQuery("select * from " + DatabaseContract.RouteScheduleItem.tb + " where " +
+                DatabaseContract.RouteScheduleItem.saleManID + " = '" + saleman_Id + "' ", null);
+        while (cursor.moveToNext()) {
+            routeID = cursor.getInt(cursor.getColumnIndex(DatabaseContract.RouteScheduleItem.routeID));
+        }
+        Log.i("routeID>>>", routeID + "");
+        return routeID;
     }
 
     /**
@@ -490,10 +645,9 @@ public class CustomerActivity extends AppCompatActivity {
                         while (cursor.moveToNext()) {
 
                             customerFeedbacks.add(new CustomerFeedback(
-                                    cursor.getString(cursor.getColumnIndex("INV_NO"))
-                                    , cursor.getString(cursor.getColumnIndex("INV_DATE"))
-                                    , cursor.getString(cursor.getColumnIndex("SERIAL_NO"))
-                                    , cursor.getString(cursor.getColumnIndex("DESCRIPTION"))));
+                                    cursor.getString(cursor.getColumnIndex(DatabaseContract.CustomerFeedback.INVOICE_NO))
+                                    , cursor.getString(cursor.getColumnIndex(DatabaseContract.CustomerFeedback.INVOICE_DATE))
+                                    , cursor.getString(cursor.getColumnIndex(DatabaseContract.CustomerFeedback.REMARK))));
                         }
 
                         final AlertDialog alertDialog = new AlertDialog.Builder(CustomerActivity.this)
@@ -513,7 +667,7 @@ public class CustomerActivity extends AppCompatActivity {
                                         String locationNumber = String.valueOf(getLocationCode());
                                         String feedbackNumber = customerFeedbacks.get(descriptionsSpinner.getSelectedItemPosition()).getInvoiceNumber();
                                         String feedbackDate = customerFeedbacks.get(descriptionsSpinner.getSelectedItemPosition()).getInvoiceDate();
-                                        String serialNumber = customerFeedbacks.get(descriptionsSpinner.getSelectedItemPosition()).getSerialNumber();
+                                        String serialNumber = "";
                                         String description = customerFeedbacks.get(descriptionsSpinner.getSelectedItemPosition()).getDescription();
                                         String remark = remarkEditText.getText().toString();
 

@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.aceplus.samparoo.CustomerVisitActivity;
 import com.aceplus.samparoo.LoginActivity;
 import com.aceplus.samparoo.R;
+import com.aceplus.samparoo.myinterface.OnActionClickListener;
 import com.aceplus.samparoo.utils.Constant;
 import com.aceplus.samparoo.utils.Database;
 import com.aceplus.samparoo.utils.DatabaseContract;
@@ -32,7 +33,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class AddNewCustomerActivity extends FragmentActivity {
+public class AddNewCustomerActivity extends FragmentActivity implements OnActionClickListener {
 
     public static final String USER_INFO_KEY = "user-info-key";
     private JSONObject userInfo;
@@ -76,6 +77,8 @@ public class AddNewCustomerActivity extends FragmentActivity {
 
         // Hide keyboard on startup.
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+        Utils.setOnActionClickListener(this);
 
         database = new Database(this).getDataBase();
         registerIDs();
@@ -212,181 +215,7 @@ public class AddNewCustomerActivity extends FragmentActivity {
         addImg.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean isErrorFlag = false;
-                if (customerNameEditText.getText().length() == 0) {
-
-                    customerNameEditText.setError("Customer name is required.");
-                    isErrorFlag = true;
-                }
-
-                if (contactPersonEditText.getText().length() == 0) {
-
-                    contactPersonEditText.setError("Contact person is required.");
-                    isErrorFlag = true;
-                }
-
-                if (phoneNumberEditText.getText().length() == 0) {
-
-                    phoneNumberEditText.setError("Phone number is required.");
-                    isErrorFlag = true;
-                }
-
-                if (addressEditText.getText().length() == 0) {
-
-                    addressEditText.setError("Address is required.");
-                    isErrorFlag = true;
-                }
-//                if (customerLocationTxt.getText().length() == 0) {
-//                    customerLocationTxt.setError("Custoemr Location is required.");
-//                    isErrorFlag = true;
-//                }
-                String currentTime = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss").format(new Date());
-                String userId = "";
-                String townshipId = "";
-               String districtId="";
-                String statedivisionId="";
-                String customerCategoryId = "";
-                String customerName="";
-                String contactPerson="";
-                String phoneNo="";
-                String address="";
-
-
-                try {
-//                    userId = userInfo.getString("userId");
-//                    zoneCode = zoneList.get(zoneSpinner.getSelectedItemPosition()).getString("zoneCode");
-//                    townshipNumber = townshipList.get(townshipSpinner.getSelectedItemPosition()).getString("townshipNumber");
-//                    townshipName = townshipList.get(townshipSpinner.getSelectedItemPosition()).getString("townshipName");
-//                    customerCategoryId = customerCategoryList.get(customerCategorySpinner.getSelectedItemPosition()).getString("id");
-//                    customerCategoryName = customerCategoryList.get(customerCategorySpinner.getSelectedItemPosition()).getString("name");
-
-                    boolean noDataFlg = false;
-
-                    if(LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID,"") != null) {
-                        userId= LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID,"");
-                    } else {
-                        noDataFlg = true;
-                    }
-
-                    if(townshipList != null && townshipList.size() != 0) {
-                        townshipId=townshipList.get(townshipSpinner.getSelectedItemPosition()).getString("townshipId");
-                    } else {
-                        noDataFlg = true;
-                    }
-
-                    if(customerCategoryList != null && customerCategoryList.size() != 0) {
-                        customerCategoryId=customerCategoryList.get(customerCategorySpinner.getSelectedItemPosition()).getString("id");
-                    } else {
-                        noDataFlg = true;
-                    }
-
-                    if(districtList != null && districtList.size() != 0) {
-                        districtId=districtList.get(districtSpinner.getSelectedItemPosition()).getString("districtId");
-                    } else {
-                        noDataFlg = true;
-                    }
-
-                    if(statedivisionList != null && statedivisionList.size() != 0) {
-                        statedivisionId=statedivisionList.get(statedivisionSpinner.getSelectedItemPosition()).getString("statedivisionId");
-                    } else {
-                        noDataFlg = true;
-                    }
-
-                    if(noDataFlg) {
-                        Utils.commonDialog(getResources().getString(R.string.no_download_data_error), AddNewCustomerActivity.this);
-                        return;
-                    }
-
-                    customerName=customerNameEditText.getText().toString();
-                    contactPerson=contactPersonEditText.getText().toString();
-                    phoneNo=phoneNumberEditText.getText().toString();
-                    address=addressEditText.getText().toString();
-
-
-
-                    Log.i("CS",Constant.SALEMAN_ID);
-
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-
-                //customerId = Preferences.getNextNewCustomerId(AddNewCustomerActivity.this, userId); // TODO: 2/3/17 customerIdAutoIncrement
-
-                if (isErrorFlag) {
-
-                    return;
-                }
-
-//                String sql = "INSERT INTO CUSTOMER(CUSTOMER_ID,CUSTOMER_NAME,PH,ADDRESS,contact_person,zone_no,customer_category_no,township_number,LATITUDE,LONGITUDE,flag) VALUES("
-//                        + "\"" + customerId + "\","
-//                        + "\"" + customerNameEditText.getText().toString() + "\","
-//                        + "\"" + phoneNumberEditText.getText().toString() + "\","
-//                        + "\"" + addressEditText.getText().toString() + "\","
-//                        + "\"" + contactPersonEditText.getText().toString() + "\","
-//                        + "\"" + zoneCode + "\","
-//                        + "\"" + customerCategoryId + "\","
-//                        + "\"" + townshipNumber + "\","
-//                        + "\"" + customerLat + "\","
-//                        + "\"" + customerLng + "\","
-//                        + "\"" + 1 + "\""
-//                        + ")";
-
-                customerId= userId + Utils.getCurrentDate(false) + new DecimalFormat("00").format(LoginActivity.mySharedPreference.getInt(Constant.ADDNEWCUSTOMERCOUNT, 0) + 1.0);
-                LoginActivity.myEditor.putInt(Constant.ADDNEWCUSTOMERCOUNT, LoginActivity.mySharedPreference.getInt(Constant.ADDNEWCUSTOMERCOUNT,0) + 1);
-                LoginActivity.myEditor.commit();
-
-                ContentValues contentValues = new ContentValues();
-
-
-                contentValues.put("township_number",townshipId);
-                Log.i("TownshipId",townshipId);
-                contentValues.put("district_id",districtId);
-                contentValues.put("state_division_id",statedivisionId);
-                contentValues.put("CUSTOMER_NAME",customerName);
-                contentValues.put("CUSTOMER_ID",customerId);
-                contentValues.put("contact_person",contactPerson);
-                contentValues.put("PH",phoneNo);
-                contentValues.put("ADDRESS",address);
-                contentValues.put("flag", 1);
-
-                database.insert("CUSTOMER", null, contentValues);
-
-
-
-//                database.beginTransaction();
-//                database.execSQL(sql);
-//                database.setTransactionSuccessful();
-//                database.endTransaction();
-
-                /*sql = "INSERT INTO CUSTOMER VALUES ("
-                        + "\"" + customerId + "\","
-                        + "\"" + customerNameEditText.getText().toString() + "\","
-                        + "\"" + customerCategoryId + "\","
-                        + "\"" + customerCategoryName + "\","
-                        + "\"" + addressEditText.getText().toString() + "\","
-                        + "\"" + phoneNumberEditText.getText().toString() + "\","
-                        + "\"" + townshipName + "\","
-                        + "" + 0 + ","
-                        + "" + 0 + ","
-                        + "" + 0 + ","
-                        + "" + 0 + ","
-                        + "" + 0 + ","
-                        + "\"" + "R" + "\","
-                        + "\"" + "true" + "\","
-                        + "\"" + customerLat + "\","
-                        + "\"" + customerLng + "\","
-                        + "\"" + "0" + "\""
-                        + ")";
-                database.beginTransaction();
-                database.execSQL(sql);
-                database.setTransactionSuccessful();
-                database.endTransaction();*/
-
-                //Preferences.didUploadedNewCustomersToServer(AddNewCustomerActivity.this, false);
-                reset();
-                //finish();
+                Utils.askConfirmationDialog("Save", "Do you want to add?", "", AddNewCustomerActivity.this);
             }
         });
 
@@ -584,5 +413,184 @@ public class AddNewCustomerActivity extends FragmentActivity {
     @Override
     public void onBackPressed() {
         Utils.backToCustomerVisit(this);
+    }
+
+    @Override
+    public void onActionClick(String type) {
+        boolean isErrorFlag = false;
+        if (customerNameEditText.getText().length() == 0) {
+
+            customerNameEditText.setError("Customer name is required.");
+            isErrorFlag = true;
+        }
+
+        if (contactPersonEditText.getText().length() == 0) {
+
+            contactPersonEditText.setError("Contact person is required.");
+            isErrorFlag = true;
+        }
+
+        if (phoneNumberEditText.getText().length() == 0) {
+
+            phoneNumberEditText.setError("Phone number is required.");
+            isErrorFlag = true;
+        }
+
+        if (addressEditText.getText().length() == 0) {
+
+            addressEditText.setError("Address is required.");
+            isErrorFlag = true;
+        }
+//                if (customerLocationTxt.getText().length() == 0) {
+//                    customerLocationTxt.setError("Custoemr Location is required.");
+//                    isErrorFlag = true;
+//                }
+        String currentTime = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss").format(new Date());
+        String userId = "";
+        String townshipId = "";
+        String districtId="";
+        String statedivisionId="";
+        String customerCategoryId = "";
+        String customerName="";
+        String contactPerson="";
+        String phoneNo="";
+        String address="";
+
+
+        try {
+//                    userId = userInfo.getString("userId");
+//                    zoneCode = zoneList.get(zoneSpinner.getSelectedItemPosition()).getString("zoneCode");
+//                    townshipNumber = townshipList.get(townshipSpinner.getSelectedItemPosition()).getString("townshipNumber");
+//                    townshipName = townshipList.get(townshipSpinner.getSelectedItemPosition()).getString("townshipName");
+//                    customerCategoryId = customerCategoryList.get(customerCategorySpinner.getSelectedItemPosition()).getString("id");
+//                    customerCategoryName = customerCategoryList.get(customerCategorySpinner.getSelectedItemPosition()).getString("name");
+
+            boolean noDataFlg = false;
+
+            if(LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID,"") != null) {
+                userId= LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID,"");
+            } else {
+                noDataFlg = true;
+            }
+
+            if(townshipList != null && townshipList.size() != 0) {
+                townshipId=townshipList.get(townshipSpinner.getSelectedItemPosition()).getString("townshipId");
+            } else {
+                noDataFlg = true;
+            }
+
+            if(customerCategoryList != null && customerCategoryList.size() != 0) {
+                customerCategoryId=customerCategoryList.get(customerCategorySpinner.getSelectedItemPosition()).getString("id");
+            } else {
+                noDataFlg = true;
+            }
+
+            if(districtList != null && districtList.size() != 0) {
+                districtId=districtList.get(districtSpinner.getSelectedItemPosition()).getString("districtId");
+            } else {
+                noDataFlg = true;
+            }
+
+            if(statedivisionList != null && statedivisionList.size() != 0) {
+                statedivisionId=statedivisionList.get(statedivisionSpinner.getSelectedItemPosition()).getString("statedivisionId");
+            } else {
+                noDataFlg = true;
+            }
+
+            if(noDataFlg) {
+                Utils.commonDialog(getResources().getString(R.string.no_download_data_error), AddNewCustomerActivity.this);
+                return;
+            }
+
+            customerName=customerNameEditText.getText().toString();
+            contactPerson=contactPersonEditText.getText().toString();
+            phoneNo=phoneNumberEditText.getText().toString();
+            address=addressEditText.getText().toString();
+
+
+
+            Log.i("CS",Constant.SALEMAN_ID);
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        //customerId = Preferences.getNextNewCustomerId(AddNewCustomerActivity.this, userId); // TODO: 2/3/17 customerIdAutoIncrement
+
+        if (isErrorFlag) {
+
+            return;
+        }
+
+//                String sql = "INSERT INTO CUSTOMER(CUSTOMER_ID,CUSTOMER_NAME,PH,ADDRESS,contact_person,zone_no,customer_category_no,township_number,LATITUDE,LONGITUDE,flag) VALUES("
+//                        + "\"" + customerId + "\","
+//                        + "\"" + customerNameEditText.getText().toString() + "\","
+//                        + "\"" + phoneNumberEditText.getText().toString() + "\","
+//                        + "\"" + addressEditText.getText().toString() + "\","
+//                        + "\"" + contactPersonEditText.getText().toString() + "\","
+//                        + "\"" + zoneCode + "\","
+//                        + "\"" + customerCategoryId + "\","
+//                        + "\"" + townshipNumber + "\","
+//                        + "\"" + customerLat + "\","
+//                        + "\"" + customerLng + "\","
+//                        + "\"" + 1 + "\""
+//                        + ")";
+
+        customerId= userId + Utils.getCurrentDate(false) + new DecimalFormat("00").format(LoginActivity.mySharedPreference.getInt(Constant.ADDNEWCUSTOMERCOUNT, 0) + 1.0);
+        LoginActivity.myEditor.putInt(Constant.ADDNEWCUSTOMERCOUNT, LoginActivity.mySharedPreference.getInt(Constant.ADDNEWCUSTOMERCOUNT,0) + 1);
+        LoginActivity.myEditor.commit();
+
+        ContentValues contentValues = new ContentValues();
+
+
+        contentValues.put("township_number",townshipId);
+        Log.i("TownshipId",townshipId);
+        contentValues.put("district_id",districtId);
+        contentValues.put("state_division_id",statedivisionId);
+        contentValues.put("CUSTOMER_NAME",customerName);
+        contentValues.put("CUSTOMER_ID",customerId);
+        contentValues.put("contact_person",contactPerson);
+        contentValues.put("PH",phoneNo);
+        contentValues.put("ADDRESS",address);
+        contentValues.put("flag", 1);
+
+        database.insert("CUSTOMER", null, contentValues);
+
+
+
+//                database.beginTransaction();
+//                database.execSQL(sql);
+//                database.setTransactionSuccessful();
+//                database.endTransaction();
+
+                /*sql = "INSERT INTO CUSTOMER VALUES ("
+                        + "\"" + customerId + "\","
+                        + "\"" + customerNameEditText.getText().toString() + "\","
+                        + "\"" + customerCategoryId + "\","
+                        + "\"" + customerCategoryName + "\","
+                        + "\"" + addressEditText.getText().toString() + "\","
+                        + "\"" + phoneNumberEditText.getText().toString() + "\","
+                        + "\"" + townshipName + "\","
+                        + "" + 0 + ","
+                        + "" + 0 + ","
+                        + "" + 0 + ","
+                        + "" + 0 + ","
+                        + "" + 0 + ","
+                        + "\"" + "R" + "\","
+                        + "\"" + "true" + "\","
+                        + "\"" + customerLat + "\","
+                        + "\"" + customerLng + "\","
+                        + "\"" + "0" + "\""
+                        + ")";
+                database.beginTransaction();
+                database.execSQL(sql);
+                database.setTransactionSuccessful();
+                database.endTransaction();*/
+
+        //Preferences.didUploadedNewCustomersToServer(AddNewCustomerActivity.this, false);
+        reset();
+        //finish();
     }
 }

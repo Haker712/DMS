@@ -60,6 +60,7 @@ import com.aceplus.samparoo.model.forApi.PreOrderDetailApi;
 import com.aceplus.samparoo.model.forApi.PreOrderPresentApi;
 import com.aceplus.samparoo.model.forApi.PreOrderRequest;
 import com.aceplus.samparoo.model.forApi.PreOrderRequestData;
+import com.aceplus.samparoo.myinterface.OnActionClickListener;
 import com.aceplus.samparoo.retrofit.RetrofitServiceFactory;
 import com.aceplus.samparoo.retrofit.UploadService;
 import com.aceplus.samparoo.utils.Constant;
@@ -87,7 +88,7 @@ import retrofit2.Response;
 /**
  * Created by phonelin on 2/10/17.
  */
-public class SaleOrderCheckoutActivity extends AppCompatActivity{
+public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnActionClickListener {
 
     public static final int REQUEST_SEND_SMS = 101;
     public static final String REMAINING_AMOUNT_KEY = "remaining-amount-key";
@@ -158,6 +159,8 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sale_checkout);
         database = new Database(this).getDataBase();
+
+        Utils.setOnActionClickListener(this);
 
         saleman_Id = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
         saleman_No = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, "");
@@ -654,34 +657,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
         img_confirmAndPrint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isPreOrder) {
-                    insertPreOrderInformation();
-                    if(isOnline()) {
-                        uploadPreOrderToServer();
-                    } else {
-                        sendSMSMessage();
-                    }
-                } else if(isDelivery) {
-                    if (SaleOrderCheckoutActivity.this.receiptPersonEditText.getText().length() == 0) {
-
-                        new AlertDialog.Builder(SaleOrderCheckoutActivity.this)
-                                .setTitle("Delivery")
-                                .setMessage("Your must provide 'Receipt Person'.")
-                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-
-                                    @Override
-                                    public void onClick(DialogInterface arg0, int arg1) {
-                                        receiptPersonEditText.requestFocus();
-                                    }
-                                })
-                                .show();
-
-                        return;
-                    }
-
-                    insertDeliveryDataToDatabase(orderedInvoice);
-                    toDeliveryActivity();
-                }
+                Utils.askConfirmationDialog("Save", "Do you want to confirm?", "", SaleOrderCheckoutActivity.this);
             }
         });
 
@@ -1307,6 +1283,38 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity{
         cvDeliveryUploadItem.put(DatabaseContract.DELIVERY_ITEM_UPLOAD.QUANTITY, deliveryItemApi.getDeliveryQty());
         cvDeliveryUploadItem.put(DatabaseContract.DELIVERY_ITEM_UPLOAD.FOC, deliveryItemApi.getFoc());
         database.insert(DatabaseContract.DELIVERY_ITEM_UPLOAD.TABLE, null, cvDeliveryUploadItem);
+    }
+
+    @Override
+    public void onActionClick(String type) {
+        if(isPreOrder) {
+            insertPreOrderInformation();
+            if(isOnline()) {
+                uploadPreOrderToServer();
+            } else {
+                sendSMSMessage();
+            }
+        } else if(isDelivery) {
+            if (SaleOrderCheckoutActivity.this.receiptPersonEditText.getText().length() == 0) {
+
+                new AlertDialog.Builder(SaleOrderCheckoutActivity.this)
+                        .setTitle("Delivery")
+                        .setMessage("Your must provide 'Receipt Person'.")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface arg0, int arg1) {
+                                receiptPersonEditText.requestFocus();
+                            }
+                        })
+                        .show();
+
+                return;
+            }
+
+            insertDeliveryDataToDatabase(orderedInvoice);
+            toDeliveryActivity();
+        }
     }
 
     /**

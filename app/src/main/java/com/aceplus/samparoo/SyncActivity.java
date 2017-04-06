@@ -45,6 +45,7 @@ import com.aceplus.samparoo.model.forApi.CompetitorSizeinstoreshareRequest;
 import com.aceplus.samparoo.model.forApi.Competitor_Activity;
 import com.aceplus.samparoo.model.forApi.CreditForApi;
 import com.aceplus.samparoo.model.forApi.CreditResponse;
+import com.aceplus.samparoo.model.forApi.Currency;
 import com.aceplus.samparoo.model.forApi.CustomerBalanceForApi;
 import com.aceplus.samparoo.model.forApi.CustomerData;
 import com.aceplus.samparoo.model.forApi.CustomerFeedback;
@@ -53,6 +54,7 @@ import com.aceplus.samparoo.model.forApi.CustomerResponse;
 import com.aceplus.samparoo.model.forApi.CustomerVisitRequest;
 import com.aceplus.samparoo.model.forApi.CustomerVisitRequestData;
 import com.aceplus.samparoo.model.forApi.CustomerVisitResponse;
+import com.aceplus.samparoo.model.forApi.DataForSaleManRoute;
 import com.aceplus.samparoo.model.forApi.DataForVolumeDiscount;
 import com.aceplus.samparoo.model.forApi.DataforMarketing;
 import com.aceplus.samparoo.model.forApi.DataforSaleUpload;
@@ -68,6 +70,7 @@ import com.aceplus.samparoo.model.forApi.DisplayAssessmentData;
 import com.aceplus.samparoo.model.forApi.DisplayAssessmentRequest;
 import com.aceplus.samparoo.model.forApi.District;
 import com.aceplus.samparoo.model.forApi.DownloadMarketing;
+import com.aceplus.samparoo.model.forApi.ERouteReport;
 import com.aceplus.samparoo.model.forApi.GeneralData;
 import com.aceplus.samparoo.model.forApi.GeneralResponse;
 import com.aceplus.samparoo.model.forApi.GroupCode;
@@ -99,6 +102,7 @@ import com.aceplus.samparoo.model.forApi.PromotionGift;
 import com.aceplus.samparoo.model.forApi.PromotionGiftItem;
 import com.aceplus.samparoo.model.forApi.PromotionPrice;
 import com.aceplus.samparoo.model.forApi.PromotionResponse;
+import com.aceplus.samparoo.model.forApi.SaleManRouteRequest;
 import com.aceplus.samparoo.model.forApi.SaleReturnApi;
 import com.aceplus.samparoo.model.forApi.SaleReturnItem;
 import com.aceplus.samparoo.model.forApi.SaleReturnRequest;
@@ -265,6 +269,11 @@ public class SyncActivity extends AppCompatActivity {
             }
         });
         alertDialog.show();
+
+        TextView textViewYes = (TextView) alertDialog.findViewById(android.R.id.button1);
+        textViewYes.setTextSize(25);
+        TextView textViewNo = (TextView) alertDialog.findViewById(android.R.id.button2);
+        textViewNo.setTextSize(25);
     }
 
     private int getRouteID(String saleman_Id) {
@@ -804,7 +813,7 @@ public class SyncActivity extends AppCompatActivity {
         sqLiteDatabase.execSQL("delete from " + DatabaseContract.UM.tb);
         sqLiteDatabase.execSQL("delete from " + DatabaseContract.Location.tb);
         sqLiteDatabase.execSQL("delete from " + DatabaseContract.CustomerFeedback.tb);
-
+        sqLiteDatabase.execSQL("delete from " + DatabaseContract.Currency.tb);
 
         for (GeneralData generalData : generalDataList) {
 
@@ -817,6 +826,7 @@ public class SyncActivity extends AppCompatActivity {
             insertUM(generalData.getUM());
             insertLocation(generalData.getLocation());
             insertCustomerFeedback(generalData.getCustomerFeedbacks());
+            insertCurrency(generalData.getCurrencyList());
         }
 
 
@@ -1128,8 +1138,22 @@ public class SyncActivity extends AppCompatActivity {
             contentValues.put(DatabaseContract.CustomerFeedback.INVOICE_NO, customerFeedback.getInvoiceNo());
             contentValues.put(DatabaseContract.CustomerFeedback.INVOICE_DATE, customerFeedback.getInvoiceDate());
             contentValues.put(DatabaseContract.CustomerFeedback.REMARK, customerFeedback.getRemark());
+
+            sqLiteDatabase.insert(DatabaseContract.CustomerFeedback.tb, null, contentValues);
         }
 
+    }
+
+    private void insertCurrency(List<Currency> currencyList) {
+        for (Currency currency : currencyList) {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(DatabaseContract.Currency.ID, currency.getId());
+            contentValues.put(DatabaseContract.Currency.CURRENCY, currency.getCurrency());
+            contentValues.put(DatabaseContract.Currency.DESCRIPTION, currency.getDescription());
+            contentValues.put(DatabaseContract.Currency.COUPON_STATUS, currency.getCuponStatus());
+
+            sqLiteDatabase.insert(DatabaseContract.Currency.tb, null, contentValues);
+        }
     }
 
     private void uploadInvoiceToSever() {
@@ -1144,23 +1168,6 @@ public class SyncActivity extends AppCompatActivity {
         dataforSaleUpload.setInvoicePresent(getInvoicepresentData());
 
         dataforSaleUploads.add(dataforSaleUpload);
-
-        /*JSONObject jsonObject = new JSONObject();
-
-
-        try {
-
-            jsonObject.put("site_activation_key", Constant.SITE_ACTIVATION_KEY);
-            jsonObject.put("tablet_activation_key", Constant.TABLET_ACTIVATION_KEY);
-            jsonObject.put("user_id", saleman_No);
-            jsonObject.put("password",saleman_Pwd);
-            jsonObject.put("route", getRouteID(saleman_Id));
-            jsonObject.put("data",dataforSaleUploads);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        paramData = jsonObject.toString();*/
-
 
         TsaleRequest tsaleRequest = new TsaleRequest();
         tsaleRequest.setSiteActivationKey(Constant.SITE_ACTIVATION_KEY);
@@ -1431,18 +1438,6 @@ public class SyncActivity extends AppCompatActivity {
         });
     }
 
-/*    private String getJsonFromObject(TsaleRequest tsaleRequest) {
-        Gson gson = new GsonBuilder().serializeNulls().create();
-        String jsonString = gson.toJson(tsaleRequest);
-        return jsonString;
-    }
-
-    private String getJsonFromObject1(AddnewCustomerRequest addnewCustomerRequest) {
-        Gson gson = new GsonBuilder().serializeNulls().create();
-        String jsonString = gson.toJson(addnewCustomerRequest);
-        return jsonString;
-    }*/
-
     /**
      * Upload pre order data to server
      */
@@ -1507,18 +1502,6 @@ public class SyncActivity extends AppCompatActivity {
             }
         });
     }
-
-    /**
-     * Transform preOrderRequest to json.
-     *
-     * @param preOrderRequest PreOrderRequest
-     * @return preOrderRequest pre order object for api request
-     */
-/*    private String getJsonFromObject(PreOrderRequest preOrderRequest) {
-        Gson gson = new GsonBuilder().serializeNulls().create();
-        String jsonString = gson.toJson(preOrderRequest);
-        return jsonString;
-    }*/
 
     /**
      * Get all related data for pre order from database.
@@ -1837,18 +1820,6 @@ public class SyncActivity extends AppCompatActivity {
     }
 
     /**
-     * Transform saleReturnRequest to json.
-     *
-     * @param saleReturnRequest SaleReturnRequest
-     * @return saleReturnRequest sale return object for api request
-     */
-/*    private String getJsonFromObject(SaleReturnRequest saleReturnRequest) {
-        Gson gson = new GsonBuilder().serializeNulls().create();
-        String jsonString = gson.toJson(saleReturnRequest);
-        return jsonString;
-    }*/
-
-    /**
      * Download posm and shop type from server.
      *
      * @param param request param
@@ -2059,18 +2030,6 @@ public class SyncActivity extends AppCompatActivity {
 
         return posmByCustomerList;
     }
-
-    /**
-     * Transform PosmByCustomerRequest to json.
-     *
-     * @param posmByCustomerRequest PosmByCustomerRequest
-     * @return PosmByCustomerRequest sale return object for api request
-     */
- /*   String getJsonFromObject(PosmByCustomerRequest posmByCustomerRequest) {
-        Gson gson = new GsonBuilder().serializeNulls().create();
-        String jsonString = gson.toJson(posmByCustomerRequest);
-        return jsonString;
-    }*/
 
     /**
      * Delete data in table after uploading to server.
@@ -2301,15 +2260,6 @@ public class SyncActivity extends AppCompatActivity {
 
 
     }
-
-/*    private String getJsonFromObject(DisplayAssessmentRequest displayAssessmentRequest) {
-
-        Gson gson = new GsonBuilder().serializeNulls().create();
-        String jsonString = gson.toJson(displayAssessmentRequest);
-        return jsonString;
-
-    }*/
-
 
     private List<DisplayAssessment> getDisplayAssessmentFromDB() {
 
@@ -2793,36 +2743,6 @@ public class SyncActivity extends AppCompatActivity {
         return sizeInStoreShareItemList;
     }
 
-
-    /**
-     * upload out competitorsizeinstoreshare to server by BL
-     */
-
-
-
-
-
-/*    private String getJsonFromObject(Outlet_Sizeinstore_request outlet_sizeinstore_request) {
-
-        Gson gson = new GsonBuilder().serializeNulls().create();
-        String jsonString = gson.toJson(outlet_sizeinstore_request);
-        return jsonString;
-
-    }*/
-
-
-    /**
-     * Convert delivery date to json format
-     *
-     * @param deliveryRequest DeliveryRequest
-     * @return json string
-     */
-/*    private String getJsonFromObject(DeliveryRequest deliveryRequest) {
-        Gson gson = new GsonBuilder().serializeNulls().create();
-        String jsonString = gson.toJson(deliveryRequest);
-        return jsonString;
-    }*/
-
     /**
      * Set required delivery data to delivery request
      *
@@ -3154,15 +3074,16 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        Utils.cancelDialog();
+                        //Utils.cancelDialog();
                         if (!services.equals("")) {
                             services += ",";
                         }
                         services += "CUSTOMER VISIT RECORD ";
-                        if (!services.equals("")) {
+                        uploadSaleManRoute();
+                        /*if (!services.equals("")) {
                             services += " are successfully uploaded";
                             Utils.commonDialog(services, SyncActivity.this);
-                        }
+                        }*/
                     } else {
                         if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
                             onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
@@ -3298,6 +3219,135 @@ public class SyncActivity extends AppCompatActivity {
     /***
      * PL
      ***/
+
+    private void uploadSaleManRoute() {
+        String paramData = "";
+        SaleManRouteRequest saleManRouteRequest = new SaleManRouteRequest();
+        saleManRouteRequest.setSiteActivationKey(Constant.SITE_ACTIVATION_KEY);
+        saleManRouteRequest.setTabletActivationKey(Constant.TABLET_ACTIVATION_KEY);
+        saleManRouteRequest.setUserId(saleman_Id);
+        saleManRouteRequest.setPassword("");//it is empty string bcoz json format using gson cannot accept encrypted
+
+        List<ERouteReport> eRouteReportList = getDatasForSaleManRoute();
+        List<DataForSaleManRoute> dataForSaleManRouteList = new ArrayList<>();
+        DataForSaleManRoute dataForSaleManRoute = new DataForSaleManRoute();
+        dataForSaleManRoute.setERouteReport(eRouteReportList);
+        dataForSaleManRouteList.add(dataForSaleManRoute);
+        saleManRouteRequest.setData(dataForSaleManRouteList);
+
+        paramData = getJsonFromObject(saleManRouteRequest);
+        Log.i("Param_SAL_ROUTE", paramData);
+
+        UploadService uploadService = RetrofitServiceFactory.createService(UploadService.class);
+        Call<InvoiceResponse> call = uploadService.uploadSaleManRoute(paramData);
+        call.enqueue(new Callback<InvoiceResponse>() {
+            @Override
+            public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
+                if (response.code() == 200) {
+                    if (response.body().getAceplusStatusCode() == 200) {
+                        Utils.cancelDialog();
+                        if (!services.equals("")) {
+                            services += ",";
+                        }
+                        services += "E ROUTE REPORT ";
+                        if (!services.equals("")) {
+                            services += " are successfully uploaded";
+                            Utils.commonDialog(services, SyncActivity.this);
+                        }
+                    } else {
+                        if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
+                            onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                        }
+                    }
+
+                } else {
+                    Utils.cancelDialog();
+                    Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<InvoiceResponse> call, Throwable t) {
+                Utils.cancelDialog();
+                Utils.commonDialog(t.getMessage(), SyncActivity.this);
+            }
+        });
+    }
+
+    private ArrayList<ERouteReport> getDatasForSaleManRoute() {
+        ArrayList<ERouteReport> eRouteReportArrayList = new ArrayList<>();
+        Cursor cursor = sqLiteDatabase.rawQuery("select * from " + DatabaseContract.temp_for_saleman_route.TABLE, null);
+        while (cursor.moveToNext()) {
+            ERouteReport eRouteReport = new ERouteReport();
+            eRouteReport.setCustomerId(cursor.getInt(cursor.getColumnIndex(DatabaseContract.temp_for_saleman_route.CUSTOMER_ID)));
+            eRouteReport.setSaleManId(cursor.getInt(cursor.getColumnIndex(DatabaseContract.temp_for_saleman_route.SALEMAN_ID)));
+            eRouteReport.setRouteId(cursor.getInt(cursor.getColumnIndex(DatabaseContract.temp_for_saleman_route.ROUTE_ID)));
+            eRouteReport.setArrivalTime(cursor.getString(cursor.getColumnIndex(DatabaseContract.temp_for_saleman_route.ARRIVAL_TIME)));
+            eRouteReport.setDepartureTime(cursor.getString(cursor.getColumnIndex(DatabaseContract.temp_for_saleman_route.DEPARTURE_TIME)));
+            eRouteReport.setLatitude(cursor.getDouble(cursor.getColumnIndex(DatabaseContract.temp_for_saleman_route.LATITUDE)));
+            eRouteReport.setLongitude(cursor.getDouble(cursor.getColumnIndex(DatabaseContract.temp_for_saleman_route.LONGITUDE)));
+
+            eRouteReportArrayList.add(eRouteReport);
+        }
+        return eRouteReportArrayList;
+    }
+
+    /**
+     * Download sale target data from api.
+     */
+    private void downloadSaleTargetFromServer() {
+        DownloadService downloadService = RetrofitServiceFactory.createService(DownloadService.class);
+        /*Call<SaleTargetResponse> call = downloadService.getCustomerVisitFromApi(paramData);
+        call.enqueue(new Callback<SaleTargetResponse>() {
+            @Override
+            public void onResponse(Call<SaleTargetResponse> call, Response<SaleTargetResponse> response) {
+                if (response.code() == 200) {
+                    if (response.body().getAceplusStatusCode() == 200) {
+                        //Utils.cancelDialog();
+                        textViewError.setText("");
+
+                        //Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
+
+                        List<SaleTargetForCustomer> saleTargetCustomerList = response.body().getDataForSaleTargetList().get(0).getSaleTargetForCustomerList();
+                        List<SaleTargetForSaleMan> saleTargetSaleMenList = response.body().getDataForSaleTargetList().get(0).getSaleTargetForSaleManList();
+
+                        *//*Log.i("saleTargetRecordList>>>", saleTargetResponseList.size() + "");
+
+                        sqLiteDatabase.beginTransaction();
+
+                        for (DataForSaleTarget saleTarget : saleTargetResponseList) {
+                            deleteDataAfterUpload(DatabaseContract.SALE_TARGET.TABLE, null, null);
+
+                            insertSaleTarget(saleTarget);
+                        }*//*
+
+                        sqLiteDatabase.setTransactionSuccessful();
+                        sqLiteDatabase.endTransaction();
+                    } else {
+                        Utils.cancelDialog();
+                        textViewError.setText(response.body().getAceplusStatusMessage());
+                    }
+
+                } else {
+
+                    if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                        textViewError.setText(response.body().getAceplusStatusMessage());
+                    } else {
+                        Utils.cancelDialog();
+                        Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
+                    }
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SaleTargetResponse> call, Throwable t) {
+                Utils.cancelDialog();
+                Utils.commonDialog(t.getMessage(), SyncActivity.this);
+            }
+        });*/
+    }
 
     @OnClick(R.id.cancel_img)
     void back() {
