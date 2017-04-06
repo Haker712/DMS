@@ -1,5 +1,6 @@
 package com.aceplus.samparoo.retrofit;
 
+import com.aceplus.samparoo.model.forApi.CompanyInformationResponse;
 import com.aceplus.samparoo.model.forApi.CreditResponse;
 import com.aceplus.samparoo.model.forApi.CustomerResponse;
 import com.aceplus.samparoo.model.forApi.CustomerVisitResponse;
@@ -65,4 +66,9 @@ public interface DownloadService {
     @FormUrlEncoded
     @POST("customerVisit")
     Call<CustomerVisitResponse> getCustomerVisitFromApi(@Field("param_data") String paramData);
+
+    @FormUrlEncoded
+    @POST("customerVisit")
+    Call<CompanyInformationResponse> getCompanyInformationFromApi(@Field("param_data") String paramData);
+
 }

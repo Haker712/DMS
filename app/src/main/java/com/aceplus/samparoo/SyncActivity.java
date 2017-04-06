@@ -37,6 +37,9 @@ import com.aceplus.samparoo.model.forApi.CashReceiveItemApi;
 import com.aceplus.samparoo.model.forApi.CashReceiveRequest;
 import com.aceplus.samparoo.model.forApi.CashReceiveRequestData;
 import com.aceplus.samparoo.model.forApi.ClassOfProduct;
+import com.aceplus.samparoo.model.forApi.CompanyInformation;
+import com.aceplus.samparoo.model.forApi.CompanyInformationResponse;
+import com.aceplus.samparoo.model.forApi.CompanyInfromationData;
 import com.aceplus.samparoo.model.forApi.CompetitorSizeinstoreshareData;
 import com.aceplus.samparoo.model.forApi.CompetitorSizeinstoreshareRequest;
 import com.aceplus.samparoo.model.forApi.Competitor_Activity;
@@ -211,7 +214,7 @@ public class SyncActivity extends AppCompatActivity {
 
         Log.i("Table counts --> ", String.valueOf(tables.size()));
         for (String table : tables) {
-            if(!table.equals("CLASS")) {
+            if (!table.equals("CLASS")) {
                 String clearQuery = "DELETE FROM " + table;
                 sqLiteDatabase.execSQL(clearQuery);
                 Log.i("DELETION SUCCESS --> ", "All data from " + table + " has been successfully deleted");
@@ -818,6 +821,141 @@ public class SyncActivity extends AppCompatActivity {
 
 
     }
+
+    /***
+     * PLin
+     ***/
+
+
+    /***
+     * Company Information Download by PLin
+     ***/
+
+
+    private void downloadCompanyInformationfromServer(String paramdata) {
+
+
+        DownloadService downloadService = RetrofitServiceFactory.createService(DownloadService.class);
+        Call<CompanyInformationResponse> call = downloadService.getCompanyInformationFromApi(paramdata);
+        call.enqueue(new Callback<CompanyInformationResponse>() {
+            @Override
+            public void onResponse(Call<CompanyInformationResponse> call, Response<CompanyInformationResponse> response) {
+
+                if (response.code() == 200) {
+
+                    if (response.body().getAceplusStatusCode() == 200) {
+
+
+                        Utils.cancelDialog();
+
+                        Toast.makeText(SyncActivity.this, R.string.download_success, Toast.LENGTH_SHORT).show();
+
+                        sqLiteDatabase.beginTransaction();
+
+                        insertCompanyInformationData(response.body().getData());
+
+
+                        sqLiteDatabase.setTransactionSuccessful();
+                        sqLiteDatabase.endTransaction();
+
+
+                    }
+
+
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<CompanyInformationResponse> call, Throwable t) {
+
+            }
+        });
+
+
+    }
+
+    private void insertCompanyInformationData(List<CompanyInfromationData> companyInfromationDataList) {
+
+
+        for (CompanyInfromationData companyInfromationData : companyInfromationDataList) {
+
+            insertCompanyInformation(companyInfromationData.getCompanyInformation());
+
+        }
+
+
+    }
+
+    private void insertCompanyInformation(List<CompanyInformation> companyInformationList) {
+        for (CompanyInformation companyInformation : companyInformationList) {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(DatabaseContract.CompanyInformation.ID, companyInformation.getId());
+            contentValues.put(DatabaseContract.CompanyInformation.Description, companyInformation.getDescription());
+            contentValues.put(DatabaseContract.CompanyInformation.MainDBName, companyInformation.getMainDBName());
+            contentValues.put(DatabaseContract.CompanyInformation.HomeCurrencyId, companyInformation.getHomeCurrencyId());
+            contentValues.put(DatabaseContract.CompanyInformation.MultiCurrency, companyInformation.getMultiCurrency());
+            contentValues.put(DatabaseContract.CompanyInformation.StartDate, companyInformation.getStartDate());
+            contentValues.put(DatabaseContract.CompanyInformation.EndDate, companyInformation.getEndDate());
+            contentValues.put(DatabaseContract.CompanyInformation.AutoGenerate, companyInformation.getAutoGenerate());
+            contentValues.put(DatabaseContract.CompanyInformation.CompanyName, companyInformation.getCompanyName());
+            contentValues.put(DatabaseContract.CompanyInformation.ShortName, companyInformation.getShortName());
+            contentValues.put(DatabaseContract.CompanyInformation.ContactPerson, companyInformation.getContactPerson());
+            contentValues.put(DatabaseContract.CompanyInformation.Address, companyInformation.getAddress());
+            contentValues.put(DatabaseContract.CompanyInformation.Email, companyInformation.getEmail());
+            contentValues.put(DatabaseContract.CompanyInformation.Website, companyInformation.getWebsite());
+            contentValues.put(DatabaseContract.CompanyInformation.SerialNumber, companyInformation.getSerialNumber());
+            contentValues.put(DatabaseContract.CompanyInformation.PhoneNumber, companyInformation.getPhoneNumber());
+            contentValues.put(DatabaseContract.CompanyInformation.IsSeparator, companyInformation.getIsSeparator());
+            contentValues.put(DatabaseContract.CompanyInformation.Amount_Format, companyInformation.getAmountFormat());
+            contentValues.put(DatabaseContract.CompanyInformation.Price_Format, companyInformation.getPriceFormat());
+            contentValues.put(DatabaseContract.CompanyInformation.Quantity_Format, companyInformation.getQuantityFormat());
+            contentValues.put(DatabaseContract.CompanyInformation.Rate_Format, companyInformation.getRateFormat());
+            contentValues.put(DatabaseContract.CompanyInformation.ValuationMethod, companyInformation.getValuationMethod());
+            contentValues.put(DatabaseContract.CompanyInformation.Font, companyInformation.getFont());
+            contentValues.put(DatabaseContract.CompanyInformation.ReportFont, companyInformation.getReportFont());
+            contentValues.put(DatabaseContract.CompanyInformation.ReceiptVoucher, companyInformation.getReceiptVoucher());
+            contentValues.put(DatabaseContract.CompanyInformation.prnPort, companyInformation.getPrnPort());
+            contentValues.put(DatabaseContract.CompanyInformation.POSVoucherFooter1, companyInformation.getPOSVoucherFooter1());
+            contentValues.put(DatabaseContract.CompanyInformation.POSVoucherFooter2, companyInformation.getPOSVoucherFooter2());
+            contentValues.put(DatabaseContract.CompanyInformation.IsStockAutoGenerate, companyInformation.getIsStockAutoGenerate());
+            contentValues.put(DatabaseContract.CompanyInformation.PCCount, companyInformation.getPCCount());
+            contentValues.put(DatabaseContract.CompanyInformation.ExpiredMonth, companyInformation.getExpiredMonth());
+            contentValues.put(DatabaseContract.CompanyInformation.Paidstatus, companyInformation.getPaidstatus());
+            contentValues.put(DatabaseContract.CompanyInformation.H1, companyInformation.getH1());
+            contentValues.put(DatabaseContract.CompanyInformation.H2, companyInformation.getH2());
+            contentValues.put(DatabaseContract.CompanyInformation.H3, companyInformation.getH3());
+            contentValues.put(DatabaseContract.CompanyInformation.H4, companyInformation.getH4());
+            contentValues.put(DatabaseContract.CompanyInformation.F1, companyInformation.getF1());
+            contentValues.put(DatabaseContract.CompanyInformation.F2, companyInformation.getF2());
+            contentValues.put(DatabaseContract.CompanyInformation.F3, companyInformation.getF3());
+            contentValues.put(DatabaseContract.CompanyInformation.F4, companyInformation.getF4());
+            contentValues.put(DatabaseContract.CompanyInformation.Tax, companyInformation.getTax());
+            contentValues.put(DatabaseContract.CompanyInformation.Branch_Code, companyInformation.getBranchCode());
+            contentValues.put(DatabaseContract.CompanyInformation.Branch_Name, companyInformation.getBranchName());
+            contentValues.put(DatabaseContract.CompanyInformation.HBCode, companyInformation.getHBCode());
+            contentValues.put(DatabaseContract.CompanyInformation.CreditSale, companyInformation.getCreditSale());
+            contentValues.put(DatabaseContract.CompanyInformation.UseCombo, companyInformation.getUseCombo());
+            contentValues.put(DatabaseContract.CompanyInformation.LastDayCloseDate, companyInformation.getLastDayCloseDate());
+            contentValues.put(DatabaseContract.CompanyInformation.LastUpdateInvoiceDate, companyInformation.getLastUpdateInvoiceDate());
+            contentValues.put(DatabaseContract.CompanyInformation.CompanyType, companyInformation.getCompanyType());
+            contentValues.put(DatabaseContract.CompanyInformation.CompanyCode, companyInformation.getCompanyCode());
+            contentValues.put(DatabaseContract.CompanyInformation.StartTime, companyInformation.getStartTime());
+            contentValues.put(DatabaseContract.CompanyInformation.EndTime, companyInformation.getEndTime());
+            contentValues.put(DatabaseContract.CompanyInformation.BranchId, companyInformation.getBranchId());
+            contentValues.put(DatabaseContract.CompanyInformation.PrintCopy, companyInformation.getPrintCopy());
+            contentValues.put(DatabaseContract.CompanyInformation.TaxType, companyInformation.getTaxType());
+            contentValues.put(DatabaseContract.CompanyInformation.BalanceControl, companyInformation.getBalanceControl());
+            contentValues.put(DatabaseContract.CompanyInformation.TransactionAutoGenerate, companyInformation.getTransactionAutoGenerate());
+
+            sqLiteDatabase.insert(DatabaseContract.CompanyInformation.tb, null, contentValues);
+        }
+    }
+
+    /***
+     * Company Information Download by PLin
+     ***/
+
 
     private void insertMarkting(List<DataforMarketing> dataforMarketingList) {
 
