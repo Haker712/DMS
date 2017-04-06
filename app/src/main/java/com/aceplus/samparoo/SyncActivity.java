@@ -862,15 +862,28 @@ public class SyncActivity extends AppCompatActivity {
 
                         sqLiteDatabase.beginTransaction();
 
-                        insertCompanyInformationData(response.body().getData());
+                        insertCompanyInformationData((ArrayList<CompanyInfromationData>) response.body().getData());
 
 
                         sqLiteDatabase.setTransactionSuccessful();
                         sqLiteDatabase.endTransaction();
 
 
+                    } else {
+                        Utils.cancelDialog();
+                        textViewError.setText(response.body().getAceplusStatusMessage());
                     }
 
+
+                } else {
+
+                    if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                        textViewError.setText(response.body().getAceplusStatusMessage());
+                    } else {
+                        Utils.cancelDialog();
+                        Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
+                    }
 
                 }
 
@@ -879,25 +892,34 @@ public class SyncActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<CompanyInformationResponse> call, Throwable t) {
 
+                Utils.cancelDialog();
+                Utils.commonDialog(t.getMessage(), SyncActivity.this);
+
             }
         });
 
 
     }
 
-    private void insertCompanyInformationData(List<CompanyInfromationData> companyInfromationDataList) {
+    private void insertCompanyInformationData(ArrayList<CompanyInfromationData> companyInfromationDataList) {
 
+Log.i("DataListSize",companyInfromationDataList.size()+"");
 
-        for (CompanyInfromationData companyInfromationData : companyInfromationDataList) {
+//        for (CompanyInfromationData companyInfromationData : companyInfromationDataList) {
+//
+//            insertCompanyInformation((ArrayList<CompanyInformation>) companyInfromationData.getCompanyInformation());
+//
+//        }
 
-            insertCompanyInformation(companyInfromationData.getCompanyInformation());
-
-        }
+        insertCompanyInformation((ArrayList<CompanyInformation>) companyInfromationDataList.get(0).getCompanyInformation());
 
 
     }
 
-    private void insertCompanyInformation(List<CompanyInformation> companyInformationList) {
+    private void insertCompanyInformation(ArrayList<CompanyInformation> companyInformationList) {
+
+        Log.i("ListsIZE",companyInformationList.size()+"listsize");
+
         for (CompanyInformation companyInformation : companyInformationList) {
             ContentValues contentValues = new ContentValues();
             contentValues.put(DatabaseContract.CompanyInformation.ID, companyInformation.getId());
@@ -1017,7 +1039,7 @@ public class SyncActivity extends AppCompatActivity {
 
                         sqLiteDatabase.setTransactionSuccessful();
                         sqLiteDatabase.endTransaction();
-                        //downloadCustomerVisitFromServer(paramData);
+                        downloadCustomerVisitFromServer(paramData);
                     } else {
                         Utils.cancelDialog();
                         textViewError.setText(response.body().getAceplusStatusMessage());
@@ -3132,8 +3154,12 @@ public class SyncActivity extends AppCompatActivity {
                             insertSaleVisitRecord(saleVisitRecord);
                         }
 
+
                         sqLiteDatabase.setTransactionSuccessful();
                         sqLiteDatabase.endTransaction();
+
+                        downloadCompanyInformationfromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
+
                     } else {
                         Utils.cancelDialog();
                         textViewError.setText(response.body().getAceplusStatusMessage());
