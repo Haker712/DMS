@@ -96,6 +96,9 @@ public class FragmentSaleComparisonReport extends Fragment {
         return view;
     }
 
+    /**
+     * Register id for widgets of layout
+     */
     private void registerIDS() {
         saleTargetTxt = (TextView) view.findViewById(R.id.sale_target_txt);
         saleTxt = (TextView) view.findViewById(R.id.sale_txt);
@@ -104,6 +107,9 @@ public class FragmentSaleComparisonReport extends Fragment {
         spinnerCategory = (Spinner) view.findViewById(R.id.spinner_category);
     }
 
+    /**
+     * Update pie chart data
+     */
     private void updateChartData() {
         if(customerIdArr != null && customerIdArr.size() != 0) {
             customerId = customerIdArr.get(spinnerCustomer.getSelectedItemPosition());
@@ -121,6 +127,9 @@ public class FragmentSaleComparisonReport extends Fragment {
         initialize();
     }
 
+    /**
+     * User events on widgets
+     */
     private void catchEvents() {
         spinnerCustomer.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -159,8 +168,9 @@ public class FragmentSaleComparisonReport extends Fragment {
         });
     }
 
-
-
+    /**
+     * Initialize pie chart for sale target.
+     */
     private void initialize() {
         allSaleTargetValue = 0;
         allActualSaleValue = 0;
@@ -223,6 +233,13 @@ public class FragmentSaleComparisonReport extends Fragment {
         }
     }
 
+    /**
+     * Get actual sale for today
+     *
+     * @param customerId customerId
+     * @param categoryId categoryId
+     * @param groupId groupId
+     */
     private void getActualSaleDB(String customerId, String categoryId, String groupId) {
 
         String query = "SELECT IP.TOTAL_AMOUNT, P.PRODUCT_ID, IP.SALE_QUANTITY FROM INVOICE_PRODUCT AS IP, PRODUCT AS P, INVOICE AS INV WHERE P.PRODUCT_ID = IP.PRODUCT_ID";
@@ -261,6 +278,9 @@ public class FragmentSaleComparisonReport extends Fragment {
         cursor.close();
     }
 
+    /**
+     * Get sale target from db.
+     */
     private void getTargetSaleDB() {
         saleTargetArrayList.clear();
         Cursor cursor = database.rawQuery("SELECT * FROM sale_target_customer", null);
@@ -296,9 +316,7 @@ public class FragmentSaleComparisonReport extends Fragment {
     }
 
     /**
-     * Get customer name from database
-     *
-     * @return customer name list
+     * Get customer name from database.
      */
     void getCustomerListFromDB() {
         customerIdArr = new ArrayList<>();
@@ -314,9 +332,7 @@ public class FragmentSaleComparisonReport extends Fragment {
     }
 
     /**
-     * Get group code name from database
-     *
-     * @return group code list
+     * Get group code name from database.
      */
     void getGroupCodeListFromDB() {
         groupIdArr = new ArrayList<>();
@@ -332,9 +348,7 @@ public class FragmentSaleComparisonReport extends Fragment {
     }
 
     /**
-     * Get group code name from database
-     *
-     * @return group code list
+     * Get group code name from database.
      */
     void getCategoryListFromDB() {
         categoryIdArr = new ArrayList<>();

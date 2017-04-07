@@ -73,6 +73,9 @@ public class FragmentProductComparisonReport extends Fragment  {
         return view;
     }
 
+    /**
+     * Initialize bar chart for sale target.
+     */
     private void initialize() {
         ArrayList<String> xAxisList = getXAxisValues();
         ArrayList<BarDataSet> barDataArrayList = getDataSet();
@@ -89,11 +92,17 @@ public class FragmentProductComparisonReport extends Fragment  {
 
     }
 
+    /**
+     * Register id for widgets of layout
+     */
     private void registerIDS() {
         spinnerGroup = (Spinner) view.findViewById(R.id.spinner_group);
         spinnerCategory = (Spinner) view.findViewById(R.id.spinner_category);
     }
 
+    /**
+     * Update bar chart data
+     */
     private void updateChartData() {
         if(categoryIdArr != null && categoryIdArr.size() != 0) {
             categoryId = categoryIdArr.get(spinnerCategory.getSelectedItemPosition());
@@ -107,6 +116,9 @@ public class FragmentProductComparisonReport extends Fragment  {
         initialize();
     }
 
+    /**
+     * User events on widgets
+     */
     private void catchEvents() {
         spinnerGroup.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -133,6 +145,12 @@ public class FragmentProductComparisonReport extends Fragment  {
         });
     }
 
+    /**
+     * Get actual sale for today
+     *
+     * @param categoryId categoryId
+     * @param groupId groupId
+     */
     private void getActualSaleDB(String categoryId, String groupId) {
 
         String query = "SELECT IP.TOTAL_AMOUNT, P.PRODUCT_ID, IP.SALE_QUANTITY FROM INVOICE_PRODUCT AS IP, PRODUCT AS P, INVOICE AS INV WHERE P.PRODUCT_ID = IP.PRODUCT_ID";
@@ -166,6 +184,9 @@ public class FragmentProductComparisonReport extends Fragment  {
         cursor.close();
     }
 
+    /**
+     * Get target sale for current month
+     */
     private void getTargetSaleDB() {
         Cursor cursor = database.rawQuery("SELECT * FROM sale_target_saleman", null);
         while (cursor.moveToNext()) {
@@ -197,6 +218,11 @@ public class FragmentProductComparisonReport extends Fragment  {
         cursor.close();
     }
 
+    /**
+     * Set comparing data set for bar chart
+     *
+     * @return bar data set array list
+     */
     private ArrayList<BarDataSet> getDataSet() {
         ArrayList<BarDataSet> dataSets = null;
 
@@ -225,6 +251,11 @@ public class FragmentProductComparisonReport extends Fragment  {
         return dataSets;
     }
 
+    /**
+     * Product title for comparing bar chart data
+     *
+     * @return title list
+     */
     private ArrayList<String> getXAxisValues() {
         ArrayList<String> xAxis = new ArrayList<>();
         for (SaleTargetForSaleMan saleTarget : saleTargetArrayList) {
@@ -233,6 +264,12 @@ public class FragmentProductComparisonReport extends Fragment  {
         return xAxis;
     }
 
+    /**
+     * Get product name related to sale target product
+     *
+     * @param stockId product id
+     * @return product name
+     */
     String getProductNameFromDb(int stockId) {
         String name = "";
         Cursor c = database.rawQuery("SELECT PRODUCT_NAME FROM PRODUCT WHERE ID = " + stockId, null);
@@ -243,6 +280,9 @@ public class FragmentProductComparisonReport extends Fragment  {
         return name;
     }
 
+    /**
+     * value formatter for bar chart
+     */
     public class MyValueFormatter implements ValueFormatter{
         @Override
         public String getFormattedValue(float value) {
@@ -268,6 +308,9 @@ public class FragmentProductComparisonReport extends Fragment  {
         }
     }
 
+    /**
+     * Get all group code list from db for group spinner.
+     */
     void getGroupCodeListFromDB() {
         groupIdArr = new ArrayList<>();
         groupIdArr.add("-1");
@@ -282,9 +325,7 @@ public class FragmentProductComparisonReport extends Fragment  {
     }
 
     /**
-     * Get group code name from database
-     *
-     * @return group code list
+     * Get category name from db for category spinner.
      */
     void getCategoryListFromDB() {
         categoryIdArr = new ArrayList<>();
