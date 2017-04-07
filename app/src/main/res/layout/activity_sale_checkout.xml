@@ -481,6 +481,52 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/bank_branch_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:layout_marginTop="10dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:layout_weight="2"
+                        android:gravity="right"
+                        android:text="Branch Name : " />
+
+                    <EditText
+                        android:id="@+id/edit_txt_branch_name"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:text="" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/bank_account_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:layout_marginTop="10dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:layout_weight="2"
+                        android:gravity="right"
+                        android:text="Account No. :" />
+
+                    <EditText
+                        android:id="@+id/edit_txt_account_name"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:text="" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/refundLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -576,51 +622,8 @@
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:id="@+id/bank_branch_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="10dp"
-                        android:layout_weight="2"
-                        android:gravity="right"
-                        android:text="@string/refund" />
-
-                    <EditText
-                        android:id="@+id/edit_txt_branch_name"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="3"
-                        android:text="" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/bank_account_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="10dp"
-                        android:layout_weight="2"
-                        android:gravity="right"
-                        android:text="@string/refund" />
-
-                    <EditText
-                        android:id="@+id/edit_txt_account_name"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="3"
-                        android:text="" />
-                </LinearLayout>
-
             </LinearLayout>
+
         </LinearLayout>
 
     </LinearLayout>

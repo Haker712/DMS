@@ -1,0 +1,76 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/chart"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:paddingBottom="10dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/sale_target_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="10dp"
+        android:paddingLeft="10dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sale Target : "
+            android:textSize="20dp"/>
+        <TextView
+            android:id="@+id/sale_target_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/spinner_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true">
+
+        <Spinner
+            android:id="@+id/spinner_customer"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"/>
+
+        <Spinner
+            android:id="@+id/spinner_group"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content" />
+
+        <Spinner
+            android:id="@+id/spinner_category"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/sale_target_layout"
+        android:paddingTop="10dp"
+        android:paddingLeft="10dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sale : "
+            android:textSize="20dp"/>
+        <TextView
+            android:id="@+id/sale_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"/>
+    </LinearLayout>
+
+</RelativeLayout>

@@ -11,6 +11,7 @@ import com.aceplus.samparoo.model.forApi.LoginResponse;
 import com.aceplus.samparoo.model.forApi.PosmShopTypeResponse;
 import com.aceplus.samparoo.model.forApi.ProductResponse;
 import com.aceplus.samparoo.model.forApi.PromotionResponse;
+import com.aceplus.samparoo.model.forApi.SaleTargetResponse;
 import com.aceplus.samparoo.model.forApi.VolumeDiscountResponse;
 
 import retrofit2.Call;
@@ -66,6 +67,10 @@ public interface DownloadService {
     @FormUrlEncoded
     @POST("customerVisit")
     Call<CustomerVisitResponse> getCustomerVisitFromApi(@Field("param_data") String paramData);
+
+    @FormUrlEncoded
+    @POST("saleTarget")
+    Call<SaleTargetResponse> getSaleTargetFromApi(@Field("param_data") String paramData);
 
     @FormUrlEncoded
     @POST("companyInfo")

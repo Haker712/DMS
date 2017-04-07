@@ -108,7 +108,8 @@ public class ReportHomeActivity extends FragmentActivity {
                 , "Sale Exchange Report"
                 , "POSM Report"
                 , "Deliver Report"
-
+                , "Sale Target & Actual Sale Report"
+                , "Sale Target & Actual Sale Product Report"
         };
         ArrayAdapter<String> reportsSpinnerAdapter
                 = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, reportNames);
@@ -297,6 +298,44 @@ public class ReportHomeActivity extends FragmentActivity {
                     FragmentDeliveryInvoiceReport fragmentDeliveryInvoiceReport = new FragmentDeliveryInvoiceReport();
                     fragmentDeliveryInvoiceReport.DeliveryReportArrayList = DeliveryReportArrayList;
                     fragmentTransaction.replace(R.id.fragment_report, fragmentDeliveryInvoiceReport);
+                    fragmentTransaction.commit();
+
+                } else if (position == 7) {
+
+                    if (DeliveryReportArrayList.size() == 0){
+
+                        for (JSONObject DeliveryJSONObject : getDeliveryInvoiceReports()){
+
+
+                            DeliveryReportArrayList.add(DeliveryJSONObject);
+
+                        }
+
+                    }
+
+                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    FragmentSaleComparisonReport fragmentSaleComparisonReport = new FragmentSaleComparisonReport();
+                    //fragmentDeliveryInvoiceReport.DeliveryReportArrayList = DeliveryReportArrayList;
+                    fragmentTransaction.replace(R.id.fragment_report, fragmentSaleComparisonReport);
+                    fragmentTransaction.commit();
+
+                } else if (position == 8) {
+
+                    if (DeliveryReportArrayList.size() == 0){
+
+                        for (JSONObject DeliveryJSONObject : getDeliveryInvoiceReports()){
+
+
+                            DeliveryReportArrayList.add(DeliveryJSONObject);
+
+                        }
+
+                    }
+
+                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    FragmentProductComparisonReport fragmentProductComparisonReport = new FragmentProductComparisonReport();
+                    //fragmentDeliveryInvoiceReport.DeliveryReportArrayList = DeliveryReportArrayList;
+                    fragmentTransaction.replace(R.id.fragment_report, fragmentProductComparisonReport);
                     fragmentTransaction.commit();
                 }
 

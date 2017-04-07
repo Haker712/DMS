@@ -603,11 +603,13 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             }
         });
 
-        bankRadio.setOnClickListener(new View.OnClickListener() {
+        cashRadio.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
-                layoutBranch.setVisibility(View.VISIBLE);
-                layoutBankAcc.setVisibility(View.VISIBLE);
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    layoutBranch.setVisibility(View.GONE);
+                    layoutBankAcc.setVisibility(View.GONE);
+                }
             }
         });
     }

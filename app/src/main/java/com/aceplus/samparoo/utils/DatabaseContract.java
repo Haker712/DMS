@@ -163,6 +163,7 @@ public class DatabaseContract {
 
         public static final String tb = "GROUP_CODE";
         public static final String id = "id";
+        public static final String group_no = "group_no";
         public static final String name = "name";
 
     }
@@ -389,6 +390,7 @@ public class DatabaseContract {
 
         public static final String tb="PRODUCT_CATEGORY";
         public static final String CATEGORY_ID="CATEGORY_ID";
+        public static final String CATEGORY_NO="CATEGORY_NO";
         public static final String CATEGORY_NAME="CATEGORY_NAME";
 
     }
@@ -479,7 +481,7 @@ public class DatabaseContract {
 
     public abstract class SALE_TARGET {
         public static final String TABLE_FOR_CUS = "sale_target_customer";
-        public static final String TABLE_FOR_saleman = "sale_target_saleman";
+        public static final String TABLE_FOR_SALEMAN = "sale_target_saleman";
         public static final String ID = "ID";
         public static final String FROM_DATE = "FROM_DATE";
         public static final String TO_DATE = "TO_DATE";
