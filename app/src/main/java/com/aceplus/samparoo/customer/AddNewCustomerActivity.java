@@ -85,6 +85,9 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
         database = new Database(this).getDataBase();
         registerIDs();
         catchEvents();
+
+
+
     }
 
     private void registerIDs() {
