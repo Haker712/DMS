@@ -322,7 +322,7 @@ public class ReportHomeActivity extends FragmentActivity {
                     fragmentTransaction.addToBackStack(null);*/
                     fragmentTransaction.commit();
 
-                } else if (position == 7) {
+                } else if (position == 8) {
 
                     if (DeliveryReportArrayList.size() == 0){
 
@@ -341,7 +341,7 @@ public class ReportHomeActivity extends FragmentActivity {
                     fragmentTransaction.replace(R.id.fragment_report, fragmentSaleComparisonReport);
                     fragmentTransaction.commit();
 
-                } else if (position == 8) {
+                } else if (position == 9) {
 
                     if (DeliveryReportArrayList.size() == 0){
 
