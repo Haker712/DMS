@@ -67,6 +67,7 @@
     <string name="branch_label">Branch:</string>
 
     <string name="add_new_customer">ADD NEW CUSTOMER</string>
+    <string name="prospect_customer">Prospect Customer</string>
 
     <string name="outlet_external_check">OUTLET EXTERNAL CHECK</string>
     <string name="display_assessment">DISPLAY ASSESSMENT</string>

@@ -49,14 +49,16 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
     Spinner zoneSpinner;
     Spinner districtSpinner;
     Spinner statedivisionSpinner;
+    Spinner shoptypeSpinner;
     TextView customerLocationTxt;
     ImageView cancelImg, resetImg, addImg, nextImg;
 
     ArrayList<JSONObject> townshipList;
-    ArrayList<JSONObject> customerCategoryList;
+  //  ArrayList<JSONObject> customerCategoryList;
     ArrayList<JSONObject> zoneList;
     ArrayList<JSONObject> districtList;
     ArrayList<JSONObject> statedivisionList;
+    ArrayList<JSONObject> shoptypeList;
 
     public static String customerLat = null;
     public static String customerLng = null;
@@ -91,10 +93,12 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
         phoneNumberEditText = (EditText) findViewById(R.id.phoneNumber);
         addressEditText = (EditText) findViewById(R.id.address);
         townshipSpinner = (Spinner) findViewById(R.id.township);
-        customerCategorySpinner = (Spinner) findViewById(R.id.customerCategoryList);
+        //customerCategorySpinner = (Spinner) findViewById(R.id.customerCategoryList);
         districtSpinner= (Spinner) findViewById(R.id.districtlist);
         statedivisionSpinner= (Spinner) findViewById(R.id.statedivisionlist);
+        shoptypeSpinner= (Spinner) findViewById(R.id.shoptypespn);
         customerLocationTxt = (TextView) findViewById(R.id.customer_location);
+
 
         cancelImg = (ImageView) findViewById(R.id.cancel_img);
         resetImg = (ImageView) findViewById(R.id.reset_img);
@@ -131,22 +135,22 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
         townshipNamesArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         townshipSpinner.setAdapter(townshipNamesArrayAdapter);
 
-        customerCategoryList = getCustomerCategoryList();
-        String[] customerCategoryNames = new String[customerCategoryList.size()];
-        for (int i = 0; i < customerCategoryNames.length; i++) {
-
-            try {
-
-                customerCategoryNames[i] = customerCategoryList.get(i).getString("name");
-            } catch (JSONException e) {
-
-                e.printStackTrace();
-            }
-        }
-        ArrayAdapter<String> customerCategoryNamesArrayAdapter =
-                new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, customerCategoryNames);
-        customerCategoryNamesArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        customerCategorySpinner.setAdapter(customerCategoryNamesArrayAdapter);
+//        customerCategoryList = getCustomerCategoryList();
+//        String[] customerCategoryNames = new String[customerCategoryList.size()];
+//        for (int i = 0; i < customerCategoryNames.length; i++) {
+//
+//            try {
+//
+//                customerCategoryNames[i] = customerCategoryList.get(i).getString("name");
+//            } catch (JSONException e) {
+//
+//                e.printStackTrace();
+//            }
+//        }
+//        ArrayAdapter<String> customerCategoryNamesArrayAdapter =
+//                new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, customerCategoryNames);
+//        customerCategoryNamesArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        customerCategorySpinner.setAdapter(customerCategoryNamesArrayAdapter);
 
 
 
@@ -204,6 +208,25 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
                 new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, statedivisions);
         statedivisionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         statedivisionSpinner.setAdapter(statedivisionAdapter);
+
+
+        shoptypeList=getShoptype();
+        String[] shoptypes=new String[shoptypeList.size()];
+        for (int i=0;i<shoptypes.length;i++){
+
+
+            try {
+                shoptypes[i]=shoptypeList.get(i).getString("shoptypeName");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+        ArrayAdapter<String> shoptypeAdapter=new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, shoptypes);
+        shoptypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        shoptypeSpinner.setAdapter(shoptypeAdapter);
+
+
 
         resetImg.setOnClickListener(new OnClickListener() {
             @Override
@@ -384,6 +407,34 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
 
     }
 
+    private ArrayList<JSONObject> getShoptype(){
+
+        ArrayList<JSONObject> shoptypeList=new ArrayList<>();
+
+        Cursor cursor=database.rawQuery("SELECT * FROM SHOP_TYPE",null);
+
+        while (cursor.moveToNext()){
+
+            JSONObject shoptypeObject=new JSONObject();
+
+            try {
+                shoptypeObject.put("shoptypeId",cursor.getString(cursor.getColumnIndex("ID")));
+                shoptypeObject.put("shoptypeName",cursor.getString(cursor.getColumnIndex("SHOP_TYPE_NAME")));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            shoptypeList.add(shoptypeObject);
+
+
+        }
+
+        return shoptypeList;
+
+
+
+    }
+
     private void reset() {
         putCustomerName = null;
         putcustomerPhone = null;
@@ -404,9 +455,9 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
         addressEditText.setError(null);
         customerLocationTxt.setText("");
         customerLocationTxt.setError(null);
-        if (customerCategoryList.size() > 0) {
-            customerCategorySpinner.setSelection(0);
-        }
+//        if (customerCategoryList.size() > 0) {
+//            customerCategorySpinner.setSelection(0);
+//        }
         customerNameEditText.requestFocus();
     }
 
@@ -450,6 +501,7 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
         String townshipId = "";
         String districtId="";
         String statedivisionId="";
+        String shoptypeId="";
         String customerCategoryId = "";
         String customerName="";
         String contactPerson="";
@@ -472,6 +524,12 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
             } else {
                 noDataFlg = true;
             }
+            if (shoptypeList !=null && shoptypeList.size() !=0){
+                shoptypeId=shoptypeList.get(shoptypeSpinner.getSelectedItemPosition()).getString("shoptypeId");
+            }else {
+                noDataFlg=true;
+
+            }
 
             if(townshipList != null && townshipList.size() != 0) {
                 townshipId=townshipList.get(townshipSpinner.getSelectedItemPosition()).getString("townshipId");
@@ -479,11 +537,11 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
                 noDataFlg = true;
             }
 
-            if(customerCategoryList != null && customerCategoryList.size() != 0) {
-                customerCategoryId=customerCategoryList.get(customerCategorySpinner.getSelectedItemPosition()).getString("id");
-            } else {
-                noDataFlg = true;
-            }
+//            if(customerCategoryList != null && customerCategoryList.size() != 0) {
+//                customerCategoryId=customerCategoryList.get(customerCategorySpinner.getSelectedItemPosition()).getString("id");
+//            } else {
+//                noDataFlg = true;
+//            }
 
             if(districtList != null && districtList.size() != 0) {
                 districtId=districtList.get(districtSpinner.getSelectedItemPosition()).getString("districtId");
@@ -549,6 +607,7 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
         Log.i("TownshipId",townshipId);
         contentValues.put("district_id",districtId);
         contentValues.put("state_division_id",statedivisionId);
+        contentValues.put("shop_type_id",shoptypeId);
         contentValues.put("CUSTOMER_NAME",customerName);
         contentValues.put("CUSTOMER_ID",customerId);
         contentValues.put("contact_person",contactPerson);

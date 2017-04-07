@@ -158,37 +158,34 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
                 double totalItemDiscountAmount = 0.0;
 
-              //  titleTextView.setText("SALE EXCHANGE");
+                //  titleTextView.setText("SALE EXCHANGE");
                 invoiceIdTextView.setText(Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.FOR_SALE_EXCHANGE));
-                View layout=findViewById(R.id.SaleExchangeLayout);
+                View layout = findViewById(R.id.SaleExchangeLayout);
                 layout.setVisibility(View.VISIBLE);
 
-                TextView textView_salereturnAmount= (TextView) findViewById(R.id.salereturnAmount);
-                TextView textView_payAmtfromCustomer= (TextView) findViewById(R.id.payamountfromcustomer);
-                TextView textView_refundtoCustomer= (TextView) findViewById(R.id.refundtocustomer);
+                TextView textView_salereturnAmount = (TextView) findViewById(R.id.salereturnAmount);
+                TextView textView_payAmtfromCustomer = (TextView) findViewById(R.id.payamountfromcustomer);
+                TextView textView_refundtoCustomer = (TextView) findViewById(R.id.refundtocustomer);
 
-                Double salereturnAmount=getIntent().getDoubleExtra(Constant.KEY_SALE_RETURN_AMOUNT,0.0);
-                Double saleexchangeAmount= Double.valueOf(Utils.formatAmount(totalAmount - totalItemDiscountAmount - totalVolumeDiscount));
+                Double salereturnAmount = getIntent().getDoubleExtra(Constant.KEY_SALE_RETURN_AMOUNT, 0.0);
+                Double saleexchangeAmount = Double.valueOf(Utils.formatAmount(totalAmount - totalItemDiscountAmount - totalVolumeDiscount));
 
-                textView_salereturnAmount.setText(salereturnAmount+"");
+                textView_salereturnAmount.setText(salereturnAmount + "");
 
-                if (saleexchangeAmount>salereturnAmount){
+                if (saleexchangeAmount > salereturnAmount) {
 
-                    Double payAmtfromCustomer=saleexchangeAmount-salereturnAmount;
-                    textView_payAmtfromCustomer.setText(payAmtfromCustomer+"");
+                    Double payAmtfromCustomer = saleexchangeAmount - salereturnAmount;
+                    textView_payAmtfromCustomer.setText(payAmtfromCustomer + "");
 
-                }else {
+                } else {
 
-                    double refundAmount=salereturnAmount-saleexchangeAmount;
+                    double refundAmount = salereturnAmount - saleexchangeAmount;
 
-                    textView_refundtoCustomer.setText(refundAmount+"");
+                    textView_refundtoCustomer.setText(refundAmount + "");
 
                 }
 
 //                textView_salereturnAmount.setText((int) getIntent().getDoubleExtra(Constant.KEY_SALE_RETURN_AMOUNT,0.0));
-
-
-
 
 
             } else {
@@ -347,7 +344,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             Log.i("volDisId", volDisId);
 
             Cursor cusorForVolDisItem = database.rawQuery("SELECT * FROM VOLUME_DISCOUNT_ITEM WHERE VOLUME_DISCOUNT_ID = '" + volDisId + "' " +
-                    "and " + buy_amt + " >= FROM_SALE_AMT and "+ buy_amt +"<= TO_SALE_AMT;", null);
+                    "and " + buy_amt + " >= FROM_SALE_AMT and " + buy_amt + "<= TO_SALE_AMT;", null);
             Log.i("cusorForVolDisItem", cusorForVolDisItem.getCount() + "");
 
             while (cusorForVolDisItem.moveToNext()) {
@@ -596,7 +593,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         bankRadio.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) {
+                if (isChecked) {
                     layoutBranch.setVisibility(View.VISIBLE);
                     layoutBankAcc.setVisibility(View.VISIBLE);
                 }
@@ -620,7 +617,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             toSaleExchange();
         } else {
 
-            if(isSameCustomer(customer.getId())) {
+            if (isSameCustomer(customer.getId())) {
 
                 updateSaleVisitRecord(customer.getId());
             }
@@ -647,13 +644,13 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
      *
      * @return C : cash, B : bank, R : Credit
      */
-    private String getPaymentMethod(){
+    private String getPaymentMethod() {
         int selectedRadio = bankOrCashRadioGroup.getCheckedRadioButtonId();
         String paymentMethod = "";
-        if(selectedRadio == R.id.activity_sale_checkout_radio_bank) {
+        if (selectedRadio == R.id.activity_sale_checkout_radio_bank) {
             paymentMethod = "B";
 
-        } else if(selectedRadio == R.id.activity_sale_checkout_radio_cash) {
+        } else if (selectedRadio == R.id.activity_sale_checkout_radio_cash) {
             paymentMethod = "C";
         }
         return paymentMethod;
@@ -667,7 +664,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
     private void updateSaleVisitRecord(int customerId) {
         ContentValues cv = new ContentValues();
         String where = DatabaseContract.SALE_VISIT_RECORD.CUSTOMER_ID + "=?";
-        String[] whereArgs = new String[] {String.valueOf(customerId)};
+        String[] whereArgs = new String[]{String.valueOf(customerId)};
         cv.put(DatabaseContract.SALE_VISIT_RECORD.VISIT_FLG, 1);
         cv.put(DatabaseContract.SALE_VISIT_RECORD.SALE_FLG, 1);
         database.update(DatabaseContract.SALE_VISIT_RECORD.TABLE_UPLOAD, cv, where, whereArgs);
@@ -677,7 +674,6 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
      * Check it is the same location for customer.
      *
      * @param customerId customer row number
-     *
      * @return true: if that location is correct; otherwise false.
      */
     private boolean isSameCustomer(int customerId) {
@@ -685,12 +681,12 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         String latiString = "", longiString = "";
         Double latitude = 0.0, longitude = 0.0, latiDouble = 0.0, longDouble = 0.0;
 
-        while(locationCursor.moveToNext()) {
+        while (locationCursor.moveToNext()) {
             latiString = locationCursor.getString(locationCursor.getColumnIndex("LATITUDE"));
             longiString = locationCursor.getString(locationCursor.getColumnIndex("LONGITUDE"));
         }
 
-        if(latiString != null && longiString != null) {
+        if (latiString != null && longiString != null) {
             latiDouble = Double.parseDouble(latiString.substring(0, 7));
             longDouble = Double.parseDouble(longiString.substring(0, 7));
         }
@@ -700,17 +696,17 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             String lat = String.valueOf(gpsTracker.getLatitude());
             String lon = String.valueOf(gpsTracker.getLongitude());
 
-            if(!lat.equals(null) && !lon.equals(null) && lat.length() > 6 && lon.length() > 6){
-                latitude = Double.parseDouble(lat.substring(0,7));
-                longitude = Double.parseDouble(lon.substring(0,7));
+            if (!lat.equals(null) && !lon.equals(null) && lat.length() > 6 && lon.length() > 6) {
+                latitude = Double.parseDouble(lat.substring(0, 7));
+                longitude = Double.parseDouble(lon.substring(0, 7));
             }
         } else {
             gpsTracker.showSettingsAlert();
         }
 
-        if(latiDouble != null && longDouble !=null && latitude != null && longitude != null) {
+        if (latiDouble != null && longDouble != null && latitude != null && longitude != null) {
 
-            if(latitude >= (latiDouble - 0.0001) && latitude <= (latiDouble + 0.0001) && longitude >= (longDouble - 0.0001) && longitude <= (longDouble + 0.0001)) {
+            if (latitude >= (latiDouble - 0.0001) && latitude <= (latiDouble + 0.0001) && longitude >= (longDouble - 0.0001) && longitude <= (longDouble + 0.0001)) {
                 return true;
             }
         }
@@ -726,15 +722,15 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
     private boolean isFullyPaid() {
         double pay_amount = 0.0, net_amount = 0.0;
 
-        if(!payAmountEditText.getText().toString().equals("")) {
+        if (!payAmountEditText.getText().toString().equals("")) {
             pay_amount = Double.parseDouble(payAmountEditText.getText().toString());
         }
 
-        if(!netAmountTextView.getText().toString().equals("")) {
+        if (!netAmountTextView.getText().toString().equals("")) {
             net_amount = Double.parseDouble(netAmountTextView.getText().toString().replace(",", ""));
         }
 
-        if(pay_amount == 0.0 || pay_amount < net_amount) {
+        if (pay_amount == 0.0 || pay_amount < net_amount) {
             return false;
         } else {
             return true;
@@ -751,23 +747,23 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         String invoiceId = invoiceIdTextView.getText().toString();
 
         double totalDiscountAmount = 0.0;
-        if(discountTextView.getText().toString() != null && !discountTextView.getText().toString().equals("")) {
+        if (discountTextView.getText().toString() != null && !discountTextView.getText().toString().equals("")) {
             totalDiscountAmount = Double.parseDouble(discountTextView.getText().toString().replace(",", ""));
         }
 
         double totalAmount = 0.0;
-        if(netAmountTextView.getText().toString() != null && !netAmountTextView.getText().toString().equals("")) {
+        if (netAmountTextView.getText().toString() != null && !netAmountTextView.getText().toString().equals("")) {
             totalAmount = Double.parseDouble(netAmountTextView.getText().toString().replace(",", ""))
                     + totalDiscountAmount;
         }
 
         double payAmount = 0.0;
-        if(payAmountEditText.getText().toString() != null && !payAmountEditText.getText().toString().equals("")) {
+        if (payAmountEditText.getText().toString() != null && !payAmountEditText.getText().toString().equals("")) {
             payAmount = Double.parseDouble(payAmountEditText.getText().toString().replace(",", ""));
         }
 
         double refundAmount = 0.0;
-        if(refundTextView.getText().toString() != null && !refundTextView.getText().toString().equals("")) {
+        if (refundTextView.getText().toString() != null && !refundTextView.getText().toString().equals("")) {
             refundAmount = Double.parseDouble(refundTextView.getText().toString().replace(",", ""));
         }
 
@@ -909,8 +905,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             qtyTextView.setText(soldProduct.getQuantity() + "");
             if (soldProduct.getPromotionPrice() == 0.0) {
                 priceTextView.setText(Utils.formatAmount(soldProduct.getProduct().getPrice()));
-            }
-            else {
+            } else {
                 priceTextView.setText(Utils.formatAmount(soldProduct.getPromotionPrice()));
             }
 
@@ -921,8 +916,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             Double totalAmount = 0.0;
             if (soldProduct.getPromotionPrice() == 0.0) {
                 totalAmount = soldProduct.getProduct().getPrice() * soldProduct.getQuantity();
-            }
-            else {
+            } else {
                 totalAmount = soldProduct.getPromotionPrice() * soldProduct.getQuantity();
             }
             Double discount = totalAmount * discountPercent / 100;
