@@ -9,9 +9,13 @@ import com.google.gson.annotations.SerializedName;
 
 public class ProductCategory {
 
-    @SerializedName("id")
+    @SerializedName("Id")
     @Expose
     String category_Id;
+
+    @SerializedName("CategoryNo")
+    @Expose
+    String category_no;
 
     @SerializedName("name")
     @Expose
@@ -23,6 +27,14 @@ public class ProductCategory {
 
     public void setCategory_Id(String category_Id) {
         this.category_Id = category_Id;
+    }
+
+    public String getCategory_no() {
+        return category_no;
+    }
+
+    public void setCategory_no(String category_no) {
+        this.category_no = category_no;
     }
 
     public String getCategory_Name() {

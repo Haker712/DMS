@@ -55,6 +55,7 @@ import com.aceplus.samparoo.model.forApi.CustomerVisitRequest;
 import com.aceplus.samparoo.model.forApi.CustomerVisitRequestData;
 import com.aceplus.samparoo.model.forApi.CustomerVisitResponse;
 import com.aceplus.samparoo.model.forApi.DataForSaleManRoute;
+import com.aceplus.samparoo.model.forApi.DataForSaleTarget;
 import com.aceplus.samparoo.model.forApi.DataForVolumeDiscount;
 import com.aceplus.samparoo.model.forApi.DataforMarketing;
 import com.aceplus.samparoo.model.forApi.DataforSaleUpload;
@@ -108,6 +109,9 @@ import com.aceplus.samparoo.model.forApi.SaleReturnApi;
 import com.aceplus.samparoo.model.forApi.SaleReturnItem;
 import com.aceplus.samparoo.model.forApi.SaleReturnRequest;
 import com.aceplus.samparoo.model.forApi.SaleReturnRequestData;
+import com.aceplus.samparoo.model.forApi.SaleTargetForCustomer;
+import com.aceplus.samparoo.model.forApi.SaleTargetForSaleMan;
+import com.aceplus.samparoo.model.forApi.SaleTargetResponse;
 import com.aceplus.samparoo.model.forApi.SaleVisitRecord;
 import com.aceplus.samparoo.model.forApi.ShopTypeForApi;
 import com.aceplus.samparoo.model.forApi.SizeInStoreShare;
@@ -860,7 +864,7 @@ public class SyncActivity extends AppCompatActivity {
                     if (response.body().getAceplusStatusCode() == 200) {
 
 
-                        Utils.cancelDialog();
+                        //Utils.cancelDialog();
 
                         Toast.makeText(SyncActivity.this, R.string.download_success, Toast.LENGTH_SHORT).show();
 
@@ -872,7 +876,7 @@ public class SyncActivity extends AppCompatActivity {
                         sqLiteDatabase.setTransactionSuccessful();
                         sqLiteDatabase.endTransaction();
 
-
+                        downloadSaleTargetFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
                     } else {
                         Utils.cancelDialog();
                         textViewError.setText(response.body().getAceplusStatusMessage());
@@ -1096,6 +1100,7 @@ public class SyncActivity extends AppCompatActivity {
         for (GroupCode groupCode : groupCodeList) {
             ContentValues contentValues = new ContentValues();
             contentValues.put(DatabaseContract.GroupCode.id, groupCode.getId());
+            contentValues.put(DatabaseContract.GroupCode.group_no, groupCode.getGroupNo());
             contentValues.put(DatabaseContract.GroupCode.name, groupCode.getName());
 
             sqLiteDatabase.insert(DatabaseContract.GroupCode.tb, null, contentValues);
@@ -1188,6 +1193,7 @@ public class SyncActivity extends AppCompatActivity {
 
             ContentValues contentValues=new ContentValues();
             contentValues.put(DatabaseContract.Product_Category.CATEGORY_ID,productCategory.getCategory_Id());
+            contentValues.put(DatabaseContract.Product_Category.CATEGORY_NO,productCategory.getCategory_no());
             contentValues.put(DatabaseContract.Product_Category.CATEGORY_NAME,productCategory.getCategory_Name());
 
             sqLiteDatabase.insert(DatabaseContract.Product_Category.tb,null,contentValues);
@@ -3341,15 +3347,15 @@ public class SyncActivity extends AppCompatActivity {
     /**
      * Download sale target data from api.
      */
-    private void downloadSaleTargetFromServer() {
+    private void downloadSaleTargetFromServer(String paramData) {
         DownloadService downloadService = RetrofitServiceFactory.createService(DownloadService.class);
-        /*Call<SaleTargetResponse> call = downloadService.getCustomerVisitFromApi(paramData);
+        Call<SaleTargetResponse> call = downloadService.getSaleTargetFromApi(paramData);
         call.enqueue(new Callback<SaleTargetResponse>() {
             @Override
             public void onResponse(Call<SaleTargetResponse> call, Response<SaleTargetResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        //Utils.cancelDialog();
+                        Utils.cancelDialog();
                         textViewError.setText("");
 
                         //Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
@@ -3357,15 +3363,15 @@ public class SyncActivity extends AppCompatActivity {
                         List<SaleTargetForCustomer> saleTargetCustomerList = response.body().getDataForSaleTargetList().get(0).getSaleTargetForCustomerList();
                         List<SaleTargetForSaleMan> saleTargetSaleMenList = response.body().getDataForSaleTargetList().get(0).getSaleTargetForSaleManList();
 
-                        *//*Log.i("saleTargetRecordList>>>", saleTargetResponseList.size() + "");
+                        Log.i("saleTargetRecordList>>>", saleTargetCustomerList.size() + "");
+                        Log.i("saleTargetRecordList>>>", saleTargetSaleMenList.size() + "");
 
                         sqLiteDatabase.beginTransaction();
 
-                        for (DataForSaleTarget saleTarget : saleTargetResponseList) {
-                            deleteDataAfterUpload(DatabaseContract.SALE_TARGET.TABLE, null, null);
-
-                            insertSaleTarget(saleTarget);
-                        }*//*
+                        deleteDataAfterUpload(DatabaseContract.SALE_TARGET.TABLE_FOR_CUS, null, null);
+                        deleteDataAfterUpload(DatabaseContract.SALE_TARGET.TABLE_FOR_SALEMAN, null, null);
+                        insertSaleTargetCustomer(saleTargetCustomerList);
+                        insertSaleTargetSaleman(saleTargetSaleMenList);
 
                         sqLiteDatabase.setTransactionSuccessful();
                         sqLiteDatabase.endTransaction();
@@ -3392,7 +3398,48 @@ public class SyncActivity extends AppCompatActivity {
                 Utils.cancelDialog();
                 Utils.commonDialog(t.getMessage(), SyncActivity.this);
             }
-        });*/
+        });
+    }
+
+    private void insertSaleTargetCustomer(List<SaleTargetForCustomer> saleTargetForCustomerList) {
+
+        for(SaleTargetForCustomer saleTargetForCustomer : saleTargetForCustomerList) {
+            ContentValues cvForSaleTargetCustomer = new ContentValues();
+            cvForSaleTargetCustomer.put(DatabaseContract.SALE_TARGET.ID, saleTargetForCustomer.getId());
+            cvForSaleTargetCustomer.put(DatabaseContract.SALE_TARGET.FROM_DATE, saleTargetForCustomer.getFromDate());
+            cvForSaleTargetCustomer.put(DatabaseContract.SALE_TARGET.TO_DATE, saleTargetForCustomer.getToDate());
+            cvForSaleTargetCustomer.put(DatabaseContract.SALE_TARGET.CUSTOMER_ID, saleTargetForCustomer.getCustomerId());
+            cvForSaleTargetCustomer.put(DatabaseContract.SALE_TARGET.SALE_MAN_ID, saleTargetForCustomer.getSaleManId());
+            cvForSaleTargetCustomer.put(DatabaseContract.SALE_TARGET.CATEGORY_ID, saleTargetForCustomer.getCategoryId());
+            cvForSaleTargetCustomer.put(DatabaseContract.SALE_TARGET.GROUP_CODE_ID, saleTargetForCustomer.getGroupCodeId());
+            cvForSaleTargetCustomer.put(DatabaseContract.SALE_TARGET.STOCK_ID, saleTargetForCustomer.getStockId());
+            cvForSaleTargetCustomer.put(DatabaseContract.SALE_TARGET.TARGET_AMOUNT, saleTargetForCustomer.getTargetAmount());
+            cvForSaleTargetCustomer.put(DatabaseContract.SALE_TARGET.DATE, saleTargetForCustomer.getDate());
+            cvForSaleTargetCustomer.put(DatabaseContract.SALE_TARGET.DAY, saleTargetForCustomer.getDay());
+            cvForSaleTargetCustomer.put(DatabaseContract.SALE_TARGET.DATE_STATUS, saleTargetForCustomer.getDateStatus());
+            cvForSaleTargetCustomer.put(DatabaseContract.SALE_TARGET.INVOICE_NO, saleTargetForCustomer.getInvoiceNo());
+            sqLiteDatabase.insert(DatabaseContract.SALE_TARGET.TABLE_FOR_CUS, null, cvForSaleTargetCustomer);
+        }
+    }
+
+    private void insertSaleTargetSaleman(List<SaleTargetForSaleMan> saleTargetForSaleManList) {
+
+        for(SaleTargetForSaleMan saleTargetSaleMan : saleTargetForSaleManList) {
+            ContentValues cvForSaleTargetCustomer = new ContentValues();
+            cvForSaleTargetCustomer.put(DatabaseContract.SALE_TARGET.ID, saleTargetSaleMan.getId());
+            cvForSaleTargetCustomer.put(DatabaseContract.SALE_TARGET.FROM_DATE, saleTargetSaleMan.getFromDate());
+            cvForSaleTargetCustomer.put(DatabaseContract.SALE_TARGET.TO_DATE, saleTargetSaleMan.getToDate());
+            cvForSaleTargetCustomer.put(DatabaseContract.SALE_TARGET.SALE_MAN_ID, saleTargetSaleMan.getSaleManId());
+            cvForSaleTargetCustomer.put(DatabaseContract.SALE_TARGET.CATEGORY_ID, saleTargetSaleMan.getCategoryId());
+            cvForSaleTargetCustomer.put(DatabaseContract.SALE_TARGET.GROUP_CODE_ID, saleTargetSaleMan.getGroupCodeId());
+            cvForSaleTargetCustomer.put(DatabaseContract.SALE_TARGET.STOCK_ID, saleTargetSaleMan.getStockId());
+            cvForSaleTargetCustomer.put(DatabaseContract.SALE_TARGET.TARGET_AMOUNT, saleTargetSaleMan.getTargetAmount());
+            cvForSaleTargetCustomer.put(DatabaseContract.SALE_TARGET.DATE, saleTargetSaleMan.getDate());
+            cvForSaleTargetCustomer.put(DatabaseContract.SALE_TARGET.DAY, saleTargetSaleMan.getDay());
+            cvForSaleTargetCustomer.put(DatabaseContract.SALE_TARGET.DATE_STATUS, saleTargetSaleMan.getDateStatus());
+            cvForSaleTargetCustomer.put(DatabaseContract.SALE_TARGET.INVOICE_NO, saleTargetSaleMan.getInvoiceNo());
+            sqLiteDatabase.insert(DatabaseContract.SALE_TARGET.TABLE_FOR_SALEMAN, null, cvForSaleTargetCustomer);
+        }
     }
 
     @OnClick(R.id.cancel_img)
