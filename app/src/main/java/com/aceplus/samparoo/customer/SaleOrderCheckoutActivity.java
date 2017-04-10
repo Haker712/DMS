@@ -20,6 +20,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -904,7 +905,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        Toast.makeText(SaleOrderCheckoutActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(SaleOrderCheckoutActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
 
                         database.beginTransaction();
 
@@ -919,7 +920,17 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                         database.setTransactionSuccessful();
                         database.endTransaction();
                         Utils.cancelDialog();
-                        Utils.backToCustomer(SaleOrderCheckoutActivity.this);
+
+                        Snackbar snackbar = Snackbar
+                                .make(lv_soldProductList, R.string.upload_succes_msg, Snackbar.LENGTH_LONG)
+                                .setAction("DONE", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Utils.backToCustomer(SaleOrderCheckoutActivity.this);
+                                    }
+                                });
+
+                        snackbar.show();
                     }
                 } else {
                     if(response.body() != null && response.body().getAceplusStatusMessage().length() != 0 ) {
