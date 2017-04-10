@@ -88,6 +88,8 @@ public class TabFragment6 extends Fragment {
 
         }
 
+        view.findViewById(R.id.save_img).setVisibility(View.GONE);
+
         RegisterById();
         AddActivityOnClick();
 

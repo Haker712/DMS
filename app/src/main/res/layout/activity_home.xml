@@ -82,7 +82,7 @@
                 android:id="@+id/buttonMarketing"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/marketing"
+                android:background="@drawable/merchandizing"
                 android:layout_marginLeft="20dp" />
 
             <Button

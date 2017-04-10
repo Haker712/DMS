@@ -603,13 +603,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             }
         });
 
-        bankRadio.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                layoutBranch.setVisibility(View.VISIBLE);
-                layoutBankAcc.setVisibility(View.VISIBLE);
-            }
-        });
+
     }
 
     /**

@@ -437,10 +437,10 @@ public class CustomerActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (didCustomerSelected()) {
-                    /*CustomerLoactionActivity.latitude = latitude;
-                    CustomerLoactionActivity.longitude = longitude;*/
-                    CustomerLoactionActivity.latitude = 16.8487745;
-                    CustomerLoactionActivity.longitude = 96.1268365;
+                    CustomerLoactionActivity.latitude = latitude;
+                    CustomerLoactionActivity.longitude = longitude;
+                    /*CustomerLoactionActivity.latitude = 16.8487745;
+                    CustomerLoactionActivity.longitude = 96.1268365;*/
                     CustomerLoactionActivity.customerName = customerNameTextView.getText().toString();
                     CustomerLoactionActivity.address = addressTextView.getText().toString();
                     CustomerLoactionActivity.visitRecord = visitRecord;
