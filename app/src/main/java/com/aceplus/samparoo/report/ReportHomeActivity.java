@@ -108,7 +108,10 @@ public class ReportHomeActivity extends FragmentActivity {
                 , "Sale Exchange Report"
                 , "POSM Report"
                 , "Deliver Report"
+                , "PreOrder Report"
 
+                , "Sale Target & Actual Sale Report"
+                , "Sale Target & Actual Sale Product Report"
         };
         ArrayAdapter<String> reportsSpinnerAdapter
                 = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, reportNames);
@@ -280,11 +283,11 @@ public class ReportHomeActivity extends FragmentActivity {
                     fragmentTransaction.commit();
 
 
-                }else if (position == 6) {
+                } else if (position == 6) {
 
-                    if (DeliveryReportArrayList.size()==0){
+                    if (DeliveryReportArrayList.size() == 0) {
 
-                        for (JSONObject DeliveryJSONObject : getDeliveryInvoiceReports()){
+                        for (JSONObject DeliveryJSONObject : getDeliveryInvoiceReports()) {
 
 
                             DeliveryReportArrayList.add(DeliveryJSONObject);
@@ -297,6 +300,64 @@ public class ReportHomeActivity extends FragmentActivity {
                     FragmentDeliveryInvoiceReport fragmentDeliveryInvoiceReport = new FragmentDeliveryInvoiceReport();
                     fragmentDeliveryInvoiceReport.DeliveryReportArrayList = DeliveryReportArrayList;
                     fragmentTransaction.replace(R.id.fragment_report, fragmentDeliveryInvoiceReport);
+                    fragmentTransaction.commit();
+                } else if (position == 7) {
+
+                    // Used lazy loading
+                    if (preOrderReportsArrayList.size() == 0) {
+
+                        // Need to add implicitly because preOrderReportsArrayList is final
+                        for (JSONObject preOrderReportJsonObject : getPreOrderReports()) {
+
+                            preOrderReportsArrayList.add(preOrderReportJsonObject);
+                        }
+                    }
+
+                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+
+                    FragmentPreOrderReport preOrderReportFragment = new FragmentPreOrderReport();
+                    preOrderReportFragment.preOrderReportsArrayList = preOrderReportsArrayList;
+                    fragmentTransaction.replace(R.id.fragment_report, preOrderReportFragment);
+                   /* fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                    fragmentTransaction.addToBackStack(null);*/
+                    fragmentTransaction.commit();
+
+                } else if (position == 8) {
+
+                    if (DeliveryReportArrayList.size() == 0){
+
+                        for (JSONObject DeliveryJSONObject : getDeliveryInvoiceReports()){
+
+
+                            DeliveryReportArrayList.add(DeliveryJSONObject);
+
+                        }
+
+                    }
+
+                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    FragmentSaleComparisonReport fragmentSaleComparisonReport = new FragmentSaleComparisonReport();
+                    //fragmentDeliveryInvoiceReport.DeliveryReportArrayList = DeliveryReportArrayList;
+                    fragmentTransaction.replace(R.id.fragment_report, fragmentSaleComparisonReport);
+                    fragmentTransaction.commit();
+
+                } else if (position == 9) {
+
+                    if (DeliveryReportArrayList.size() == 0){
+
+                        for (JSONObject DeliveryJSONObject : getDeliveryInvoiceReports()){
+
+
+                            DeliveryReportArrayList.add(DeliveryJSONObject);
+
+                        }
+
+                    }
+
+                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    FragmentProductComparisonReport fragmentProductComparisonReport = new FragmentProductComparisonReport();
+                    //fragmentDeliveryInvoiceReport.DeliveryReportArrayList = DeliveryReportArrayList;
+                    fragmentTransaction.replace(R.id.fragment_report, fragmentProductComparisonReport);
                     fragmentTransaction.commit();
                 }
 
@@ -374,7 +435,7 @@ public class ReportHomeActivity extends FragmentActivity {
 
                     double totalAmount = cursor.getDouble(cursor.getColumnIndex("TOTAL_AMOUNT"));
                     double discount = cursor.getDouble(cursor.getColumnIndex("TOTAL_DISCOUNT_AMOUNT"));
-                    Log.i("TotalDis",discount+"");
+                    Log.i("TotalDis", discount + "");
                     saleInvoiceReportJsonObject.put("totalAmount", totalAmount);
                     saleInvoiceReportJsonObject.put("discount", discount);
                     saleInvoiceReportJsonObject.put("netAmount", totalAmount - discount);

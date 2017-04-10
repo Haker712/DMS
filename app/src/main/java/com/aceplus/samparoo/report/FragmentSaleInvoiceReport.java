@@ -115,7 +115,7 @@ public class FragmentSaleInvoiceReport extends Fragment {
                 saleInvoiceReportsListView.setAdapter(new SaleInvoiceArrayAdapter(getActivity()));
                 new AlertDialog.Builder(getActivity())
                         .setView(dialogBoxView)
-                        .setTitle("Pre-Order Products")
+                        .setTitle("Sale Products")
                         .setPositiveButton("OK", null)
                         .show();
 

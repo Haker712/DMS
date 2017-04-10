@@ -41,6 +41,8 @@ public class CustomerVisitActivity extends AppCompatActivity {
         Intent intent = new Intent(this, AddNewCustomerActivity.class);
         startActivity(intent);
         finish();
+
+
     }
 
     @OnClick(R.id.buttonCreditCollections)

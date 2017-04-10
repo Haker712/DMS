@@ -8,9 +8,14 @@ import com.google.gson.annotations.SerializedName;
  */
 public class GroupCode {
 
-    @SerializedName("id")
+    @SerializedName("Id")
     @Expose
     private String id;
+
+    @SerializedName("GroupNo")
+    @Expose
+    private String groupNo;
+
     @SerializedName("name")
     @Expose
     private String name;
@@ -21,6 +26,14 @@ public class GroupCode {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getGroupNo() {
+        return groupNo;
+    }
+
+    public void setGroupNo(String groupNo) {
+        this.groupNo = groupNo;
     }
 
     public String getName() {

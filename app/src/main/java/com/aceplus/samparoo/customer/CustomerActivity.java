@@ -168,6 +168,8 @@ public class CustomerActivity extends AppCompatActivity {
         //new Thread(new Task()).start();
         //startTimer();
 
+        posmButton.setVisibility(View.GONE);
+
     }
 
     class Task implements Runnable {
@@ -731,16 +733,16 @@ public class CustomerActivity extends AppCompatActivity {
             }
         });
 
-        posmButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (didCustomerSelected()) {
-                    Intent intent = new Intent(CustomerActivity.this, PosmActivity.class);
-                    intent.putExtra(PosmActivity.CUSTOMER_INFO_KEY, customer);
-                    startActivity(intent);
-                }
-            }
-        });
+//        posmButton.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (didCustomerSelected()) {
+//                    Intent intent = new Intent(CustomerActivity.this, PosmActivity.class);
+//                    intent.putExtra(PosmActivity.CUSTOMER_INFO_KEY, customer);
+//                    startActivity(intent);
+//                }
+//            }
+//        });
     }
 
     /*private void catchEvents() {

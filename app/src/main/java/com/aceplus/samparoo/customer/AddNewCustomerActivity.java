@@ -1,11 +1,14 @@
 package com.aceplus.samparoo.customer;
 
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -49,14 +52,16 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
     Spinner zoneSpinner;
     Spinner districtSpinner;
     Spinner statedivisionSpinner;
+    Spinner shoptypeSpinner;
     TextView customerLocationTxt;
     ImageView cancelImg, resetImg, addImg, nextImg;
 
     ArrayList<JSONObject> townshipList;
-    ArrayList<JSONObject> customerCategoryList;
+    //  ArrayList<JSONObject> customerCategoryList;
     ArrayList<JSONObject> zoneList;
     ArrayList<JSONObject> districtList;
     ArrayList<JSONObject> statedivisionList;
+    ArrayList<JSONObject> shoptypeList;
 
     public static String customerLat = null;
     public static String customerLng = null;
@@ -67,7 +72,20 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
     public static String putzonePosition = null;
     public static String putcustomerCategoryPosition = null;
     public static String puttownshipPosition = null;
-    public static String customerId=null;
+    public static String customerId = null;
+
+    String userId = "";
+    String townshipId = "";
+    String districtId = "";
+    String statedivisionId = "";
+    String shoptypeId = "";
+    String customerCategoryId = "";
+    String customerName = "";
+    String contactPerson = "";
+    String phoneNo = "";
+    String address = "";
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +101,66 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
         database = new Database(this).getDataBase();
         registerIDs();
         catchEvents();
+
+        try {
+
+
+            boolean noDataFlg = false;
+
+            if (LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "") != null) {
+                userId = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
+            } else {
+                noDataFlg = true;
+            }
+            if (shoptypeList != null && shoptypeList.size() != 0) {
+                shoptypeId = shoptypeList.get(shoptypeSpinner.getSelectedItemPosition()).getString("shoptypeId");
+            } else {
+                noDataFlg = true;
+
+            }
+
+            if (townshipList != null && townshipList.size() != 0) {
+                townshipId = townshipList.get(townshipSpinner.getSelectedItemPosition()).getString("townshipId");
+            } else {
+                noDataFlg = true;
+            }
+
+//            if(customerCategoryList != null && customerCategoryList.size() != 0) {
+//                customerCategoryId=customerCategoryList.get(customerCategorySpinner.getSelectedItemPosition()).getString("id");
+//            } else {
+//                noDataFlg = true;
+//            }
+
+            if (districtList != null && districtList.size() != 0) {
+                districtId = districtList.get(districtSpinner.getSelectedItemPosition()).getString("districtId");
+            } else {
+                noDataFlg = true;
+            }
+
+            if (statedivisionList != null && statedivisionList.size() != 0) {
+                statedivisionId = statedivisionList.get(statedivisionSpinner.getSelectedItemPosition()).getString("statedivisionId");
+            } else {
+                noDataFlg = true;
+            }
+
+            if (noDataFlg) {
+                new AlertDialog.Builder(this)
+                        .setTitle("")
+                        .setMessage("Need to download information")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                             Intent intent=new Intent(getApplication(),CustomerVisitActivity.class);
+                                startActivity(intent);
+                            }
+                        })
+                        .show();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void registerIDs() {
@@ -91,10 +169,12 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
         phoneNumberEditText = (EditText) findViewById(R.id.phoneNumber);
         addressEditText = (EditText) findViewById(R.id.address);
         townshipSpinner = (Spinner) findViewById(R.id.township);
-        customerCategorySpinner = (Spinner) findViewById(R.id.customerCategoryList);
-        districtSpinner= (Spinner) findViewById(R.id.districtlist);
-        statedivisionSpinner= (Spinner) findViewById(R.id.statedivisionlist);
+        //customerCategorySpinner = (Spinner) findViewById(R.id.customerCategoryList);
+        districtSpinner = (Spinner) findViewById(R.id.districtlist);
+        statedivisionSpinner = (Spinner) findViewById(R.id.statedivisionlist);
+        shoptypeSpinner = (Spinner) findViewById(R.id.shoptypespn);
         customerLocationTxt = (TextView) findViewById(R.id.customer_location);
+
 
         cancelImg = (ImageView) findViewById(R.id.cancel_img);
         resetImg = (ImageView) findViewById(R.id.reset_img);
@@ -131,24 +211,22 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
         townshipNamesArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         townshipSpinner.setAdapter(townshipNamesArrayAdapter);
 
-        customerCategoryList = getCustomerCategoryList();
-        String[] customerCategoryNames = new String[customerCategoryList.size()];
-        for (int i = 0; i < customerCategoryNames.length; i++) {
-
-            try {
-
-                customerCategoryNames[i] = customerCategoryList.get(i).getString("name");
-            } catch (JSONException e) {
-
-                e.printStackTrace();
-            }
-        }
-        ArrayAdapter<String> customerCategoryNamesArrayAdapter =
-                new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, customerCategoryNames);
-        customerCategoryNamesArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        customerCategorySpinner.setAdapter(customerCategoryNamesArrayAdapter);
-
-
+//        customerCategoryList = getCustomerCategoryList();
+//        String[] customerCategoryNames = new String[customerCategoryList.size()];
+//        for (int i = 0; i < customerCategoryNames.length; i++) {
+//
+//            try {
+//
+//                customerCategoryNames[i] = customerCategoryList.get(i).getString("name");
+//            } catch (JSONException e) {
+//
+//                e.printStackTrace();
+//            }
+//        }
+//        ArrayAdapter<String> customerCategoryNamesArrayAdapter =
+//                new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, customerCategoryNames);
+//        customerCategoryNamesArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        customerCategorySpinner.setAdapter(customerCategoryNamesArrayAdapter);
 
 
 //        zoneList = getZoneList();
@@ -167,7 +245,6 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
 //                new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, zones);
 //        zonesArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 //        zoneSpinner.setAdapter(zonesArrayAdapter);
-
 
 
         districtList = getDistrictList();
@@ -204,6 +281,24 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
                 new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, statedivisions);
         statedivisionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         statedivisionSpinner.setAdapter(statedivisionAdapter);
+
+
+        shoptypeList = getShoptype();
+        String[] shoptypes = new String[shoptypeList.size()];
+        for (int i = 0; i < shoptypes.length; i++) {
+
+
+            try {
+                shoptypes[i] = shoptypeList.get(i).getString("shoptypeName");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+        ArrayAdapter<String> shoptypeAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, shoptypes);
+        shoptypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        shoptypeSpinner.setAdapter(shoptypeAdapter);
+
 
         resetImg.setOnClickListener(new OnClickListener() {
             @Override
@@ -334,19 +429,19 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
 //        return zoneList;
 //    }
 
-    private ArrayList<JSONObject> getDistrictList(){
+    private ArrayList<JSONObject> getDistrictList() {
 
-        ArrayList<JSONObject> districtList=new ArrayList<>();
+        ArrayList<JSONObject> districtList = new ArrayList<>();
 
-        Cursor cursor=database.rawQuery("SELECT * FROM DISTRICT",null);
+        Cursor cursor = database.rawQuery("SELECT * FROM DISTRICT", null);
 
-        while (cursor.moveToNext()){
+        while (cursor.moveToNext()) {
 
-            JSONObject districtObject=new JSONObject();
+            JSONObject districtObject = new JSONObject();
 
             try {
-                districtObject.put("districtId",cursor.getString(cursor.getColumnIndex("ID")));
-                districtObject.put("districtName",cursor.getString(cursor.getColumnIndex("NAME")));
+                districtObject.put("districtId", cursor.getString(cursor.getColumnIndex("ID")));
+                districtObject.put("districtName", cursor.getString(cursor.getColumnIndex("NAME")));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -359,19 +454,19 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
 
     }
 
-    private ArrayList<JSONObject> getStatedivisionList(){
+    private ArrayList<JSONObject> getStatedivisionList() {
 
-        ArrayList<JSONObject> statedivisionList=new ArrayList<>();
+        ArrayList<JSONObject> statedivisionList = new ArrayList<>();
 
-        Cursor cursor=database.rawQuery("SELECT * FROM STATE_DIVISION",null);
+        Cursor cursor = database.rawQuery("SELECT * FROM STATE_DIVISION", null);
 
-        while (cursor.moveToNext()){
+        while (cursor.moveToNext()) {
 
-            JSONObject statedivisionObject=new JSONObject();
+            JSONObject statedivisionObject = new JSONObject();
 
             try {
-                statedivisionObject.put("statedivisionId",cursor.getString(cursor.getColumnIndex("ID")));
-                statedivisionObject.put("statedivisionName",cursor.getString(cursor.getColumnIndex("NAME")));
+                statedivisionObject.put("statedivisionId", cursor.getString(cursor.getColumnIndex("ID")));
+                statedivisionObject.put("statedivisionName", cursor.getString(cursor.getColumnIndex("NAME")));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -381,6 +476,33 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
 
         }
         return statedivisionList;
+
+    }
+
+    private ArrayList<JSONObject> getShoptype() {
+
+        ArrayList<JSONObject> shoptypeList = new ArrayList<>();
+
+        Cursor cursor = database.rawQuery("SELECT * FROM SHOP_TYPE", null);
+
+        while (cursor.moveToNext()) {
+
+            JSONObject shoptypeObject = new JSONObject();
+
+            try {
+                shoptypeObject.put("shoptypeId", cursor.getString(cursor.getColumnIndex("ID")));
+                shoptypeObject.put("shoptypeName", cursor.getString(cursor.getColumnIndex("SHOP_TYPE_NAME")));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            shoptypeList.add(shoptypeObject);
+
+
+        }
+
+        return shoptypeList;
+
 
     }
 
@@ -404,9 +526,9 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
         addressEditText.setError(null);
         customerLocationTxt.setText("");
         customerLocationTxt.setError(null);
-        if (customerCategoryList.size() > 0) {
-            customerCategorySpinner.setSelection(0);
-        }
+//        if (customerCategoryList.size() > 0) {
+//            customerCategorySpinner.setSelection(0);
+//        }
         customerNameEditText.requestFocus();
     }
 
@@ -446,18 +568,8 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
 //                    isErrorFlag = true;
 //                }
         String currentTime = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss").format(new Date());
-        String userId = "";
-        String townshipId = "";
-        String districtId="";
-        String statedivisionId="";
-        String customerCategoryId = "";
-        String customerName="";
-        String contactPerson="";
-        String phoneNo="";
-        String address="";
 
 
-        try {
 //                    userId = userInfo.getString("userId");
 //                    zoneCode = zoneList.get(zoneSpinner.getSelectedItemPosition()).getString("zoneCode");
 //                    townshipNumber = townshipList.get(townshipSpinner.getSelectedItemPosition()).getString("townshipNumber");
@@ -465,56 +577,14 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
 //                    customerCategoryId = customerCategoryList.get(customerCategorySpinner.getSelectedItemPosition()).getString("id");
 //                    customerCategoryName = customerCategoryList.get(customerCategorySpinner.getSelectedItemPosition()).getString("name");
 
-            boolean noDataFlg = false;
 
-            if(LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID,"") != null) {
-                userId= LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID,"");
-            } else {
-                noDataFlg = true;
-            }
-
-            if(townshipList != null && townshipList.size() != 0) {
-                townshipId=townshipList.get(townshipSpinner.getSelectedItemPosition()).getString("townshipId");
-            } else {
-                noDataFlg = true;
-            }
-
-            if(customerCategoryList != null && customerCategoryList.size() != 0) {
-                customerCategoryId=customerCategoryList.get(customerCategorySpinner.getSelectedItemPosition()).getString("id");
-            } else {
-                noDataFlg = true;
-            }
-
-            if(districtList != null && districtList.size() != 0) {
-                districtId=districtList.get(districtSpinner.getSelectedItemPosition()).getString("districtId");
-            } else {
-                noDataFlg = true;
-            }
-
-            if(statedivisionList != null && statedivisionList.size() != 0) {
-                statedivisionId=statedivisionList.get(statedivisionSpinner.getSelectedItemPosition()).getString("statedivisionId");
-            } else {
-                noDataFlg = true;
-            }
-
-            if(noDataFlg) {
-                Utils.commonDialog(getResources().getString(R.string.no_download_data_error), AddNewCustomerActivity.this);
-                return;
-            }
-
-            customerName=customerNameEditText.getText().toString();
-            contactPerson=contactPersonEditText.getText().toString();
-            phoneNo=phoneNumberEditText.getText().toString();
-            address=addressEditText.getText().toString();
+        customerName = customerNameEditText.getText().toString();
+        contactPerson = contactPersonEditText.getText().toString();
+        phoneNo = phoneNumberEditText.getText().toString();
+        address = addressEditText.getText().toString();
 
 
-
-            Log.i("CS",Constant.SALEMAN_ID);
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        Log.i("CS", Constant.SALEMAN_ID);
 
 
         //customerId = Preferences.getNextNewCustomerId(AddNewCustomerActivity.this, userId); // TODO: 2/3/17 customerIdAutoIncrement
@@ -538,26 +608,26 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
 //                        + "\"" + 1 + "\""
 //                        + ")";
 
-        customerId= userId + Utils.getCurrentDate(false) + new DecimalFormat("00").format(LoginActivity.mySharedPreference.getInt(Constant.ADDNEWCUSTOMERCOUNT, 0) + 1.0);
-        LoginActivity.myEditor.putInt(Constant.ADDNEWCUSTOMERCOUNT, LoginActivity.mySharedPreference.getInt(Constant.ADDNEWCUSTOMERCOUNT,0) + 1);
+        customerId = userId + Utils.getCurrentDate(false) + new DecimalFormat("00").format(LoginActivity.mySharedPreference.getInt(Constant.ADDNEWCUSTOMERCOUNT, 0) + 1.0);
+        LoginActivity.myEditor.putInt(Constant.ADDNEWCUSTOMERCOUNT, LoginActivity.mySharedPreference.getInt(Constant.ADDNEWCUSTOMERCOUNT, 0) + 1);
         LoginActivity.myEditor.commit();
 
         ContentValues contentValues = new ContentValues();
 
 
-        contentValues.put("township_number",townshipId);
-        Log.i("TownshipId",townshipId);
-        contentValues.put("district_id",districtId);
-        contentValues.put("state_division_id",statedivisionId);
-        contentValues.put("CUSTOMER_NAME",customerName);
-        contentValues.put("CUSTOMER_ID",customerId);
-        contentValues.put("contact_person",contactPerson);
-        contentValues.put("PH",phoneNo);
-        contentValues.put("ADDRESS",address);
+        contentValues.put("township_number", townshipId);
+        Log.i("TownshipId", townshipId);
+        contentValues.put("district_id", districtId);
+        contentValues.put("state_division_id", statedivisionId);
+        contentValues.put("shop_type_id", shoptypeId);
+        contentValues.put("CUSTOMER_NAME", customerName);
+        contentValues.put("CUSTOMER_ID", customerId);
+        contentValues.put("contact_person", contactPerson);
+        contentValues.put("PH", phoneNo);
+        contentValues.put("ADDRESS", address);
         contentValues.put("flag", 1);
 
         database.insert("CUSTOMER", null, contentValues);
-
 
 
 //                database.beginTransaction();

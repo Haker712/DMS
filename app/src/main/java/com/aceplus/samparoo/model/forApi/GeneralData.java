@@ -21,7 +21,7 @@ public class GeneralData {
     private List<Township> township = null;
     @SerializedName("Category")
     @Expose
-    private List<Category> category = null;
+    private List<ProductCategory> category = null;
     @SerializedName("GroupCode")
     @Expose
     private List<GroupCode> groupCode = null;
@@ -63,11 +63,11 @@ public class GeneralData {
         this.township = township;
     }
 
-    public List<Category> getCategory() {
+    public List<ProductCategory> getProductCategory() {
         return category;
     }
 
-    public void setCategory(List<Category> category) {
+    public void setProductCategory(List<ProductCategory> category) {
         this.category = category;
     }
 

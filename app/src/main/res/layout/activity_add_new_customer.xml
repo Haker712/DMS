@@ -44,7 +44,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:text="@string/add_new_customer"
+            android:text="@string/prospect_customer"
             android:textColor="#ffffff"
             android:textSize="@dimen/appbar_title_size"/>
 
@@ -175,10 +175,10 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Customer Category:" />
+                android:text="Shop Type:" />
 
             <Spinner
-                android:id="@+id/customerCategoryList"
+                android:id="@+id/shoptypespn"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3" />
