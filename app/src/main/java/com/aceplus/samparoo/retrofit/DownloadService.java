@@ -11,6 +11,7 @@ import com.aceplus.samparoo.model.forApi.LoginResponse;
 import com.aceplus.samparoo.model.forApi.PosmShopTypeResponse;
 import com.aceplus.samparoo.model.forApi.ProductResponse;
 import com.aceplus.samparoo.model.forApi.PromotionResponse;
+import com.aceplus.samparoo.model.forApi.SaleHistoryResponse;
 import com.aceplus.samparoo.model.forApi.SaleTargetResponse;
 import com.aceplus.samparoo.model.forApi.VolumeDiscountResponse;
 
@@ -76,4 +77,7 @@ public interface DownloadService {
     @POST("companyInfo")
     Call<CompanyInformationResponse> getCompanyInformationFromApi(@Field("param_data") String paramData);
 
+    @FormUrlEncoded
+    @POST("saleHistory")
+    Call<SaleHistoryResponse> getSaleHistoryFromApi(@Field("param_data") String paramData);
 }

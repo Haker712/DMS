@@ -104,6 +104,9 @@ import com.aceplus.samparoo.model.forApi.PromotionGift;
 import com.aceplus.samparoo.model.forApi.PromotionGiftItem;
 import com.aceplus.samparoo.model.forApi.PromotionPrice;
 import com.aceplus.samparoo.model.forApi.PromotionResponse;
+import com.aceplus.samparoo.model.forApi.SaleHistory;
+import com.aceplus.samparoo.model.forApi.SaleHistoryDetail;
+import com.aceplus.samparoo.model.forApi.SaleHistoryResponse;
 import com.aceplus.samparoo.model.forApi.SaleManRouteRequest;
 import com.aceplus.samparoo.model.forApi.SaleReturnApi;
 import com.aceplus.samparoo.model.forApi.SaleReturnItem;
@@ -3355,7 +3358,7 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<SaleTargetResponse> call, Response<SaleTargetResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        Utils.cancelDialog();
+                        //Utils.cancelDialog();
                         textViewError.setText("");
 
                         //Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
@@ -3375,6 +3378,8 @@ public class SyncActivity extends AppCompatActivity {
 
                         sqLiteDatabase.setTransactionSuccessful();
                         sqLiteDatabase.endTransaction();
+
+                        downloadSaleHistoryFromApi(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
                     } else {
                         Utils.cancelDialog();
                         textViewError.setText(response.body().getAceplusStatusMessage());
@@ -3439,6 +3444,89 @@ public class SyncActivity extends AppCompatActivity {
             cvForSaleTargetCustomer.put(DatabaseContract.SALE_TARGET.DATE_STATUS, saleTargetSaleMan.getDateStatus());
             cvForSaleTargetCustomer.put(DatabaseContract.SALE_TARGET.INVOICE_NO, saleTargetSaleMan.getInvoiceNo());
             sqLiteDatabase.insert(DatabaseContract.SALE_TARGET.TABLE_FOR_SALEMAN, null, cvForSaleTargetCustomer);
+        }
+    }
+
+    void downloadSaleHistoryFromApi(String paramData) {
+        DownloadService downloadService = RetrofitServiceFactory.createService(DownloadService.class);
+        Call<SaleHistoryResponse> call = downloadService.getSaleHistoryFromApi(paramData);
+        call.enqueue(new Callback<SaleHistoryResponse>() {
+            @Override
+            public void onResponse(Call<SaleHistoryResponse> call, Response<SaleHistoryResponse> response) {
+                if (response.code() == 200) {
+                    if (response.body().getAceplusStatusCode() == 200) {
+                        //Utils.cancelDialog();
+                        textViewError.setText("");
+
+                        //Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
+
+                        List<SaleHistory> saleTargetCustomerList = response.body().getDataForSaleHistoryList().get(0).getSaleHistoryList();
+
+                        Log.i("saleTargetRecordList>>>", saleTargetCustomerList.size() + "");
+
+                        sqLiteDatabase.beginTransaction();
+
+                        deleteDataAfterUpload(DatabaseContract.SALE_TARGET.TABLE_FOR_CUS, null, null);
+                        deleteDataAfterUpload(DatabaseContract.SALE_TARGET.TABLE_FOR_SALEMAN, null, null);
+                        insertSaleHistory(saleTargetCustomerList);
+
+                        sqLiteDatabase.setTransactionSuccessful();
+                        sqLiteDatabase.endTransaction();
+
+                    } else {
+                        Utils.cancelDialog();
+                        textViewError.setText(response.body().getAceplusStatusMessage());
+                    }
+
+                } else {
+
+                    if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                        textViewError.setText(response.body().getAceplusStatusMessage());
+                    } else {
+                        Utils.cancelDialog();
+                        Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
+                    }
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SaleHistoryResponse> call, Throwable t) {
+                Utils.cancelDialog();
+                Utils.commonDialog(t.getMessage(), SyncActivity.this);
+            }
+        });
+    }
+
+    private void insertSaleHistory(List<SaleHistory> saleHistoryList) {
+
+        for(SaleHistory saleHistory : saleHistoryList) {
+            ContentValues cvForSaleHistory = new ContentValues();
+            cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.NUM, saleHistory.getNumber());
+            cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.ID, saleHistory.getId());
+            cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.DATE, saleHistory.getDate());
+            cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.CUSTOMER_ID, saleHistory.getCustomerId());
+            cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.TOTAL_AMT, saleHistory.getTotalAmt());
+            cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.TOTAL_PAY_AMT, saleHistory.getTotalPayAmt());
+            cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.TOTAL_REFUND_AMT, saleHistory.getTotalRefundAmt());
+            cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.SALEPERSON_ID, saleHistory.getSalepersonId());
+            cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.LOCATION_CODE, saleHistory.getLocationCode());
+            cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.DEVICE_ID, saleHistory.getDeviceId());
+            insertSaleHistoryDetail(saleHistory.getSaleHistoryDetailList());
+            sqLiteDatabase.insert(DatabaseContract.SALE_HISTORY.TABLE, null, cvForSaleHistory);
+        }
+    }
+
+    private void insertSaleHistoryDetail(List<SaleHistoryDetail> saleHistoryList) {
+
+        for(SaleHistoryDetail saleHistoryDetail : saleHistoryList) {
+            ContentValues cvForSaleHistoryDetail = new ContentValues();
+            cvForSaleHistoryDetail.put(DatabaseContract.SALE_HISTORY_DETAIL.TSALE_ID, saleHistoryDetail.gettSaleId());
+            cvForSaleHistoryDetail.put(DatabaseContract.SALE_HISTORY_DETAIL.PRODUCT_ID, saleHistoryDetail.gettSaleId());
+            cvForSaleHistoryDetail.put(DatabaseContract.SALE_HISTORY_DETAIL.QTY, saleHistoryDetail.gettSaleId());
+            cvForSaleHistoryDetail.put(DatabaseContract.SALE_HISTORY_DETAIL.DISCOUNT_AMT, saleHistoryDetail.gettSaleId());
+            sqLiteDatabase.insert(DatabaseContract.SALE_HISTORY_DETAIL.TABLE, null, cvForSaleHistoryDetail);
         }
     }
 
