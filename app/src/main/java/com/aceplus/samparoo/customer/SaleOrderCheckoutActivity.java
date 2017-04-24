@@ -1302,7 +1302,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         if(isPreOrder) {
             insertPreOrderInformation();
             if(isOnline()) {
-                //uploadPreOrderToServer();
+                uploadPreOrderToServer();
             } else {
                 sendSMSMessage();
             }
