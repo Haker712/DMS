@@ -117,6 +117,13 @@ public class LoginActivity extends AppCompatActivity {
 
         sqLiteDatabase = new Database(this).getDataBase();
 
+        /*try {
+            RetrofitServiceFactory.getUrlFromDb(sqLiteDatabase);
+            Log.i("url in retrofit", RetrofitServiceFactory.url);
+        }catch (ExceptionInInitializerError e) {
+            e.printStackTrace();
+        }*/
+
         mySharedPreference = getSharedPreferences(MyPREFS, mode);
         myEditor = mySharedPreference.edit();
 
@@ -254,7 +261,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private void loginWithApi(String paramData) {
         Utils.callDialog("Please wait...", this);
-
         DownloadService downloadService = RetrofitServiceFactory.createService(DownloadService.class);
         Call<LoginResponse> call = downloadService.login(paramData);
         call.enqueue(new Callback<LoginResponse>() {
@@ -456,13 +462,11 @@ public class LoginActivity extends AppCompatActivity {
         textViewOk = ButterKnife.findById(dialogBoxView, R.id.textViewOk);
         textViewCancel = ButterKnife.findById(dialogBoxView, R.id.textViewCancel);
 
-        textViewCurrentIP.setText(Constant.BASE_URL);
-
         if (!mySharedPreference.getString(Constant.KEY_CHANGE_URL, "").equals("")) {
             textViewCurrentIP.setText(mySharedPreference.getString(Constant.KEY_CHANGE_URL, ""));
         }
 
-        editTextNewIP.setText("http://192.168.:9999/api/v1/");
+        editTextNewIP.setText("192.168.:9999");
 
         textViewCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -482,7 +486,6 @@ public class LoginActivity extends AppCompatActivity {
                 myEditor.commit();
 
                 Constant.changeUrl(new_ip);
-                Log.i("Current URL", Constant.BASE_URL);
 
                 dialog.dismiss();
                 dialogBoxView = null;

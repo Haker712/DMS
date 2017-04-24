@@ -12,12 +12,14 @@ import com.aceplus.samparoo.customer.DeliveryActivity;
 import com.aceplus.samparoo.utils.Utils;
 
 import butterknife.ButterKnife;
+import butterknife.InjectViews;
 import butterknife.OnClick;
 
 /**
  * Created by haker on 2/3/17.
  */
 public class CustomerVisitActivity extends AppCompatActivity {
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,10 +47,10 @@ public class CustomerVisitActivity extends AppCompatActivity {
 
     @OnClick(R.id.buttonCreditCollections)
     void creditCollections() {
-        Utils.commonDialog("This feature is not yet.", this);
-        /*Intent intent = new Intent(this, CreditCollectActivity.class);
+        //Utils.commonDialog("This feature is not yet.", this);
+        Intent intent = new Intent(this, CreditCollectActivity.class);
         startActivity(intent);
-        finish();*/
+        finish();
     }
 
     @OnClick(R.id.buttonSaleExchange)

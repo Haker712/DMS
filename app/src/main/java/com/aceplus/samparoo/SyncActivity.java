@@ -252,8 +252,8 @@ public class SyncActivity extends AppCompatActivity {
         messageTextView.setVisibility(View.GONE);
 
         final AlertDialog alertDialog = new AlertDialog.Builder(this)
-                .setView(view)
-                .setTitle("Are you sure want to clear all data ?")
+                .setTitle("Clear All Data")
+                .setMessage("Are you sure want to clear all data ?")
                 .setPositiveButton("Confirm", null)
                 .setNegativeButton("Cancel", null)
                 .create();
@@ -839,8 +839,6 @@ public class SyncActivity extends AppCompatActivity {
             insertCurrency(generalData.getCurrencyList());
             insertProductCategory(generalData.getProductCategory());
         }
-
-
     }
 
     /***

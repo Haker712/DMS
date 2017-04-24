@@ -1,5 +1,7 @@
 package com.aceplus.samparoo.retrofit;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.aceplus.samparoo.utils.Constant;

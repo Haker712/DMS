@@ -646,7 +646,7 @@ public class ReportHomeActivity extends FragmentActivity {
                 if (cursorForCustomerFeedback.moveToNext()) {
 
                     customerFeedbackReportJsonObject.put("description"
-                            , cursorForCustomerFeedback.getString(cursorForCustomerFeedback.getColumnIndex("DESCRIPTION")));
+                            , cursorForCustomerFeedback.getString(cursorForCustomerFeedback.getColumnIndex("REMARK")));
                 }
 
                 customerFeedbackReportJsonObject.put("remark", cursor.getString(cursor.getColumnIndex("REMARK")));

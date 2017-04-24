@@ -151,49 +151,59 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
         Intent intent = this.getIntent();
 
-        if (intent != null) {
+        try {
+            if (intent != null) {
 
-            check = intent.getExtras().getString("SaleExchange");
-            if (check.equalsIgnoreCase("yes")) {
+                check = intent.getExtras().getString("SaleExchange");
+                if (check.equalsIgnoreCase("yes")) {
 
-                double totalItemDiscountAmount = 0.0;
+                    double totalItemDiscountAmount = 0.0;
 
-                //  titleTextView.setText("SALE EXCHANGE");
-                invoiceIdTextView.setText(Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.FOR_SALE_EXCHANGE));
-                View layout = findViewById(R.id.SaleExchangeLayout);
-                layout.setVisibility(View.VISIBLE);
+                    //  titleTextView.setText("SALE EXCHANGE");
+                    invoiceIdTextView.setText(Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.FOR_SALE_EXCHANGE));
+                    View layout = findViewById(R.id.SaleExchangeLayout);
+                    layout.setVisibility(View.VISIBLE);
 
-                TextView textView_salereturnAmount = (TextView) findViewById(R.id.salereturnAmount);
-                TextView textView_payAmtfromCustomer = (TextView) findViewById(R.id.payamountfromcustomer);
-                TextView textView_refundtoCustomer = (TextView) findViewById(R.id.refundtocustomer);
+                    TextView textView_salereturnAmount = (TextView) findViewById(R.id.salereturnAmount);
+                    TextView textView_payAmtfromCustomer = (TextView) findViewById(R.id.payamountfromcustomer);
+                    TextView textView_refundtoCustomer = (TextView) findViewById(R.id.refundtocustomer);
 
+                    Double salereturnAmount = getIntent().getDoubleExtra(Constant.KEY_SALE_RETURN_AMOUNT, 0.0);
+                    Double saleexchangeAmount = Double.valueOf(Utils.formatAmount(totalAmount - totalItemDiscountAmount - totalVolumeDiscount));
                 Double salereturnAmount = getIntent().getDoubleExtra(Constant.KEY_SALE_RETURN_AMOUNT, 0.0);
                 Double saleexchangeAmount = totalAmount - totalItemDiscountAmount - totalVolumeDiscount;
 
-                textView_salereturnAmount.setText(salereturnAmount + "");
+                    textView_salereturnAmount.setText(salereturnAmount + "");
 
-                if (saleexchangeAmount > salereturnAmount) {
+                    if (saleexchangeAmount > salereturnAmount) {
 
+                        Double payAmtfromCustomer = saleexchangeAmount - salereturnAmount;
+                        textView_payAmtfromCustomer.setText(payAmtfromCustomer + "");
                     Double payAmtfromCustomer = saleexchangeAmount - salereturnAmount;
                     textView_payAmtfromCustomer.setText(payAmtfromCustomer + "");
                     textView_refundtoCustomer.setText("0");
 
-                } else {
+                    } else {
 
-                    double refundAmount = salereturnAmount - saleexchangeAmount;
+                        double refundAmount = salereturnAmount - saleexchangeAmount;
 
+                        textView_refundtoCustomer.setText(refundAmount + "");
                     textView_refundtoCustomer.setText(refundAmount + "");
                     textView_payAmtfromCustomer.setText("0");
 
-                }
+                    }
 
 //                textView_salereturnAmount.setText((int) getIntent().getDoubleExtra(Constant.KEY_SALE_RETURN_AMOUNT,0.0));
 
 
-            } else {
+                } else {
 
-                invoiceIdTextView.setText(Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.FOR_OTHERS));
+                    invoiceIdTextView.setText(Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.FOR_OTHERS));
+                }
             }
+        }catch (NullPointerException e) {
+            e.printStackTrace();
+            Utils.backToLogin(this);
         }
         soldProductListRowAdapter = new SoldProductListRowAdapter(this);
         soldProductsListView.setAdapter(soldProductListRowAdapter);
@@ -611,6 +621,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                 }
             }
         });
+
     }
 
     /**

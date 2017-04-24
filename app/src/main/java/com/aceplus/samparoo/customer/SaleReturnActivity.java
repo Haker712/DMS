@@ -124,29 +124,33 @@ public class SaleReturnActivity extends AppCompatActivity implements OnActionCli
         cursor = database.rawQuery("select * from sale_return", null);
         count = cursor.getCount();
 
-        saleman_Id = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
+        try {
+            saleman_Id = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
 
 
-        Intent intent = this.getIntent();
+            Intent intent = this.getIntent();
 
-        if (intent != null) {
+            if (intent != null) {
 
-             check = intent.getExtras().getString("SaleExchange");
+                check = intent.getExtras().getString("SaleExchange");
 
-            if (check.equalsIgnoreCase("yes")) {
+                if (check.equalsIgnoreCase("yes")) {
 
-              // titleTextView.setText(R.string.sale_return);
+                    // titleTextView.setText(R.string.sale_return);
 //                sale_return_id = Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), "YGN", Utils.FOR_SALE_RETURN_EXCHANGE);
-               titleTextView.setText(R.string.sale_exchange);
-                sale_return_id = Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), String.valueOf(getLocationCode()), Utils.FOR_SALE_RETURN_EXCHANGE);
+                    titleTextView.setText(R.string.sale_exchange);
+                    sale_return_id = Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), String.valueOf(getLocationCode()), Utils.FOR_SALE_RETURN_EXCHANGE);
 
-            } else {
-                sale_return_id = Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), String.valueOf(getLocationCode()), Utils.FOR_SALE_RETURN);
+                } else {
+                    sale_return_id = Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), String.valueOf(getLocationCode()), Utils.FOR_SALE_RETURN);
+
+                }
 
             }
-
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Utils.backToLogin(this);
         }
-
 
 
         products = getProducts("");
@@ -269,7 +273,7 @@ public class SaleReturnActivity extends AppCompatActivity implements OnActionCli
             @Override
             public void onClick(View v) {
 
-            Utils.askConfirmationDialog("Save", "Do you want to confirm?", "", SaleReturnActivity.this);
+                Utils.askConfirmationDialog("Save", "Do you want to confirm?", "", SaleReturnActivity.this);
 
             }
         });
@@ -323,7 +327,7 @@ public class SaleReturnActivity extends AppCompatActivity implements OnActionCli
             saleReturnDetail.setRemark(soldProductList.get(i).getRemark());
             insertSaleReturnDetail(saleReturnDetail);
 
-            if (check.equalsIgnoreCase("yes")){
+            if (check.equalsIgnoreCase("yes")) {
                 database.execSQL("UPDATE PRODUCT SET REMAINING_QTY = REMAINING_QTY + " + soldProductList.get(i).getQuantity()
                         + ", EXCHANGE_QTY = EXCHANGE_QTY + " + soldProductList.get(i).getQuantity() + " WHERE PRODUCT_ID = \'" + soldProductList.get(i).getProduct().getId() + "\'");
             } else {
@@ -335,9 +339,9 @@ public class SaleReturnActivity extends AppCompatActivity implements OnActionCli
         database.setTransactionSuccessful();
         database.endTransaction();
 
-        if (check.equalsIgnoreCase("yes")){
+        if (check.equalsIgnoreCase("yes")) {
 
-           Double netAmount=0.0;
+            Double netAmount = 0.0;
 
             for (SoldProduct soldProduct : soldProductList) {
                 netAmount += soldProduct.getNetAmount(SaleReturnActivity.this);
@@ -346,17 +350,17 @@ public class SaleReturnActivity extends AppCompatActivity implements OnActionCli
             }
 
             Intent intent = new Intent(SaleReturnActivity.this, SaleActivity.class);
-            intent.putExtra("SaleExchange","yes");
+            intent.putExtra("SaleExchange", "yes");
             intent.putExtra(SaleActivity.CUSTOMER_INFO_KEY, customer);
             intent.putExtra(SaleActivity.SALE_RETURN_INVOICEID_KEY, sale_return_id);
-            intent.putExtra(Constant.KEY_SALE_RETURN_AMOUNT,netAmount);
+            intent.putExtra(Constant.KEY_SALE_RETURN_AMOUNT, netAmount);
             startActivity(intent);
 
-        }else {
+        } else {
 
             Intent intent = new Intent(SaleReturnActivity.this, CustomerActivity.class);
             //intent.putExtra(CustomerActivity.USER_INFO_KEY, userInfo.toString());
-            intent.putExtra("SaleExchange","no");
+            intent.putExtra("SaleExchange", "no");
             startActivity(intent);
             finish();
 
@@ -588,7 +592,7 @@ public class SaleReturnActivity extends AppCompatActivity implements OnActionCli
                     .show();
 
             return;
-        } else if(!Utils.isNumeric(returnCashAmtEditText.getText().toString())) {
+        } else if (!Utils.isNumeric(returnCashAmtEditText.getText().toString())) {
             new AlertDialog.Builder(SaleReturnActivity.this)
                     .setTitle("Alert")
                     .setMessage("Please enter valid amount.")
