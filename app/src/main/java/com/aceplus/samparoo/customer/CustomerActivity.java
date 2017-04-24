@@ -138,7 +138,12 @@ public class CustomerActivity extends AppCompatActivity {
 
         ButterKnife.inject(this);
 
-        saleManId = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
+        try {
+            saleManId = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Utils.backToLogin(this);
+        }
 
         registerIDs();
 
