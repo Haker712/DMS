@@ -496,4 +496,26 @@ public class DatabaseContract {
         public static final String DATE_STATUS = "DATE_STATUS";
         public static final String INVOICE_NO = "INVOICE_NO";
     }
+
+    public abstract class SALE_HISTORY {
+        public static final String TABLE = "SALE_HISTORY";
+        public static final String NUM = "NUM";
+        public static final String ID = "ID";
+        public static final String DATE = "DATE";
+        public static final String CUSTOMER_ID = "CUSTOMER_ID";
+        public static final String TOTAL_AMT = "TOTAL_AMT";
+        public static final String TOTAL_PAY_AMT = "TOTAL_PAY_AMT";
+        public static final String TOTAL_REFUND_AMT = "TOTAL_REFUND_AMT";
+        public static final String SALEPERSON_ID = "SALEPERSON_ID";
+        public static final String LOCATION_CODE = "LOCATION_CODE";
+        public static final String DEVICE_ID = "DEVICE_ID";
+    }
+
+    public abstract class SALE_HISTORY_DETAIL {
+        public static final String TABLE = "SALE_HISTORY_DETAIL";
+        public static final String TSALE_ID = "TSALE_ID";
+        public static final String PRODUCT_ID = "PRODUCT_ID";
+        public static final String QTY = "QTY";
+        public static final String DISCOUNT_AMT = "DISCOUNT_AMT";
+    }
 }
