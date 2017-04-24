@@ -25,7 +25,7 @@ public class PreOrderApi {
      */
     @SerializedName("customer_id")
     @Expose
-    private String customerId;
+    private int customerId;
 
     /**
      * sale man id
@@ -115,7 +115,7 @@ public class PreOrderApi {
      *
      * @return customerId
      */
-    public String getCustomerId() {
+    public int getCustomerId() {
         return customerId;
     }
 
@@ -124,7 +124,7 @@ public class PreOrderApi {
      *
      * @param customerId customer id
      */
-    public void setCustomerId(String customerId) {
+    public void setCustomerId(int customerId) {
         this.customerId = customerId;
     }
 

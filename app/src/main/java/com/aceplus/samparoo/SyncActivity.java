@@ -773,7 +773,7 @@ public class SyncActivity extends AppCompatActivity {
                     if (response.body().getAceplusStatusCode() == 200) {
                         Utils.cancelDialog();
 
-                        Toast.makeText(SyncActivity.this, R.string.download_success, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(SyncActivity.this, R.string.download_success, Toast.LENGTH_SHORT).show();
 
                         sqLiteDatabase.beginTransaction();
 
@@ -869,7 +869,7 @@ public class SyncActivity extends AppCompatActivity {
 
                         //Utils.cancelDialog();
 
-                        Toast.makeText(SyncActivity.this, R.string.download_success, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(SyncActivity.this, R.string.download_success, Toast.LENGTH_SHORT).show();
 
                         sqLiteDatabase.beginTransaction();
 
@@ -1569,7 +1569,7 @@ public class SyncActivity extends AppCompatActivity {
         for (PreOrder preOrder : preOrderList) {
             PreOrderApi preOrderApi = new PreOrderApi();
             preOrderApi.setId(preOrder.getInvoiceId());
-            preOrderApi.setCustomerId(preOrder.getCustomerId());
+            preOrderApi.setCustomerId(Integer.parseInt(preOrder.getCustomerId()));
             preOrderApi.setSaleManId(preOrder.getSalePersonId());
             preOrderApi.setDeviceId(preOrder.getDeviceId());
             preOrderApi.setSaleOrderDate(preOrder.getPreOrderDate());
@@ -1634,12 +1634,12 @@ public class SyncActivity extends AppCompatActivity {
     private List<PreOrder> getPreOrderFromDatabase() {
         List<PreOrder> preOrderList = new ArrayList<>();
 
-        Cursor cursorPreOrder = sqLiteDatabase.rawQuery("select * from PRE_ORDER WHERE DELETE_FLAG = 0", null);
+        Cursor cursorPreOrder = sqLiteDatabase.rawQuery("select P.*, (SELECT CUSTOMER.id from CUSTOMER WHERE CUSTOMER.CUSTOMER_ID = P.CUSTOMER_ID) AS CUS_ID from PRE_ORDER AS P WHERE P.DELETE_FLAG = 0", null);
 
         while (cursorPreOrder.moveToNext()) {
             PreOrder preOrder = new PreOrder();
             preOrder.setInvoiceId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("INVOICE_ID")));
-            preOrder.setCustomerId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("CUSTOMER_ID")));
+            preOrder.setCustomerId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("CUS_ID")));
             preOrder.setSalePersonId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("SALEPERSON_ID")));
             preOrder.setDeviceId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("DEV_ID")));
             preOrder.setPreOrderDate(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("PREORDER_DATE")));
@@ -1693,11 +1693,11 @@ public class SyncActivity extends AppCompatActivity {
 
         List<PreOrderPresentApi> preOrderPresentList = new ArrayList<>();
 
-        Cursor cursorPreOrderPresent = sqLiteDatabase.rawQuery("select * from PRE_ORDER_PRESENT WHERE PRE_ORDER_ID = \'" + saleOrderId + "\' AND WHERE DELETE_FLAG = 0;", null);
+        Cursor cursorPreOrderPresent = sqLiteDatabase.rawQuery("select * from PRE_ORDER_PRESENT WHERE PRE_ORDER_ID = \'" + saleOrderId + "\' AND DELETE_FLAG = 0;", null);
         while (cursorPreOrderPresent.moveToNext()) {
             PreOrderPresentApi preOrderPresentApi = new PreOrderPresentApi();
             preOrderPresentApi.setSaleOrderId(cursorPreOrderPresent.getString(cursorPreOrderPresent.getColumnIndex("pre_order_id")));
-            preOrderPresentApi.setProductId(cursorPreOrderPresent.getString(cursorPreOrderPresent.getColumnIndex("stock_id")));
+            preOrderPresentApi.setProductId(Integer.parseInt(cursorPreOrderPresent.getString(cursorPreOrderPresent.getColumnIndex("stock_id"))));
             preOrderPresentApi.setQuantity(cursorPreOrderPresent.getInt(cursorPreOrderPresent.getColumnIndex("quantity")));
         }
 
@@ -2090,7 +2090,13 @@ public class SyncActivity extends AppCompatActivity {
      * @param columnValue column value
      */
     private void deleteDataAfterUpload(String tableName, String columnName, String columnValue) {
-        String sql = "delete from " + tableName + " WHERE " + columnName + " = \'" + columnValue + "\';";
+        String sql = "";
+        if(columnName == null || columnValue == null) {
+            sql = "delete from " + tableName;
+        } else {
+            sql = "delete from " + tableName + " WHERE " + columnName + " = \'" + columnValue + "\';";
+        }
+
         sqLiteDatabase.execSQL(sql);
     }
 
@@ -2637,7 +2643,7 @@ public class SyncActivity extends AppCompatActivity {
 
                         services += " " + getResources().getString(R.string.outlet_stock_availability);
 
-                        //uploadCustomerVisitToServer();
+                        uploadCustomerVisitToServer();
                     }
                 } else {
                     if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
@@ -3458,17 +3464,17 @@ public class SyncActivity extends AppCompatActivity {
                         //Utils.cancelDialog();
                         textViewError.setText("");
 
-                        //Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
 
-                        List<SaleHistory> saleTargetCustomerList = response.body().getDataForSaleHistoryList().get(0).getSaleHistoryList();
+                        List<SaleHistory> saleHistoryCustomerList = response.body().getDataForSaleHistoryList().get(0).getSaleHistoryList();
 
-                        Log.i("saleTargetRecordList>>>", saleTargetCustomerList.size() + "");
+                        Log.i("saleHistoryRecordList>>>", saleHistoryCustomerList.size() + "");
 
                         sqLiteDatabase.beginTransaction();
 
-                        deleteDataAfterUpload(DatabaseContract.SALE_TARGET.TABLE_FOR_CUS, null, null);
-                        deleteDataAfterUpload(DatabaseContract.SALE_TARGET.TABLE_FOR_SALEMAN, null, null);
-                        insertSaleHistory(saleTargetCustomerList);
+                        deleteDataAfterUpload(DatabaseContract.SALE_HISTORY.TABLE, null, null);
+                        deleteDataAfterUpload(DatabaseContract.SALE_HISTORY_DETAIL.TABLE, null, null);
+                        insertSaleHistory(saleHistoryCustomerList);
 
                         sqLiteDatabase.setTransactionSuccessful();
                         sqLiteDatabase.endTransaction();
@@ -3503,14 +3509,14 @@ public class SyncActivity extends AppCompatActivity {
 
         for(SaleHistory saleHistory : saleHistoryList) {
             ContentValues cvForSaleHistory = new ContentValues();
-            cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.NUM, saleHistory.getNumber());
-            cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.ID, saleHistory.getId());
-            cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.DATE, saleHistory.getDate());
+            //cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.NUM, saleHistory.getNumber());
+            cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.INVOICE_ID, saleHistory.getId());
+            cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.SALE_DATE, saleHistory.getDate());
             cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.CUSTOMER_ID, saleHistory.getCustomerId());
-            cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.TOTAL_AMT, saleHistory.getTotalAmt());
-            cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.TOTAL_PAY_AMT, saleHistory.getTotalPayAmt());
-            cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.TOTAL_REFUND_AMT, saleHistory.getTotalRefundAmt());
-            cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.SALEPERSON_ID, saleHistory.getSalepersonId());
+            cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.TOTAL_AMOUNT, saleHistory.getTotalAmt());
+            cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.PAY_AMOUNT, saleHistory.getTotalPayAmt());
+            cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.REFUND_AMOUNT, saleHistory.getTotalRefundAmt());
+            cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.SALE_PERSON_ID, saleHistory.getSalepersonId());
             cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.LOCATION_CODE, saleHistory.getLocationCode());
             cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.DEVICE_ID, saleHistory.getDeviceId());
             insertSaleHistoryDetail(saleHistory.getSaleHistoryDetailList());
@@ -3522,10 +3528,10 @@ public class SyncActivity extends AppCompatActivity {
 
         for(SaleHistoryDetail saleHistoryDetail : saleHistoryList) {
             ContentValues cvForSaleHistoryDetail = new ContentValues();
-            cvForSaleHistoryDetail.put(DatabaseContract.SALE_HISTORY_DETAIL.TSALE_ID, saleHistoryDetail.gettSaleId());
-            cvForSaleHistoryDetail.put(DatabaseContract.SALE_HISTORY_DETAIL.PRODUCT_ID, saleHistoryDetail.gettSaleId());
-            cvForSaleHistoryDetail.put(DatabaseContract.SALE_HISTORY_DETAIL.QTY, saleHistoryDetail.gettSaleId());
-            cvForSaleHistoryDetail.put(DatabaseContract.SALE_HISTORY_DETAIL.DISCOUNT_AMT, saleHistoryDetail.gettSaleId());
+            cvForSaleHistoryDetail.put(DatabaseContract.SALE_HISTORY_DETAIL.INVOICE_PRODUCT_ID, saleHistoryDetail.gettSaleId());
+            cvForSaleHistoryDetail.put(DatabaseContract.SALE_HISTORY_DETAIL.PRODUCT_ID, saleHistoryDetail.getProductId());
+            cvForSaleHistoryDetail.put(DatabaseContract.SALE_HISTORY_DETAIL.SALE_QUANTITY, saleHistoryDetail.getQty());
+            cvForSaleHistoryDetail.put(DatabaseContract.SALE_HISTORY_DETAIL.DISCOUNT_AMOUNT, saleHistoryDetail.getDiscountAmt());
             sqLiteDatabase.insert(DatabaseContract.SALE_HISTORY_DETAIL.TABLE, null, cvForSaleHistoryDetail);
         }
     }

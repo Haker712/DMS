@@ -98,6 +98,7 @@ public class ReportHomeActivity extends FragmentActivity {
         final ArrayList<JSONObject> saleReturnReportsArrayList = new ArrayList<>();
         final ArrayList<JSONObject> POSMReportArrayList = new ArrayList<>();
         final ArrayList<JSONObject> DeliveryReportArrayList = new ArrayList<>();
+        final ArrayList<JSONObject> CustomerReportArrayList = new ArrayList<>();
 
 
         final String[] reportNames = {
@@ -145,18 +146,18 @@ public class ReportHomeActivity extends FragmentActivity {
                     fragmentTransaction.commit();
                 } else if (position == 1) {
 
-                    if (saleInvoiceReportsArrayList.size() == 0) {
+                    if (CustomerReportArrayList.size() == 0) {
 
-                        for (JSONObject saleInvoiceReportJsonObject : getSaleInvoiceReports()) {
+                        for (JSONObject customerReportJsonObject : getCustomerReports()) {
 
-                            saleInvoiceReportsArrayList.add(saleInvoiceReportJsonObject);
+                            CustomerReportArrayList.add(customerReportJsonObject);
                         }
                     }
 
                     FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 
                     FragmentSaleInvoiceReport saleInvoiceFragment = new FragmentSaleInvoiceReport();
-                    saleInvoiceFragment.saleInvoiceReportsArrayList = saleInvoiceReportsArrayList;
+                    saleInvoiceFragment.customerReportsArrayList = CustomerReportArrayList;
                     fragmentTransaction.replace(R.id.fragment_report, saleInvoiceFragment);
                     /*fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                     fragmentTransaction.addToBackStack(null);*/
@@ -410,11 +411,11 @@ public class ReportHomeActivity extends FragmentActivity {
 
     }
 
-    private ArrayList<JSONObject> getSaleInvoiceReports() {
+    private ArrayList<JSONObject> getSaleInvoiceReports(String customerId) {
 
         ArrayList<JSONObject> saleInvoiceReportsArrayList = new ArrayList<JSONObject>();
 
-        Cursor cursor = database.rawQuery("SELECT * FROM INVOICE where INVOICE_ID not like 'SX%' and INVOICE_ID not like 'OS%'", null);
+        Cursor cursor = database.rawQuery("SELECT * FROM INVOICE where INVOICE_ID not like 'SX%' and INVOICE_ID not like 'OS%' and CUSTOMER_ID = '" + customerId + "'", null);
         while (cursor.moveToNext()) {
 
             JSONObject saleInvoiceReportJsonObject = new JSONObject();
@@ -979,6 +980,25 @@ public class ReportHomeActivity extends FragmentActivity {
         }
 
         return saleExchangeReceiveReportsArrayList;
+    }
+
+    private ArrayList<JSONObject> getCustomerReports() {
+        ArrayList<JSONObject> customerReportsArrayList = new ArrayList<JSONObject>();
+        Cursor cursor = database.rawQuery("SELECT * FROM CUSTOMER", null);
+        while (cursor.moveToNext()) {
+            JSONObject customerReceiveReportJsonObject = new JSONObject();
+            try {
+                customerReceiveReportJsonObject.put("customerId", cursor.getString(cursor.getColumnIndex("id")));
+                customerReceiveReportJsonObject.put("customerName", cursor.getString(cursor.getColumnIndex("CUSTOMER_NAME")));
+            } catch (JSONException e) {
+
+                e.printStackTrace();
+            }
+
+            customerReportsArrayList.add(customerReceiveReportJsonObject);
+        }
+
+        return customerReportsArrayList;
     }
 
     @Override
