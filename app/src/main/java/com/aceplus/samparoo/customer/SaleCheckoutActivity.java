@@ -168,10 +168,9 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                     TextView textView_payAmtfromCustomer = (TextView) findViewById(R.id.payamountfromcustomer);
                     TextView textView_refundtoCustomer = (TextView) findViewById(R.id.refundtocustomer);
 
+
                     Double salereturnAmount = getIntent().getDoubleExtra(Constant.KEY_SALE_RETURN_AMOUNT, 0.0);
-                    Double saleexchangeAmount = Double.valueOf(Utils.formatAmount(totalAmount - totalItemDiscountAmount - totalVolumeDiscount));
-                Double salereturnAmount = getIntent().getDoubleExtra(Constant.KEY_SALE_RETURN_AMOUNT, 0.0);
-                Double saleexchangeAmount = totalAmount - totalItemDiscountAmount - totalVolumeDiscount;
+                    Double saleexchangeAmount = totalAmount - totalItemDiscountAmount - totalVolumeDiscount;
 
                     textView_salereturnAmount.setText(salereturnAmount + "");
 
@@ -179,17 +178,16 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
                         Double payAmtfromCustomer = saleexchangeAmount - salereturnAmount;
                         textView_payAmtfromCustomer.setText(payAmtfromCustomer + "");
-                    Double payAmtfromCustomer = saleexchangeAmount - salereturnAmount;
-                    textView_payAmtfromCustomer.setText(payAmtfromCustomer + "");
-                    textView_refundtoCustomer.setText("0");
+
+                        textView_refundtoCustomer.setText("0");
 
                     } else {
 
                         double refundAmount = salereturnAmount - saleexchangeAmount;
 
                         textView_refundtoCustomer.setText(refundAmount + "");
-                    textView_refundtoCustomer.setText(refundAmount + "");
-                    textView_payAmtfromCustomer.setText("0");
+                        textView_refundtoCustomer.setText(refundAmount + "");
+                        textView_payAmtfromCustomer.setText("0");
 
                     }
 
@@ -201,7 +199,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                     invoiceIdTextView.setText(Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.FOR_OTHERS));
                 }
             }
-        }catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             e.printStackTrace();
             Utils.backToLogin(this);
         }
@@ -615,7 +613,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         cashRadio.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) {
+                if (isChecked) {
                     layoutBranch.setVisibility(View.GONE);
                     layoutBankAcc.setVisibility(View.GONE);
                 }
