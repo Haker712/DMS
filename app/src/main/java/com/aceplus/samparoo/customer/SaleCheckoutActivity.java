@@ -168,7 +168,6 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                     TextView textView_payAmtfromCustomer = (TextView) findViewById(R.id.payamountfromcustomer);
                     TextView textView_refundtoCustomer = (TextView) findViewById(R.id.refundtocustomer);
 
-
                     Double salereturnAmount = getIntent().getDoubleExtra(Constant.KEY_SALE_RETURN_AMOUNT, 0.0);
                     Double saleexchangeAmount = totalAmount - totalItemDiscountAmount - totalVolumeDiscount;
 
@@ -178,7 +177,6 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
                         Double payAmtfromCustomer = saleexchangeAmount - salereturnAmount;
                         textView_payAmtfromCustomer.setText(payAmtfromCustomer + "");
-
                         textView_refundtoCustomer.setText("0");
 
                     } else {

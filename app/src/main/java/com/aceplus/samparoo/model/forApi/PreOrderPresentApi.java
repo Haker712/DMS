@@ -13,7 +13,7 @@ public class PreOrderPresentApi {
     private String saleOrderId;
     @SerializedName("product_id")
     @Expose
-    private String productId;
+    private int productId;
     @SerializedName("quantity")
     @Expose
     private Integer quantity;
@@ -26,11 +26,11 @@ public class PreOrderPresentApi {
         this.saleOrderId = saleOrderId;
     }
 
-    public String getProductId() {
+    public int getProductId() {
         return productId;
     }
 
-    public void setProductId(String productId) {
+    public void setProductId(int productId) {
         this.productId = productId;
     }
 

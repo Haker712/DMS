@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +37,8 @@ public class FragmentSaleInvoiceReport extends Fragment {
 
     ArrayList<JSONObject> saleInvoiceReportsArrayList;
 
+    ArrayList<JSONObject> customerReportsArrayList;
+
     JSONObject saleInvoiceReportJsonObject;
 
     SQLiteDatabase database;
@@ -45,7 +48,7 @@ public class FragmentSaleInvoiceReport extends Fragment {
     String quantity, product_name;
     Double dicount_amount;
     Double total_amount;
-
+    Spinner customerSpinner;
     Saleinvoicedetail saleinvoicedetail;
     List<Saleinvoicedetail> saleinvoicedetailList = new ArrayList<Saleinvoicedetail>();
 
@@ -59,8 +62,47 @@ public class FragmentSaleInvoiceReport extends Fragment {
         database = new Database(getActivity()).getDataBase();
 
         saleInvoiceReportsListView = (ListView) view.findViewById(R.id.saleInvoceReports);
+        customerSpinner = (Spinner) view.findViewById(R.id.customer_spinner_fragment_invoice_report);
+
+        List<String> customerNameArr = new ArrayList<>();
+        if (customerSpinner != null) {
+            try {
+                for (JSONObject customerName : customerReportsArrayList) {
+                    customerNameArr.add(customerName.getString("customerName"));
+                }
+                saleInvoiceReportsArrayList = getSaleInvoiceReports(customerReportsArrayList.get(0).getString("customerId"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            ArrayAdapter<String> customerAdapter = new ArrayAdapter<String>(this.getContext(), android.R.layout.simple_spinner_dropdown_item, customerNameArr);
+            customerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            customerSpinner.setAdapter(customerAdapter);
+        }
+
+        customerSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                try {
+                    saleInvoiceReportsArrayList.clear();
+                    saleInvoiceReportsArrayList = getSaleInvoiceReports(customerReportsArrayList.get(position).getString("customerId"));
+                    ArrayAdapter<JSONObject> saleInvoiceReportsArrayAdapter = new SaleInvoiceReportsArrayAdapter(getActivity());
+                    saleInvoiceReportsListView.setAdapter(saleInvoiceReportsArrayAdapter);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
         ArrayAdapter<JSONObject> saleInvoiceReportsArrayAdapter = new SaleInvoiceReportsArrayAdapter(getActivity());
         saleInvoiceReportsListView.setAdapter(saleInvoiceReportsArrayAdapter);
+
         saleInvoiceReportsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -85,8 +127,21 @@ public class FragmentSaleInvoiceReport extends Fragment {
                     String produc_Id = cursor_Invoice_Id.getString(cursor_Invoice_Id.getColumnIndex("PRODUCT_ID"));
                     Log.i("product_Id", produc_Id + "aaa");
                     quantity = cursor_Invoice_Id.getString(cursor_Invoice_Id.getColumnIndex("SALE_QUANTITY"));
-                    dicount_amount = Double.valueOf(cursor_Invoice_Id.getString(cursor_Invoice_Id.getColumnIndex("DISCOUNT_AMOUNT")));
-                    total_amount = Double.valueOf(cursor_Invoice_Id.getString(cursor_Invoice_Id.getColumnIndex("TOTAL_AMOUNT")));
+                    String discountAmt = cursor_Invoice_Id.getString(cursor_Invoice_Id.getColumnIndex("DISCOUNT_AMOUNT"));
+                    String totalAmt = cursor_Invoice_Id.getString(cursor_Invoice_Id.getColumnIndex("TOTAL_AMOUNT"));
+
+                    if(discountAmt != null && !discountAmt.equals("")) {
+                        dicount_amount = Double.valueOf(cursor_Invoice_Id.getString(cursor_Invoice_Id.getColumnIndex("DISCOUNT_AMOUNT")));
+                    } else {
+                        dicount_amount = 0.0;
+                    }
+
+
+                    if(totalAmt != null && !totalAmt.equals("")) {
+                        total_amount = Double.valueOf(cursor_Invoice_Id.getString(cursor_Invoice_Id.getColumnIndex("TOTAL_AMOUNT")));
+                    } else {
+                        total_amount = 0.0;
+                    }
 
                     Cursor cursor_product_Id = database.rawQuery("SELECT * FROM PRODUCT WHERE PRODUCT_ID='" + produc_Id + "'", null);
                     Log.i("cur_count", cursor_product_Id.getCount() + "");
@@ -95,19 +150,13 @@ public class FragmentSaleInvoiceReport extends Fragment {
                         Log.i("product_name", cursor_product_Id.getString(cursor_product_Id.getColumnIndex("PRODUCT_NAME")) + " aaa");
 
 
-
                     }
                     saleinvoicedetail.setProductName(product_name);
                     saleinvoicedetail.setQuantity(quantity);
                     saleinvoicedetail.setDiscountAmount(dicount_amount);
                     saleinvoicedetail.setTotalAmount(total_amount);
                     saleinvoicedetailList.add(saleinvoicedetail);
-
-//
-
-
                 }
-
 
                 View dialogBoxView = getActivity().getLayoutInflater().inflate(R.layout.dialog_box_sale_invoice_report, null);
                 saleInvoiceReportsListView = (ListView) dialogBoxView.findViewById(R.id.saleinvoicedialog);
@@ -195,5 +244,46 @@ public class FragmentSaleInvoiceReport extends Fragment {
 
             return view;
         }
+    }
+
+    private ArrayList<JSONObject> getSaleInvoiceReports(String customerId) {
+
+        ArrayList<JSONObject> saleInvoiceReportsArrayList = new ArrayList<JSONObject>();
+
+        Cursor cursor = database.rawQuery("SELECT * FROM INVOICE where INVOICE_ID not like 'SX%' and INVOICE_ID not like 'OS%' and CUSTOMER_ID = '" + customerId + "'", null);
+        while (cursor.moveToNext()) {
+
+            JSONObject saleInvoiceReportJsonObject = new JSONObject();
+            try {
+
+                saleInvoiceReportJsonObject.put("invoiceId", cursor.getString(cursor.getColumnIndex("INVOICE_ID")));
+
+                Cursor cursorForCustomer = database.rawQuery(
+                        "SELECT CUSTOMER_NAME, ADDRESS FROM CUSTOMER"
+                                + " WHERE ID = \"" + customerId + "\""
+                        , null);
+                if (cursorForCustomer.moveToNext()) {
+
+                    saleInvoiceReportJsonObject.put("customerName"
+                            , cursorForCustomer.getString(cursorForCustomer.getColumnIndex("CUSTOMER_NAME")));
+                    saleInvoiceReportJsonObject.put("address"
+                            , cursorForCustomer.getString(cursorForCustomer.getColumnIndex("ADDRESS")));
+
+                    double totalAmount = cursor.getDouble(cursor.getColumnIndex("TOTAL_AMOUNT"));
+                    double discount = cursor.getDouble(cursor.getColumnIndex("TOTAL_DISCOUNT_AMOUNT"));
+                    Log.i("TotalDis", discount + "");
+                    saleInvoiceReportJsonObject.put("totalAmount", totalAmount);
+                    saleInvoiceReportJsonObject.put("discount", discount);
+                    saleInvoiceReportJsonObject.put("netAmount", totalAmount - discount);
+                }
+            } catch (JSONException e) {
+
+                e.printStackTrace();
+            }
+
+            saleInvoiceReportsArrayList.add(saleInvoiceReportJsonObject);
+        }
+
+        return saleInvoiceReportsArrayList;
     }
 }

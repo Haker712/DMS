@@ -617,7 +617,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             for (Promotion promotion : promotionArrayList) {
                 PreOrderPresentApi preOrderPresentApi = new PreOrderPresentApi();
                 preOrderPresentApi.setSaleOrderId(preOrder.getInvoiceId());
-                preOrderPresentApi.setProductId(promotion.getPromotionProductId());
+                preOrderPresentApi.setProductId(Integer.parseInt(promotion.getPromotionProductId()));
                 preOrderPresentApi.setQuantity(promotion.getPromotionQty());
 
                 message += "\nPresent Product Stock Number : " + promotion.getPromotionProductId()
@@ -922,7 +922,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                         Utils.cancelDialog();
 
                         Snackbar snackbar = Snackbar
-                                .make(lv_soldProductList, R.string.upload_succes_msg, Snackbar.LENGTH_LONG)
+                                .make(lv_soldProductList, R.string.upload_succes_msg, Snackbar.LENGTH_INDEFINITE)
                                 .setAction("DONE", new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
@@ -936,6 +936,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                     if(response.body() != null && response.body().getAceplusStatusMessage().length() != 0 ) {
                         onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
                     } else {
+                        Utils.cancelDialog();
                         Utils.commonDialog(getResources().getString(R.string.server_error), SaleOrderCheckoutActivity.this);
                     }
                 }
@@ -976,7 +977,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         for(PreOrder preOrder : preOrderList) {
             PreOrderApi preOrderApi = new PreOrderApi();
             preOrderApi.setId(preOrder.getInvoiceId());
-            preOrderApi.setCustomerId(preOrder.getCustomerId());
+            preOrderApi.setCustomerId(Integer.parseInt(preOrder.getCustomerId()));
             preOrderApi.setSaleManId(preOrder.getSalePersonId());
             preOrderApi.setDeviceId(preOrder.getDeviceId());
             preOrderApi.setSaleOrderDate(preOrder.getPreOrderDate());
@@ -992,7 +993,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             for (Promotion promotion : promotionArrayList) {
                 PreOrderPresentApi preOrderPresentApi = new PreOrderPresentApi();
                 preOrderPresentApi.setSaleOrderId(preOrder.getInvoiceId());
-                preOrderPresentApi.setProductId(promotion.getPromotionProductId());
+                preOrderPresentApi.setProductId(Integer.parseInt(promotion.getPromotionProductId()));
                 preOrderPresentApi.setQuantity(promotion.getPromotionQty());
 
                 preOrderPresentApiList.add(preOrderPresentApi);
@@ -1046,12 +1047,12 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
     private List<PreOrder> getPreOrderFromDatabase() {
         List<PreOrder> preOrderList = new ArrayList<>();
 
-        Cursor cursorPreOrder = database.rawQuery("select * from PRE_ORDER WHERE DELETE_FLAG = 0", null);
+        Cursor cursorPreOrder = database.rawQuery("select P.*, (SELECT CUSTOMER.id from CUSTOMER WHERE CUSTOMER.CUSTOMER_ID = P.CUSTOMER_ID) AS CUS_ID from PRE_ORDER AS P WHERE P.DELETE_FLAG = 0", null);
 
         while (cursorPreOrder.moveToNext()) {
             PreOrder preOrder = new PreOrder();
             preOrder.setInvoiceId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("INVOICE_ID")));
-            preOrder.setCustomerId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("CUSTOMER_ID")));
+            preOrder.setCustomerId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("CUS_ID")));
             preOrder.setSalePersonId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("SALEPERSON_ID")));
             preOrder.setDeviceId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("DEV_ID")));
             preOrder.setPreOrderDate(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("PREORDER_DATE")));
