@@ -42,9 +42,6 @@ public class FragmentProductComparisonReport extends Fragment  {
     SQLiteDatabase database;
     ArrayList<SaleTargetForSaleMan> saleTargetArrayList = new ArrayList<>();
     ArrayList<SaleTarget> actualTargetArrayList = new ArrayList<>();
-    Spinner spinnerGroup, spinnerCategory;
-    List<String> groupNameArr, categoryNameArr, groupIdArr, categoryIdArr;
-    String categoryId, groupId;
     BarChart chart;
 
     @Override
@@ -52,24 +49,11 @@ public class FragmentProductComparisonReport extends Fragment  {
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_product_report, container, false);
         database = new Database(getActivity()).getDataBase();
-        registerIDS();
         getTargetSaleDB();
-        getGroupCodeListFromDB();
-        getCategoryListFromDB();
-        setUpSpinner();
-        catchEvents();
         chart = (HorizontalBarChart) view.findViewById(R.id.chart);
         initialize();
 
-        if(categoryIdArr != null && categoryIdArr.size() != 0) {
-            categoryId = categoryIdArr.get(spinnerCategory.getSelectedItemPosition());
-        }
-
-        if(groupIdArr != null && groupIdArr.size() != 0) {
-            groupId = groupIdArr.get(spinnerGroup.getSelectedItemPosition());
-        }
-
-        getActualSaleDB(categoryId, groupId);
+        getActualSaleDB();
         return view;
     }
 
@@ -93,77 +77,11 @@ public class FragmentProductComparisonReport extends Fragment  {
     }
 
     /**
-     * Register id for widgets of layout
-     */
-    private void registerIDS() {
-        spinnerGroup = (Spinner) view.findViewById(R.id.spinner_group);
-        spinnerCategory = (Spinner) view.findViewById(R.id.spinner_category);
-    }
-
-    /**
-     * Update bar chart data
-     */
-    private void updateChartData() {
-        if(categoryIdArr != null && categoryIdArr.size() != 0) {
-            categoryId = categoryIdArr.get(spinnerCategory.getSelectedItemPosition());
-        }
-
-        if(groupIdArr != null && groupIdArr.size() != 0) {
-            groupId = groupIdArr.get(spinnerGroup.getSelectedItemPosition());
-        }
-
-        getActualSaleDB(categoryId, groupId);
-        initialize();
-    }
-
-    /**
-     * User events on widgets
-     */
-    private void catchEvents() {
-        spinnerGroup.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                updateChartData();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        spinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                updateChartData();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-    }
-
-    /**
      * Get actual sale for today
-     *
-     * @param categoryId categoryId
-     * @param groupId groupId
      */
-    private void getActualSaleDB(String categoryId, String groupId) {
+    private void getActualSaleDB() {
 
         String query = "SELECT IP.TOTAL_AMOUNT, P.PRODUCT_ID, IP.SALE_QUANTITY FROM INVOICE_PRODUCT AS IP, PRODUCT AS P, INVOICE AS INV WHERE P.PRODUCT_ID = IP.PRODUCT_ID";
-        String groupCondtion = " AND P.GROUP_ID = '" + groupId + "'";
-        String categoryCondition = " AND P.CATEGORY_ID = '" + categoryId + "'";
-
-        if(!categoryId.equals("-1")) {
-            query += categoryCondition;
-        }
-
-        if(!groupId.equals("-1")) {
-            query += groupCondtion;
-        }
 
         actualTargetArrayList.clear();
         Cursor cursor = database.rawQuery(query, null);
@@ -287,56 +205,6 @@ public class FragmentProductComparisonReport extends Fragment  {
         @Override
         public String getFormattedValue(float value) {
             return Math.round(value)+"";
-        }
-    }
-
-    /**
-     * Initialize all spinner.
-     */
-    private void setUpSpinner() {
-
-        if(groupNameArr != null) {
-            ArrayAdapter<String> groupAdapter = new ArrayAdapter<String>(this.getContext(), android.R.layout.simple_spinner_dropdown_item, groupNameArr);
-            groupAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinnerGroup.setAdapter(groupAdapter);
-        }
-
-        if(categoryNameArr != null) {
-            ArrayAdapter<String> categoryAdapter = new ArrayAdapter<String>(this.getContext(), android.R.layout.simple_spinner_dropdown_item, categoryNameArr);
-            categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinnerCategory.setAdapter(categoryAdapter);
-        }
-    }
-
-    /**
-     * Get all group code list from db for group spinner.
-     */
-    void getGroupCodeListFromDB() {
-        groupIdArr = new ArrayList<>();
-        groupIdArr.add("-1");
-        groupNameArr = new ArrayList<>();
-        groupNameArr.add("All Group");
-
-        Cursor cursorGroup = database.rawQuery("SELECT id, name FROM GROUP_CODE", null);
-        while(cursorGroup.moveToNext()) {
-            groupIdArr.add(cursorGroup.getString(cursorGroup.getColumnIndex("id")));
-            groupNameArr.add(cursorGroup.getString(cursorGroup.getColumnIndex("name")));
-        }
-    }
-
-    /**
-     * Get category name from db for category spinner.
-     */
-    void getCategoryListFromDB() {
-        categoryIdArr = new ArrayList<>();
-        categoryIdArr.add("-1");
-        categoryNameArr = new ArrayList<>();
-        categoryNameArr.add("All Category");
-
-        Cursor cursorCategory = database.rawQuery("SELECT CATEGORY_ID,CATEGORY_NAME FROM PRODUCT_CATEGORY", null);
-        while(cursorCategory.moveToNext()) {
-            categoryIdArr.add(cursorCategory.getString(cursorCategory.getColumnIndex("CATEGORY_ID")));
-            categoryNameArr.add(cursorCategory.getString(cursorCategory.getColumnIndex("CATEGORY_NAME")));
         }
     }
 }

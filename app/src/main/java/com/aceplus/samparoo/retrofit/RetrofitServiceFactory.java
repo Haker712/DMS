@@ -49,4 +49,39 @@ public class RetrofitServiceFactory {
         return retrofit.create(serviceClass);
     }
 
+    /**
+     * Real time service for pre-order uploading.
+     *
+     * @param serviceClass retrofit service
+     * @param <T> uploading object
+     * @return retrofit service
+     */
+    public static <T> T createRealTimeService(Class<T> serviceClass) {
+
+        String url = Constant.BASE_URL; // real time address
+
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        Retrofit.Builder builder = new Retrofit.Builder()
+                .baseUrl(url)
+                .addConverterFactory(GsonConverterFactory.create());
+
+
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        httpClient.addInterceptor(loggingInterceptor);
+        httpClient.addInterceptor(loggingInterceptor);
+        httpClient.addInterceptor(new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                Request origial = chain.request();
+                Request.Builder requstbuilder = origial.newBuilder();
+
+                Request request = requstbuilder.build();
+                return chain.proceed(request);
+            }
+        });
+        OkHttpClient client = httpClient.build();
+        Retrofit retrofit = builder.client(client).build();
+        return retrofit.create(serviceClass);
+    }
 }

@@ -85,7 +85,7 @@
     <string name="sale_checkout">SALE CHECKOUT</string>
     <string name="volume_discount">Vol: Discount</string>
     <string name="sale_upload_success">Sale Upload Successfully.</string>
-    <string name="download_success">Successfully downloaded.</string>
+    <string name="download_success">Download complete.</string>
     <string name="title_activity_sale_exchange">SaleExchangeActivity</string>
     <string name="promotion_price">PROMOTION PRICE</string>
     <string name="promotion_gift">PROMOTION GIFT</string>

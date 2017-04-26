@@ -882,7 +882,6 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         }
     }
 
-
     /**
      * Upload pre order data to server
      */
@@ -915,6 +914,68 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
                             /*deletePreOrderAfterUpload(preOrderRequest.getData().get(0).getData().get(0).getId());
                             deletePreOrderProductAfterUpload(preOrderRequest.getData().get(0).getData().get(0).getId());*/
+                        }
+
+                        database.setTransactionSuccessful();
+                        database.endTransaction();
+                        Utils.cancelDialog();
+
+                        Snackbar snackbar = Snackbar
+                                .make(lv_soldProductList, R.string.upload_succes_msg, Snackbar.LENGTH_INDEFINITE)
+                                .setAction("DONE", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Utils.backToCustomer(SaleOrderCheckoutActivity.this);
+                                    }
+                                });
+
+                        snackbar.show();
+                    }
+                } else {
+                    if(response.body() != null && response.body().getAceplusStatusMessage().length() != 0 ) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    } else {
+                        Utils.cancelDialog();
+                        Utils.commonDialog(getResources().getString(R.string.server_error), SaleOrderCheckoutActivity.this);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<InvoiceResponse> call, Throwable t) {
+                Utils.cancelDialog();
+                Utils.commonDialog(t.getMessage(), SaleOrderCheckoutActivity.this);
+            }
+        });
+    }
+
+    /**
+     * Upload pre order data for real time
+     */
+    private void uploadPreOrderRealTime() {
+
+        Utils.callDialog("Please wait...", SaleOrderCheckoutActivity.this);
+
+        final PreOrderRequest preOrderRequest = getPreOrderRequest();
+
+        String paramData = getJsonFromObject(preOrderRequest);
+
+        Log.i("ParamData",paramData);
+
+        UploadService uploadService = RetrofitServiceFactory.createRealTimeService(UploadService.class);
+
+        Call<InvoiceResponse> call = uploadService.uploadPreOrderData(paramData);
+
+        call.enqueue(new Callback<InvoiceResponse>() {
+            @Override
+            public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
+                if (response.code() == 200) {
+                    if (response.body().getAceplusStatusCode() == 200) {
+                        database.beginTransaction();
+
+                        if(preOrderRequest.getData() != null && preOrderRequest.getData().get(0).getData().size() > 0) {
+                            updateDeleteFlag(DatabaseContract.PreOrder.tb, 1, DatabaseContract.PreOrder.invoice_id, preOrderRequest.getData().get(0).getData().get(0).getId());
+                            updateDeleteFlag(DatabaseContract.PreOrderDetail.tb, 1, DatabaseContract.PreOrderDetail.sale_order_id, preOrderRequest.getData().get(0).getData().get(0).getId());
                         }
 
                         database.setTransactionSuccessful();
