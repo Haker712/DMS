@@ -173,6 +173,6 @@ public class MainFragmentActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        Utils.backToCustomer(this);
+        Utils.backToMarketingActivity(this);
     }
 }

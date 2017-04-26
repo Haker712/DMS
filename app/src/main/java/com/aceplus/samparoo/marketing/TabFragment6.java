@@ -77,6 +77,8 @@ public class TabFragment6 extends Fragment {
 
         database = new Database(getActivity()).getDataBase();
 
+        activity = (AppCompatActivity) getActivity();
+
         customer = MainFragmentActivity.customer;
 
         String customerId = customer.getCustomerId();

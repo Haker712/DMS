@@ -248,7 +248,7 @@ public class POSMFragment extends Fragment {
         cancelImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getActivity().finish();
+                Utils.backToMarketingActivity(getActivity());
             }
         });
 

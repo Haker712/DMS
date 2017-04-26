@@ -244,7 +244,7 @@ public class PosmActivity extends AppCompatActivity {
         cancelImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                Utils.backToMarketingActivity(PosmActivity.this);
             }
         });
 

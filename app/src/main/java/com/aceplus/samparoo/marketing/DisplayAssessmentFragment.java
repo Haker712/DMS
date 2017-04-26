@@ -50,7 +50,7 @@ public class DisplayAssessmentFragment extends Fragment {
 
     int Cus_id;
 
-    AppCompatActivity activity;
+    Activity activity;
 
 
 
@@ -64,6 +64,8 @@ public class DisplayAssessmentFragment extends Fragment {
 
         view = inflater.inflate(R.layout.display_assessment_fragment, container, false);
         sqLiteDatabase = new Database(getActivity()).getDataBase();
+
+        activity = getActivity();
 
         ImageView imageView1 = (ImageView) view.findViewById(R.id.display_standard_image);
         ImageView imageView2 = (ImageView) view.findViewById(R.id.outlet_image);

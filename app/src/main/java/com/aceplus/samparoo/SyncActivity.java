@@ -3462,7 +3462,8 @@ public class SyncActivity extends AppCompatActivity {
                         //Utils.cancelDialog();
                         textViewError.setText("");
 
-                        Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SyncActivity.this, getResources().getString(R.string.download_success), Toast.LENGTH_SHORT).show();
 
                         List<SaleHistory> saleHistoryCustomerList = response.body().getDataForSaleHistoryList().get(0).getSaleHistoryList();
 
