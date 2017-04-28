@@ -862,7 +862,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         /*if (this.orderedInvoice != null) {
             intent.putExtra(SaleActivity.ORDERED_INVOICE_KEY, this.orderedInvoice.toString());
         }*/
-        intent.putExtra("SaleExchange", "no");
+        intent.putExtra("SaleExchange", check);
         startActivity(intent);
         finish();
     }

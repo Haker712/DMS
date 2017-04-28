@@ -289,10 +289,11 @@ public class CustomerActivity extends AppCompatActivity {
     @OnClick(R.id.ok)
     void Ok() {
 
-        Intent intent = new Intent(this, SaleReturnActivity.class);
-        intent.putExtra("SaleExchange", "yes");
-        intent.putExtra(SaleActivity.CUSTOMER_INFO_KEY, customer);
-        startActivity(intent);
+        if(didCustomerSelected()) {
+            Intent intent = new Intent(this, SaleReturnActivity.class);intent.putExtra("SaleExchange", "yes");
+            intent.putExtra(SaleActivity.CUSTOMER_INFO_KEY, customer);
+            startActivity(intent);
+        }
 
     }
 

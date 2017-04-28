@@ -96,7 +96,11 @@ public class Customer implements Serializable {
         this.dueAmt = dueAmt;
         this.prepaidAmt = prepaidAmt;
         this.paymentType = paymentType;
-        this.isInRoute = isInRoute.equalsIgnoreCase("true");
+
+        if(isInRoute != null && !isInRoute.equals("")) {
+            this.isInRoute = isInRoute.equalsIgnoreCase("true");
+        }
+
         this.latitude = latitude;
         this.longitude = longitude;
         this.visitRecord = visitRecord;
