@@ -327,7 +327,7 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
                 intent.putExtra("contactPerson", contactPersonEditText.getText().toString());
                 intent.putExtra("zonePosition", "");
                 intent.putExtra("townshipPosition", String.valueOf(townshipSpinner.getSelectedItemPosition()));
-                intent.putExtra("customerCategoryPosition", String.valueOf(customerCategorySpinner.getSelectedItemPosition()));
+                //intent.putExtra("customerCategoryPosition", String.valueOf(customerCategorySpinner.getSelectedItemPosition()));
                 intent.putExtra("customerLat", customerLat);
                 intent.putExtra("customerLng", customerLng);
                 startActivity(intent);
@@ -350,12 +350,15 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
         if (!(putcontactPerson == null)) {
             contactPersonEditText.setText(putcontactPerson);
         }
-     /*   if (!(putzonePosition == null)) {
+        /*
+        if (!(putzonePosition == null)) {
             zoneSpinner.setSelection(Integer.parseInt(putzonePosition));
-        }*/
+        }
         if (!(putcustomerCategoryPosition == null)) {
             customerCategorySpinner.setSelection(Integer.parseInt(putcustomerCategoryPosition));
         }
+        */
+
         if (!(puttownshipPosition == null)) {
             townshipSpinner.setSelection(Integer.parseInt(puttownshipPosition));
         }

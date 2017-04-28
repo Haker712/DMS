@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">AcePlus DMS</string>
 
-    <string name="google_map_api_key">AIzaSyCgBYPxRZ0ds7ZEeeTFnSe6Fd6f6cSPVM4</string>
+    <string name="google_map_api_key">AIzaSyAPBZAwnNfjVOWX04mT_ex2WI9bwus9srI</string>
 
     <string name="home_title">HOME</string>
     <string name="username_label">USER NAME : </string>
