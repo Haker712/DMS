@@ -771,7 +771,7 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<GeneralResponse> call, Response<GeneralResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        Utils.cancelDialog();
+                        //Utils.cancelDialog();
 
                         //Toast.makeText(SyncActivity.this, R.string.download_success, Toast.LENGTH_SHORT).show();
 
@@ -1041,7 +1041,7 @@ public class SyncActivity extends AppCompatActivity {
                 if (response.code() == 200) {
 
                     if (response.body().getAceplusStatusCode() == 200) {
-                        Utils.cancelDialog();
+                        //Utils.cancelDialog();
                         sqLiteDatabase.beginTransaction();
 
                         insertMarkting(response.body().getData());
@@ -2119,7 +2119,7 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<DeliveryResponse> call, Response<DeliveryResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        Utils.cancelDialog();
+                        //Utils.cancelDialog();
 
                         List<DeliveryForApi> deliveryForApiList = response.body().getDataForDeliveryList().get(0).getDeliveryForApiList();
 
