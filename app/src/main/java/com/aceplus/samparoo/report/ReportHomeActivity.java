@@ -551,13 +551,14 @@ public class ReportHomeActivity extends FragmentActivity {
                 //  saleReturnReportJsonObject.put("customerId", cursor.getString(cursor.getColumnIndex("CUSTOMER_ID")));
 
                 String customer_Id = cursor.getString(cursor.getColumnIndex("CUSTOMER_ID"));
+                saleReturnReportJsonObject.put("customerId", cursor.getString(cursor.getColumnIndex("CUSTOMER_ID")));
 
             } catch (JSONException e) {
 
                 e.printStackTrace();
             }
 
-            Cursor cur_CusId = database.rawQuery("select * from CUSTOMER", null);
+            Cursor cur_CusId = database.rawQuery("select * from CUSTOMER WHERE ID = '" + cursor.getString(cursor.getColumnIndex("CUSTOMER_ID")) + "'", null);
 
             while (cur_CusId.moveToNext()) {
 
@@ -988,7 +989,7 @@ public class ReportHomeActivity extends FragmentActivity {
         while (cursor.moveToNext()) {
             JSONObject customerReceiveReportJsonObject = new JSONObject();
             try {
-                customerReceiveReportJsonObject.put("customerId", cursor.getString(cursor.getColumnIndex("id")));
+                customerReceiveReportJsonObject.put("customerId", cursor.getString(cursor.getColumnIndex("CUSTOMER_ID")));
                 customerReceiveReportJsonObject.put("customerName", cursor.getString(cursor.getColumnIndex("CUSTOMER_NAME")));
             } catch (JSONException e) {
 

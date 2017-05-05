@@ -19,7 +19,7 @@ public class SaleTarget {
     /**
      * quantity
      */
-    int quantity = 0;
+    double quantity = 0;
 
     /**
      * sellingPrice
@@ -87,7 +87,7 @@ public class SaleTarget {
      *
      * @return quantity
      */
-    public int getQuantity() {
+    public double getQuantity() {
         return quantity;
     }
 
@@ -96,7 +96,7 @@ public class SaleTarget {
      *
      * @param quantity quantity
      */
-    public void setQuantity(int quantity) {
+    public void setQuantity(double quantity) {
         this.quantity = quantity;
     }
 

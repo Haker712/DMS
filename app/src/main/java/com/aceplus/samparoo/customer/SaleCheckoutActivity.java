@@ -752,7 +752,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
      * Save data to database
      */
     private void saveDatas(String cashOrLoanOrBank) {
-        String customerId = customer.getCustomerId();
+        String customerId = String.valueOf(customer.getId());
         String saleDate = Utils.getCurrentDate(true);
 
         String invoiceId = invoiceIdTextView.getText().toString();

@@ -3,6 +3,7 @@ package com.aceplus.samparoo.report;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -13,6 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -27,7 +31,10 @@ import com.aceplus.samparoo.utils.Utils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 @SuppressLint("NewApi")
@@ -52,6 +59,17 @@ public class FragmentSaleInvoiceReport extends Fragment {
     Saleinvoicedetail saleinvoicedetail;
     List<Saleinvoicedetail> saleinvoicedetailList = new ArrayList<Saleinvoicedetail>();
 
+    String ALL_CUSTOMER = "All";
+
+    Calendar myCalendar = Calendar.getInstance();
+
+    EditText fromDateEditTxt, toDateEditTxt;
+
+    SimpleDateFormat sdf;
+
+    Date fromDate, toDate;
+
+    Button searchBtn, clearBtn;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -61,43 +79,76 @@ public class FragmentSaleInvoiceReport extends Fragment {
 
         database = new Database(getActivity()).getDataBase();
 
+        sdf = new SimpleDateFormat("yyyy/MM/dd");
+
         saleInvoiceReportsListView = (ListView) view.findViewById(R.id.saleInvoceReports);
         customerSpinner = (Spinner) view.findViewById(R.id.customer_spinner_fragment_invoice_report);
+        fromDateEditTxt = (EditText) view.findViewById(R.id.edit_text_sale_report_from_date);
+        toDateEditTxt = (EditText) view.findViewById(R.id.edit_text_sale_report_to_date);
+        searchBtn = (Button) view.findViewById(R.id.btn_sale_report_search);
+        clearBtn = (Button) view.findViewById(R.id.btn_sale_report_clear);
 
         List<String> customerNameArr = new ArrayList<>();
         if (customerSpinner != null) {
             try {
+                JSONObject allCustomer = new JSONObject();
+                allCustomer.put("customerId", ALL_CUSTOMER);
+                allCustomer.put("customerName", "ALL");
+                customerReportsArrayList.add(0,allCustomer);
+
                 for (JSONObject customerName : customerReportsArrayList) {
                     customerNameArr.add(customerName.getString("customerName"));
                 }
-                saleInvoiceReportsArrayList = getSaleInvoiceReports(customerReportsArrayList.get(0).getString("customerId"));
+                saleInvoiceReportsArrayList = getSaleInvoiceReports(ALL_CUSTOMER);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
             ArrayAdapter<String> customerAdapter = new ArrayAdapter<String>(this.getContext(), android.R.layout.simple_spinner_dropdown_item, customerNameArr);
             customerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             customerSpinner.setAdapter(customerAdapter);
         }
 
-        customerSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        fromDateEditTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                chooseDob(1);
+            }
+        });
+
+        toDateEditTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                chooseDob(2);
+            }
+        });
+
+        searchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int selectedCustomerPosition = customerSpinner.getSelectedItemPosition();
+                setDataToSaleReportAdapter(selectedCustomerPosition);
+            }
+        });
+
+        clearBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fromDateEditTxt.setText("");
+                toDateEditTxt.setText("");
+            }
+        });
+
+        /*customerSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                try {
-                    saleInvoiceReportsArrayList.clear();
-                    saleInvoiceReportsArrayList = getSaleInvoiceReports(customerReportsArrayList.get(position).getString("customerId"));
-                    ArrayAdapter<JSONObject> saleInvoiceReportsArrayAdapter = new SaleInvoiceReportsArrayAdapter(getActivity());
-                    saleInvoiceReportsListView.setAdapter(saleInvoiceReportsArrayAdapter);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                setDataToSaleReportAdapter(position);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
             }
-        });
+        });*/
 
 
         ArrayAdapter<JSONObject> saleInvoiceReportsArrayAdapter = new SaleInvoiceReportsArrayAdapter(getActivity());
@@ -171,6 +222,18 @@ public class FragmentSaleInvoiceReport extends Fragment {
             }
         });
         return view;
+    }
+
+    private void setDataToSaleReportAdapter(int position) {
+        try {
+            saleInvoiceReportsArrayList.clear();
+            saleInvoiceReportsArrayList.addAll(getSaleInvoiceReports(customerReportsArrayList.get(position).getString("customerId")));
+            ArrayAdapter<JSONObject> saleInvoiceReportsArrayAdapter = new SaleInvoiceReportsArrayAdapter(getActivity());
+            saleInvoiceReportsArrayAdapter.notifyDataSetChanged();
+            saleInvoiceReportsListView.setAdapter(saleInvoiceReportsArrayAdapter);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private class SaleInvoiceReportsArrayAdapter extends ArrayAdapter<JSONObject> {
@@ -250,7 +313,22 @@ public class FragmentSaleInvoiceReport extends Fragment {
 
         ArrayList<JSONObject> saleInvoiceReportsArrayList = new ArrayList<JSONObject>();
 
-        Cursor cursor = database.rawQuery("SELECT * FROM INVOICE where INVOICE_ID not like 'SX%' and INVOICE_ID not like 'OS%' and CUSTOMER_ID = '" + customerId + "'", null);
+        String query = "SELECT * FROM INVOICE where INVOICE_ID not like 'SX%' and INVOICE_ID not like 'OS%' ";
+        String customerCondition = "and CUSTOMER_ID = '" + customerId + "' ";
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+        if(!customerId.equals(ALL_CUSTOMER)) {
+            query += customerCondition;
+        }
+
+        if(!fromDateEditTxt.getText().toString().equals("") || !toDateEditTxt.getText().toString().equals("")) {
+            String dateCondtion = "and SALE_DATE BETWEEN '" + sdf.format(fromDate) + "' AND '" + sdf.format(toDate) + "'";
+            query += dateCondtion;
+        }
+
+        Cursor cursor = database.rawQuery(query, null);
+
         while (cursor.moveToNext()) {
 
             JSONObject saleInvoiceReportJsonObject = new JSONObject();
@@ -260,7 +338,7 @@ public class FragmentSaleInvoiceReport extends Fragment {
 
                 Cursor cursorForCustomer = database.rawQuery(
                         "SELECT CUSTOMER_NAME, ADDRESS FROM CUSTOMER"
-                                + " WHERE ID = \"" + customerId + "\""
+                                + " WHERE id = \"" + cursor.getString(cursor.getColumnIndex("CUSTOMER_ID")) + "\""
                         , null);
                 if (cursorForCustomer.moveToNext()) {
 
@@ -285,5 +363,33 @@ public class FragmentSaleInvoiceReport extends Fragment {
         }
 
         return saleInvoiceReportsArrayList;
+    }
+
+    void chooseDob(final int choice) {
+
+        DatePickerDialog.OnDateSetListener datePicker = new DatePickerDialog.OnDateSetListener() {
+
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, monthOfYear);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+                if(choice == 1) {
+                    fromDateEditTxt.setText(sdf.format(myCalendar.getTime()));
+                    fromDate = myCalendar.getTime();
+                } else if(choice == 2) {
+                    toDateEditTxt.setText(sdf.format(myCalendar.getTime()));
+                    toDate = myCalendar.getTime();
+                }
+            }
+        };
+
+        DatePickerDialog dateDialog = new DatePickerDialog(this.getContext(),
+                datePicker,
+                myCalendar.get(Calendar.YEAR),
+                myCalendar.get(Calendar.MONTH),
+                myCalendar.get(Calendar.DAY_OF_MONTH));
+        dateDialog.show();
     }
 }

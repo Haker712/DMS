@@ -494,7 +494,7 @@
                         android:layout_marginRight="10dp"
                         android:layout_weight="2"
                         android:gravity="right"
-                        android:text="Branch Name : " />
+                        android:text="Bank Name : " />
 
                     <EditText
                         android:id="@+id/edit_txt_branch_name"

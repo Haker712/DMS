@@ -263,9 +263,22 @@ public class FragmentSaleComparisonReport extends Fragment {
         Cursor cursor = database.rawQuery(query, null);
 
         while (cursor.moveToNext()) {
-            String productId = cursor.getString(cursor.getColumnIndex("PRODUCT_ID"));
-            int saleQty = Integer.parseInt(cursor.getString(cursor.getColumnIndex("SALE_QUANTITY")));
-            double totalSaleAmount = Double.parseDouble(cursor.getString(cursor.getColumnIndex("TOTAL_AMOUNT")));
+            String productId = "";
+
+            if(cursor.getString(cursor.getColumnIndex("PRODUCT_ID")) != null) {
+                productId = cursor.getString(cursor.getColumnIndex("PRODUCT_ID"));
+            }
+
+            double saleQty = 0.0;
+            if(cursor.getString(cursor.getColumnIndex("SALE_QUANTITY")) != null) {
+                saleQty = Double.parseDouble(cursor.getString(cursor.getColumnIndex("SALE_QUANTITY")));
+            }
+
+            double totalSaleAmount = 0.0;
+            if(cursor.getString(cursor.getColumnIndex("TOTAL_AMOUNT")) != null) {
+                totalSaleAmount = Double.parseDouble(cursor.getString(cursor.getColumnIndex("TOTAL_AMOUNT")));
+            }
+
             double sellingPrice = totalSaleAmount / saleQty;
 
             SaleTarget saleTarget = new SaleTarget();
