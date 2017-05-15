@@ -23,6 +23,8 @@ public class PromotionActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText("Promotion Price"));
         tabLayout.addTab(tabLayout.newTab().setText("Promotion Gift"));
+        tabLayout.addTab(tabLayout.newTab().setText("Volume Discount"));
+        tabLayout.addTab(tabLayout.newTab().setText("Volume Discount Filter"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
         tabLayout.setTabTextColors(Color.WHITE, Color.RED);
 

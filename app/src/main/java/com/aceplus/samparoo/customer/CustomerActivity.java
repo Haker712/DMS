@@ -541,7 +541,7 @@ public class CustomerActivity extends AppCompatActivity {
             longiString = locationCursor.getString(locationCursor.getColumnIndex("LONGITUDE"));
         }
 
-        if(latiString != null && longiString != null) {
+        if(latiString != null && longiString != null && !latiString.equals("0") && !longiString.equals("0")) {
             latiDouble = Double.parseDouble(latiString.substring(0, 7));
             longDouble = Double.parseDouble(longiString.substring(0, 7));
         }

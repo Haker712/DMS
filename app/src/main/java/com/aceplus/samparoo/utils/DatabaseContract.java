@@ -508,6 +508,7 @@ public class DatabaseContract {
         public static final String REFUND_AMOUNT = "REFUND_AMOUNT";
         public static final String SALE_PERSON_ID = "SALE_PERSON_ID";
         public static final String LOCATION_CODE = "LOCATION_CODE";
+        public static final String CASH_OR_CREDIT = "CASH_OR_CREDIT";
         public static final String DEVICE_ID = "DEVICE_ID";
     }
 

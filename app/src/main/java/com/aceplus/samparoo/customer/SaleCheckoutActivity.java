@@ -126,7 +126,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
         customer = (Customer) getIntent().getSerializableExtra(CUSTOMER_INFO_KEY);
         soldProductList = (ArrayList<SoldProduct>) getIntent().getSerializableExtra(SOLD_PROUDCT_LIST_KEY);
-
+        promotionArrayList = (ArrayList<Promotion>) getIntent().getSerializableExtra(PRESENT_PROUDCT_LIST_KEY);
         registerIDs();
 
         findViewById(R.id.advancedPaidAmountLayout).setVisibility(View.GONE);
@@ -250,7 +250,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
         //initCategories();
 
-        showPromotionData();
+        setPromotionProductListView();
 
         catchEvents();
     }
@@ -653,7 +653,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
     /**
      * Get customer payment method.
      *
-     * @return C : cash, B : bank, R : Credit
+     * @return CA : cash, B : bank, CR : Credit
      */
     private String getPaymentMethod() {
         int selectedRadio = bankOrCashRadioGroup.getCheckedRadioButtonId();
@@ -662,7 +662,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             paymentMethod = "B";
 
         } else if (selectedRadio == R.id.activity_sale_checkout_radio_cash) {
-            paymentMethod = "C";
+            paymentMethod = "CA";
         }
         return paymentMethod;
     }
@@ -697,7 +697,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             longiString = locationCursor.getString(locationCursor.getColumnIndex("LONGITUDE"));
         }
 
-        if (latiString != null && longiString != null) {
+        if (latiString != null && longiString != null && !latiString.equals("0") && !longiString.equals("0")) {
             latiDouble = Double.parseDouble(latiString.substring(0, 7));
             longDouble = Double.parseDouble(longiString.substring(0, 7));
         }
@@ -872,15 +872,27 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
         String cashOrBank = getPaymentMethod();
 
-        if (isFullyPaid()) {
-            saveDatas(cashOrBank);
-            saleOrExchange();
+        if (receiptPersonEditText.getText().toString().equals("") || receiptPersonEditText.getText().toString().equals(null)) {
+            receiptPersonEditText.setError("Please enter receipt person");
         } else {
-            if (cashOrBank.equals("B")) {
-                Utils.commonDialog("Insufficient Pay Amount!", SaleCheckoutActivity.this);
-            } else {
-                saveDatas("R");
+
+            if (isFullyPaid()) {
+                cashOrBank = "CA";
+                saveDatas(cashOrBank);
                 saleOrExchange();
+            } else {
+                if (cashOrBank.equals("B")) {
+                    if (branchEditText.getText().toString().equals("") || branchEditText.getText().toString().equals(null)) {
+                        branchEditText.setError("Please enter bank account");
+                    } else if(accountEditText.getText().toString().equals("") || accountEditText.getText().toString().equals(null)) {
+                        accountEditText.setError("Please enter bank name");
+                    } else {
+                        Utils.commonDialog("Insufficient Pay Amount!", SaleCheckoutActivity.this);
+                    }
+                } else {
+                    saveDatas("CR");
+                    saleOrExchange();
+                }
             }
         }
     }
@@ -968,7 +980,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             } else {
                 qtyTextView.setVisibility(View.GONE);
             }
-            if (promotion.getPromotionPrice() != 0.0) {
+            if (promotion.getPromotionPrice()!= null && promotion.getPromotionPrice() != 0.0) {
                 priceTextView.setText(promotion.getPromotionPrice() + "");
             } else {
                 priceTextView.setVisibility(View.GONE);

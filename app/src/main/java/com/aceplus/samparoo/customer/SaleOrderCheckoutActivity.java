@@ -40,6 +40,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -154,6 +156,9 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
     double totalAmountForVolumeDiscount = 0.0;
 
     TextView volDisForPreOrder;
+
+    RadioGroup bankOrCashRadioGroup;
+    RadioButton bankRadio, cashRadio;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -271,6 +276,9 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         volDisForPreOrderLayout = (LinearLayout) findViewById(R.id.volDisForPreOrderLayout);
         volDisForPreOrder = (TextView) findViewById(R.id.volumeDiscount);
         paymentMethodLayout = (LinearLayout) findViewById(R.id.paymentMethodLayout);
+        bankOrCashRadioGroup = (RadioGroup) findViewById(R.id.activity_sale_checkout_radio_group);
+        bankRadio = (RadioButton) findViewById(R.id.activity_sale_checkout_radio_bank);
+        cashRadio = (RadioButton) findViewById(R.id.activity_sale_checkout_radio_cash);
     }
 
     /**
@@ -285,7 +293,6 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         payAmountLayout.setVisibility(View.GONE);
         receiptPersonLayout.setVisibility(View.GONE);
         volDisForPreOrderLayout.setVisibility(View.GONE);
-        paymentMethodLayout.setVisibility(View.GONE);
         if(isDelivery) {
             totalInfoForPreOrderLayout.setVisibility(View.GONE);
             volumeDiscountLayout.setVisibility(View.GONE);
@@ -293,6 +300,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             advancedPaidAmountLayout.setVisibility(View.VISIBLE);
             receiptPersonLayout.setVisibility(View.VISIBLE);
             txt_table_header_foc.setVisibility(View.VISIBLE);
+            paymentMethodLayout.setVisibility(View.GONE);
         }
     }
 
@@ -752,7 +760,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
     /**
      * Insert pre-order to database.
      */
-    void insertPreOrderInformation() {
+    void insertPreOrderInformation(String cashOrBank) {
         double netAmount = 0;
 
         PreOrder preOrder = new PreOrder();
@@ -762,7 +770,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         }
 
         if(SaleOrderCheckoutActivity.this.customer != null) {
-            preOrder.setCustomerId(SaleOrderCheckoutActivity.this.customer.getCustomerId());
+            preOrder.setCustomerId(String.valueOf(SaleOrderCheckoutActivity.this.customer.getId()));
         }
 
         preOrder.setSalePersonId(LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, ""));
@@ -1108,12 +1116,12 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
     private List<PreOrder> getPreOrderFromDatabase() {
         List<PreOrder> preOrderList = new ArrayList<>();
 
-        Cursor cursorPreOrder = database.rawQuery("select P.*, (SELECT CUSTOMER.id from CUSTOMER WHERE CUSTOMER.CUSTOMER_ID = P.CUSTOMER_ID) AS CUS_ID from PRE_ORDER AS P WHERE P.DELETE_FLAG = 0", null);
+        Cursor cursorPreOrder = database.rawQuery("select P.* from PRE_ORDER AS P WHERE P.DELETE_FLAG = 0", null);
 
         while (cursorPreOrder.moveToNext()) {
             PreOrder preOrder = new PreOrder();
             preOrder.setInvoiceId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("INVOICE_ID")));
-            preOrder.setCustomerId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("CUS_ID")));
+            preOrder.setCustomerId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("CUSTOMER_ID")));
             preOrder.setSalePersonId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("SALEPERSON_ID")));
             preOrder.setDeviceId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("DEV_ID")));
             preOrder.setPreOrderDate(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("PREORDER_DATE")));
@@ -1251,7 +1259,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         int totalQuantity = insertDeliveryDataItemToDatabase(soldProductList, invoiceId);
 
         database.execSQL("INSERT INTO INVOICE VALUES (\""
-                + customer.getCustomerId() + "\", \""
+                + customer.getId() + "\", \""
                 + saleDate + "\", \""
                 + invoiceId + "\", \""
                 + totalAmount + "\", \""
@@ -1360,8 +1368,17 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
     @Override
     public void onActionClick(String type) {
+        String cashOrBank = getPaymentMethod();
+
         if(isPreOrder) {
-            insertPreOrderInformation();
+            if (isFullyPaid()) {
+                cashOrBank = "CA";
+                insertPreOrderInformation(cashOrBank);
+            } else {
+                insertPreOrderInformation("CR");
+            }
+
+
             if(isOnline()) {
                 uploadPreOrderToServer();
             } else {
@@ -1387,6 +1404,46 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
             insertDeliveryDataToDatabase(orderedInvoice);
             toDeliveryActivity();
+        }
+    }
+
+    /**
+     * Get customer payment method.
+     *
+     * @return CA : cash, B : bank, CR : Credit
+     */
+    private String getPaymentMethod() {
+        int selectedRadio = bankOrCashRadioGroup.getCheckedRadioButtonId();
+        String paymentMethod = "";
+        if (selectedRadio == R.id.activity_sale_checkout_radio_bank) {
+            paymentMethod = "B";
+
+        } else if (selectedRadio == R.id.activity_sale_checkout_radio_cash) {
+            paymentMethod = "CA";
+        }
+        return paymentMethod;
+    }
+
+    /**
+     * Check for fully paid
+     *
+     * @return true : fully paid; false : not fully paid
+     */
+    private boolean isFullyPaid() {
+        double pay_amount = 0.0, net_amount = 0.0;
+
+        if (!prepaidAmt.getText().toString().equals("")) {
+            pay_amount = Double.parseDouble(prepaidAmt.getText().toString());
+        }
+
+        if (!netAmountTextView.getText().toString().equals("")) {
+            net_amount = Double.parseDouble(netAmountTextView.getText().toString().replace(",", ""));
+        }
+
+        if (pay_amount == 0.0 || pay_amount < net_amount) {
+            return false;
+        } else {
+            return true;
         }
     }
 

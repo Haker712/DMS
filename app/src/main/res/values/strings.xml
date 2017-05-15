@@ -105,4 +105,17 @@
     <string name="sale_exchange">SALE EXCHANGE</string>
     <string name="upload_succes_msg">Uploading success.</string>
 
+    <string name="vd_title">VOLUME DISCOUNT</string>
+    <string name="vd_filter_title">VOLUME DISCOUNT FILTER</string>
+    <string name="vd_from_date">FROM DATE</string>
+    <string name="vd_to_date">TO DATE</string>
+    <string name="vd_from_amt">FROM AMOUNT</string>
+    <string name="vd_to_amt">TO AMOUNT</string>
+    <string name="vd_discount">DISCOUNT PERCENT</string>
+    <string name="vd_discount_amount">DISCOUNT AMOUNT</string>
+    <string name="vd_discount_price">DISCOUNT PRICE</string>
+    <string name="vd_exclude">EXCLUDE</string>
+    <string name="vd_filter_category">CATEGORY</string>
+    <string name="vd_filter_group">GROUP</string>
+
 </resources>

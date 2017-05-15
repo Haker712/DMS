@@ -195,7 +195,11 @@ public class FragmentProductComparisonReport extends Fragment  {
     private ArrayList<String> getXAxisValues() {
         ArrayList<String> xAxis = new ArrayList<>();
         for (SaleTargetForSaleMan saleTarget : saleTargetArrayList) {
-            xAxis.add(getProductNameFromDb(Integer.parseInt(saleTarget.getStockId())));
+            if(saleTarget.getStockId() != null) {
+                xAxis.add(getProductNameFromDb(Integer.parseInt(saleTarget.getStockId())));
+            } else {
+                xAxis.add("");
+            }
         }
         return xAxis;
     }

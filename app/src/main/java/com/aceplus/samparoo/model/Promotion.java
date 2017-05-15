@@ -1,10 +1,12 @@
 package com.aceplus.samparoo.model;
 
+import java.io.Serializable;
+
 /**
  * Created by haker on 2/13/17.
  */
 
-public class Promotion {
+public class Promotion implements Serializable {
     Double promotionPrice;
 
     String promotionProductId;

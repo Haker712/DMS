@@ -315,6 +315,8 @@ public class SaleActivity extends AppCompatActivity {
                         , SaleActivity.this.customer);
                 intent.putExtra(SaleCheckoutActivity.SOLD_PROUDCT_LIST_KEY
                         , SaleActivity.this.soldProductList);
+                intent.putExtra(SaleCheckoutActivity.PRESENT_PROUDCT_LIST_KEY
+                        , SaleActivity.this.promotionArrayList);
                 if (SaleActivity.this.orderedInvoice != null) {
 
 
@@ -588,6 +590,7 @@ public class SaleActivity extends AppCompatActivity {
                                     soldProduct.setQuantity(quantity);
                                     soldProductListRowAdapter.notifyDataSetChanged();
 
+                                    promotionArrayList.clear();
                                     promotionPrice = calculatePromotinPriceAndGift(soldProduct);
                                     totalPromotionPrice += promotionPrice;
 

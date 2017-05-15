@@ -146,12 +146,13 @@ public class LoginActivity extends AppCompatActivity {
      * to user from application.
      */
     void askPermission() {
-        String [] permissionArr = new String[5];
+        String [] permissionArr = new String[6];
         permissionArr[0] = android.Manifest.permission.READ_EXTERNAL_STORAGE;
         permissionArr[1] = Manifest.permission.ACCESS_COARSE_LOCATION;
         permissionArr[2] = Manifest.permission.ACCESS_FINE_LOCATION;
         permissionArr[3] = Manifest.permission.ACCESS_NETWORK_STATE;
         permissionArr[4] = Manifest.permission.ACCESS_WIFI_STATE;
+        permissionArr[5] = Manifest.permission.SEND_SMS;
 
         permissionRequest = PermissionHelper.with(LoginActivity.this)
                 .build(permissionArr)

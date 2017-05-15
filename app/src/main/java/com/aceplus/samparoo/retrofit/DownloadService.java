@@ -80,4 +80,8 @@ public interface DownloadService {
     @FormUrlEncoded
     @POST("saleHistory")
     Call<SaleHistoryResponse> getSaleHistoryFromApi(@Field("param_data") String paramData);
+
+    @FormUrlEncoded
+    @POST("reissue")
+    Call<ProductResponse> getReissueProductFromApi(@Field("param_data") String paramData);
 }

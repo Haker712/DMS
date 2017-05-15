@@ -566,10 +566,12 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
             addressEditText.setError("Address is required.");
             isErrorFlag = true;
         }
-//                if (customerLocationTxt.getText().length() == 0) {
-//                    customerLocationTxt.setError("Custoemr Location is required.");
-//                    isErrorFlag = true;
-//                }
+
+        if (customerLocationTxt.getText().length() == 0) {
+            customerLocationTxt.setError("Custoemr Location is required.");
+            isErrorFlag = true;
+        }
+
         String currentTime = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss").format(new Date());
 
 
@@ -664,6 +666,7 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
 
         //Preferences.didUploadedNewCustomersToServer(AddNewCustomerActivity.this, false);
         reset();
+        Utils.commonDialog("Customer has been successfully created", AddNewCustomerActivity.this);
         //finish();
     }
 }

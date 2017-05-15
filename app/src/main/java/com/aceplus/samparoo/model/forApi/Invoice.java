@@ -51,6 +51,12 @@ public class Invoice {
     @SerializedName("invoice_time")
     @Expose
     private String invoiceTime;
+    @SerializedName("currency_id")
+    @Expose
+    private int currencyId;
+    @SerializedName("invoice_status")
+    @Expose
+    private String invoiceStatus;
 
     public String getId() {
         return id;
@@ -164,5 +170,19 @@ public class Invoice {
         this.invoiceTime = invoiceTime;
     }
 
+    public int getCurrencyId() {
+        return currencyId;
+    }
 
+    public void setCurrencyId(int currencyId) {
+        this.currencyId = currencyId;
+    }
+
+    public String getInvoiceStatus() {
+        return invoiceStatus;
+    }
+
+    public void setInvoiceStatus(String invoiceStatus) {
+        this.invoiceStatus = invoiceStatus;
+    }
 }

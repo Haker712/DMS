@@ -229,8 +229,22 @@ public class FragmentSaleInvoiceReport extends Fragment {
             saleInvoiceReportsArrayList.clear();
             saleInvoiceReportsArrayList.addAll(getSaleInvoiceReports(customerReportsArrayList.get(position).getString("customerId")));
             ArrayAdapter<JSONObject> saleInvoiceReportsArrayAdapter = new SaleInvoiceReportsArrayAdapter(getActivity());
-            saleInvoiceReportsArrayAdapter.notifyDataSetChanged();
             saleInvoiceReportsListView.setAdapter(saleInvoiceReportsArrayAdapter);
+            saleInvoiceReportsArrayAdapter.notifyDataSetChanged();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        try {
+            saleInvoiceReportsArrayList.clear();
+            saleInvoiceReportsArrayList.addAll(getSaleInvoiceReports(customerReportsArrayList.get(customerSpinner.getSelectedItemPosition()).getString("customerId")));
+            ArrayAdapter<JSONObject> saleInvoiceReportsArrayAdapter = new SaleInvoiceReportsArrayAdapter(getActivity());
+            saleInvoiceReportsListView.setAdapter(saleInvoiceReportsArrayAdapter);
+            saleInvoiceReportsArrayAdapter.notifyDataSetChanged();
         } catch (JSONException e) {
             e.printStackTrace();
         }

@@ -42,8 +42,6 @@ public class ReportHomeActivity extends FragmentActivity {
 
     JSONObject userInfo;
 
-
-
     ImageView cancelImg;
     Spinner reportsSpinner;
 
@@ -989,7 +987,7 @@ public class ReportHomeActivity extends FragmentActivity {
         while (cursor.moveToNext()) {
             JSONObject customerReceiveReportJsonObject = new JSONObject();
             try {
-                customerReceiveReportJsonObject.put("customerId", cursor.getString(cursor.getColumnIndex("CUSTOMER_ID")));
+                customerReceiveReportJsonObject.put("customerId", cursor.getString(cursor.getColumnIndex("id")));
                 customerReceiveReportJsonObject.put("customerName", cursor.getString(cursor.getColumnIndex("CUSTOMER_NAME")));
             } catch (JSONException e) {
 

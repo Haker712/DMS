@@ -56,4 +56,8 @@ public interface UploadService {
     @FormUrlEncoded
     @POST("upload/eRoute")
     Call<InvoiceResponse> uploadSaleManRoute(@Field("param_data") String paramData);
+
+    @FormUrlEncoded
+    @POST("deviceIssue/status")
+    Call<InvoiceResponse> confirmDownloadSuccess(@Field("param_data") String paramData);
 }

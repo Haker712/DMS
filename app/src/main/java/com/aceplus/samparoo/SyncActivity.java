@@ -29,106 +29,9 @@ import com.aceplus.samparoo.model.Promotion;
 import com.aceplus.samparoo.model.SaleReturn;
 import com.aceplus.samparoo.model.SaleReturnDetail;
 import com.aceplus.samparoo.model.ShopType;
-import com.aceplus.samparoo.model.forApi.AddnewCustomerRequest;
+import com.aceplus.samparoo.model.forApi.*;
 import com.aceplus.samparoo.model.PreOrder;
 import com.aceplus.samparoo.model.PreOrderProduct;
-import com.aceplus.samparoo.model.forApi.CashReceiveApi;
-import com.aceplus.samparoo.model.forApi.CashReceiveItemApi;
-import com.aceplus.samparoo.model.forApi.CashReceiveRequest;
-import com.aceplus.samparoo.model.forApi.CashReceiveRequestData;
-import com.aceplus.samparoo.model.forApi.ClassOfProduct;
-import com.aceplus.samparoo.model.forApi.CompanyInformation;
-import com.aceplus.samparoo.model.forApi.CompanyInformationResponse;
-import com.aceplus.samparoo.model.forApi.CompanyInfromationData;
-import com.aceplus.samparoo.model.forApi.CompetitorSizeinstoreshareData;
-import com.aceplus.samparoo.model.forApi.CompetitorSizeinstoreshareRequest;
-import com.aceplus.samparoo.model.forApi.Competitor_Activity;
-import com.aceplus.samparoo.model.forApi.CreditForApi;
-import com.aceplus.samparoo.model.forApi.CreditResponse;
-import com.aceplus.samparoo.model.forApi.Currency;
-import com.aceplus.samparoo.model.forApi.CustomerBalanceForApi;
-import com.aceplus.samparoo.model.forApi.CustomerData;
-import com.aceplus.samparoo.model.forApi.CustomerFeedback;
-import com.aceplus.samparoo.model.forApi.CustomerForApi;
-import com.aceplus.samparoo.model.forApi.CustomerResponse;
-import com.aceplus.samparoo.model.forApi.CustomerVisitRequest;
-import com.aceplus.samparoo.model.forApi.CustomerVisitRequestData;
-import com.aceplus.samparoo.model.forApi.CustomerVisitResponse;
-import com.aceplus.samparoo.model.forApi.DataForSaleManRoute;
-import com.aceplus.samparoo.model.forApi.DataForSaleTarget;
-import com.aceplus.samparoo.model.forApi.DataForVolumeDiscount;
-import com.aceplus.samparoo.model.forApi.DataforMarketing;
-import com.aceplus.samparoo.model.forApi.DataforSaleUpload;
-import com.aceplus.samparoo.model.forApi.DeliveryApi;
-import com.aceplus.samparoo.model.forApi.DeliveryForApi;
-import com.aceplus.samparoo.model.forApi.DeliveryItemApi;
-import com.aceplus.samparoo.model.forApi.DeliveryItemForApi;
-import com.aceplus.samparoo.model.forApi.DeliveryRequest;
-import com.aceplus.samparoo.model.forApi.DeliveryRequestData;
-import com.aceplus.samparoo.model.forApi.DeliveryResponse;
-import com.aceplus.samparoo.model.forApi.DisplayAssessment;
-import com.aceplus.samparoo.model.forApi.DisplayAssessmentData;
-import com.aceplus.samparoo.model.forApi.DisplayAssessmentRequest;
-import com.aceplus.samparoo.model.forApi.District;
-import com.aceplus.samparoo.model.forApi.DownloadMarketing;
-import com.aceplus.samparoo.model.forApi.ERouteReport;
-import com.aceplus.samparoo.model.forApi.GeneralData;
-import com.aceplus.samparoo.model.forApi.GeneralResponse;
-import com.aceplus.samparoo.model.forApi.GroupCode;
-import com.aceplus.samparoo.model.forApi.Invoice;
-import com.aceplus.samparoo.model.forApi.InvoiceDetail;
-import com.aceplus.samparoo.model.forApi.InvoicePresent;
-import com.aceplus.samparoo.model.forApi.InvoiceResponse;
-import com.aceplus.samparoo.model.forApi.Location;
-import com.aceplus.samparoo.model.forApi.OutletStockAvailability;
-import com.aceplus.samparoo.model.forApi.OutletStockAvailabilityItem;
-import com.aceplus.samparoo.model.forApi.Outlet_Sizeinstore_Data;
-import com.aceplus.samparoo.model.forApi.Outlet_Sizeinstore_request;
-import com.aceplus.samparoo.model.forApi.PosmByCustomerApi;
-import com.aceplus.samparoo.model.forApi.PosmByCustomerRequest;
-import com.aceplus.samparoo.model.forApi.PosmByCustomerRequestData;
-import com.aceplus.samparoo.model.forApi.PosmForApi;
-import com.aceplus.samparoo.model.forApi.PosmShopTypeResponse;
-import com.aceplus.samparoo.model.forApi.PreOrderApi;
-import com.aceplus.samparoo.model.forApi.PreOrderDetailApi;
-import com.aceplus.samparoo.model.forApi.PreOrderPresentApi;
-import com.aceplus.samparoo.model.forApi.PreOrderRequest;
-import com.aceplus.samparoo.model.forApi.PreOrderRequestData;
-import com.aceplus.samparoo.model.forApi.ProductCategory;
-import com.aceplus.samparoo.model.forApi.ProductForApi;
-import com.aceplus.samparoo.model.forApi.ProductResponse;
-import com.aceplus.samparoo.model.forApi.ProductType;
-import com.aceplus.samparoo.model.forApi.PromotionDate;
-import com.aceplus.samparoo.model.forApi.PromotionForApi;
-import com.aceplus.samparoo.model.forApi.PromotionGift;
-import com.aceplus.samparoo.model.forApi.PromotionGiftItem;
-import com.aceplus.samparoo.model.forApi.PromotionPrice;
-import com.aceplus.samparoo.model.forApi.PromotionResponse;
-import com.aceplus.samparoo.model.forApi.SaleHistory;
-import com.aceplus.samparoo.model.forApi.SaleHistoryDetail;
-import com.aceplus.samparoo.model.forApi.SaleHistoryResponse;
-import com.aceplus.samparoo.model.forApi.SaleManRouteRequest;
-import com.aceplus.samparoo.model.forApi.SaleReturnApi;
-import com.aceplus.samparoo.model.forApi.SaleReturnItem;
-import com.aceplus.samparoo.model.forApi.SaleReturnRequest;
-import com.aceplus.samparoo.model.forApi.SaleReturnRequestData;
-import com.aceplus.samparoo.model.forApi.SaleTargetForCustomer;
-import com.aceplus.samparoo.model.forApi.SaleTargetForSaleMan;
-import com.aceplus.samparoo.model.forApi.SaleTargetResponse;
-import com.aceplus.samparoo.model.forApi.SaleVisitRecord;
-import com.aceplus.samparoo.model.forApi.ShopTypeForApi;
-import com.aceplus.samparoo.model.forApi.SizeInStoreShare;
-import com.aceplus.samparoo.model.forApi.SizeInStoreShareItem;
-import com.aceplus.samparoo.model.forApi.StandardExternalCheck;
-import com.aceplus.samparoo.model.forApi.StateDivision;
-import com.aceplus.samparoo.model.forApi.Township;
-import com.aceplus.samparoo.model.forApi.UM;
-import com.aceplus.samparoo.model.forApi.VolumeDiscount;
-import com.aceplus.samparoo.model.forApi.VolumeDiscountFilter;
-import com.aceplus.samparoo.model.forApi.VolumeDiscountItem;
-import com.aceplus.samparoo.model.forApi.TsaleRequest;
-import com.aceplus.samparoo.model.forApi.VolumeDiscountResponse;
-import com.aceplus.samparoo.model.forApi.VolumediscountfilterItem;
 import com.aceplus.samparoo.retrofit.DownloadService;
 import com.aceplus.samparoo.retrofit.RetrofitServiceFactory;
 import com.aceplus.samparoo.retrofit.UploadService;
@@ -142,7 +45,9 @@ import com.google.gson.GsonBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -168,6 +73,8 @@ public class SyncActivity extends AppCompatActivity {
     @InjectView(R.id.textViewError)
     TextView textViewError;
 
+    int currencyId = 0;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -188,6 +95,12 @@ public class SyncActivity extends AppCompatActivity {
         if (LoginActivity.mySharedPreference.getString(Constant.SALEMAN_PWD, "") != null) {
             saleman_Pwd = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_PWD, "");
         }
+
+        Cursor currencyCursor = sqLiteDatabase.rawQuery("SELECT id FROM currency WHERE currency = 'MMK'", null);
+        while(currencyCursor.moveToNext()) {
+            currencyId = currencyCursor.getInt(currencyCursor.getColumnIndex("id"));
+        }
+        currencyCursor.close();
 
     }
 
@@ -211,6 +124,11 @@ public class SyncActivity extends AppCompatActivity {
     @OnClick(R.id.buttonClearData)
     void clearAllData() {
         showConfirmDialog();
+    }
+
+    @OnClick(R.id.buttonReissue)
+    void reissue() {
+        downloadReissueFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
     }
 
     /**
@@ -399,7 +317,9 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<ProductResponse> call, Response<ProductResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
+
                         List<ProductForApi> productList = new ArrayList<ProductForApi>();
+
                         productList = response.body().getDataForProductList().get(0).getProductList();
                         Log.i("productList>>>", productList.size() + "");
 
@@ -409,8 +329,7 @@ public class SyncActivity extends AppCompatActivity {
 
                         sqLiteDatabase.setTransactionSuccessful();
                         sqLiteDatabase.endTransaction();
-
-                        downloadPromotionFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
+                        confirmRequestSuccessForProduct(1);
                     } else {
                         Utils.cancelDialog();
                         textViewError.setText(response.body().getAceplusStatusMessage());
@@ -446,14 +365,61 @@ public class SyncActivity extends AppCompatActivity {
             cv.put("CATEGORY_ID", product.getCategoryId());
             cv.put("GROUP_ID", product.getGroupId());
             cv.put("PRODUCT_NAME", product.getProductName());
-            cv.put("TOTAL_QTY", product.getTotal_Qty());
+            cv.put("TOTAL_QTY", product.getProductName());
             cv.put("REMAINING_QTY", product.getTotal_Qty());
             cv.put("SELLING_PRICE", product.getSellingPrice());
             cv.put("PURCHASE_PRICE", product.getPurchasePrice());
             cv.put("DISCOUNT_TYPE", product.getProductTypeId());
             cv.put("UM", product.getUmId());
-            sqLiteDatabase.insert("PRODUCT", null, cv);
+            sqLiteDatabase.insertOrThrow("PRODUCT", null, cv);
         }
+    }
+
+    /**
+     * For reissue service
+     *
+     * @param productList ProductForApiList
+     */
+    private void insertOrUpdateProduct(List<ProductForApi> productList) {
+
+        for (ProductForApi product : productList) {
+            ContentValues cv = new ContentValues();
+            cv.put("ID", product.getId());
+            cv.put("PRODUCT_ID", product.getProductId());
+            cv.put("CATEGORY_ID", product.getCategoryId());
+            cv.put("GROUP_ID", product.getGroupId());
+            cv.put("PRODUCT_NAME", product.getProductName());
+            cv.put("TOTAL_QTY", product.getProductName());
+            cv.put("REMAINING_QTY", product.getTotal_Qty());
+            cv.put("SELLING_PRICE", product.getSellingPrice());
+            cv.put("PURCHASE_PRICE", product.getPurchasePrice());
+            cv.put("DISCOUNT_TYPE", product.getProductTypeId());
+            cv.put("UM", product.getUmId());
+
+            String[] whereArgs = {product.getProductId()};
+
+            if (checkDuplicate(product.getProductId())) {
+                sqLiteDatabase.update("PRODUCT", cv, "PRODUCT_ID = ?", whereArgs);
+            } else {
+                sqLiteDatabase.insertOrThrow("PRODUCT", null, cv);
+            }
+        }
+    }
+
+    /**
+     * Check duplicate product in table with product id/
+     *
+     * @param productId product id
+     * @return true : duplicate; otherwise : false
+     */
+    private boolean checkDuplicate(String productId) {
+        Cursor duplicateCursor = sqLiteDatabase.rawQuery("SELECT COUNT(*) FROM PRODUCT WHERE PRODUCT_ID = '" + productId + "'", null);
+        int count = duplicateCursor.getCount();
+
+        if(count > 1) {
+            return true;
+        }
+        else return false;
     }
 
     private void downloadPromotionFromServer(String paramData) {
@@ -721,10 +687,6 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<GeneralResponse> call, Response<GeneralResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        Utils.cancelDialog();
-
-                        //Toast.makeText(SyncActivity.this, R.string.download_success, Toast.LENGTH_SHORT).show();
-
                         sqLiteDatabase.beginTransaction();
 
                         insertGeneral(response.body().getData());
@@ -960,7 +922,6 @@ public class SyncActivity extends AppCompatActivity {
                 if (response.code() == 200) {
 
                     if (response.body().getAceplusStatusCode() == 200) {
-                        Utils.cancelDialog();
                         sqLiteDatabase.beginTransaction();
 
                         insertMarkting(response.body().getData());
@@ -1184,7 +1145,7 @@ public class SyncActivity extends AppCompatActivity {
 
         List<Invoice> invoiceList = new ArrayList<>();
 
-        Cursor cursor_invoice = sqLiteDatabase.rawQuery("select * from INVOICE", null);
+        Cursor cursor_invoice = sqLiteDatabase.rawQuery("select * from INVOICE WHERE SALE_DATE >= DATE('now')", null);
 
         while (cursor_invoice.moveToNext()) {
 
@@ -1198,6 +1159,7 @@ public class SyncActivity extends AppCompatActivity {
             Double totalPayAmount = cursor_invoice.getDouble(cursor_invoice.getColumnIndex("PAY_AMOUNT"));
             Double totalRefundAmount = cursor_invoice.getDouble(cursor_invoice.getColumnIndex("REFUND_AMOUNT"));
             String receiptPerson = cursor_invoice.getString(cursor_invoice.getColumnIndex("RECEIPT_PERSON_NAME"));
+            String invoiceStatus = cursor_invoice.getString(cursor_invoice.getColumnIndex("CASH_OR_CREDIT"));
 
             invoice.setId(invoice_Id);
             invoice.setCustomerId(customer_Id);
@@ -1213,11 +1175,12 @@ public class SyncActivity extends AppCompatActivity {
             //invoice.setDeviceId(cursor_invoice.getString(cursor_invoice.getColumnIndex("DEVICE_ID")));
             invoice.setDeviceId("");
             invoice.setInvoiceTime(cursor_invoice.getString(cursor_invoice.getColumnIndex("INVOICE_TIME")));
-
+            invoice.setCurrencyId(currencyId);
+            invoice.setInvoiceStatus(invoiceStatus);
 
             List<InvoiceDetail> invoiceDetailList = new ArrayList<>();
 
-            Cursor cur_invoiceDetail = sqLiteDatabase.rawQuery("select * from INVOICE_PRODUCT", null);
+            Cursor cur_invoiceDetail = sqLiteDatabase.rawQuery("select * from INVOICE_PRODUCT WHERE INVOICE_PRODUCT_ID = '" + invoice.getId() + "'", null);
             while (cur_invoiceDetail.moveToNext()) {
                 InvoiceDetail invoiceDetail = new InvoiceDetail();
                 String tsale_Id = cur_invoiceDetail.getString(cur_invoiceDetail.getColumnIndex("INVOICE_PRODUCT_ID"));
@@ -1267,7 +1230,7 @@ public class SyncActivity extends AppCompatActivity {
             invoicePresent.setPcAddress("");
             invoicePresent.setLocationId(cursor_InvoicePresent.getString(cursor_InvoicePresent.getColumnIndex("location_id")));
             invoicePresent.setPrice(cursor_InvoicePresent.getDouble(cursor_InvoicePresent.getColumnIndex("price")));
-
+            invoicePresent.setCurrencyId(currencyId);
             invoicePresentList.add(invoicePresent);
         }
 
@@ -1371,7 +1334,8 @@ public class SyncActivity extends AppCompatActivity {
                         }
                         services += " " + getResources().getString(R.string.customer_title);
 
-                        uploadPreOrderToServer();
+                        //uploadPreOrderToServer();
+                        uploadSaleReturnToServer();
                     } else {
                         if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
                             onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
@@ -1538,12 +1502,12 @@ public class SyncActivity extends AppCompatActivity {
     private List<PreOrder> getPreOrderFromDatabase() {
         List<PreOrder> preOrderList = new ArrayList<>();
 
-        Cursor cursorPreOrder = sqLiteDatabase.rawQuery("select P.*, (SELECT CUSTOMER.id from CUSTOMER WHERE CUSTOMER.CUSTOMER_ID = P.CUSTOMER_ID) AS CUS_ID from PRE_ORDER AS P WHERE P.DELETE_FLAG = 0", null);
+        Cursor cursorPreOrder = sqLiteDatabase.rawQuery("select P.* from PRE_ORDER AS P WHERE P.DELETE_FLAG = 0", null);
 
         while (cursorPreOrder.moveToNext()) {
             PreOrder preOrder = new PreOrder();
             preOrder.setInvoiceId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("INVOICE_ID")));
-            preOrder.setCustomerId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("CUS_ID")));
+            preOrder.setCustomerId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("CUSTOMER_ID")));
             preOrder.setSalePersonId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("SALEPERSON_ID")));
             preOrder.setDeviceId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("DEV_ID")));
             preOrder.setPreOrderDate(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("PREORDER_DATE")));
@@ -2012,8 +1976,6 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<DeliveryResponse> call, Response<DeliveryResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        Utils.cancelDialog();
-
                         List<DeliveryForApi> deliveryForApiList = response.body().getDataForDeliveryList().get(0).getDeliveryForApiList();
 
                         Log.i("DeliveryForApiList >>>", deliveryForApiList.size() + "");
@@ -3070,7 +3032,7 @@ public class SyncActivity extends AppCompatActivity {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
                         textViewError.setText("");
-
+                        Utils.cancelDialog();
                         List<SaleHistory> saleHistoryCustomerList = response.body().getDataForSaleHistoryList().get(0).getSaleHistoryList();
 
                         Log.i("saleHistoryRecordList>>>", saleHistoryCustomerList.size() + "");
@@ -3125,6 +3087,7 @@ public class SyncActivity extends AppCompatActivity {
             cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.REFUND_AMOUNT, saleHistory.getTotalRefundAmt());
             cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.SALE_PERSON_ID, saleHistory.getSalepersonId());
             cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.LOCATION_CODE, saleHistory.getLocationCode());
+            cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.CASH_OR_CREDIT, saleHistory.getInvoiceStatus());
             cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.DEVICE_ID, saleHistory.getDeviceId());
             insertSaleHistoryDetail(saleHistory.getSaleHistoryDetailList());
             sqLiteDatabase.insert(DatabaseContract.SALE_HISTORY.TABLE, null, cvForSaleHistory);
@@ -3141,6 +3104,101 @@ public class SyncActivity extends AppCompatActivity {
             cvForSaleHistoryDetail.put(DatabaseContract.SALE_HISTORY_DETAIL.DISCOUNT_AMOUNT, saleHistoryDetail.getDiscountAmt());
             sqLiteDatabase.insert(DatabaseContract.SALE_HISTORY_DETAIL.TABLE, null, cvForSaleHistoryDetail);
         }
+    }
+
+    /**
+     * Send success message to API service in order to update downloaded flag.
+     */
+    private void confirmRequestSuccessForProduct(final int reIssue) {
+        ConfirmRequestSuccess confirmRequestSuccess = new ConfirmRequestSuccess();
+        confirmRequestSuccess.setSiteActivationKey(Constant.SITE_ACTIVATION_KEY);
+        confirmRequestSuccess.setTabletActivationKey(Constant.TABLET_ACTIVATION_KEY);
+        confirmRequestSuccess.setUserId(saleman_Id);
+        confirmRequestSuccess.setRoute(String.valueOf(getRouteID(saleman_Id)));
+        confirmRequestSuccess.setDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+        confirmRequestSuccess.setSuccessCode(200);
+        String paramData = getJsonFromObject(confirmRequestSuccess);
+        Log.i("ParamData", paramData);
+
+        UploadService uploadService = RetrofitServiceFactory.createService(UploadService.class);
+        Call<InvoiceResponse> call = uploadService.confirmDownloadSuccess(paramData);
+        call.enqueue(new Callback<InvoiceResponse>() {
+            @Override
+            public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
+                if (response.code() == 200) {
+                    if (response.body().getAceplusStatusCode() == 200) {
+                        Log.i("Confirm Product :-> ", "PRODUCT fOR " + Calendar.getInstance() + "hAs beEn sUcCEssfuLly uPdATEd");
+
+                        if(reIssue == 1) {
+                            downloadPromotionFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
+                        } else {
+                            Utils.commonDialog("Successfully downloaded", SyncActivity.this);
+                        }
+
+                    } else if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    }
+
+                } else {
+                    Utils.cancelDialog();
+                    Utils.commonDialog("Products are not successfully downloaded", SyncActivity.this);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<InvoiceResponse> call, Throwable t) {
+                Utils.cancelDialog();
+                Utils.commonDialog(t.getMessage(), SyncActivity.this);
+            }
+        });
+    }
+
+    public void downloadReissueFromServer(String paramData) {
+        //Utils.callDialog("Please wait...", this);
+
+        DownloadService downloadService = RetrofitServiceFactory.createService(DownloadService.class);
+        Call<ProductResponse> call = downloadService.getProduct(paramData);
+        call.enqueue(new Callback<ProductResponse>() {
+            @Override
+            public void onResponse(Call<ProductResponse> call, Response<ProductResponse> response) {
+                if (response.code() == 200) {
+                    if (response.body().getAceplusStatusCode() == 200) {
+
+                        List<ProductForApi> productList = new ArrayList<ProductForApi>();
+
+                        productList = response.body().getDataForProductList().get(0).getProductList();
+                        Log.i("productList>>>", productList.size() + "");
+
+                        sqLiteDatabase.beginTransaction();
+
+                        insertOrUpdateProduct(productList);
+
+                        sqLiteDatabase.setTransactionSuccessful();
+                        sqLiteDatabase.endTransaction();
+                        confirmRequestSuccessForProduct(0);
+                    } else {
+                        Utils.cancelDialog();
+                        Utils.commonDialog(response.body().getAceplusStatusMessage(), SyncActivity.this);
+                    }
+
+                } else {
+
+                    if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    } else {
+                        Utils.cancelDialog();
+                        Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
+                    }
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ProductResponse> call, Throwable t) {
+                Utils.cancelDialog();
+                Utils.commonDialog(t.getMessage(), SyncActivity.this);
+            }
+        });
     }
 
     @OnClick(R.id.cancel_img)
