@@ -184,11 +184,18 @@ public class Utils {
     }
 
     public static void callDialog(String message, Activity activity) {
-        progressDialog = new ProgressDialog(activity, ProgressDialog.THEME_HOLO_LIGHT);
+
+        if (progressDialog == null) {
+            progressDialog = new ProgressDialog(activity, ProgressDialog.THEME_HOLO_LIGHT);
+        }
+
         progressDialog.setIndeterminate(false);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage(message);
-        progressDialog.show();
+
+        if (!activity.isFinishing()) {
+            progressDialog.show();
+        }
     }
 
     public static void cancelDialog() {

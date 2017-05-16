@@ -93,7 +93,7 @@ public class DeliveryActivity extends AppCompatActivity {
 
             Cursor deliveryItemCursor = database.rawQuery("SELECT D.DELIVERY_ID, D.STOCK_NO, D.ORDER_QTY, D.SPRICE " +
                     "FROM DELIVERY_ITEM D INNER JOIN " +
-                    "PRODUCT ON PRODUCT.ID = D.STOCK_NO;", null);
+                    "PRODUCT ON PRODUCT.ID = D.STOCK_NO AND DELIVERY_FLG = 0;", null);
 
             Log.i("deliver_Count -> ", String.valueOf(deliveryItemCursor.getCount()));
             List<DeliverItem> deliverItemList = new ArrayList<>();

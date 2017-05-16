@@ -7,6 +7,7 @@ import android.util.Log;
 import com.aceplus.samparoo.utils.Constant;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -23,12 +24,18 @@ public class RetrofitServiceFactory {
 
     public static String url = Constant.BASE_URL;
 
-    public static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+    public static String real_time_url = Constant.REAL_TIME_URL;
+
+    public static OkHttpClient.Builder httpClient = new OkHttpClient.Builder().readTimeout(60, TimeUnit.SECONDS)
+            .connectTimeout(60, TimeUnit.SECONDS);
     public static Retrofit.Builder builder = new Retrofit.Builder()
             .baseUrl(url)
             .addConverterFactory(GsonConverterFactory.create());
 
     public static <T> T createService(Class<T> serviceClass) {
+        if(!httpClient.interceptors().isEmpty()) {
+            httpClient.interceptors().clear();
+        }
 
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -58,13 +65,15 @@ public class RetrofitServiceFactory {
      */
     public static <T> T createRealTimeService(Class<T> serviceClass) {
 
-        String url = Constant.BASE_URL; // real time address
-
-        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder().readTimeout(60, TimeUnit.SECONDS)
+                .connectTimeout(60, TimeUnit.SECONDS);
         Retrofit.Builder builder = new Retrofit.Builder()
-                .baseUrl(url)
+                .baseUrl(Constant.REAL_TIME_AP_URL)
                 .addConverterFactory(GsonConverterFactory.create());
 
+        if(!httpClient.interceptors().isEmpty()) {
+            httpClient.interceptors().clear();
+        }
 
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);

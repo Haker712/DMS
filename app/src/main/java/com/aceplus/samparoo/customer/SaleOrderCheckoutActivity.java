@@ -177,6 +177,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         this.isPreOrder = getIntent().getBooleanExtra(SaleOrderActivity.IS_PRE_ORDER, false);
         this.isDelivery = getIntent().getBooleanExtra(SaleOrderActivity.IS_DELIVERY, false);
         soldProductList = (ArrayList<SoldProduct>) getIntent().getSerializableExtra(this.SOLD_PROUDCT_LIST_KEY);
+        promotionArrayList = (ArrayList<Promotion>) getIntent().getSerializableExtra(PRESENT_PROUDCT_LIST_KEY);
 
         if (getIntent().getSerializableExtra(this.ORDERED_INVOICE_KEY) != null) {
             orderedInvoice = (Deliver) getIntent().getSerializableExtra(this.ORDERED_INVOICE_KEY);
@@ -546,6 +547,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                         REQUEST_SEND_SMS);
             }
         } else {
+            Utils.cancelDialog();
             showDialogForPhoneNumber();
         }
     }
@@ -802,6 +804,14 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             preOrderProduct.setPrice(soldProduct.getProduct().getPrice());
             preOrderProduct.setTotalAmt(soldProduct.getTotalAmount());
             preOrderProductList.add(preOrderProduct);
+
+            database.execSQL("UPDATE PRODUCT SET REMAINING_QTY = REMAINING_QTY - " + soldProduct.getQuantity()
+                    + ", SOLD_QTY = SOLD_QTY + " + soldProduct.getQuantity() + " WHERE PRODUCT_ID = \'" + soldProduct.getProduct().getId() + "\'");
+
+            for (Promotion promotion : promotionArrayList) {
+                database.execSQL("UPDATE PRODUCT SET PRESENT_QTY = PRESENT_QTY + " + promotion.getPromotionQty() + " WHERE PRODUCT_ID = \'" + soldProduct.getProduct().getId() + "\'");
+                database.execSQL("UPDATE PRODUCT SET REMAINING_QTY = REMAINING_QTY - " + promotion.getPromotionQty() + " WHERE ID = '" + promotion.getPromotionProductId() + "'");
+            }
         }
 
         preOrder.setNetAmount(netAmount);
@@ -903,7 +913,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
         Log.i("ParamData",paramData);
 
-        UploadService uploadService = RetrofitServiceFactory.createService(UploadService.class);
+        UploadService uploadService = RetrofitServiceFactory.createRealTimeService(UploadService.class);
 
         Call<InvoiceResponse> call = uploadService.uploadPreOrderData(paramData);
 
@@ -962,8 +972,6 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
      */
     private void uploadPreOrderRealTime() {
 
-        Utils.callDialog("Please wait...", SaleOrderCheckoutActivity.this);
-
         final PreOrderRequest preOrderRequest = getPreOrderRequest();
 
         String paramData = getJsonFromObject(preOrderRequest);
@@ -972,7 +980,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
         UploadService uploadService = RetrofitServiceFactory.createRealTimeService(UploadService.class);
 
-        Call<InvoiceResponse> call = uploadService.uploadPreOrderData(paramData);
+        Call<InvoiceResponse> call = uploadService.uploadRealTimePreOrderData(paramData);
 
         call.enqueue(new Callback<InvoiceResponse>() {
             @Override
@@ -1330,6 +1338,10 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             database.execSQL("UPDATE PRODUCT SET REMAINING_QTY = REMAINING_QTY - " + soldProduct.getQuantity()
                     + ", DELIVERY_QTY = DELIVERY_QTY + " + soldProduct.getQuantity() + " WHERE PRODUCT_ID = \'" + soldProduct.getProduct().getId() + "\'");
 
+            database.execSQL("UPDATE DELIVERY_ITEM SET RECEIVED_QTY = " + soldProduct.getQuantity() + ", ORDER_QTY = ORDER_QTY - " + soldProduct.getQuantity() + " WHERE STOCK_NO = \'" + soldProduct.getProduct().getStockId() + "\'");
+
+            database.execSQL("UPDATE DELIVERY_ITEM SET DELIVERY_FLG = 1 WHERE ORDER_QTY < 1 AND STOCK_NO = \'" + soldProduct.getProduct().getId() + "\'");
+
             for (Promotion promotion : promotionArrayList) {
                 database.execSQL("UPDATE PRODUCT SET PRESENT_QTY = PRESENT_QTY + " + promotion.getPromotionQty() + " WHERE PRODUCT_ID = \'" + soldProduct.getProduct().getId() + "\'");
             }
@@ -1371,6 +1383,8 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         String cashOrBank = getPaymentMethod();
 
         if(isPreOrder) {
+            Utils.callDialog("Please wait...", SaleOrderCheckoutActivity.this);
+
             if (isFullyPaid()) {
                 cashOrBank = "CA";
                 insertPreOrderInformation(cashOrBank);
@@ -1378,9 +1392,9 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                 insertPreOrderInformation("CR");
             }
 
-
             if(isOnline()) {
                 uploadPreOrderToServer();
+                //uploadPreOrderRealTime();
             } else {
                 sendSMSMessage();
             }

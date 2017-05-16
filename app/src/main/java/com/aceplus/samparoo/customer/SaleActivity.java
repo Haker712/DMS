@@ -259,6 +259,11 @@ public class SaleActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface arg0, int arg1) {
 
+                                if(promotionArrayList.size() != 0) {
+                                    promotionArrayList.remove(position);
+                                    promotionProductCustomAdapter.notifyDataSetChanged();
+                                }
+
                                 soldProductList.remove(position);
                                 soldProductListRowAdapter.notifyDataSetChanged();
                             }
@@ -728,12 +733,31 @@ public class SaleActivity extends AppCompatActivity {
                         promotionProductQty = cursorForPromotionGiftItem.getInt(cursorForPromotionGiftItem.getColumnIndex(DatabaseContract.PromotionGiftItem.quantity));
 
                         if (!promotionProductId.equals("")) {
-                            Promotion promotion = new Promotion();
-                            promotion.setPromotionProductId(promotionProductId);
-                            promotion.setPromotionProductName(promotionProductName);
-                            promotion.setPromotionQty(promotionProductQty);
 
-                            promotionArrayList.add(promotion);
+                            if(promotionArrayList.size() == 0) {
+                                Promotion promotion = new Promotion();
+                                promotion.setPromotionProductId(promotionProductId);
+                                promotion.setPromotionProductName(promotionProductName);
+                                promotion.setPromotionQty(promotionProductQty);
+
+                                promotionArrayList.add(promotion);
+                            } else {
+                                for(Promotion item : promotionArrayList) {
+
+                                    if(item.getPromotionProductId().equals(promotionProductId)){
+                                        item.setPromotionQty(item.getPromotionQty() + promotionProductQty);
+                                    } else {
+                                        Promotion promotion = new Promotion();
+                                        promotion.setPromotionProductId(promotionProductId);
+                                        promotion.setPromotionProductName(promotionProductName);
+                                        promotion.setPromotionQty(promotionProductQty);
+
+                                        promotionArrayList.add(promotion);
+                                    }
+
+                                }
+                            }
+
                         }
 
                     }

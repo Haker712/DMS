@@ -365,8 +365,8 @@ public class SyncActivity extends AppCompatActivity {
             cv.put("CATEGORY_ID", product.getCategoryId());
             cv.put("GROUP_ID", product.getGroupId());
             cv.put("PRODUCT_NAME", product.getProductName());
-            cv.put("TOTAL_QTY", product.getProductName());
-            cv.put("REMAINING_QTY", product.getTotal_Qty());
+            cv.put("TOTAL_QTY", product.getTotal_Qty());
+            cv.put("REMAINING_QTY", 0);
             cv.put("SELLING_PRICE", product.getSellingPrice());
             cv.put("PURCHASE_PRICE", product.getPurchasePrice());
             cv.put("DISCOUNT_TYPE", product.getProductTypeId());
@@ -1372,7 +1372,7 @@ public class SyncActivity extends AppCompatActivity {
 
         Log.i("ParamData", paramData);
 
-        UploadService uploadService = RetrofitServiceFactory.createService(UploadService.class);
+        UploadService uploadService = RetrofitServiceFactory.createRealTimeService(UploadService.class);
 
         Call<InvoiceResponse> call = uploadService.uploadPreOrderData(paramData);
 
@@ -2872,7 +2872,7 @@ public class SyncActivity extends AppCompatActivity {
         paramData = getJsonFromObject(saleManRouteRequest);
         Log.i("Param_SAL_ROUTE", paramData);
 
-        UploadService uploadService = RetrofitServiceFactory.createService(UploadService.class);
+        UploadService uploadService = RetrofitServiceFactory.createRealTimeService(UploadService.class);
         Call<InvoiceResponse> call = uploadService.uploadSaleManRoute(paramData);
         call.enqueue(new Callback<InvoiceResponse>() {
             @Override
