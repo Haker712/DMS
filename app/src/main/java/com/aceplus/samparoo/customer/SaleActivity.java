@@ -595,7 +595,7 @@ public class SaleActivity extends AppCompatActivity {
                                     soldProduct.setQuantity(quantity);
                                     soldProductListRowAdapter.notifyDataSetChanged();
 
-                                    promotionArrayList.clear();
+                                    //promotionArrayList.clear();
                                     promotionPrice = calculatePromotinPriceAndGift(soldProduct);
                                     totalPromotionPrice += promotionPrice;
 

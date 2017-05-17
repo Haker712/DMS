@@ -328,7 +328,7 @@ public class SaleOrderActivity extends AppCompatActivity {
                 intent.putExtra(SaleOrderCheckoutActivity.SOLD_PROUDCT_LIST_KEY
                         , SaleOrderActivity.this.soldProductList);
                 intent.putExtra(SaleOrderCheckoutActivity.PRESENT_PROUDCT_LIST_KEY
-                        , SaleOrderActivity.this.products);
+                        , SaleOrderActivity.this.promotionArrayList);
                 if (SaleOrderActivity.this.orderedInvoice != null) {
                     intent.putExtra(SaleOrderCheckoutActivity.ORDERED_INVOICE_KEY
                             , SaleOrderActivity.this.orderedInvoice);
