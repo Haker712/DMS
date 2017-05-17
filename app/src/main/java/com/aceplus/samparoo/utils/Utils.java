@@ -49,6 +49,8 @@ public class Utils {
 
     public static ProgressDialog progressDialog;
 
+    private static Activity acti;
+
     public static final String MODE_CUSTOMER_FEEDBACK = "mode_customer_feedback";
     public static final String MODE_GENERAL_SALE = "mode_general_sale";
 
@@ -185,15 +187,21 @@ public class Utils {
 
     public static void callDialog(String message, Activity activity) {
 
+        acti = activity;
+
         if (progressDialog == null) {
-            progressDialog = new ProgressDialog(activity, ProgressDialog.THEME_HOLO_LIGHT);
+            progressDialog = new ProgressDialog(acti, ProgressDialog.THEME_HOLO_LIGHT);
         }
 
         progressDialog.setIndeterminate(false);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage(message);
 
-        if (!activity.isFinishing()) {
+        if (!acti.isFinishing()) {
+            progressDialog = new ProgressDialog(acti, ProgressDialog.THEME_HOLO_LIGHT);
+            progressDialog.setIndeterminate(false);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setMessage(message);
             progressDialog.show();
         }
     }
