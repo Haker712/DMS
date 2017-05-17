@@ -1574,7 +1574,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             } else {
                 qtyTextView.setVisibility(View.GONE);
             }
-            if (promotion.getPromotionPrice() != 0.0) {
+            if (promotion.getPromotionPrice() != null && promotion.getPromotionPrice() != 0.0) {
                 priceTextView.setText(promotion.getPromotionPrice() + "");
             } else {
                 priceTextView.setVisibility(View.GONE);
