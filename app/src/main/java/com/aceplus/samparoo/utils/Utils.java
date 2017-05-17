@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
+import android.os.Handler;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.util.Base64;
@@ -48,8 +49,6 @@ public class Utils {
     private static DecimalFormat decimalFormatterWithComma = new DecimalFormat("###,##0");
 
     public static ProgressDialog progressDialog;
-
-    private static Activity acti;
 
     public static final String MODE_CUSTOMER_FEEDBACK = "mode_customer_feedback";
     public static final String MODE_GENERAL_SALE = "mode_general_sale";
@@ -185,25 +184,31 @@ public class Utils {
         return new SimpleDateFormat(dateFormat).format(new Date());
     }
 
-    public static void callDialog(String message, Activity activity) {
-
-        acti = activity;
+    public static void callDialog(final String message, final Activity activity) {
 
         if (progressDialog == null) {
-            progressDialog = new ProgressDialog(acti, ProgressDialog.THEME_HOLO_LIGHT);
+            progressDialog = new ProgressDialog(activity, ProgressDialog.THEME_HOLO_LIGHT);
         }
 
         progressDialog.setIndeterminate(false);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage(message);
 
-        if (!acti.isFinishing()) {
-            progressDialog = new ProgressDialog(acti, ProgressDialog.THEME_HOLO_LIGHT);
-            progressDialog.setIndeterminate(false);
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progressDialog.setMessage(message);
-            progressDialog.show();
-        }
+        Handler handler = new Handler();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (activity.isFinishing()) {
+                    return;
+                } else {
+                    progressDialog = new ProgressDialog(activity, ProgressDialog.THEME_HOLO_LIGHT);
+                    progressDialog.setIndeterminate(false);
+                    progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                    progressDialog.setMessage(message);
+                    progressDialog.show();
+                }
+            }
+        });
     }
 
     public static void cancelDialog() {
