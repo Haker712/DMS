@@ -22,17 +22,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class RetrofitServiceFactory {
 
-    public static String url = Constant.BASE_URL;
-
-    public static String real_time_url = Constant.REAL_TIME_URL;
-
-    public static OkHttpClient.Builder httpClient = new OkHttpClient.Builder().readTimeout(60, TimeUnit.SECONDS)
-            .connectTimeout(60, TimeUnit.SECONDS);
-    public static Retrofit.Builder builder = new Retrofit.Builder()
-            .baseUrl(url)
-            .addConverterFactory(GsonConverterFactory.create());
-
     public static <T> T createService(Class<T> serviceClass) {
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder().readTimeout(60, TimeUnit.SECONDS)
+                .connectTimeout(60, TimeUnit.SECONDS);
+        Retrofit.Builder builder = new Retrofit.Builder()
+                .baseUrl(Constant.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create());
+
         if(!httpClient.interceptors().isEmpty()) {
             httpClient.interceptors().clear();
         }

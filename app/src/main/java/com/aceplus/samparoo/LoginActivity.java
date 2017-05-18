@@ -467,7 +467,7 @@ public class LoginActivity extends AppCompatActivity {
             textViewCurrentIP.setText(mySharedPreference.getString(Constant.KEY_CHANGE_URL, ""));
         }
 
-        editTextNewIP.setText("192.168.:9999");
+        editTextNewIP.setText("http://192.168.:9999/api/v1/");
 
         textViewCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -486,7 +486,7 @@ public class LoginActivity extends AppCompatActivity {
                 myEditor.putString(Constant.KEY_CHANGE_URL, new_ip);
                 myEditor.commit();
 
-                Constant.changeUrl(new_ip);
+                Constant.BASE_URL = new_ip;
 
                 dialog.dismiss();
                 dialogBoxView = null;
