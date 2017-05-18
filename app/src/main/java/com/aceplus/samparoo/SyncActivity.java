@@ -1649,6 +1649,7 @@ public class SyncActivity extends AppCompatActivity {
             saleReturnApi.setPcAddress(saleReturn.getPcAddress());
             saleReturnApi.setAmount(saleReturn.getAmt());
             saleReturnApi.setPayAmount(saleReturn.getPayAmt());
+            saleReturnApi.setCurrencyId(currencyId);
 
             List<SaleReturnDetail> saleReturnDetailList = getSaleReturnDetailFromDatabase(saleReturn.getSaleReturnId());
 
@@ -3154,7 +3155,7 @@ public class SyncActivity extends AppCompatActivity {
     }
 
     public void downloadReissueFromServer(String paramData) {
-        //Utils.callDialog("Please wait...", this);
+        Utils.callDialog("Please wait...", this);
 
         DownloadService downloadService = RetrofitServiceFactory.createService(DownloadService.class);
         Call<ProductResponse> call = downloadService.getProduct(paramData);
@@ -3163,7 +3164,7 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<ProductResponse> call, Response<ProductResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-
+                        Utils.cancelDialog();
                         List<ProductForApi> productList = new ArrayList<ProductForApi>();
 
                         productList = response.body().getDataForProductList().get(0).getProductList();

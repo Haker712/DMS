@@ -63,6 +63,10 @@ public class SaleReturnApi {
     @Expose
     private double payAmount;
 
+    @SerializedName("CurrencyId")
+    @Expose
+    private int currencyId;
+
     /**
      * TSaleReturnItem
      */
@@ -212,5 +216,13 @@ public class SaleReturnApi {
      */
     public void setSaleReturnItemList(List<SaleReturnItem> saleReturnItemList) {
         this.saleReturnItemList = saleReturnItemList;
+    }
+
+    public int getCurrencyId() {
+        return currencyId;
+    }
+
+    public void setCurrencyId(int currencyId) {
+        this.currencyId = currencyId;
     }
 }
