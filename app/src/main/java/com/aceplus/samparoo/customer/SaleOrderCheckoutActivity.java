@@ -547,7 +547,6 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                         REQUEST_SEND_SMS);
             }
         } else {
-            Utils.cancelDialog();
             showDialogForPhoneNumber();
         }
     }
@@ -1225,7 +1224,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             intent.putExtra(SaleOrderActivity.SOLD_PROUDCT_LIST_KEY
                     , SaleOrderCheckoutActivity.this.soldProductList);
             intent.putExtra(SaleOrderCheckoutActivity.PRESENT_PROUDCT_LIST_KEY
-                    , SaleOrderCheckoutActivity.this.products);
+                    , SaleOrderCheckoutActivity.this.promotionArrayList);
             intent.putExtra(SaleOrderActivity.IS_PRE_ORDER
                     , SaleOrderCheckoutActivity.this.isPreOrder);
             intent.putExtra(SaleOrderActivity.IS_DELIVERY
@@ -1383,8 +1382,6 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         String cashOrBank = getPaymentMethod();
 
         if(isPreOrder) {
-            Utils.callDialog("Please wait...", SaleOrderCheckoutActivity.this);
-
             if (isFullyPaid()) {
                 cashOrBank = "CA";
                 insertPreOrderInformation(cashOrBank);
