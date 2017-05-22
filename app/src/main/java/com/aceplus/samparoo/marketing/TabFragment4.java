@@ -103,9 +103,12 @@ public class TabFragment4 extends Fragment {
             e.printStackTrace();
         }*/
 
-        outlet_stock_availability_id=Utils.getInvoiceNo(getActivity(), LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode+"", Utils.FOR_OUTLET_STOCK_AVAILABILITY);
-
-
+        try {
+            outlet_stock_availability_id = Utils.getInvoiceNo(getActivity(), LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.FOR_OUTLET_STOCK_AVAILABILITY);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Utils.backToLogin(this.getActivity());
+        }
 
         // Hide keyboard on startup.
         activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);

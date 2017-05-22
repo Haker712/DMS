@@ -160,7 +160,13 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                     double totalItemDiscountAmount = 0.0;
 
                     //  titleTextView.setText("SALE EXCHANGE");
-                    invoiceIdTextView.setText(Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.FOR_SALE_EXCHANGE));
+                    try {
+                        invoiceIdTextView.setText(Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.FOR_SALE_EXCHANGE));
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                        Utils.backToLogin(this);
+                    }
+
                     View layout = findViewById(R.id.SaleExchangeLayout);
                     layout.setVisibility(View.VISIBLE);
 
@@ -193,8 +199,12 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
 
                 } else {
-
-                    invoiceIdTextView.setText(Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.FOR_OTHERS));
+                    try {
+                        invoiceIdTextView.setText(Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.FOR_OTHERS));
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                        Utils.backToLogin(this);
+                    }
                 }
             }
         } catch (NullPointerException e) {
@@ -779,8 +789,14 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         }
 
         String receiptPersonName = receiptPersonEditText.getText().toString();
+        String salePersonId = "";
 
-        String salePersonId = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
+        try {
+            salePersonId = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Utils.backToLogin(this);
+        }
 
         String invoiceTime = Utils.getCurrentDate(true);
         Log.i("invoiceTime", invoiceTime);

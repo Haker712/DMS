@@ -84,16 +84,21 @@ public class SyncActivity extends AppCompatActivity {
 
         sqLiteDatabase = new Database(this).getDataBase();
 
-        if (LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "") != null) {
-            saleman_Id = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
-        }
+        try {
+            if (LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "") != null) {
+                saleman_Id = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
+            }
 
-        if (LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, "") != null) {
-            saleman_No = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, "");
-        }
+            if (LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, "") != null) {
+                saleman_No = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, "");
+            }
 
-        if (LoginActivity.mySharedPreference.getString(Constant.SALEMAN_PWD, "") != null) {
-            saleman_Pwd = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_PWD, "");
+            if (LoginActivity.mySharedPreference.getString(Constant.SALEMAN_PWD, "") != null) {
+                saleman_Pwd = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_PWD, "");
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Utils.backToLogin(this);
         }
 
         Cursor currencyCursor = sqLiteDatabase.rawQuery("SELECT id FROM currency WHERE currency = 'MMK'", null);

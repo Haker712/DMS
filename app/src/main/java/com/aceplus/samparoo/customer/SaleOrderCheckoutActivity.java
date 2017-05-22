@@ -168,9 +168,14 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
         Utils.setOnActionClickListener(this);
 
-        saleman_Id = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
-        saleman_No = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, "");
-        saleman_Pwd = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_PWD, "");
+        try {
+            saleman_Id = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
+            saleman_No = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, "");
+            saleman_Pwd = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_PWD, "");
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Utils.backToLogin(this);
+        }
 
         this.remainingAmount = getIntent().getDoubleExtra(this.REMAINING_AMOUNT_KEY, 0);
         this.customer = (Customer) getIntent().getSerializableExtra(this.CUSTOMER_INFO_KEY);
@@ -314,7 +319,12 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
     private void setSoldProductInformation() {
         saleDateTextView.setText(Utils.getCurrentDate(false));
-        txt_invoiceId.setText(Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.forPreOrderSale));
+        try {
+            txt_invoiceId.setText(Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.forPreOrderSale));
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Utils.backToLogin(this);
+        }
     }
 
     private void calculateVolumeDiscount() {
@@ -774,7 +784,13 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             preOrder.setCustomerId(String.valueOf(SaleOrderCheckoutActivity.this.customer.getId()));
         }
 
-        preOrder.setSalePersonId(LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, ""));
+        try {
+            preOrder.setSalePersonId(LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, ""));
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Utils.backToLogin(this);
+        }
+
         //preOrder.setDeviceId(Utils.getDeviceId(SaleOrderCheckoutActivity.this));
         preOrder.setDeviceId("");
         preOrder.setPreOrderDate(new SimpleDateFormat("yyyy/MM/dd").format(new Date()));
@@ -1256,10 +1272,19 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
     private void insertDeliveryDataToDatabase(Deliver deliver) {
 
         String saleDate = Utils.getCurrentDate(true);
-        String invoiceId = Utils.getInvoiceNo(SaleOrderCheckoutActivity.this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), String.valueOf(locationCode), Utils.FOR_DELIVERY);
+        String invoiceId = "";
+        String salePersonId = "";
+
+        try {
+            invoiceId = Utils.getInvoiceNo(SaleOrderCheckoutActivity.this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), String.valueOf(locationCode), Utils.FOR_DELIVERY);
+            salePersonId = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Utils.backToLogin(this);
+        }
+
         double totalAmount = deliver.getAmount();
         double paidAmount = deliver.getPaidAmount();
-        String salePersonId = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
         String dueDate = Utils.getCurrentDate(true);
         String invoiceTime = Utils.getCurrentDate(true);
         database.beginTransaction();

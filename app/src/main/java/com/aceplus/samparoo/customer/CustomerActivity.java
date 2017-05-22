@@ -402,7 +402,15 @@ public class CustomerActivity extends AppCompatActivity {
                 visitRecord = customer.getVisitRecord();
 
                 if (isSameCustomer(customer.getId())) {
-                    String saleman_id = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
+
+                    String saleman_id = "";
+                    try {
+                        saleman_id = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                        Utils.backToLogin(CustomerActivity.this);
+                    }
+
                     Cursor cursorForSaleManRoute = database.rawQuery("select * from " + DatabaseContract.temp_for_saleman_route.TABLE +
                             " where " + DatabaseContract.temp_for_saleman_route.SALEMAN_ID + " = "+saleman_id+"" +
                             " and " + DatabaseContract.temp_for_saleman_route.CUSTOMER_ID + " = "+customer.getId()+"", null);
@@ -665,9 +673,15 @@ public class CustomerActivity extends AppCompatActivity {
 
                                     @Override
                                     public void onClick(DialogInterface arg0, int arg1) {
+                                        String salemanId = "";
 
+                                        try {
+                                            salemanId = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
+                                        } catch (NullPointerException e) {
+                                            e.printStackTrace();
+                                            Utils.backToLogin(CustomerActivity.this);
+                                        }
 
-                                        String salemanId = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
                                         String deviceId = Utils.getDeviceId(CustomerActivity.this);
                                         String invoiceNumber = Utils.getInvoiceNo(getApplicationContext(), salemanId, String.valueOf(getLocationCode()), Utils.MODE_CUSTOMER_FEEDBACK);
                                         String invoiceDate = new SimpleDateFormat("yyyy/MM/dd").format(new Date());

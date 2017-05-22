@@ -150,8 +150,14 @@ public class TabFragment6 extends Fragment {
 
                                 String competitor_name = String.valueOf(txtCompetitorName.getText());
                                 String activity = String.valueOf(txtActivity.getText());
+                                String competitoractivity_id = "";
 
-                                String competitoractivity_id=(Utils.getInvoiceNo(getActivity(), LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""),  String.valueOf(getLocationCode()) + "", Utils.FOR_COMPETITORACTIVITY));
+                                try {
+                                    competitoractivity_id = (Utils.getInvoiceNo(getActivity(), LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), String.valueOf(getLocationCode()) + "", Utils.FOR_COMPETITORACTIVITY));
+                                } catch (NullPointerException e) {
+                                    e.printStackTrace();
+                                    Utils.backToLogin(TabFragment6.this.getActivity());
+                                }
 
                                 ContentValues contentValues = new ContentValues();
 

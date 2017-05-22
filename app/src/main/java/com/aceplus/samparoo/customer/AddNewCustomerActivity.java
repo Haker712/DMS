@@ -159,8 +159,10 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
             }
         } catch (JSONException e) {
             e.printStackTrace();
+        } catch(NullPointerException e){
+            e.printStackTrace();
+            Utils.backToLogin(this);
         }
-
     }
 
     private void registerIDs() {
