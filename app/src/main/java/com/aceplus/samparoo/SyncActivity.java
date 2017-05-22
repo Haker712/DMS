@@ -1567,6 +1567,7 @@ public class SyncActivity extends AppCompatActivity {
             preOrderPresentApi.setSaleOrderId(cursorPreOrderPresent.getString(cursorPreOrderPresent.getColumnIndex("pre_order_id")));
             preOrderPresentApi.setProductId(Integer.parseInt(cursorPreOrderPresent.getString(cursorPreOrderPresent.getColumnIndex("stock_id"))));
             preOrderPresentApi.setQuantity(cursorPreOrderPresent.getInt(cursorPreOrderPresent.getColumnIndex("quantity")));
+            preOrderPresentList.add(preOrderPresentApi);
         }
 
         return preOrderPresentList;
