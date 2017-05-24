@@ -186,6 +186,8 @@ public class MarketingActivity extends AppCompatActivity {
                     , cursor.getDouble(cursor.getColumnIndex("LATITUDE"))
                     , cursor.getDouble(cursor.getColumnIndex("LONGITUDE"))
                     , cursor.getInt(cursor.getColumnIndex("VISIT_RECORD")));
+            customer.setShopTypeId(cursor.getInt(cursor.getColumnIndex("shop_type_id")));
+            customer.setId(cursor.getInt(cursor.getColumnIndex("id")));
             customers.add(customer);
             customerListForArrayAdapter.add(customer);
         }

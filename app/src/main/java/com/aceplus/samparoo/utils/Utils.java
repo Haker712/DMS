@@ -218,11 +218,21 @@ public class Utils {
         }
     }
 
-    public static void commonDialog(String message, Activity activity) {
-        new AlertDialog.Builder(activity)
-                .setMessage(message)
-                .setPositiveButton("OK", null)
-                .show();
+    public static void commonDialog(final String message, final Activity activity) {
+        Handler handler = new Handler();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (activity.isFinishing()) {
+                    return;
+                } else {
+                    new AlertDialog.Builder(activity)
+                            .setMessage(message)
+                            .setPositiveButton("OK", null)
+                            .show();
+                }
+            }
+        });
     }
 
     public static boolean isOsMarshmallow() {
