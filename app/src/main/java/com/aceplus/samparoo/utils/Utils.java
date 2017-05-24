@@ -206,6 +206,7 @@ public class Utils {
                     progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                     progressDialog.setMessage(message);
                     progressDialog.show();
+                    progressDialog.setCanceledOnTouchOutside(false);
                 }
             }
         });
