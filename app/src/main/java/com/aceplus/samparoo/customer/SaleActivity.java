@@ -353,6 +353,11 @@ public class SaleActivity extends AppCompatActivity {
         //productsForSearch.clear();
         Log.i("products length", products.length + "");
 
+        if(products.length == 0) {
+            Utils.commonDialog("No issued product", this);
+            return;
+        }
+
         for (int i = 0; i < products.length; i++) {
             productsForSearch.add(products[i].getName());
         }
@@ -416,7 +421,7 @@ public class SaleActivity extends AppCompatActivity {
                 "SELECT * FROM PRODUCT WHERE CATEGORY_ID = '" + categoryId + "'", null);*/
 
         Cursor cursor = db.rawQuery(
-                "SELECT * FROM PRODUCT", null);
+                "SELECT * FROM PRODUCT WHERE TOTAL_QTY > 0", null);
 
         products = new Product[cursor.getCount()];
         while (cursor.moveToNext()) {

@@ -146,9 +146,9 @@ public class TabFragmentVolumeDiscount extends Fragment {
 
             if(volumeDiscountForReport.getVolumeDiscountExclude() != null) {
                 if(volumeDiscountForReport.getVolumeDiscountExclude().equals("0")) {
-                    txt_exclude.setText("Yes");
-                } else {
                     txt_exclude.setText("No");
+                } else {
+                    txt_exclude.setText("Yes");
                 }
             }
 
