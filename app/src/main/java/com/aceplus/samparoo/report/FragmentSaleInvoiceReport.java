@@ -330,14 +330,14 @@ public class FragmentSaleInvoiceReport extends Fragment {
         String query = "SELECT * FROM INVOICE where INVOICE_ID not like 'SX%' and INVOICE_ID not like 'OS%' ";
         String customerCondition = "and CUSTOMER_ID = '" + customerId + "' ";
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
         if(!customerId.equals(ALL_CUSTOMER)) {
             query += customerCondition;
         }
 
         if(!fromDateEditTxt.getText().toString().equals("") || !toDateEditTxt.getText().toString().equals("")) {
-            String dateCondtion = "and SALE_DATE BETWEEN '" + sdf.format(fromDate) + "' AND '" + sdf.format(toDate) + "'";
+            String dateCondtion = "and date(SALE_DATE) between date('" + sdf.format(fromDate) + "') and date('" + sdf.format(toDate) + "')";
             query += dateCondtion;
         }
 
@@ -369,8 +369,9 @@ public class FragmentSaleInvoiceReport extends Fragment {
                     saleInvoiceReportJsonObject.put("netAmount", totalAmount - discount);
                 }
             } catch (JSONException e) {
-
                 e.printStackTrace();
+                String msg =  e.getMessage();
+                Toast.makeText(this.getContext(), msg, Toast.LENGTH_SHORT).show();
             }
 
             saleInvoiceReportsArrayList.add(saleInvoiceReportJsonObject);
