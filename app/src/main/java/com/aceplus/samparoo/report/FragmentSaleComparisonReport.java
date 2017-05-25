@@ -242,7 +242,7 @@ public class FragmentSaleComparisonReport extends Fragment {
      */
     private void getActualSaleDB(String customerId, String categoryId, String groupId) {
 
-        String query = "SELECT IP.TOTAL_AMOUNT, P.PRODUCT_ID, IP.SALE_QUANTITY FROM INVOICE_PRODUCT AS IP, PRODUCT AS P, INVOICE AS INV WHERE P.PRODUCT_ID = IP.PRODUCT_ID";
+        String query = "SELECT IP.TOTAL_AMOUNT, P.PRODUCT_ID, IP.SALE_QUANTITY FROM INVOICE_PRODUCT AS IP, PRODUCT AS P, INVOICE AS INV WHERE P.ID = IP.PRODUCT_ID";
         String customerCondtion = " AND INV.CUSTOMER_ID = '" + customerId + "'";
         String groupCondtion = " AND P.GROUP_ID = '" + groupId + "'";
         String categoryCondition = " AND P.CATEGORY_ID = '" + categoryId + "'";
@@ -337,9 +337,9 @@ public class FragmentSaleComparisonReport extends Fragment {
         customerNameArr = new ArrayList<>();
         customerNameArr.add("All Customer");
 
-        Cursor cursorCustomer = database.rawQuery("SELECT CUSTOMER_ID, CUSTOMER_NAME FROM CUSTOMER", null);
+        Cursor cursorCustomer = database.rawQuery("SELECT id, CUSTOMER_NAME FROM CUSTOMER", null);
         while (cursorCustomer.moveToNext()) {
-            customerIdArr.add(cursorCustomer.getString(cursorCustomer.getColumnIndex("CUSTOMER_ID")));
+            customerIdArr.add(cursorCustomer.getString(cursorCustomer.getColumnIndex("id")));
             customerNameArr.add(cursorCustomer.getString(cursorCustomer.getColumnIndex("CUSTOMER_NAME")));
         }
     }

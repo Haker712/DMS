@@ -1469,7 +1469,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         double pay_amount = 0.0, net_amount = 0.0;
 
         if (!prepaidAmt.getText().toString().equals("")) {
-            pay_amount = Double.parseDouble(prepaidAmt.getText().toString());
+            pay_amount = Double.parseDouble(prepaidAmt.getText().toString().replace(",", ""));
         }
 
         if (!netAmountTextView.getText().toString().equals("")) {
