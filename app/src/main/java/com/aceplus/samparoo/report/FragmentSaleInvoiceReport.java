@@ -134,7 +134,9 @@ public class FragmentSaleInvoiceReport extends Fragment {
             @Override
             public void onClick(View v) {
                 fromDateEditTxt.setText("");
+                fromDateEditTxt.setError(null);
                 toDateEditTxt.setText("");
+                toDateEditTxt.setError(null);
             }
         });
 
@@ -226,6 +228,8 @@ public class FragmentSaleInvoiceReport extends Fragment {
 
     private void setDataToSaleReportAdapter(int position) {
         try {
+            fromDateEditTxt.setError(null);
+            toDateEditTxt.setError(null);
             saleInvoiceReportsArrayList.clear();
             saleInvoiceReportsArrayList.addAll(getSaleInvoiceReports(customerReportsArrayList.get(position).getString("customerId")));
             ArrayAdapter<JSONObject> saleInvoiceReportsArrayAdapter = new SaleInvoiceReportsArrayAdapter(getActivity());
@@ -337,8 +341,15 @@ public class FragmentSaleInvoiceReport extends Fragment {
         }
 
         if(!fromDateEditTxt.getText().toString().equals("") || !toDateEditTxt.getText().toString().equals("")) {
-            String dateCondtion = "and date(SALE_DATE) between date('" + sdf.format(fromDate) + "') and date('" + sdf.format(toDate) + "')";
-            query += dateCondtion;
+
+            if(fromDateEditTxt.getText().toString().equals("")) {
+                fromDateEditTxt.setError("Please enter START DATE");
+            } else if(toDateEditTxt.getText().toString().equals("")) {
+                toDateEditTxt.setError("Please enter END DATE");
+            } else {
+                String dateCondtion = "and date(SALE_DATE) between date('" + sdf.format(fromDate) + "') and date('" + sdf.format(toDate) + "')";
+                query += dateCondtion;
+            }
         }
 
         Cursor cursor = database.rawQuery(query, null);
