@@ -99,7 +99,7 @@ public class CustomerActivity extends AppCompatActivity {
     CustomerListArrayAdapter customerListArrayAdapter;
 
     Customer customer;
-    ArrayList<String> customerIdArrayList = new ArrayList<String>();
+    ArrayList<Integer> customerIdArrayList = new ArrayList<>();
     ArrayList<CustomerLocation> visitRecordArrayList = new ArrayList<>();
 
     View buttongp;
@@ -611,41 +611,26 @@ public class CustomerActivity extends AppCompatActivity {
             @Override
             public void onClick(View arg0) {
 
-
-                int count = 0;
-                Cursor cursor = database.rawQuery(
-                        "SELECT COUNT(*) AS COUNT FROM DID_CUSTOMER_FEEDBACK", null);
-                if (cursor.moveToNext()) {
-
-                    count = cursor.getInt(cursor.getColumnIndex("COUNT"));
-                }
-
-                if (count > 0) {
-
-                    new AlertDialog.Builder(CustomerActivity.this)
-                            .setTitle("General sale")
-                            .setMessage("Your uploaded customer feedbacks is not clear yet.\n"
-                                    + "Before sale, clear all data.")
-                            .setPositiveButton("OK", null)
-                            .show();
-
-                    return;
-                }
-
-
                 if (didCustomerSelected()) {
                     boolean customerNoDid = true;
                     Cursor cur = database.rawQuery("SELECT * FROM DID_CUSTOMER_FEEDBACK", null);
                     customerIdArrayList.clear();
                     while (cur.moveToNext()) {
-                        String customerId = cur.getString(cur.getColumnIndex("CUSTOMER_NO"));
+                        int customerId = cur.getInt(cur.getColumnIndex("CUSTOMER_NO"));
                         customerIdArrayList.add(customerId);
                     }
 
                     for (int i = 0; i < customerIdArrayList.size(); i++) {
-                        if (customer.getCustomerId().equals(customerIdArrayList.get(i))) {
+                        if (customer.getId() == customerIdArrayList.get(i)) {
                             customerNoDid = false;
-                            Toast.makeText(CustomerActivity.this, "This customer have customer feedback report.Please check!", Toast.LENGTH_LONG).show();
+
+                            new AlertDialog.Builder(CustomerActivity.this)
+                                    .setTitle("General sale")
+                                    .setMessage("This customer already have customer feedback report. Please check!")
+                                    .setPositiveButton("OK", null)
+                                    .show();
+
+                            return;
                         }
                     }
                     if (customerNoDid == true) {
@@ -685,7 +670,7 @@ public class CustomerActivity extends AppCompatActivity {
                                         String deviceId = Utils.getDeviceId(CustomerActivity.this);
                                         String invoiceNumber = Utils.getInvoiceNo(getApplicationContext(), salemanId, String.valueOf(getLocationCode()), Utils.MODE_CUSTOMER_FEEDBACK);
                                         String invoiceDate = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
-                                        String customerNumber = customer.getCustomerId();
+                                        int customerNumber = customer.getId();
                                         String locationNumber = String.valueOf(getLocationCode());
                                         String feedbackNumber = customerFeedbacks.get(descriptionsSpinner.getSelectedItemPosition()).getInvoiceNumber();
                                         String feedbackDate = customerFeedbacks.get(descriptionsSpinner.getSelectedItemPosition()).getInvoiceDate();
