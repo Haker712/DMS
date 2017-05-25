@@ -371,7 +371,7 @@ public class SyncActivity extends AppCompatActivity {
             cv.put("GROUP_ID", product.getGroupId());
             cv.put("PRODUCT_NAME", product.getProductName());
             cv.put("TOTAL_QTY", product.getTotal_Qty());
-            cv.put("REMAINING_QTY", 0);
+            cv.put("REMAINING_QTY", product.getTotal_Qty());
             cv.put("SELLING_PRICE", product.getSellingPrice());
             cv.put("PURCHASE_PRICE", product.getPurchasePrice());
             cv.put("DISCOUNT_TYPE", product.getProductTypeId());

@@ -71,7 +71,10 @@ public class FragmentProductBalancesReport extends Fragment {
 
             try {
                 int remaingingQuantity = (int) saleInvoiceReportJsonObject.getDouble("remainingQuantity");
-                if (remaingingQuantity <= 0) {
+
+                int totalQuantity = (int) saleInvoiceReportJsonObject.getDouble("totalQuantity");
+
+                if (totalQuantity != 0 && remaingingQuantity <= 0) {
                     Resources res1 = getActivity().getResources();
                     remainingQuantityTextView.setTextColor(res1.getColor(R.color.accentColor));
                     productNameTextView.setTextColor(res1.getColor(R.color.accentColor));
