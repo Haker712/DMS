@@ -29,21 +29,13 @@
             android:gravity="center"
             android:src="@drawable/ic_add_xh_btn"
             android:layout_marginLeft="20dp"/>
-        <ImageView
-            android:id="@+id/camera_img"
-            android:layout_width="@dimen/btn_appbar_width"
-            android:layout_height="@dimen/btn_appbar_height"
-            android:layout_toRightOf="@+id/add_img"
-            android:layout_centerVertical="true"
-            android:gravity="center"
-            android:src="@drawable/ic_camrea_hx_btn"
-            android:layout_marginLeft="20dp"/>
+
         <ImageView
             android:id="@+id/save_img"
             android:layout_width="@dimen/btn_appbar_width"
             android:layout_height="@dimen/btn_appbar_height"
+            android:layout_toRightOf="@+id/add_img"
             android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/camera_img"
             android:gravity="center"
             android:src="@drawable/ic_done_hx_btn"
             android:layout_marginLeft="20dp"/>
