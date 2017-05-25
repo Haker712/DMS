@@ -370,8 +370,6 @@ public class FragmentSaleInvoiceReport extends Fragment {
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-                String msg =  e.getMessage();
-                Toast.makeText(this.getContext(), msg, Toast.LENGTH_SHORT).show();
             }
 
             saleInvoiceReportsArrayList.add(saleInvoiceReportJsonObject);
