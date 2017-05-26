@@ -71,10 +71,15 @@ public class FragmentProductBalancesReport extends Fragment {
 
             try {
                 int remaingingQuantity = (int) saleInvoiceReportJsonObject.getDouble("remainingQuantity");
+                int soldQuantity = (int) saleInvoiceReportJsonObject.getDouble("soldQuantity");
 
+                int returnQuantity = (int) saleInvoiceReportJsonObject.getDouble("returnQuantity");
+                int deliveryQuantity = (int) saleInvoiceReportJsonObject.getDouble("deliveryQuantity");
+                int presentQuantity = (int) saleInvoiceReportJsonObject.getDouble("presentQuantity");
+                int exchangeQuantity = (int) saleInvoiceReportJsonObject.getDouble("exchangeQuantity");
                 int totalQuantity = (int) saleInvoiceReportJsonObject.getDouble("totalQuantity");
 
-                if (totalQuantity != 0 && remaingingQuantity <= 0) {
+                if (totalQuantity == 0 && soldQuantity == 0 && remaingingQuantity == 0 && returnQuantity == 0 && deliveryQuantity == 0 && presentQuantity == 0 && exchangeQuantity == 0) {
                     Resources res1 = getActivity().getResources();
                     remainingQuantityTextView.setTextColor(res1.getColor(R.color.accentColor));
                     productNameTextView.setTextColor(res1.getColor(R.color.accentColor));

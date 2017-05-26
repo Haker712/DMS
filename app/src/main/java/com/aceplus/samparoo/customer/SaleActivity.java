@@ -42,6 +42,7 @@ import com.aceplus.samparoo.utils.Utils;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by haker on 2/3/17.
@@ -104,6 +105,8 @@ public class SaleActivity extends AppCompatActivity {
     ListView promotionPlanGiftListView;
     ArrayList<Promotion> promotionArrayList = new ArrayList<>();
     PromotionProductCustomAdapter promotionProductCustomAdapter;
+
+    List<String> productToBuyForPromotion = new ArrayList<>();
 
     double promotionPrice = 0.0;
     double totalPromotionPrice = 0.0;
@@ -265,6 +268,7 @@ public class SaleActivity extends AppCompatActivity {
                                 }
 
                                 soldProductList.remove(position);
+                                productToBuyForPromotion.remove(position);
                                 soldProductListRowAdapter.notifyDataSetChanged();
                             }
                         })
@@ -433,7 +437,7 @@ public class SaleActivity extends AppCompatActivity {
                     , cursor.getDouble(cursor.getColumnIndex("PURCHASE_PRICE"))
                     , cursor.getString(cursor.getColumnIndex("DISCOUNT_TYPE"))
                     , cursor.getInt(cursor.getColumnIndex("REMAINING_QTY")));
-
+            tempProduct.setStockId(cursor.getInt(cursor.getColumnIndex("ID")));
             tempProduct.setUm(cursor.getString(cursor.getColumnIndex("UM")));
 
             products[cursor.getPosition()] = tempProduct;
@@ -534,7 +538,7 @@ public class SaleActivity extends AppCompatActivity {
         public View getView(final int position, View convertView, ViewGroup parent) {
 
             final SoldProduct soldProduct = soldProductList.get(position);
-
+            productToBuyForPromotion.add(String.valueOf(soldProductList.get(position).getProduct().getStockId()));
             LayoutInflater layoutInflater = context.getLayoutInflater();
             final View view = layoutInflater.inflate(this.resource, null, true);
 
@@ -721,58 +725,80 @@ public class SaleActivity extends AppCompatActivity {
 
             if (promotion_price == 0.0) {
                 Cursor cursorForPromotionGift = sqLiteDatabase.rawQuery("select * from " + DatabaseContract.PromotionGift.tb + " where " + DatabaseContract.PromotionGift.promotionPlanId + " = '" + promotionPlanId + "'" +
-                        " and " + buy_qty + " >= " + DatabaseContract.PromotionGift.fromQuantity + " and " + +buy_qty + " <= " + DatabaseContract.PromotionGift.toQuantity + " and " + DatabaseContract.PromotionGift.stockId + " = '" + stock_id_new + "'", null);
+                        " and " + DatabaseContract.PromotionGift.fromQuantity + " <= " + buy_qty + " and " + DatabaseContract.PromotionGift.toQuantity + " >= " + buy_qty, null);
+
+                List<String> productToBuy = new ArrayList<>();
                 Log.i("GiftCount", cursorForPromotionGift.getCount() + "");
                 while (cursorForPromotionGift.moveToNext()) {
-                    String promotionGiftId = cursorForPromotionGift.getString(cursorForPromotionGift.getColumnIndex(DatabaseContract.PromotionGift.id));
-                    Log.i("promotionGiftId", promotionGiftId + "");
-                    Cursor cursorForPromotionGiftItem = sqLiteDatabase.rawQuery("select * from " + DatabaseContract.PromotionGiftItem.tb + " where " + DatabaseContract.PromotionGiftItem.id + " = '" + promotionGiftId + "'", null);
-                    while (cursorForPromotionGiftItem.moveToNext()) {
-                        promotionProductId = cursorForPromotionGiftItem.getString(cursorForPromotionGiftItem.getColumnIndex(DatabaseContract.PromotionGiftItem.stockId));
-                        Log.i("promotionProductId", promotionProductId + "");
-                        Cursor cursorForProductName = sqLiteDatabase.rawQuery("select * from PRODUCT WHERE ID = '" + promotionProductId + "'", null);
-                        while (cursorForProductName.moveToNext()) {
-                            promotionProductName = cursorForProductName.getString(cursorForProductName.getColumnIndex("PRODUCT_NAME"));
-                            Log.i("promotionProductName", promotionProductName + ">>not null");
-                        }
-                        promotionProductQty = cursorForPromotionGiftItem.getInt(cursorForPromotionGiftItem.getColumnIndex(DatabaseContract.PromotionGiftItem.quantity));
+                    String promotionProductToBuy = cursorForPromotionGift.getString(cursorForPromotionGift.getColumnIndex(DatabaseContract.PromotionGift.stockId));
+                    Log.i("promotionPlanIdForGift", promotionPlanId + "");
+                    productToBuy.add(promotionProductToBuy);
+                }
 
-                        if (!promotionProductId.equals("")) {
-
-                            if(promotionArrayList.size() == 0) {
-                                Promotion promotion = new Promotion();
-                                promotion.setPromotionProductId(promotionProductId);
-                                promotion.setPromotionProductName(promotionProductName);
-                                promotion.setPromotionQty(promotionProductQty);
-
-                                promotionArrayList.add(promotion);
-                            } else {
-                                for(Promotion item : promotionArrayList) {
-
-                                    if(item.getPromotionProductId().equals(promotionProductId)){
-                                        item.setPromotionQty(item.getPromotionQty() + promotionProductQty);
-                                    } else {
-                                        Promotion promotion = new Promotion();
-                                        promotion.setPromotionProductId(promotionProductId);
-                                        promotion.setPromotionProductName(promotionProductName);
-                                        promotion.setPromotionQty(promotionProductQty);
-
-                                        promotionArrayList.add(promotion);
-                                    }
-
-                                }
+                if(productToBuy.size() > 1) {
+                    int productCount = 0;
+                    for(String productId : productToBuy) {
+                        for(SoldProduct soldProduct1 : soldProductList) {
+                            if(productId.equals(String.valueOf(soldProduct1.getProduct().getStockId()))) {
+                                productCount++;
                             }
-
                         }
+                    }
 
+                    if(productToBuy.size() == productCount) {
+                        addToPromotionList(promotionProductId, promotionProductName, promotionProductQty, promotionPlanId);
                     }
                 }
+
             }
         }
 
         setPromotionProductListView();
 
         return promotion_price;
+    }
+
+    void addToPromotionList(String promotionProductId, String promotionProductName, int promotionProductQty, String promotionPlanId) {
+        Cursor cursorForPromotionGiftItem = sqLiteDatabase.rawQuery("select * from " + DatabaseContract.PromotionGiftItem.tb + " where " + DatabaseContract.PromotionGiftItem.promotionPlanId + " = '" + promotionPlanId + "'", null);
+        while (cursorForPromotionGiftItem.moveToNext()) {
+            promotionProductId = cursorForPromotionGiftItem.getString(cursorForPromotionGiftItem.getColumnIndex(DatabaseContract.PromotionGiftItem.stockId));
+            Log.i("promotionProductId", promotionProductId + "");
+            Cursor cursorForProductName = sqLiteDatabase.rawQuery("select * from PRODUCT WHERE ID = '" + promotionProductId + "'", null);
+            while (cursorForProductName.moveToNext()) {
+                promotionProductName = cursorForProductName.getString(cursorForProductName.getColumnIndex("PRODUCT_NAME"));
+                Log.i("promotionProductName", promotionProductName + ">>not null");
+            }
+            promotionProductQty = cursorForPromotionGiftItem.getInt(cursorForPromotionGiftItem.getColumnIndex(DatabaseContract.PromotionGiftItem.quantity));
+
+            if (!promotionProductId.equals("")) {
+
+                if(promotionArrayList.size() == 0) {
+                    Promotion promotion = new Promotion();
+                    promotion.setPromotionProductId(promotionProductId);
+                    promotion.setPromotionProductName(promotionProductName);
+                    promotion.setPromotionQty(promotionProductQty);
+
+                    promotionArrayList.add(promotion);
+                } else {
+                    for(Promotion item : promotionArrayList) {
+
+                        if(item.getPromotionProductId().equals(promotionProductId)){
+                            item.setPromotionQty(item.getPromotionQty() + promotionProductQty);
+                        } else {
+                            Promotion promotion = new Promotion();
+                            promotion.setPromotionProductId(promotionProductId);
+                            promotion.setPromotionProductName(promotionProductName);
+                            promotion.setPromotionQty(promotionProductQty);
+
+                            promotionArrayList.add(promotion);
+                        }
+
+                    }
+                }
+
+            }
+
+        }
     }
 
     private void setPromotionProductListView() {

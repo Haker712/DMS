@@ -73,7 +73,7 @@ public class FragmentSaleComparisonReport extends Fragment {
 
         registerIDS();
 
-        getTargetSaleDB();
+        getTargetSaleDB(-1);
 
         getCustomerListFromDB();
         getGroupCodeListFromDB();
@@ -113,6 +113,9 @@ public class FragmentSaleComparisonReport extends Fragment {
     private void updateChartData() {
         if(customerIdArr != null && customerIdArr.size() != 0) {
             customerId = customerIdArr.get(spinnerCustomer.getSelectedItemPosition());
+            getTargetSaleDB(Integer.parseInt(customerId));
+        } else {
+            getTargetSaleDB(-1);
         }
 
         if(categoryIdArr != null && categoryIdArr.size() != 0) {
@@ -122,6 +125,7 @@ public class FragmentSaleComparisonReport extends Fragment {
         if(groupIdArr != null && groupIdArr.size() != 0) {
             groupId = groupIdArr.get(spinnerGroup.getSelectedItemPosition());
         }
+
 
         getActualSaleDB(customerId, categoryId, groupId);
         initialize();
@@ -294,9 +298,16 @@ public class FragmentSaleComparisonReport extends Fragment {
     /**
      * Get sale target from db.
      */
-    private void getTargetSaleDB() {
+    private void getTargetSaleDB(int customerIdFromSpinner) {
         saleTargetArrayList.clear();
-        Cursor cursor = database.rawQuery("SELECT * FROM sale_target_customer", null);
+        String query = "SELECT * FROM sale_target_customer";
+        String customerCondtion = " WHERE CUSTOMER_ID = '" + customerIdFromSpinner + "'";
+
+        if(customerIdFromSpinner != -1) {
+            query += customerCondtion;
+        }
+
+        Cursor cursor = database.rawQuery(query, null);
         while (cursor.moveToNext()) {
             String id = cursor.getString(cursor.getColumnIndex(DatabaseContract.SALE_TARGET.ID));
             String fromDate = cursor.getString(cursor.getColumnIndex(DatabaseContract.SALE_TARGET.FROM_DATE));

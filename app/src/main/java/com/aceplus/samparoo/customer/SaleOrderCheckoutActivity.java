@@ -222,7 +222,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
         calculateNetAmount();
 
-        showPromotionData();
+        setPromotionProductListView();
         catchEvents();
     }
 
@@ -337,7 +337,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         boolean isAllAreCategory = false;
 
         double buy_amt = totalAmount;
-        Cursor cursor = database.rawQuery("select * from VOLUME_DISCOUNT_FILTER WHERE '" + Utils.getCurrentDate(true) + "' BETWEEN START_DATE AND END_DATE", null);
+        Cursor cursor = database.rawQuery("select * from VOLUME_DISCOUNT_FILTER WHERE date('" + Utils.getCurrentDate(true) + "') BETWEEN date(START_DATE) AND date(END_DATE)", null);
         Log.i("VolumeDisFilterCursor", cursor.getCount() + "");
         while (cursor.moveToNext()) {
             volDisFilterId = cursor.getString(cursor.getColumnIndex(DatabaseContract.VolumeDiscountFilter.id));
@@ -396,7 +396,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         double buy_amt = totalAmount;
         Double fromSaleAmt, toSaleAmt, discountPercentForVolDis;
 
-        Cursor cursor = database.rawQuery("select * from VOLUME_DISCOUNT WHERE '" + Utils.getCurrentDate(true) + "' BETWEEN START_DATE AND END_DATE", null);
+        Cursor cursor = database.rawQuery("select * from VOLUME_DISCOUNT WHERE date('" + Utils.getCurrentDate(true) + "') BETWEEN date(START_DATE) AND date(END_DATE)", null);
         Log.i("VolumeDiscountCursor", cursor.getCount() + "");
         while (cursor.moveToNext()) {
             volDisId = cursor.getString(cursor.getColumnIndex(DatabaseContract.VolumeDiscount.id));
@@ -406,34 +406,40 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                 for (SoldProduct soldProduct : soldProductList) {
                     buy_amt = soldProduct.getProduct().getPrice() * soldProduct.getQuantity();
                 }
-
-               /* double promotion_price = 0.0;
+                calculateInvoiceDiscountAmount(buy_amt, volDisId);
+               /* */
+            } else {
+                double promotion_price = 0.0;
                 for (Promotion promotion : promotionArrayList) {
                     promotion_price += promotion.getPromotionPrice();
                 }
-                buy_amt += promotion_price;*/
+                buy_amt = buy_amt - promotion_price;
+                calculateInvoiceDiscountAmount(buy_amt, volDisId);
             }
-
 
             Log.i("buy_amt", buy_amt + "");
             Log.i("volDisId", volDisId);
-
-            Cursor cusorForVolDisItem = database.rawQuery("SELECT * FROM VOLUME_DISCOUNT_ITEM WHERE VOLUME_DISCOUNT_ID = '" + volDisId + "' " +
-                    "and " + buy_amt + " >= FROM_SALE_AMT and "+ buy_amt +"<= TO_SALE_AMT;", null);
-            Log.i("cusorForVolDisItem", cusorForVolDisItem.getCount() + "");
-
-            while (cusorForVolDisItem.moveToNext()) {
-                fromSaleAmt = cusorForVolDisItem.getDouble(cusorForVolDisItem.getColumnIndex(DatabaseContract.VolumeDiscountItem.fromSaleAmt));
-                toSaleAmt = cusorForVolDisItem.getDouble(cusorForVolDisItem.getColumnIndex(DatabaseContract.VolumeDiscountItem.toSaleAmt));
-                discountPercentForVolDis = cusorForVolDisItem.getDouble(cusorForVolDisItem.getColumnIndex(DatabaseContract.VolumeDiscountItem.discountPercent));
-
-                totalVolumeDiscount = totalAmount * (discountPercentForVolDis / 100);
-            }
-
-            Log.i("totalInvoiceDiscount ----->>>>>>>", totalVolumeDiscount + "");
         }
 
         volDisForPreOrder.setText(Utils.formatAmount(totalVolumeDiscount));
+    }
+
+    void calculateInvoiceDiscountAmount(Double buy_amt, String volDisId) {
+
+        Double fromSaleAmt, toSaleAmt, discountPercentForVolDis;
+        Cursor cusorForVolDisItem = database.rawQuery("SELECT * FROM VOLUME_DISCOUNT_ITEM WHERE VOLUME_DISCOUNT_ID = '" + volDisId + "' " +
+                "and " + buy_amt + " >= FROM_SALE_AMT and " + buy_amt + "<= TO_SALE_AMT;", null);
+        Log.i("cusorForVolDisItem", cusorForVolDisItem.getCount() + "");
+
+        while (cusorForVolDisItem.moveToNext()) {
+            fromSaleAmt = cusorForVolDisItem.getDouble(cusorForVolDisItem.getColumnIndex(DatabaseContract.VolumeDiscountItem.fromSaleAmt));
+            toSaleAmt = cusorForVolDisItem.getDouble(cusorForVolDisItem.getColumnIndex(DatabaseContract.VolumeDiscountItem.toSaleAmt));
+            discountPercentForVolDis = cusorForVolDisItem.getDouble(cusorForVolDisItem.getColumnIndex(DatabaseContract.VolumeDiscountItem.discountPercent));
+
+            totalVolumeDiscount = buy_amt * (discountPercentForVolDis / 100);
+        }
+
+        Log.i("totalInvoiceDiscount ----->>>>>>>", totalVolumeDiscount + "");
     }
 
     private void showPromotionData() {
