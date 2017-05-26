@@ -786,6 +786,8 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         intent.putExtra(SaleActivity.REMAINING_AMOUNT_KEY, this.remainingAmount);
         intent.putExtra(SaleActivity.CUSTOMER_INFO_KEY, this.customer);
         intent.putExtra(SaleActivity.SOLD_PROUDCT_LIST_KEY, this.soldProductList);
+
+        intent.putExtra(SaleCheckoutActivity.PRESENT_PROUDCT_LIST_KEY, this.promotionArrayList);
         /*if (this.orderedInvoice != null) {
             intent.putExtra(SaleActivity.ORDERED_INVOICE_KEY, this.orderedInvoice.toString());
         }*/

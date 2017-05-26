@@ -148,6 +148,11 @@ public class SaleOrderActivity extends AppCompatActivity {
             orderedInvoice = (Deliver) getIntent().getSerializableExtra(SaleOrderActivity.ORDERED_INVOICE_KEY);
         }
 
+        if (getIntent().getSerializableExtra(SaleOrderCheckoutActivity.PRESENT_PROUDCT_LIST_KEY) != null) {
+
+            promotionArrayList = (ArrayList<Promotion>) getIntent().getSerializableExtra(SaleOrderCheckoutActivity.PRESENT_PROUDCT_LIST_KEY);
+        }
+
         hideUnnecessaryViews();
 
         // Hide keyboard on startup.
@@ -176,6 +181,8 @@ public class SaleOrderActivity extends AppCompatActivity {
                 searchProductTextView.setText("");
             }
         });
+
+        setPromotionProductListView();
 
         previousCategoryButton.setOnClickListener(new View.OnClickListener() {
 

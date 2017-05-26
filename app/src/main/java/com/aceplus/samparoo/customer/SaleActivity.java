@@ -138,6 +138,11 @@ public class SaleActivity extends AppCompatActivity {
             soldProductList = (ArrayList<SoldProduct>) getIntent().getSerializableExtra(SOLD_PROUDCT_LIST_KEY);
         }
 
+        if ((ArrayList<Promotion>) getIntent().getSerializableExtra(SaleCheckoutActivity.PRESENT_PROUDCT_LIST_KEY) != null) {
+
+            promotionArrayList = (ArrayList<Promotion>) getIntent().getSerializableExtra(SaleCheckoutActivity.PRESENT_PROUDCT_LIST_KEY);
+        }
+
         //Toast.makeText(this, customer.getCustomerName(), Toast.LENGTH_SHORT).show();
         // Hide keyboard on startup.
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -278,6 +283,8 @@ public class SaleActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        setPromotionProductListView();
 
         cancelImg.setOnClickListener(new View.OnClickListener() {
             @Override
