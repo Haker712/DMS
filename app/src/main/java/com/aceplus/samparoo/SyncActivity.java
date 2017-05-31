@@ -1339,8 +1339,8 @@ public class SyncActivity extends AppCompatActivity {
                         }
                         services += " " + getResources().getString(R.string.customer_title);
 
-                        //uploadPreOrderToServer();
-                        uploadSaleReturnToServer();
+                        uploadPreOrderToServer();
+                        //uploadSaleReturnToServer();
                     } else {
                         if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
                             onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
