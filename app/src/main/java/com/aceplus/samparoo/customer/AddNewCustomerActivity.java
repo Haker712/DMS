@@ -589,7 +589,7 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
         contactPerson = contactPersonEditText.getText().toString();
         phoneNo = phoneNumberEditText.getText().toString();
         address = addressEditText.getText().toString();
-
+        String[] location = customerLocationTxt.getText().toString().split(",");
 
         Log.i("CS", Constant.SALEMAN_ID);
 
@@ -632,6 +632,8 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
         contentValues.put("contact_person", contactPerson);
         contentValues.put("PH", phoneNo);
         contentValues.put("ADDRESS", address);
+        contentValues.put("LATITUDE", location[0]);
+        contentValues.put("LONGITUDE", location[1]);
         contentValues.put("flag", 1);
 
         database.insert("CUSTOMER", null, contentValues);
