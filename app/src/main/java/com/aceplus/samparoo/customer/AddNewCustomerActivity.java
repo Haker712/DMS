@@ -619,9 +619,15 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
         LoginActivity.myEditor.putInt(Constant.ADDNEWCUSTOMERCOUNT, LoginActivity.mySharedPreference.getInt(Constant.ADDNEWCUSTOMERCOUNT, 0) + 1);
         LoginActivity.myEditor.commit();
 
+        Cursor cursorCust = database.rawQuery("SELECT id FROM CUSTOMER", null);
+        int cusId = 0;
+        while(cursorCust.moveToNext()) {
+            cusId = cursorCust.getInt(cursorCust.getColumnIndex("id"));
+        }
+
         ContentValues contentValues = new ContentValues();
 
-
+        contentValues.put("id", cusId+1);
         contentValues.put("township_number", townshipId);
         Log.i("TownshipId", townshipId);
         contentValues.put("district_id", districtId);

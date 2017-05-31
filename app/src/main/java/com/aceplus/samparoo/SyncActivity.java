@@ -401,10 +401,10 @@ public class SyncActivity extends AppCompatActivity {
             cv.put("DISCOUNT_TYPE", product.getProductTypeId());
             cv.put("UM", product.getUmId());
 
-            String[] whereArgs = {product.getProductId()};
+            String[] whereArgs = {product.getId()};
 
-            if (checkDuplicate(product.getProductId())) {
-                sqLiteDatabase.update("PRODUCT", cv, "PRODUCT_ID = ?", whereArgs);
+            if (checkDuplicate(product.getId())) {
+                sqLiteDatabase.update("PRODUCT", cv, "ID = ?", whereArgs);
             } else {
                 sqLiteDatabase.insertOrThrow("PRODUCT", null, cv);
             }
@@ -414,11 +414,11 @@ public class SyncActivity extends AppCompatActivity {
     /**
      * Check duplicate product in table with product id/
      *
-     * @param productId product id
+     * @param id product id
      * @return true : duplicate; otherwise : false
      */
-    private boolean checkDuplicate(String productId) {
-        Cursor duplicateCursor = sqLiteDatabase.rawQuery("SELECT COUNT(*) FROM PRODUCT WHERE PRODUCT_ID = '" + productId + "'", null);
+    private boolean checkDuplicate(String id) {
+        Cursor duplicateCursor = sqLiteDatabase.rawQuery("SELECT COUNT(*) FROM PRODUCT WHERE ID = " + id, null);
         int count = duplicateCursor.getCount();
 
         if(count > 1) {
