@@ -308,6 +308,8 @@ public class LoginActivity extends AppCompatActivity {
                         else {
                             Utils.commonDialog("You have no route.", LoginActivity.this);
                         }
+                    } else {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
                     }
 
                 }
