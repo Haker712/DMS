@@ -631,7 +631,7 @@ public class ReportHomeActivity extends FragmentActivity {
 
                 Cursor cursorForCustomer = database.rawQuery(
                         "SELECT * FROM CUSTOMER"
-                                + " WHERE CUSTOMER_ID = \"" + cursor.getString(cursor.getColumnIndex("CUSTOMER_NO")) + "\""
+                                + " WHERE id = \"" + cursor.getString(cursor.getColumnIndex("CUSTOMER_NO")) + "\""
                         , null);
                 if (cursorForCustomer.moveToNext()) {
 
