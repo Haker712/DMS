@@ -123,7 +123,7 @@ public class SyncActivity extends AppCompatActivity {
     @OnClick(R.id.buttonUpload)
     void upload() {
         services = "";
-        uploadInvoiceToSever();
+        uploadCustomertoserver();
     }
 
     @OnClick(R.id.buttonClearData)
@@ -1126,7 +1126,7 @@ public class SyncActivity extends AppCompatActivity {
                         }
                         services += getResources().getString(R.string.sale);
 
-                        uploadCustomertoserver();
+                        uploadPreOrderToServer();
                     } else if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
                         onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
                     }
@@ -1339,8 +1339,7 @@ public class SyncActivity extends AppCompatActivity {
                         }
                         services += " " + getResources().getString(R.string.customer_title);
 
-                        uploadPreOrderToServer();
-                        //uploadSaleReturnToServer();
+                        uploadInvoiceToSever();
                     } else {
                         if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
                             onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
