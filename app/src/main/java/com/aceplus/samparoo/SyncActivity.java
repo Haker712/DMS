@@ -403,9 +403,12 @@ public class SyncActivity extends AppCompatActivity {
 
             String[] whereArgs = {product.getId()};
 
-            if (checkDuplicate(product.getId())) {
-                sqLiteDatabase.update("PRODUCT", cv, "ID = ?", whereArgs);
-            } else {
+            if (checkDuplicate(product.getId()) && product.getTotal_Qty() != 0) {
+                String query = "UPDATE PRODUCT SET TOTAL_QTY = TOTAL_QTY + " + product.getTotal_Qty() + ", REMAINING_QTY = REMAINING_QTY + " + product.getTotal_Qty() + " WHERE ID = " + product.getId();
+                sqLiteDatabase.execSQL(query);
+            }
+
+            if (!checkDuplicate(product.getId())){
                 sqLiteDatabase.insertOrThrow("PRODUCT", null, cv);
             }
         }
@@ -421,7 +424,7 @@ public class SyncActivity extends AppCompatActivity {
         Cursor duplicateCursor = sqLiteDatabase.rawQuery("SELECT COUNT(*) FROM PRODUCT WHERE ID = " + id, null);
         int count = duplicateCursor.getCount();
 
-        if(count > 1) {
+        if(count > 0) {
             return true;
         }
         else return false;
@@ -1090,8 +1093,6 @@ public class SyncActivity extends AppCompatActivity {
     private void uploadInvoiceToSever() {
 
         String paramData = "";
-        Utils.callDialog("Please wait...", this);
-
         DataforSaleUpload dataforSaleUpload = new DataforSaleUpload();
         List<DataforSaleUpload> dataforSaleUploads = new ArrayList<>();
 
@@ -1251,6 +1252,7 @@ public class SyncActivity extends AppCompatActivity {
         while (cursor.moveToNext()) {
 
             CustomerForApi customerForApi = new CustomerForApi();
+            int  id = cursor.getInt(cursor.getColumnIndex("id"));
             String townshipId = cursor.getString(cursor.getColumnIndex("township_number"));
             String contact_person = cursor.getString(cursor.getColumnIndex("contact_person"));
             String customer_Id = cursor.getString(cursor.getColumnIndex("CUSTOMER_ID"));
@@ -1273,6 +1275,7 @@ public class SyncActivity extends AppCompatActivity {
             String districtId = cursor.getString(cursor.getColumnIndex("district_id"));
             String statedivisionId = cursor.getString(cursor.getColumnIndex("state_division_id"));
 
+            customerForApi.setId(id);
             customerForApi.setTownshipNumber(townshipId);
             customerForApi.setContactPerson(contact_person);
             customerForApi.setcUSTOMERID(customer_Id);
@@ -1306,8 +1309,9 @@ public class SyncActivity extends AppCompatActivity {
         String paramData = "";
 
         CustomerData customerData = new CustomerData();
-        List<CustomerData> customerDatas = new ArrayList<>();
+        final List<CustomerData> customerDatas = new ArrayList<>();
 
+        Utils.callDialog("Please wait...", this);
 
         customerData.setCustomerForApiList(getCustomerData());
         customerDatas.add(customerData);
@@ -1338,6 +1342,12 @@ public class SyncActivity extends AppCompatActivity {
                             services += ",";
                         }
                         services += " " + getResources().getString(R.string.customer_title);
+                       /* sqLiteDatabase.beginTransaction();
+                        for(CustomerForApi c : customerDatas.get(0).getCustomerForApiList()) {
+                            sqLiteDatabase.execSQL("UPDATE CUSTOMER SET FLAG = 0 WHERE id = " + c.getId());
+                        }
+                        sqLiteDatabase.setTransactionSuccessful();
+                        sqLiteDatabase.endTransaction();*/
 
                         uploadInvoiceToSever();
                     } else {

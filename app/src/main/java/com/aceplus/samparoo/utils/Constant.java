@@ -29,6 +29,10 @@ public class Constant {
 
     public static String SALEMAN_PWD = "saleman_pwd";
 
+    public static String TABLET_KEY = "tablet_key";
+
+    public static String MAX_KEY = "max_key";
+
     public static String ADDNEWCUSTOMERCOUNT="addnewcustomerCount";
 
     public static String KEY_MAX_ZOOM = "12";

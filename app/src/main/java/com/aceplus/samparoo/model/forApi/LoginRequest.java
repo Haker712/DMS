@@ -29,6 +29,9 @@ public class LoginRequest {
     @SerializedName("route")
     @Expose
     private Integer route;
+    @SerializedName("tablet_key")
+    @Expose
+    private String tabletKey;
     @SerializedName("data")
     @Expose
     private List<Object> data = null;
@@ -89,4 +92,11 @@ public class LoginRequest {
         this.data = data;
     }
 
+    public String getTabletKey() {
+        return tabletKey;
+    }
+
+    public void setTabletKey(String tabletKey) {
+        this.tabletKey = tabletKey;
+    }
 }

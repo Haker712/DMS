@@ -5,6 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.aceplus.samparoo.utils.Constant;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -25,9 +27,11 @@ public class RetrofitServiceFactory {
     public static <T> T createService(Class<T> serviceClass) {
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder().readTimeout(60, TimeUnit.SECONDS)
                 .connectTimeout(60, TimeUnit.SECONDS);
+
+        Gson gson = new GsonBuilder().setLenient().create();
         Retrofit.Builder builder = new Retrofit.Builder()
                 .baseUrl(Constant.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create());
+                .addConverterFactory(GsonConverterFactory.create(gson));
 
         if(!httpClient.interceptors().isEmpty()) {
             httpClient.interceptors().clear();
@@ -63,9 +67,12 @@ public class RetrofitServiceFactory {
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder().readTimeout(60, TimeUnit.SECONDS)
                 .connectTimeout(60, TimeUnit.SECONDS);
+
+        Gson gson = new GsonBuilder().setLenient().create();
+
         Retrofit.Builder builder = new Retrofit.Builder()
                 .baseUrl(Constant.REAL_TIME_AP_URL)
-                .addConverterFactory(GsonConverterFactory.create());
+                .addConverterFactory(GsonConverterFactory.create(gson));
 
         if(!httpClient.interceptors().isEmpty()) {
             httpClient.interceptors().clear();

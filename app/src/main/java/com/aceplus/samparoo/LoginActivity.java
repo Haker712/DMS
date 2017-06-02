@@ -181,7 +181,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
             else {
-                loginWithApi(Utils.createParamData(editTextUserID.getText().toString(), Utils.encodePassword(editTextPassword.getText().toString()), 0));
+                loginWithApi(Utils.createLoginParamData(editTextUserID.getText().toString(), Utils.encodePassword(editTextPassword.getText().toString()), 0, Utils.getDeviceId(LoginActivity.this)));
             }
         }
     }
@@ -281,6 +281,8 @@ public class LoginActivity extends AppCompatActivity {
                                 myEditor.putString(Constant.SALEMAN_NO, dataForLoginArrayList.get(0).getSaleMan().get(0).getSaleManNo());
                                 myEditor.putString(Constant.SALEMAN_NAME, dataForLoginArrayList.get(0).getSaleMan().get(0).getSaleManName());
                                 myEditor.putString(Constant.SALEMAN_PWD, dataForLoginArrayList.get(0).getSaleMan().get(0).getPassword());
+                                myEditor.putInt(Constant.TABLET_KEY, response.body().getTabletKey());
+                                myEditor.putInt(Constant.MAX_KEY, response.body().getMaxKey());
                                 myEditor.commit();
 
                                 sqLiteDatabase.beginTransaction();

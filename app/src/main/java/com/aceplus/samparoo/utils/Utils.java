@@ -293,6 +293,43 @@ public class Utils {
         return paramData;
     }
 
+    public static String createLoginParamData(String user_no, String password, int routeId, String tabletKey) {
+        String paramData = "";
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setSiteActivationKey(Constant.SITE_ACTIVATION_KEY);
+        loginRequest.setTabletActivationKey(Constant.TABLET_ACTIVATION_KEY);
+        loginRequest.setUserId(user_no);
+        //loginRequest.setPassword(Utils.encodePassword(editTextPassword.getText().toString()));
+        //String encodedPwd = Utils.encodePassword(password);
+        //Log.i("encodedPwd>>>", encodedPwd);
+        loginRequest.setPassword(password);
+        loginRequest.setDate(Utils.getCurrentDate(false));
+        loginRequest.setRoute(routeId);
+        loginRequest.setTabletKey(tabletKey);
+        List<Object> objectList = new ArrayList<>();
+        /*Object object = new Object();
+        objectList.add(object);*/
+        loginRequest.setData(objectList);
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("site_activation_key", Constant.SITE_ACTIVATION_KEY);
+            jsonObject.put("tablet_activation_key", Constant.TABLET_ACTIVATION_KEY);
+            jsonObject.put("user_id", loginRequest.getUserId());
+            jsonObject.put("password", loginRequest.getPassword());
+            jsonObject.put("route", loginRequest.getRoute());
+            jsonObject.put("tablet_key", loginRequest.getTabletKey());
+            jsonObject.put("date", loginRequest.getDate());
+            jsonObject.put("data", loginRequest.getData());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.i("param_data>>>", jsonObject.toString());
+
+        paramData = jsonObject.toString();
+        return paramData;
+    }
+
     public static String getDeviceId(Activity activity) {
         return Settings.Secure.getString(activity.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
