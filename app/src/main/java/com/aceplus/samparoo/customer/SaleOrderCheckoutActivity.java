@@ -181,8 +181,14 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         this.customer = (Customer) getIntent().getSerializableExtra(this.CUSTOMER_INFO_KEY);
         this.isPreOrder = getIntent().getBooleanExtra(SaleOrderActivity.IS_PRE_ORDER, false);
         this.isDelivery = getIntent().getBooleanExtra(SaleOrderActivity.IS_DELIVERY, false);
-        soldProductList = (ArrayList<SoldProduct>) getIntent().getSerializableExtra(this.SOLD_PROUDCT_LIST_KEY);
-        promotionArrayList = (ArrayList<Promotion>) getIntent().getSerializableExtra(PRESENT_PROUDCT_LIST_KEY);
+
+        if (getIntent().getSerializableExtra(SOLD_PROUDCT_LIST_KEY) != null) {
+            soldProductList = (ArrayList<SoldProduct>) getIntent().getSerializableExtra(SOLD_PROUDCT_LIST_KEY);
+        }
+
+        if (getIntent().getSerializableExtra(PRESENT_PROUDCT_LIST_KEY) != null) {
+            promotionArrayList = (ArrayList<Promotion>) getIntent().getSerializableExtra(PRESENT_PROUDCT_LIST_KEY);
+        }
 
         if (getIntent().getSerializableExtra(this.ORDERED_INVOICE_KEY) != null) {
             orderedInvoice = (Deliver) getIntent().getSerializableExtra(this.ORDERED_INVOICE_KEY);

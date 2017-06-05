@@ -95,9 +95,15 @@ public class TabFragmentPromotionGift extends Fragment {
                 promotionGiftForReport.setProductName(cursor.getString(cursor.getColumnIndex("PRODUCT_NAME")));
             }
 
-            cursor = sqLiteDatabase.rawQuery("SELECT P.PRODUCT_NAME, G.QUANTITY FROM PROMOTION_GIFT_ITEM G, PRODUCT P WHERE G.STOCK_ID = P.ID", null);
+            cursor = sqLiteDatabase.rawQuery("SELECT P.PRODUCT_NAME, G.QUANTITY FROM PROMOTION_GIFT_ITEM G, PRODUCT P WHERE G.STOCK_ID = P.ID AND PROMOTION_PLAN_ID = '" + promotionGiftForReport.getPromotionPlanId() + "'", null);
+            String gift = "";
             while (cursor.moveToNext()) {
-                promotionGiftForReport.setPromotionGiftName(cursor.getString(cursor.getColumnIndex("PRODUCT_NAME")));
+                if(cursor.getPosition() > 0 ) {
+                    gift += ", ";
+                }
+
+                gift += cursor.getString(cursor.getColumnIndex("PRODUCT_NAME"));
+                promotionGiftForReport.setPromotionGiftName(gift);
                 promotionGiftForReport.setPromotionGiftQuantity(cursor.getInt(cursor.getColumnIndex("QUANTITY")));
             }
 

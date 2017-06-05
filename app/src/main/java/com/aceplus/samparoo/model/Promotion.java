@@ -7,6 +7,9 @@ import java.io.Serializable;
  */
 
 public class Promotion implements Serializable {
+
+    String promotionPlanId;
+
     Double promotionPrice;
 
     String promotionProductId;
@@ -45,5 +48,13 @@ public class Promotion implements Serializable {
 
     public void setPromotionQty(int promotionQty) {
         this.promotionQty = promotionQty;
+    }
+
+    public String getPromotionPlanId() {
+        return promotionPlanId;
+    }
+
+    public void setPromotionPlanId(String promotionPlanId) {
+        this.promotionPlanId = promotionPlanId;
     }
 }

@@ -2380,7 +2380,7 @@ public class SyncActivity extends AppCompatActivity {
 
             String sizeInStoreShareNo = cursor.getString(cursor.getColumnIndex("size_in_store_share_id"));
             String productId = cursor.getString(cursor.getColumnIndex("product_id"));
-            int sizeInStoreSharePercent = cursor.getInt(cursor.getColumnIndex("size_in_store_share_percent"));
+            int sizeInStoreSharePercent = cursor.getInt(cursor.getColumnIndex("size_in_store_share_amount"));
 
             Cursor cursor1 = sqLiteDatabase.rawQuery("select * from PRODUCT where PRODUCT_ID='" + productId + "'", null);
 
@@ -2902,7 +2902,7 @@ public class SyncActivity extends AppCompatActivity {
                         services += "E ROUTE REPORT ";
                         if (!services.equals("")) {
                             services += " are successfully uploaded";
-                            Utils.commonDialog(services, SyncActivity.this);
+                            Utils.commonDialog("Successfully Uploaded. ", SyncActivity.this);
                         }
                     } else {
                         if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {

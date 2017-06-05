@@ -125,8 +125,21 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
 
         customer = (Customer) getIntent().getSerializableExtra(CUSTOMER_INFO_KEY);
-        soldProductList = (ArrayList<SoldProduct>) getIntent().getSerializableExtra(SOLD_PROUDCT_LIST_KEY);
-        promotionArrayList = (ArrayList<Promotion>) getIntent().getSerializableExtra(PRESENT_PROUDCT_LIST_KEY);
+        if (getIntent().getSerializableExtra(SOLD_PROUDCT_LIST_KEY) != null) {
+            soldProductList = (ArrayList<SoldProduct>) getIntent().getSerializableExtra(SOLD_PROUDCT_LIST_KEY);
+        }
+
+        if (getIntent().getSerializableExtra(PRESENT_PROUDCT_LIST_KEY) != null) {
+            promotionArrayList = (ArrayList<Promotion>) getIntent().getSerializableExtra(PRESENT_PROUDCT_LIST_KEY);
+        }
+        for(SoldProduct soldProduct : soldProductList) {
+            if(soldProduct.getPromotionArrayList().size() !=0) {
+                for(Promotion promotion : soldProduct.getPromotionArrayList()) {
+                    promotionArrayList.add(promotion);
+                }
+            }
+        }
+
         registerIDs();
 
         findViewById(R.id.advancedPaidAmountLayout).setVisibility(View.GONE);
