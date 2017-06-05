@@ -132,13 +132,6 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         if (getIntent().getSerializableExtra(PRESENT_PROUDCT_LIST_KEY) != null) {
             promotionArrayList = (ArrayList<Promotion>) getIntent().getSerializableExtra(PRESENT_PROUDCT_LIST_KEY);
         }
-        for(SoldProduct soldProduct : soldProductList) {
-            if(soldProduct.getPromotionArrayList().size() !=0) {
-                for(Promotion promotion : soldProduct.getPromotionArrayList()) {
-                    promotionArrayList.add(promotion);
-                }
-            }
-        }
 
         registerIDs();
 
