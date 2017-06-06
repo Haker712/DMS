@@ -2901,42 +2901,48 @@ public class SyncActivity extends AppCompatActivity {
         saleManRouteRequest.setPassword("");//it is empty string bcoz json format using gson cannot accept encrypted
 
         List<ERouteReport> eRouteReportList = getDatasForSaleManRoute();
-        List<DataForSaleManRoute> dataForSaleManRouteList = new ArrayList<>();
-        DataForSaleManRoute dataForSaleManRoute = new DataForSaleManRoute();
-        dataForSaleManRoute.setERouteReport(eRouteReportList);
-        dataForSaleManRouteList.add(dataForSaleManRoute);
-        saleManRouteRequest.setData(dataForSaleManRouteList);
 
-        paramData = getJsonFromObject(saleManRouteRequest);
-        Log.i("Param_SAL_ROUTE", paramData);
+        if(eRouteReportList.size() > 0) {
+            Utils.callDialog("Please wait...", this);
+            List<DataForSaleManRoute> dataForSaleManRouteList = new ArrayList<>();
+            DataForSaleManRoute dataForSaleManRoute = new DataForSaleManRoute();
+            dataForSaleManRoute.setERouteReport(eRouteReportList);
+            dataForSaleManRouteList.add(dataForSaleManRoute);
+            saleManRouteRequest.setData(dataForSaleManRouteList);
 
-        UploadService uploadService = RetrofitServiceFactory.createRealTimeService(UploadService.class);
-        Call<InvoiceResponse> call = uploadService.uploadSaleManRoute(paramData);
-        call.enqueue(new Callback<InvoiceResponse>() {
-            @Override
-            public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
-                if (response.code() == 200) {
-                    if (response.body().getAceplusStatusCode() == 200) {
-                        Utils.cancelDialog();
-                        Utils.commonDialog("Sale Man Route has successfully uploaded", SyncActivity.this);
-                    } else {
-                        if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
-                            onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+            paramData = getJsonFromObject(saleManRouteRequest);
+            Log.i("Param_SAL_ROUTE", paramData);
+
+            UploadService uploadService = RetrofitServiceFactory.createRealTimeService(UploadService.class);
+            Call<InvoiceResponse> call = uploadService.uploadSaleManRoute(paramData);
+            call.enqueue(new Callback<InvoiceResponse>() {
+                @Override
+                public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
+                    if (response.code() == 200) {
+                        if (response.body().getAceplusStatusCode() == 200) {
+                            Utils.cancelDialog();
+                            Utils.commonDialog("Sale Man Route has successfully uploaded", SyncActivity.this);
+                        } else {
+                            if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
+                                onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                            }
                         }
+
+                    } else {
+                        Utils.cancelDialog();
+                        Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
                     }
-
-                } else {
-                    Utils.cancelDialog();
-                    Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
                 }
-            }
 
-            @Override
-            public void onFailure(Call<InvoiceResponse> call, Throwable t) {
-                Utils.cancelDialog();
-                Utils.commonDialog(t.getMessage(), SyncActivity.this);
-            }
-        });
+                @Override
+                public void onFailure(Call<InvoiceResponse> call, Throwable t) {
+                    Utils.cancelDialog();
+                    Utils.commonDialog(t.getMessage(), SyncActivity.this);
+                }
+            });
+        } else {
+            Utils.commonDialog("No ERoute to upload", this);
+        }
     }
 
     private ArrayList<ERouteReport> getDatasForSaleManRoute() {
@@ -3252,6 +3258,7 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
+                        Utils.cancelDialog();
                         Utils.commonDialog("Successfully Uploaded. ", SyncActivity.this);
                     } else if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
                         onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));

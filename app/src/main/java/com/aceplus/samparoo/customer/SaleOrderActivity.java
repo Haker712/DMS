@@ -794,7 +794,7 @@ public class SaleOrderActivity extends AppCompatActivity {
         int count = 0;
         for(SoldProduct soldProduct : soldProductList) {
             Cursor cursorForPromotionGift = sqLiteDatabase.rawQuery("select * from " + DatabaseContract.PromotionGift.tb + " where " + DatabaseContract.PromotionGift.promotionPlanId + " = '" + promotionPlanId + "'" +
-                    " and " + DatabaseContract.PromotionGift.fromQuantity + " <= " + soldProduct.getProduct().getSoldQty() + " and " + DatabaseContract.PromotionGift.toQuantity + " >= " + soldProduct.getProduct().getSoldQty() + " and " + DatabaseContract.PromotionGift.stockId + " = " + soldProduct.getProduct().getStockId(), null);
+                    " and " + DatabaseContract.PromotionGift.fromQuantity + " <= " + soldProduct.getProduct().getSoldQty() + " and " + DatabaseContract.PromotionGift.toQuantity + " >= " + soldProduct.getProduct().getSoldQty() + " and " + DatabaseContract.PromotionGift.stockId + " = '" + soldProduct.getProduct().getStockId() + "'", null);
 
             while (cursorForPromotionGift.moveToNext()) {
                 count++;

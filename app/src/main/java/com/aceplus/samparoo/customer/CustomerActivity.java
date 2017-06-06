@@ -567,9 +567,26 @@ public class CustomerActivity extends AppCompatActivity {
             gpsTracker.showSettingsAlert();
         }
 
+        boolean flag1 = false, flag2 = false;
         if(latiDouble != null && longDouble !=null && latitude != null && longitude != null) {
 
-            if(latitude >= (latiDouble - 0.0001) && latitude <= (latiDouble + 0.0001) && longitude >= (longDouble - 0.0001) && longitude <= (longDouble + 0.0001)) {
+            if(latitude.equals(latiDouble - 0.0001)) {
+                flag1 = true;
+            } else if (latitude.equals(latiDouble + 0.0001)) {
+                flag1 = true;
+            } else if(latitude.equals(latiDouble)) {
+                flag1 = true;
+            }
+
+            if(longitude.equals(longDouble - 0.0001)) {
+                flag2 = true;
+            } else if (longitude.equals(longDouble + 0.0001)) {
+                flag2 = true;
+            } else if(longitude.equals(longDouble)) {
+                flag1 = true;
+            }
+
+            if(flag1 && flag2) {
                 return true;
             }
         }

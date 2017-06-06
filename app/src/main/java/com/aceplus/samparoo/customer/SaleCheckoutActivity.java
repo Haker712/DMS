@@ -555,12 +555,20 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         } else {
 
             if (isSameCustomer(customer.getId())) {
-
+                updateDepartureTimeForSalemanRoute(customer.getId());
                 updateSaleVisitRecord(customer.getId());
             }
 
             Utils.backToCustomer(SaleCheckoutActivity.this);
         }
+    }
+
+    private void updateDepartureTimeForSalemanRoute(int customerId) {
+        database.beginTransaction();
+        database.execSQL("update " + DatabaseContract.temp_for_saleman_route.TABLE + " set " + DatabaseContract.temp_for_saleman_route.DEPARTURE_TIME + " = '"+Utils.getCurrentDate(true)+"'" +
+                " where " + DatabaseContract.temp_for_saleman_route.CUSTOMER_ID + " = "+customerId+"");
+        database.setTransactionSuccessful();
+        database.endTransaction();
     }
 
     /**
@@ -641,9 +649,26 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             gpsTracker.showSettingsAlert();
         }
 
-        if (latiDouble != null && longDouble != null && latitude != null && longitude != null) {
+        boolean flag1 = false, flag2 = false;
+        if(latiDouble != null && longDouble !=null && latitude != null && longitude != null) {
 
-            if (latitude >= (latiDouble - 0.0001) && latitude <= (latiDouble + 0.0001) && longitude >= (longDouble - 0.0001) && longitude <= (longDouble + 0.0001)) {
+            if(latitude.equals(latiDouble - 0.0001)) {
+                flag1 = true;
+            } else if (latitude.equals(latiDouble + 0.0001)) {
+                flag1 = true;
+            } else if(latitude.equals(latiDouble)) {
+                flag1 = true;
+            }
+
+            if(longitude.equals(longDouble - 0.0001)) {
+                flag2 = true;
+            } else if (longitude.equals(longDouble + 0.0001)) {
+                flag2 = true;
+            } else if(longitude.equals(longDouble)) {
+                flag1 = true;
+            }
+
+            if(flag1 && flag2) {
                 return true;
             }
         }
