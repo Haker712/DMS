@@ -627,6 +627,7 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
 
             database.insert("CUSTOMER", null, contentValues);
             LoginActivity.myEditor.putInt(Constant.MAX_KEY, LoginActivity.mySharedPreference.getInt(Constant.MAX_KEY, 0) + 1);
+            LoginActivity.myEditor.commit();
         } catch (NullPointerException e) {
             e.printStackTrace();
             Utils.backToLogin(this);

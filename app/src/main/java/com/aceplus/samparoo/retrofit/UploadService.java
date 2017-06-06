@@ -64,4 +64,8 @@ public interface UploadService {
     @FormUrlEncoded
     @POST("deviceIssue/status")
     Call<InvoiceResponse> confirmDownloadSuccess(@Field("param_data") String paramData);
+
+    @FormUrlEncoded
+    @POST("upload/unsellReason")
+    Call<InvoiceResponse> uploadUnsellReason(@Field("param_data") String paramData);
 }

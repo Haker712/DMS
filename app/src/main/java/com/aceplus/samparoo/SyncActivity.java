@@ -21,17 +21,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aceplus.samparoo.customer.SaleOrderCheckoutActivity;
-import com.aceplus.samparoo.model.CompetitorActivity;
-import com.aceplus.samparoo.model.Customer;
-import com.aceplus.samparoo.model.Posm;
-import com.aceplus.samparoo.model.PosmByCustomer;
-import com.aceplus.samparoo.model.Promotion;
-import com.aceplus.samparoo.model.SaleReturn;
-import com.aceplus.samparoo.model.SaleReturnDetail;
-import com.aceplus.samparoo.model.ShopType;
+import com.aceplus.samparoo.model.*;
 import com.aceplus.samparoo.model.forApi.*;
-import com.aceplus.samparoo.model.PreOrder;
-import com.aceplus.samparoo.model.PreOrderProduct;
+import com.aceplus.samparoo.model.forApi.CustomerFeedback;
 import com.aceplus.samparoo.retrofit.DownloadService;
 import com.aceplus.samparoo.retrofit.RetrofitServiceFactory;
 import com.aceplus.samparoo.retrofit.UploadService;
@@ -134,6 +126,36 @@ public class SyncActivity extends AppCompatActivity {
     @OnClick(R.id.buttonReissue)
     void reissue() {
         downloadReissueFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
+    }
+
+    @OnClick(R.id.buttonSaleVisitRecord)
+    void saleVisit() {
+        uploadSaleManRoute();
+    }
+
+    private List<TSaleFeedbackData> getUnsellReasonFromDb() {
+
+        List<TSaleFeedback> feedbackList = new ArrayList<>();
+
+        Cursor feedbackCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + DatabaseContract.TSaleFeedback.tb, null);
+
+        while(feedbackCursor.moveToNext()) {
+            TSaleFeedback customerFeedback = new TSaleFeedback();
+            customerFeedback.setId(feedbackCursor.getString(feedbackCursor.getColumnIndex(DatabaseContract.TSaleFeedback.INVOICE_NO)));
+            customerFeedback.setInvoiceDate(feedbackCursor.getString(feedbackCursor.getColumnIndex(DatabaseContract.TSaleFeedback.INVOICE_DATE)));
+            customerFeedback.setCustomerId(feedbackCursor.getString(feedbackCursor.getColumnIndex(DatabaseContract.TSaleFeedback.CUSTOMER_NO)));
+            customerFeedback.setSaleManId(feedbackCursor.getInt(feedbackCursor.getColumnIndex(DatabaseContract.TSaleFeedback.SALEMAN_ID)));
+            customerFeedback.setCustomerFeedbackId(feedbackCursor.getInt(feedbackCursor.getColumnIndex(DatabaseContract.TSaleFeedback.FEEDBACK_NO)));
+            customerFeedback.setDescription(feedbackCursor.getString(feedbackCursor.getColumnIndex(DatabaseContract.TSaleFeedback.DESCRIPTION)));
+            customerFeedback.setRemark(feedbackCursor.getString(feedbackCursor.getColumnIndex(DatabaseContract.TSaleFeedback.REMARK)));
+            feedbackList.add(customerFeedback);
+        }
+
+        List<TSaleFeedbackData> feedbackDataList = new ArrayList<>();
+        TSaleFeedbackData tSaleFeedbackData = new TSaleFeedbackData();
+        tSaleFeedbackData.setFeedBackList(feedbackList);
+        feedbackDataList.add(tSaleFeedbackData);
+        return feedbackDataList;
     }
 
     /**
@@ -2732,7 +2754,7 @@ public class SyncActivity extends AppCompatActivity {
                             services += ",";
                         }
                         services += "CUSTOMER VISIT RECORD ";
-                        uploadSaleManRoute();
+                        uploadUnsellReasonToServer();
                     } else {
                         if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
                             onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
@@ -2896,14 +2918,7 @@ public class SyncActivity extends AppCompatActivity {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
                         Utils.cancelDialog();
-                        if (!services.equals("")) {
-                            services += ",";
-                        }
-                        services += "E ROUTE REPORT ";
-                        if (!services.equals("")) {
-                            services += " are successfully uploaded";
-                            Utils.commonDialog("Successfully Uploaded. ", SyncActivity.this);
-                        }
+                        Utils.commonDialog("Sale Man Route has successfully uploaded", SyncActivity.this);
                     } else {
                         if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
                             onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
@@ -3211,6 +3226,45 @@ public class SyncActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ProductResponse> call, Throwable t) {
+                Utils.cancelDialog();
+                Utils.commonDialog(t.getMessage(), SyncActivity.this);
+            }
+        });
+    }
+
+    private void uploadUnsellReasonToServer() {
+        CustomerFeedbackRequest feedbackRequest = new CustomerFeedbackRequest();
+        feedbackRequest.setSiteActivationKey(Constant.SITE_ACTIVATION_KEY);
+        feedbackRequest.setTabletActivationKey(Constant.TABLET_ACTIVATION_KEY);
+        feedbackRequest.setUserId(saleman_Id);
+        feedbackRequest.setPassword("");//it is empty string bcoz json format using gson cannot accept encrypted
+        feedbackRequest.setRoute(String.valueOf(getRouteID(saleman_Id)));
+        feedbackRequest.setData(getUnsellReasonFromDb());
+
+        String paramData = getJsonFromObject(feedbackRequest);
+
+        Log.i("ParamData", paramData);
+
+        UploadService uploadService = RetrofitServiceFactory.createService(UploadService.class);
+        Call<InvoiceResponse> call = uploadService.uploadUnsellReason(paramData);
+        call.enqueue(new Callback<InvoiceResponse>() {
+            @Override
+            public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
+                if (response.code() == 200) {
+                    if (response.body().getAceplusStatusCode() == 200) {
+                        Utils.commonDialog("Successfully Uploaded. ", SyncActivity.this);
+                    } else if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    }
+
+                } else {
+                    Utils.cancelDialog();
+                    Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<InvoiceResponse> call, Throwable t) {
                 Utils.cancelDialog();
                 Utils.commonDialog(t.getMessage(), SyncActivity.this);
             }

@@ -646,7 +646,7 @@ public class CustomerActivity extends AppCompatActivity {
                         while (cursor.moveToNext()) {
 
                             customerFeedbacks.add(new CustomerFeedback(
-                                    cursor.getString(cursor.getColumnIndex(DatabaseContract.CustomerFeedback.INVOICE_NO))
+                                    cursor.getString(cursor.getColumnIndex(DatabaseContract.CustomerFeedback.ID))
                                     , cursor.getString(cursor.getColumnIndex(DatabaseContract.CustomerFeedback.INVOICE_DATE))
                                     , cursor.getString(cursor.getColumnIndex(DatabaseContract.CustomerFeedback.REMARK))));
                         }
@@ -669,10 +669,10 @@ public class CustomerActivity extends AppCompatActivity {
 
                                         String deviceId = Utils.getDeviceId(CustomerActivity.this);
                                         String invoiceNumber = Utils.getInvoiceNo(getApplicationContext(), salemanId, String.valueOf(getLocationCode()), Utils.MODE_CUSTOMER_FEEDBACK);
-                                        String invoiceDate = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
+                                        String invoiceDate = customerFeedbacks.get(descriptionsSpinner.getSelectedItemPosition()).getInvoiceDate();
                                         int customerNumber = customer.getId();
                                         String locationNumber = String.valueOf(getLocationCode());
-                                        String feedbackNumber = customerFeedbacks.get(descriptionsSpinner.getSelectedItemPosition()).getInvoiceNumber();
+                                        int feedbackNumber = Integer.parseInt(customerFeedbacks.get(descriptionsSpinner.getSelectedItemPosition()).getInvoiceNumber());
                                         String feedbackDate = customerFeedbacks.get(descriptionsSpinner.getSelectedItemPosition()).getInvoiceDate();
                                         String serialNumber = "";
                                         String description = customerFeedbacks.get(descriptionsSpinner.getSelectedItemPosition()).getDescription();

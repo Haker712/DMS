@@ -381,9 +381,20 @@ public class DatabaseContract {
         public static final String INVOICE_NO = "INV_NO";
         public static final String INVOICE_DATE = "INV_DATE";
         public static final String REMARK = "REMARK";
+    }
 
+    public abstract class TSaleFeedback {
 
-
+        public static final String tb = "DID_CUSTOMER_FEEDBACK";
+        public static final String ID = "ID";
+        public static final String SALEMAN_ID = "SALEMAN_ID";
+        public static final String INVOICE_NO = "INV_NO";
+        public static final String INVOICE_DATE = "INV_DATE";
+        public static final String CUSTOMER_NO = "CUSTOMER_NO";
+        public static final String FEEDBACK_NO = "FEEDBACK_NO";
+        public static final String FEEDBACK_DATE = "FEEDBACK_DATE";
+        public static final String DESCRIPTION = "DESCRIPTION";
+        public static final String REMARK = "REMARK";
     }
 
     public abstract class Product_Category{
