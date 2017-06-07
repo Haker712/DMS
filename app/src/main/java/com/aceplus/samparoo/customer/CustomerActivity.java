@@ -483,7 +483,7 @@ public class CustomerActivity extends AppCompatActivity {
         contentValues.put(DatabaseContract.temp_for_saleman_route.LATITUDE, customer.getLatitude());
         contentValues.put(DatabaseContract.temp_for_saleman_route.LONGITUDE, customer.getLongitude());
         contentValues.put(DatabaseContract.temp_for_saleman_route.ARRIVAL_TIME, Utils.getCurrentDate(true));
-        contentValues.put(DatabaseContract.temp_for_saleman_route.DEPARTURE_TIME, "");
+        contentValues.put(DatabaseContract.temp_for_saleman_route.DEPARTURE_TIME, Utils.getCurrentDate(true));
         contentValues.put(DatabaseContract.temp_for_saleman_route.ROUTE_ID, getRouteID(String.valueOf(saleman_id)));
         database.insert(DatabaseContract.temp_for_saleman_route.TABLE, null, contentValues);
         database.setTransactionSuccessful();
@@ -570,23 +570,23 @@ public class CustomerActivity extends AppCompatActivity {
         boolean flag1 = false, flag2 = false;
         if(latiDouble != null && longDouble !=null && latitude != null && longitude != null) {
 
-            if(latitude.equals(latiDouble - 0.0001)) {
+            if(latitude.equals(latiDouble - 0.001)) {
                 flag1 = true;
-            } else if (latitude.equals(latiDouble + 0.0001)) {
+            } else if (latitude.equals(latiDouble + 0.001)) {
                 flag1 = true;
             } else if(latitude.equals(latiDouble)) {
                 flag1 = true;
             }
 
-            if(longitude.equals(longDouble - 0.0001)) {
+            if(longitude.equals(longDouble - 0.001)) {
                 flag2 = true;
-            } else if (longitude.equals(longDouble + 0.0001)) {
+            } else if (longitude.equals(longDouble + 0.001)) {
                 flag2 = true;
             } else if(longitude.equals(longDouble)) {
                 flag1 = true;
             }
 
-            if(flag1 && flag2) {
+            if(flag1 || flag2) {
                 return true;
             }
         }

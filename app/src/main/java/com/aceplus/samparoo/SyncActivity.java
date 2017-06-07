@@ -1408,7 +1408,7 @@ public class SyncActivity extends AppCompatActivity {
 
         Log.i("ParamData", paramData);
 
-        UploadService uploadService = RetrofitServiceFactory.createRealTimeService(UploadService.class);
+        UploadService uploadService = RetrofitServiceFactory.createService(UploadService.class);
 
         Call<InvoiceResponse> call = uploadService.uploadPreOrderData(paramData);
 

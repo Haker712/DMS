@@ -667,7 +667,7 @@ public class SaleActivity extends AppCompatActivity {
         String promotionProductName = "";
         int promotionProductQty = 0;
 
-        Cursor cursor = sqLiteDatabase.rawQuery("select * from " + DatabaseContract.PromotionDate.tb + "", null);
+        Cursor cursor = sqLiteDatabase.rawQuery("select * from " + DatabaseContract.PromotionDate.tb + " WHERE DATE(PROMOTION_DATE) = DATE('" + Utils.getCurrentDate(true) + "')", null);
         Log.i("cursor", cursor.getCount() + "");
 
         int buy_qty = soldProduct.getProduct().getSoldQty();
@@ -854,12 +854,12 @@ public class SaleActivity extends AppCompatActivity {
         String latiString = "", longiString = "";
         Double latitude = 0.0, longitude = 0.0, latiDouble = 0.0, longDouble = 0.0;
 
-        while (locationCursor.moveToNext()) {
+        while(locationCursor.moveToNext()) {
             latiString = locationCursor.getString(locationCursor.getColumnIndex("LATITUDE"));
             longiString = locationCursor.getString(locationCursor.getColumnIndex("LONGITUDE"));
         }
 
-        if (latiString != null && longiString != null && !latiString.equals("") && !longiString.equals("") && !latiString.equals("0") && !longiString.equals("0")) {
+        if(latiString != null && longiString != null && !latiString.equals("") && !longiString.equals("") && !latiString.equals("0") && !longiString.equals("0")) {
             latiDouble = Double.parseDouble(latiString.substring(0, 7));
             longDouble = Double.parseDouble(longiString.substring(0, 7));
         }
@@ -869,9 +869,9 @@ public class SaleActivity extends AppCompatActivity {
             String lat = String.valueOf(gpsTracker.getLatitude());
             String lon = String.valueOf(gpsTracker.getLongitude());
 
-            if (!lat.equals(null) && !lon.equals(null) && lat.length() > 6 && lon.length() > 6) {
-                latitude = Double.parseDouble(lat.substring(0, 7));
-                longitude = Double.parseDouble(lon.substring(0, 7));
+            if(!lat.equals(null) && !lon.equals(null) && lat.length() > 6 && lon.length() > 6){
+                latitude = Double.parseDouble(lat.substring(0,7));
+                longitude = Double.parseDouble(lon.substring(0,7));
             }
         } else {
             gpsTracker.showSettingsAlert();
@@ -880,23 +880,23 @@ public class SaleActivity extends AppCompatActivity {
         boolean flag1 = false, flag2 = false;
         if(latiDouble != null && longDouble !=null && latitude != null && longitude != null) {
 
-            if(latitude.equals(latiDouble - 0.0001)) {
+            if(latitude.equals(latiDouble - 0.001)) {
                 flag1 = true;
-            } else if (latitude.equals(latiDouble + 0.0001)) {
+            } else if (latitude.equals(latiDouble + 0.001)) {
                 flag1 = true;
             } else if(latitude.equals(latiDouble)) {
                 flag1 = true;
             }
 
-            if(longitude.equals(longDouble - 0.0001)) {
+            if(longitude.equals(longDouble - 0.001)) {
                 flag2 = true;
-            } else if (longitude.equals(longDouble + 0.0001)) {
+            } else if (longitude.equals(longDouble + 0.001)) {
                 flag2 = true;
             } else if(longitude.equals(longDouble)) {
                 flag1 = true;
             }
 
-            if(flag1 && flag2) {
+            if(flag1 || flag2) {
                 return true;
             }
         }
