@@ -651,21 +651,22 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
         boolean flag1 = false, flag2 = false;
         if(latiDouble != null && longDouble !=null && latitude != null && longitude != null) {
+            Double lati1 = latiDouble - 0.002;
+            Double lati2 = latiDouble + 0.002;
 
-            if(latitude.equals(latiDouble - 0.001)) {
-                flag1 = true;
-            } else if (latitude.equals(latiDouble + 0.001)) {
+            if(latitude >= lati1 && latitude <= lati2) {
                 flag1 = true;
             } else if(latitude.equals(latiDouble)) {
                 flag1 = true;
             }
 
-            if(longitude.equals(longDouble - 0.001)) {
-                flag2 = true;
-            } else if (longitude.equals(longDouble + 0.001)) {
+            Double longi1 = longDouble - 0.002;
+            Double longi2 = longDouble + 0.002;
+
+            if(longitude >= longi1 && longitude <= longi2) {
                 flag2 = true;
             } else if(longitude.equals(longDouble)) {
-                flag1 = true;
+                flag2 = true;
             }
 
             if(flag1 || flag2) {

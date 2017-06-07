@@ -261,7 +261,7 @@ public class CustomerActivity extends AppCompatActivity {
                     Log.i("distance", distance + "");
 
                     if (distance >= 50) {
-                        updateDepartureTimeForSalemanRoute(customer_id);
+                        //updateDepartureTimeForSalemanRoute(customer_id);
                     }
                 }
             }
@@ -273,10 +273,12 @@ public class CustomerActivity extends AppCompatActivity {
         }
     }
 
-    private void updateDepartureTimeForSalemanRoute(int customerId) {
+    private void updateTimeForSalemanRoute(String saleman_Id, int customerId) {
+        String query = "update " + DatabaseContract.temp_for_saleman_route.TABLE + " set " + DatabaseContract.temp_for_saleman_route.ARRIVAL_TIME + " = '"+Utils.getCurrentDate(true)+"', " + DatabaseContract.temp_for_saleman_route.DEPARTURE_TIME + " = '"+Utils.getCurrentDate(true)+"'" +
+                " where " + DatabaseContract.temp_for_saleman_route.SALEMAN_ID + " = "+saleman_Id+"" +
+                " and " + DatabaseContract.temp_for_saleman_route.CUSTOMER_ID + " = "+customer.getId()+"";
         database.beginTransaction();
-        database.execSQL("update " + DatabaseContract.temp_for_saleman_route.TABLE + " set " + DatabaseContract.temp_for_saleman_route.DEPARTURE_TIME + " = '"+Utils.getCurrentDate(true)+"'" +
-                " where " + DatabaseContract.temp_for_saleman_route.CUSTOMER_ID + " = "+customerId+"");
+        database.execSQL(query);
         database.setTransactionSuccessful();
         database.endTransaction();
     }
@@ -416,6 +418,8 @@ public class CustomerActivity extends AppCompatActivity {
                             " and " + DatabaseContract.temp_for_saleman_route.CUSTOMER_ID + " = "+customer.getId()+"", null);
                     if (cursorForSaleManRoute.getCount() == 0) {
                         insertFirstDataForSalemanRoute(saleman_id, customer.getId());
+                    } else if(cursorForSaleManRoute.getCount() > 0) {
+                        updateTimeForSalemanRoute(saleman_id, customer.getId());
                     }
                 }
             }
@@ -569,21 +573,22 @@ public class CustomerActivity extends AppCompatActivity {
 
         boolean flag1 = false, flag2 = false;
         if(latiDouble != null && longDouble !=null && latitude != null && longitude != null) {
+            Double lati1 = latiDouble - 0.002;
+            Double lati2 = latiDouble + 0.002;
 
-            if(latitude.equals(latiDouble - 0.001)) {
-                flag1 = true;
-            } else if (latitude.equals(latiDouble + 0.001)) {
+            if(latitude >= lati1 && latitude <= lati2) {
                 flag1 = true;
             } else if(latitude.equals(latiDouble)) {
                 flag1 = true;
             }
 
-            if(longitude.equals(longDouble - 0.001)) {
-                flag2 = true;
-            } else if (longitude.equals(longDouble + 0.001)) {
+            Double longi1 = longDouble - 0.002;
+            Double longi2 = longDouble + 0.002;
+
+            if(longitude >= longi1 && longitude <= longi2) {
                 flag2 = true;
             } else if(longitude.equals(longDouble)) {
-                flag1 = true;
+                flag2 = true;
             }
 
             if(flag1 || flag2) {
