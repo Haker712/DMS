@@ -3259,6 +3259,7 @@ public class SyncActivity extends AppCompatActivity {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
                         Utils.cancelDialog();
+                        deleteDataAfterUpload(DatabaseContract.TSaleFeedback.tb, null,null);
                         Utils.commonDialog("Successfully Uploaded. ", SyncActivity.this);
                     } else if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
                         onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
