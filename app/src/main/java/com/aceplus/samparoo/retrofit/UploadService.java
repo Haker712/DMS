@@ -26,6 +26,10 @@ public interface UploadService {
     Call<InvoiceResponse> uploadPreOrderData(@Field("param_data") String paramData);
 
     @FormUrlEncoded
+    @POST("Sale/GetTSaleOrderInfoCollection/0")
+    Call<InvoiceResponse> uploadRealTimePreOrderData(@Field("param_data") String paramData);
+
+    @FormUrlEncoded
     @POST("upload/tsalereturn")
     Call<InvoiceResponse> uploadSaleReturn(@Field("param_data") String paramData);
 
@@ -56,4 +60,12 @@ public interface UploadService {
     @FormUrlEncoded
     @POST("upload/eRoute")
     Call<InvoiceResponse> uploadSaleManRoute(@Field("param_data") String paramData);
+
+    @FormUrlEncoded
+    @POST("deviceIssue/status")
+    Call<InvoiceResponse> confirmDownloadSuccess(@Field("param_data") String paramData);
+
+    @FormUrlEncoded
+    @POST("upload/unsellReason")
+    Call<InvoiceResponse> uploadUnsellReason(@Field("param_data") String paramData);
 }

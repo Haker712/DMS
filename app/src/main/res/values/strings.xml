@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">AcePlus DMS</string>
 
-    <string name="google_map_api_key">AIzaSyCgBYPxRZ0ds7ZEeeTFnSe6Fd6f6cSPVM4</string>
+    <string name="google_map_api_key">AIzaSyAPBZAwnNfjVOWX04mT_ex2WI9bwus9srI</string>
 
     <string name="home_title">HOME</string>
     <string name="username_label">USER NAME : </string>
@@ -85,7 +85,7 @@
     <string name="sale_checkout">SALE CHECKOUT</string>
     <string name="volume_discount">Vol: Discount</string>
     <string name="sale_upload_success">Sale Upload Successfully.</string>
-    <string name="download_success">Successfully downloaded.</string>
+    <string name="download_success">Download complete.</string>
     <string name="title_activity_sale_exchange">SaleExchangeActivity</string>
     <string name="promotion_price">PROMOTION PRICE</string>
     <string name="promotion_gift">PROMOTION GIFT</string>
@@ -104,5 +104,18 @@
     <string name="no_download_data_error">Please download information!</string>
     <string name="sale_exchange">SALE EXCHANGE</string>
     <string name="upload_succes_msg">Uploading success.</string>
+
+    <string name="vd_title">VOLUME DISCOUNT</string>
+    <string name="vd_filter_title">VOLUME DISCOUNT FILTER</string>
+    <string name="vd_from_date">FROM DATE</string>
+    <string name="vd_to_date">TO DATE</string>
+    <string name="vd_from_amt">FROM AMOUNT</string>
+    <string name="vd_to_amt">TO AMOUNT</string>
+    <string name="vd_discount">DISCOUNT PERCENT</string>
+    <string name="vd_discount_amount">DISCOUNT AMOUNT</string>
+    <string name="vd_discount_price">DISCOUNT PRICE</string>
+    <string name="vd_exclude">EXCLUDE</string>
+    <string name="vd_filter_category">CATEGORY</string>
+    <string name="vd_filter_group">GROUP</string>
 
 </resources>

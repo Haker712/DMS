@@ -42,8 +42,6 @@ public class ReportHomeActivity extends FragmentActivity {
 
     JSONObject userInfo;
 
-
-
     ImageView cancelImg;
     Spinner reportsSpinner;
 
@@ -551,13 +549,14 @@ public class ReportHomeActivity extends FragmentActivity {
                 //  saleReturnReportJsonObject.put("customerId", cursor.getString(cursor.getColumnIndex("CUSTOMER_ID")));
 
                 String customer_Id = cursor.getString(cursor.getColumnIndex("CUSTOMER_ID"));
+                saleReturnReportJsonObject.put("customerId", cursor.getString(cursor.getColumnIndex("CUSTOMER_ID")));
 
             } catch (JSONException e) {
 
                 e.printStackTrace();
             }
 
-            Cursor cur_CusId = database.rawQuery("select * from CUSTOMER", null);
+            Cursor cur_CusId = database.rawQuery("select * from CUSTOMER WHERE ID = '" + cursor.getString(cursor.getColumnIndex("CUSTOMER_ID")) + "'", null);
 
             while (cur_CusId.moveToNext()) {
 
@@ -632,7 +631,7 @@ public class ReportHomeActivity extends FragmentActivity {
 
                 Cursor cursorForCustomer = database.rawQuery(
                         "SELECT * FROM CUSTOMER"
-                                + " WHERE CUSTOMER_ID = \"" + cursor.getString(cursor.getColumnIndex("CUSTOMER_NO")) + "\""
+                                + " WHERE id = \"" + cursor.getString(cursor.getColumnIndex("CUSTOMER_NO")) + "\""
                         , null);
                 if (cursorForCustomer.moveToNext()) {
 

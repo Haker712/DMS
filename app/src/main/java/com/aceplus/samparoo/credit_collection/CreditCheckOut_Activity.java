@@ -24,9 +24,11 @@ import android.widget.TextView;
 
 
 import com.aceplus.samparoo.R;
+import com.aceplus.samparoo.customer.SaleCheckoutActivity;
 import com.aceplus.samparoo.model.CreditInvoice;
 import com.aceplus.samparoo.model.CreditInvoiceItems;
 import com.aceplus.samparoo.model.CustomerCredit;
+import com.aceplus.samparoo.myinterface.OnActionClickListener;
 import com.aceplus.samparoo.utils.Database;
 import com.aceplus.samparoo.utils.DatabaseContract;
 import com.aceplus.samparoo.utils.Utils;
@@ -37,7 +39,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class CreditCheckOut_Activity extends Activity {
+public class CreditCheckOut_Activity extends Activity implements OnActionClickListener {
 
     private ListView creditListView;
     private TextView totalAmountTxt;
@@ -85,7 +87,7 @@ public class CreditCheckOut_Activity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_credit_collection);
-
+        Utils.setOnActionClickListener(this);
         creditDate = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
         database = new Database(this).getDataBase();
         customerCredit = (CustomerCredit) getIntent().getSerializableExtra(CREDIT_KEY);
@@ -365,30 +367,7 @@ public class CreditCheckOut_Activity extends Activity {
         saveImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (receiptEdit.getText().toString().length() == 0) {
-
-                    new AlertDialog.Builder(CreditCheckOut_Activity.this)
-                            .setTitle("Alert")
-                            .setMessage("Your must provide 'Receipt Person'.")
-                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-
-                                @Override
-                                public void onClick(DialogInterface arg0, int arg1) {
-
-                                    receiptEdit.requestFocus();
-                                }
-                            })
-                            .show();
-                    return;
-                }
-
-                if(totalPayLayout.getVisibility() == View.VISIBLE) {
-                    insertIntoDB(calculatePayAmount(payAmountEdit.getText().toString()));
-                } else {
-                    insertIntoDB(calculatePayAmount(itemPayEdit.getText().toString()));
-                }
-
-                Utils.backToCustomerVisit(CreditCheckOut_Activity.this);
+                Utils.askConfirmationDialog("Save", "Do you want to confirm?", "", CreditCheckOut_Activity.this);
             }
         });
     }
@@ -528,6 +507,43 @@ public class CreditCheckOut_Activity extends Activity {
             locationCodeName = cursorForLocation.getString(cursorForLocation.getColumnIndex(DatabaseContract.Location.no));
         }
         return locationCode;
+    }
+
+    @Override
+    public void onActionClick(String type) {
+        if (receiptEdit.getText().toString().length() == 0) {
+
+            new AlertDialog.Builder(CreditCheckOut_Activity.this)
+                    .setTitle("Alert")
+                    .setMessage("Your must provide 'Receipt Person'.")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface arg0, int arg1) {
+
+                            receiptEdit.requestFocus();
+                        }
+                    })
+                    .show();
+            return;
+        }
+
+        if(totalPayLayout.getVisibility() == View.VISIBLE) {
+            if(payAmountEdit.getText().toString().equals("")) {
+                payAmountEdit.setError("Please enter pay amount");
+            } else {
+                insertIntoDB(calculatePayAmount(payAmountEdit.getText().toString()));
+                Utils.backToCustomerVisit(CreditCheckOut_Activity.this);
+            }
+
+        } else {
+            if(itemPayEdit.getText().toString().equals("")) {
+                itemPayEdit.setError("Please enter pay amount");
+            } else {
+                insertIntoDB(calculatePayAmount(itemPayEdit.getText().toString()));
+                Utils.backToCustomerVisit(CreditCheckOut_Activity.this);
+            }
+        }
     }
 
     public class CreditCollectAdapter extends ArrayAdapter<CreditInvoice> {

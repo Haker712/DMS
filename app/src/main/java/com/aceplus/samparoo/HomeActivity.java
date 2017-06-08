@@ -69,9 +69,13 @@ public class HomeActivity extends AppCompatActivity implements OnActionClickList
 
         //toolbarTitle.setText(R.string.home_label);
         //Toast.makeText(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, ""), Toast.LENGTH_SHORT).show();
-
-        if (LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NAME, "") != null) {
-            textViewUserName.setText(LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NAME, ""));
+        try {
+            if (LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NAME, "") != null) {
+                textViewUserName.setText(LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NAME, ""));
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Utils.backToLogin(this);
         }
 
         textViewDate.setText(Utils.getCurrentDate(false));

@@ -1,10 +1,15 @@
 package com.aceplus.samparoo.model;
 
+import java.io.Serializable;
+
 /**
  * Created by haker on 2/13/17.
  */
 
-public class Promotion {
+public class Promotion implements Serializable {
+
+    String promotionPlanId;
+
     Double promotionPrice;
 
     String promotionProductId;
@@ -43,5 +48,13 @@ public class Promotion {
 
     public void setPromotionQty(int promotionQty) {
         this.promotionQty = promotionQty;
+    }
+
+    public String getPromotionPlanId() {
+        return promotionPlanId;
+    }
+
+    public void setPromotionPlanId(String promotionPlanId) {
+        this.promotionPlanId = promotionPlanId;
     }
 }

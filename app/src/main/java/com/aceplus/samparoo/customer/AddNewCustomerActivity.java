@@ -3,6 +3,7 @@ package com.aceplus.samparoo.customer;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -159,8 +160,10 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
             }
         } catch (JSONException e) {
             e.printStackTrace();
+        } catch(NullPointerException e){
+            e.printStackTrace();
+            Utils.backToLogin(this);
         }
-
     }
 
     private void registerIDs() {
@@ -327,7 +330,7 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
                 intent.putExtra("contactPerson", contactPersonEditText.getText().toString());
                 intent.putExtra("zonePosition", "");
                 intent.putExtra("townshipPosition", String.valueOf(townshipSpinner.getSelectedItemPosition()));
-                intent.putExtra("customerCategoryPosition", String.valueOf(customerCategorySpinner.getSelectedItemPosition()));
+                //intent.putExtra("customerCategoryPosition", String.valueOf(customerCategorySpinner.getSelectedItemPosition()));
                 intent.putExtra("customerLat", customerLat);
                 intent.putExtra("customerLng", customerLng);
                 startActivity(intent);
@@ -350,12 +353,15 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
         if (!(putcontactPerson == null)) {
             contactPersonEditText.setText(putcontactPerson);
         }
-     /*   if (!(putzonePosition == null)) {
+        /*
+        if (!(putzonePosition == null)) {
             zoneSpinner.setSelection(Integer.parseInt(putzonePosition));
-        }*/
+        }
         if (!(putcustomerCategoryPosition == null)) {
             customerCategorySpinner.setSelection(Integer.parseInt(putcustomerCategoryPosition));
         }
+        */
+
         if (!(puttownshipPosition == null)) {
             townshipSpinner.setSelection(Integer.parseInt(puttownshipPosition));
         }
@@ -563,26 +569,19 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
             addressEditText.setError("Address is required.");
             isErrorFlag = true;
         }
-//                if (customerLocationTxt.getText().length() == 0) {
-//                    customerLocationTxt.setError("Custoemr Location is required.");
-//                    isErrorFlag = true;
-//                }
+
+        if (customerLocationTxt.getText().length() == 0) {
+            customerLocationTxt.setError("Custoemr Location is required.");
+            isErrorFlag = true;
+        }
+
         String currentTime = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss").format(new Date());
-
-
-//                    userId = userInfo.getString("userId");
-//                    zoneCode = zoneList.get(zoneSpinner.getSelectedItemPosition()).getString("zoneCode");
-//                    townshipNumber = townshipList.get(townshipSpinner.getSelectedItemPosition()).getString("townshipNumber");
-//                    townshipName = townshipList.get(townshipSpinner.getSelectedItemPosition()).getString("townshipName");
-//                    customerCategoryId = customerCategoryList.get(customerCategorySpinner.getSelectedItemPosition()).getString("id");
-//                    customerCategoryName = customerCategoryList.get(customerCategorySpinner.getSelectedItemPosition()).getString("name");
-
 
         customerName = customerNameEditText.getText().toString();
         contactPerson = contactPersonEditText.getText().toString();
         phoneNo = phoneNumberEditText.getText().toString();
         address = addressEditText.getText().toString();
-
+        String[] location = customerLocationTxt.getText().toString().split(",");
 
         Log.i("CS", Constant.SALEMAN_ID);
 
@@ -594,73 +593,62 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
             return;
         }
 
-//                String sql = "INSERT INTO CUSTOMER(CUSTOMER_ID,CUSTOMER_NAME,PH,ADDRESS,contact_person,zone_no,customer_category_no,township_number,LATITUDE,LONGITUDE,flag) VALUES("
-//                        + "\"" + customerId + "\","
-//                        + "\"" + customerNameEditText.getText().toString() + "\","
-//                        + "\"" + phoneNumberEditText.getText().toString() + "\","
-//                        + "\"" + addressEditText.getText().toString() + "\","
-//                        + "\"" + contactPersonEditText.getText().toString() + "\","
-//                        + "\"" + zoneCode + "\","
-//                        + "\"" + customerCategoryId + "\","
-//                        + "\"" + townshipNumber + "\","
-//                        + "\"" + customerLat + "\","
-//                        + "\"" + customerLng + "\","
-//                        + "\"" + 1 + "\""
-//                        + ")";
+        try {
+            customerId = userId + Utils.getCurrentDate(false) + new DecimalFormat("00").format(LoginActivity.mySharedPreference.getInt(Constant.ADDNEWCUSTOMERCOUNT, 0) + 1.0);
 
-        customerId = userId + Utils.getCurrentDate(false) + new DecimalFormat("00").format(LoginActivity.mySharedPreference.getInt(Constant.ADDNEWCUSTOMERCOUNT, 0) + 1.0);
-        LoginActivity.myEditor.putInt(Constant.ADDNEWCUSTOMERCOUNT, LoginActivity.mySharedPreference.getInt(Constant.ADDNEWCUSTOMERCOUNT, 0) + 1);
-        LoginActivity.myEditor.commit();
+            LoginActivity.myEditor.putInt(Constant.ADDNEWCUSTOMERCOUNT, LoginActivity.mySharedPreference.getInt(Constant.ADDNEWCUSTOMERCOUNT, 0) + 1);
+            LoginActivity.myEditor.commit();
 
-        ContentValues contentValues = new ContentValues();
+            ContentValues contentValues = new ContentValues();
+            int custId = 0;
 
+            String tempCusId = LoginActivity.mySharedPreference.getInt(Constant.TABLET_KEY, 0) + "" + (LoginActivity.mySharedPreference.getInt(Constant.MAX_KEY, 0) + 1);
 
-        contentValues.put("township_number", townshipId);
-        Log.i("TownshipId", townshipId);
-        contentValues.put("district_id", districtId);
-        contentValues.put("state_division_id", statedivisionId);
-        contentValues.put("shop_type_id", shoptypeId);
-        contentValues.put("CUSTOMER_NAME", customerName);
-        contentValues.put("CUSTOMER_ID", customerId);
-        contentValues.put("contact_person", contactPerson);
-        contentValues.put("PH", phoneNo);
-        contentValues.put("ADDRESS", address);
-        contentValues.put("flag", 1);
+            if (tempCusId != null && !tempCusId.equals("")) {
+                custId = Integer.parseInt(tempCusId);
+            }
 
-        database.insert("CUSTOMER", null, contentValues);
+            //custId = custId + getNumberOfNewCustomer() + 1;
 
+            contentValues.put("id", custId);
+            contentValues.put("township_number", townshipId);
+            Log.i("TownshipId", townshipId);
+            contentValues.put("district_id", districtId);
+            contentValues.put("state_division_id", statedivisionId);
+            contentValues.put("shop_type_id", shoptypeId);
+            contentValues.put("CUSTOMER_NAME", customerName);
+            contentValues.put("CUSTOMER_ID", customerId);
+            contentValues.put("contact_person", contactPerson);
+            contentValues.put("PH", phoneNo);
+            contentValues.put("ADDRESS", address);
+            contentValues.put("LATITUDE", location[0]);
+            contentValues.put("LONGITUDE", location[1]);
+            contentValues.put("flag", 1);
 
-//                database.beginTransaction();
-//                database.execSQL(sql);
-//                database.setTransactionSuccessful();
-//                database.endTransaction();
-
-                /*sql = "INSERT INTO CUSTOMER VALUES ("
-                        + "\"" + customerId + "\","
-                        + "\"" + customerNameEditText.getText().toString() + "\","
-                        + "\"" + customerCategoryId + "\","
-                        + "\"" + customerCategoryName + "\","
-                        + "\"" + addressEditText.getText().toString() + "\","
-                        + "\"" + phoneNumberEditText.getText().toString() + "\","
-                        + "\"" + townshipName + "\","
-                        + "" + 0 + ","
-                        + "" + 0 + ","
-                        + "" + 0 + ","
-                        + "" + 0 + ","
-                        + "" + 0 + ","
-                        + "\"" + "R" + "\","
-                        + "\"" + "true" + "\","
-                        + "\"" + customerLat + "\","
-                        + "\"" + customerLng + "\","
-                        + "\"" + "0" + "\""
-                        + ")";
-                database.beginTransaction();
-                database.execSQL(sql);
-                database.setTransactionSuccessful();
-                database.endTransaction();*/
-
-        //Preferences.didUploadedNewCustomersToServer(AddNewCustomerActivity.this, false);
+            database.insert("CUSTOMER", null, contentValues);
+            LoginActivity.myEditor.putInt(Constant.MAX_KEY, LoginActivity.mySharedPreference.getInt(Constant.MAX_KEY, 0) + 1);
+            LoginActivity.myEditor.commit();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Utils.backToLogin(this);
+        }
         reset();
+        Utils.commonDialog("Customer has been successfully created", AddNewCustomerActivity.this);
+
         //finish();
+    }
+
+    private int getNumberOfNewCustomer() {
+        Cursor cursor = database.rawQuery("SELECT COUNT(*) AS COUNT FROM CUSTOMER WHERE flag = 1", null);
+        int count = 0;
+        if (cursor.moveToNext()) {
+            count = cursor.getInt(cursor.getColumnIndex("COUNT"));
+        }
+
+        if(count > 0) {
+            return count;
+        } else {
+            return count;
+        }
     }
 }

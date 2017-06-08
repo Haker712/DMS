@@ -39,7 +39,7 @@
             android:layout_marginLeft="20dp"
             android:layout_toRightOf="@+id/camera_img"
             android:gravity="center"
-            android:src="@drawable/ic_save_xh_btn" />
+            android:src="@drawable/ic_done_hx_btn" />
 
         <TextView
             android:id="@+id/title"

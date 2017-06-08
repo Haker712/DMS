@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
+import android.os.Handler;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.util.Base64;
@@ -183,12 +184,32 @@ public class Utils {
         return new SimpleDateFormat(dateFormat).format(new Date());
     }
 
-    public static void callDialog(String message, Activity activity) {
-        progressDialog = new ProgressDialog(activity, ProgressDialog.THEME_HOLO_LIGHT);
+    public static void callDialog(final String message, final Activity activity) {
+
+        if (progressDialog == null) {
+            progressDialog = new ProgressDialog(activity, ProgressDialog.THEME_HOLO_LIGHT);
+        }
+
         progressDialog.setIndeterminate(false);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage(message);
-        progressDialog.show();
+
+        Handler handler = new Handler();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (activity.isFinishing()) {
+                    return;
+                } else {
+                    progressDialog = new ProgressDialog(activity, ProgressDialog.THEME_HOLO_LIGHT);
+                    progressDialog.setIndeterminate(false);
+                    progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                    progressDialog.setMessage(message);
+                    progressDialog.show();
+                    progressDialog.setCanceledOnTouchOutside(false);
+                }
+            }
+        });
     }
 
     public static void cancelDialog() {
@@ -197,11 +218,21 @@ public class Utils {
         }
     }
 
-    public static void commonDialog(String message, Activity activity) {
-        new AlertDialog.Builder(activity)
-                .setMessage(message)
-                .setPositiveButton("OK", null)
-                .show();
+    public static void commonDialog(final String message, final Activity activity) {
+        Handler handler = new Handler();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (activity.isFinishing()) {
+                    return;
+                } else {
+                    new AlertDialog.Builder(activity)
+                            .setMessage(message)
+                            .setPositiveButton("OK", null)
+                            .show();
+                }
+            }
+        });
     }
 
     public static boolean isOsMarshmallow() {
@@ -251,6 +282,43 @@ public class Utils {
             jsonObject.put("user_id", loginRequest.getUserId());
             jsonObject.put("password", loginRequest.getPassword());
             jsonObject.put("route", loginRequest.getRoute());
+            jsonObject.put("date", loginRequest.getDate());
+            jsonObject.put("data", loginRequest.getData());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.i("param_data>>>", jsonObject.toString());
+
+        paramData = jsonObject.toString();
+        return paramData;
+    }
+
+    public static String createLoginParamData(String user_no, String password, int routeId, String tabletKey) {
+        String paramData = "";
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setSiteActivationKey(Constant.SITE_ACTIVATION_KEY);
+        loginRequest.setTabletActivationKey(Constant.TABLET_ACTIVATION_KEY);
+        loginRequest.setUserId(user_no);
+        //loginRequest.setPassword(Utils.encodePassword(editTextPassword.getText().toString()));
+        //String encodedPwd = Utils.encodePassword(password);
+        //Log.i("encodedPwd>>>", encodedPwd);
+        loginRequest.setPassword(password);
+        loginRequest.setDate(Utils.getCurrentDate(false));
+        loginRequest.setRoute(routeId);
+        loginRequest.setTabletKey(tabletKey);
+        List<Object> objectList = new ArrayList<>();
+        /*Object object = new Object();
+        objectList.add(object);*/
+        loginRequest.setData(objectList);
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("site_activation_key", Constant.SITE_ACTIVATION_KEY);
+            jsonObject.put("tablet_activation_key", Constant.TABLET_ACTIVATION_KEY);
+            jsonObject.put("user_id", loginRequest.getUserId());
+            jsonObject.put("password", loginRequest.getPassword());
+            jsonObject.put("route", loginRequest.getRoute());
+            jsonObject.put("tablet_key", loginRequest.getTabletKey());
             jsonObject.put("date", loginRequest.getDate());
             jsonObject.put("data", loginRequest.getData());
         } catch (JSONException e) {

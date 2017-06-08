@@ -28,6 +28,8 @@ public class SoldProduct implements Serializable {
 
     boolean focStatus;
 
+    public SoldProduct(){}
+
     public SoldProduct(Product product, Boolean isForPackage) {
 
         this.product = product;

@@ -125,7 +125,13 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
 
         customer = (Customer) getIntent().getSerializableExtra(CUSTOMER_INFO_KEY);
-        soldProductList = (ArrayList<SoldProduct>) getIntent().getSerializableExtra(SOLD_PROUDCT_LIST_KEY);
+        if (getIntent().getSerializableExtra(SOLD_PROUDCT_LIST_KEY) != null) {
+            soldProductList = (ArrayList<SoldProduct>) getIntent().getSerializableExtra(SOLD_PROUDCT_LIST_KEY);
+        }
+
+        if (getIntent().getSerializableExtra(PRESENT_PROUDCT_LIST_KEY) != null) {
+            promotionArrayList = (ArrayList<Promotion>) getIntent().getSerializableExtra(PRESENT_PROUDCT_LIST_KEY);
+        }
 
         registerIDs();
 
@@ -160,7 +166,13 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                     double totalItemDiscountAmount = 0.0;
 
                     //  titleTextView.setText("SALE EXCHANGE");
-                    invoiceIdTextView.setText(Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.FOR_SALE_EXCHANGE));
+                    try {
+                        invoiceIdTextView.setText(Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.FOR_SALE_EXCHANGE));
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                        Utils.backToLogin(this);
+                    }
+
                     View layout = findViewById(R.id.SaleExchangeLayout);
                     layout.setVisibility(View.VISIBLE);
 
@@ -188,13 +200,13 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                         textView_payAmtfromCustomer.setText("0");
 
                     }
-
-//                textView_salereturnAmount.setText((int) getIntent().getDoubleExtra(Constant.KEY_SALE_RETURN_AMOUNT,0.0));
-
-
                 } else {
-
-                    invoiceIdTextView.setText(Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.FOR_OTHERS));
+                    try {
+                        invoiceIdTextView.setText(Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.FOR_OTHERS));
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                        Utils.backToLogin(this);
+                    }
                 }
             }
         } catch (NullPointerException e) {
@@ -217,25 +229,6 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         }
         totalAmountTextView.setText(Utils.formatAmount(totalAmount));
 
-        /*Cursor cursor = database.rawQuery(
-                "SELECT DISCOUNT_PERCENT, DISCOUNT_AMOUNT"
-                        + " FROM VOLUME_DISCOUNT WHERE"
-                        + " FROM_AMOUNT <= " + totalAmountForVolumeDiscount
-                        + " AND TO_AMOUNT >= " + totalAmountForVolumeDiscount, null);
-        if (cursor.getCount() == 1) {
-            cursor.moveToNext();
-            if (cursor.getDouble(cursor.getColumnIndex("DISCOUNT_AMOUNT")) != 0) {
-
-                totalVolumeDiscount = cursor.getDouble(cursor.getColumnIndex("DISCOUNT_AMOUNT"));
-            } else {
-
-                totalVolumeDiscount = totalAmountForVolumeDiscount
-                        * cursor.getDouble(cursor.getColumnIndex("DISCOUNT_PERCENT")) / 100;
-            }
-        }*/
-
-        //discountTextView.setText(Utils.formatAmount(totalItemDiscountAmount + totalVolumeDiscount));
-
         calculateVolumeDiscount();
         calculateInvoiceDiscount();
 
@@ -248,9 +241,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             findViewById(R.id.payAmountLayout).setVisibility(View.GONE);
         }
 
-        //initCategories();
-
-        showPromotionData();
+        setPromotionProductListView();
 
         catchEvents();
     }
@@ -266,7 +257,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
         double buy_amt = totalAmount;
         try {
-            Cursor cursor = database.rawQuery("select * from VOLUME_DISCOUNT_FILTER WHERE '" + Utils.getCurrentDate(true) + "' BETWEEN START_DATE AND END_DATE", null);
+            Cursor cursor = database.rawQuery("select * from VOLUME_DISCOUNT_FILTER WHERE date('" + Utils.getCurrentDate(true) + "') BETWEEN date(START_DATE) AND date(END_DATE)", null);
             Log.i("VolumeDisFilterCursor", cursor.getCount() + "");
             while (cursor.moveToNext()) {
                 volDisFilterId = cursor.getString(cursor.getColumnIndex(DatabaseContract.VolumeDiscountFilter.id));
@@ -327,9 +318,9 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
     private void calculateInvoiceDiscount() {
         String volDisId;
         double buy_amt = totalAmount;
-        Double fromSaleAmt, toSaleAmt, discountPercentForVolDis;
 
-        Cursor cursor = database.rawQuery("select * from VOLUME_DISCOUNT WHERE '" + Utils.getCurrentDate(true) + "' BETWEEN START_DATE AND END_DATE", null);
+        String query = "select * from VOLUME_DISCOUNT WHERE date('" + Utils.getCurrentDate(true) + "') BETWEEN date(START_DATE) AND date(END_DATE)";
+        Cursor cursor = database.rawQuery(query, null);
         Log.i("VolumeDiscountCursor", cursor.getCount() + "");
         while (cursor.moveToNext()) {
             volDisId = cursor.getString(cursor.getColumnIndex(DatabaseContract.VolumeDiscount.id));
@@ -340,33 +331,47 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                     buy_amt = soldProduct.getProduct().getPrice() * soldProduct.getQuantity();
                 }
 
+                calculateInvoiceDiscountAmount(buy_amt, volDisId);
                /* double promotion_price = 0.0;
                 for (Promotion promotion : promotionArrayList) {
                     promotion_price += promotion.getPromotionPrice();
                 }
                 buy_amt += promotion_price;*/
+            } else {
+                double promotion_price = 0.0;
+                for (Promotion promotion : promotionArrayList) {
+                    promotion_price += promotion.getPromotionPrice();
+                }
+                buy_amt = buy_amt - promotion_price;
+                calculateInvoiceDiscountAmount(buy_amt, volDisId);
             }
 
 
             Log.i("buy_amt", buy_amt + "");
             Log.i("volDisId", volDisId);
 
-            Cursor cusorForVolDisItem = database.rawQuery("SELECT * FROM VOLUME_DISCOUNT_ITEM WHERE VOLUME_DISCOUNT_ID = '" + volDisId + "' " +
-                    "and " + buy_amt + " >= FROM_SALE_AMT and " + buy_amt + "<= TO_SALE_AMT;", null);
-            Log.i("cusorForVolDisItem", cusorForVolDisItem.getCount() + "");
 
-            while (cusorForVolDisItem.moveToNext()) {
-                fromSaleAmt = cusorForVolDisItem.getDouble(cusorForVolDisItem.getColumnIndex(DatabaseContract.VolumeDiscountItem.fromSaleAmt));
-                toSaleAmt = cusorForVolDisItem.getDouble(cusorForVolDisItem.getColumnIndex(DatabaseContract.VolumeDiscountItem.toSaleAmt));
-                discountPercentForVolDis = cusorForVolDisItem.getDouble(cusorForVolDisItem.getColumnIndex(DatabaseContract.VolumeDiscountItem.discountPercent));
-
-                totalVolumeDiscount = totalAmount * (discountPercentForVolDis / 100);
-            }
-
-            Log.i("totalInvoiceDiscount ----->>>>>>>", totalVolumeDiscount + "");
         }
 
         discountTextView.setText(Utils.formatAmount(totalVolumeDiscount));
+    }
+
+    void calculateInvoiceDiscountAmount(Double buy_amt, String volDisId) {
+
+        Double fromSaleAmt, toSaleAmt, discountPercentForVolDis;
+        Cursor cusorForVolDisItem = database.rawQuery("SELECT * FROM VOLUME_DISCOUNT_ITEM WHERE VOLUME_DISCOUNT_ID = '" + volDisId + "' " +
+                "and " + buy_amt + " >= FROM_SALE_AMT and " + buy_amt + "<= TO_SALE_AMT;", null);
+        Log.i("cusorForVolDisItem", cusorForVolDisItem.getCount() + "");
+
+        while (cusorForVolDisItem.moveToNext()) {
+            fromSaleAmt = cusorForVolDisItem.getDouble(cusorForVolDisItem.getColumnIndex(DatabaseContract.VolumeDiscountItem.fromSaleAmt));
+            toSaleAmt = cusorForVolDisItem.getDouble(cusorForVolDisItem.getColumnIndex(DatabaseContract.VolumeDiscountItem.toSaleAmt));
+            discountPercentForVolDis = cusorForVolDisItem.getDouble(cusorForVolDisItem.getColumnIndex(DatabaseContract.VolumeDiscountItem.discountPercent));
+
+            totalVolumeDiscount = buy_amt * (discountPercentForVolDis / 100);
+        }
+
+        Log.i("totalInvoiceDiscount ----->>>>>>>", totalVolumeDiscount + "");
     }
 
     private void registerIDs() {
@@ -445,85 +450,6 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         }
 
         return products;
-    }
-
-    private void showPromotionData() {
-
-        Cursor cursor = database.rawQuery("select * from " + DatabaseContract.PromotionDate.tb + "", null);
-        Log.i("cursor", cursor.getCount() + "");
-        while (cursor.moveToNext()) {
-            String promotionPlanId = "";
-
-            promotionPlanId = cursor.getString(cursor.getColumnIndex(DatabaseContract.PromotionDate.promotionPlanId));
-            Log.i("promotionPlanId", promotionPlanId);
-
-            for (SoldProduct soldProduct : soldProductList) {
-
-                String promotionProductId = "";
-                String promotionProductName = "";
-                int promotionProductQty = 0;
-                double promotionPrice = 0.0;
-
-                int buy_qty = soldProduct.getProduct().getSoldQty();
-                String stock_id_old = soldProduct.getProduct().getId();
-                Log.i("stock_id_old", stock_id_old);
-                String stock_id_new = "";
-                Cursor cursorForStockId = database.rawQuery("select * from PRODUCT where PRODUCT_ID = '" + stock_id_old + "'", null);
-                while (cursorForStockId.moveToNext()) {
-                    stock_id_new = cursorForStockId.getString(cursorForStockId.getColumnIndex("ID"));
-                    Log.i("stock_id_new", stock_id_new + "");
-                }
-                Cursor cursorForPromotionPrice = database.rawQuery("select * from " + DatabaseContract.PromotionPrice.tb + " where " + DatabaseContract.PromotionPrice.promotionPlanId + " = '" + promotionPlanId + "'" +
-                        " and " + DatabaseContract.PromotionPrice.fromQuantity + " <= " + buy_qty + " and " + DatabaseContract.PromotionPrice.toQuantity + " >= " + buy_qty + " and " + DatabaseContract.PromotionPrice.stockId + " = '" + stock_id_new + "'", null);
-                Log.i("PriceCount", cursorForPromotionPrice.getCount() + "");
-                while (cursorForPromotionPrice.moveToNext()) {
-                    promotionPrice = cursorForPromotionPrice.getDouble(cursorForPromotionPrice.getColumnIndex(DatabaseContract.PromotionPrice.promotionPrice));
-                }
-                Log.i("promotionPrice", promotionPrice + "");
-                Cursor cursorForPromotionGift = database.rawQuery("select * from " + DatabaseContract.PromotionGift.tb + " where " + DatabaseContract.PromotionGift.promotionPlanId + " = '" + promotionPlanId + "'" +
-                        " and " + DatabaseContract.PromotionGift.fromQuantity + " <= " + buy_qty + " and " + DatabaseContract.PromotionGift.toQuantity + " >= " + buy_qty + " and " + DatabaseContract.PromotionGift.stockId + " = '" + stock_id_new + "'", null);
-                Log.i("GiftCount", cursorForPromotionGift.getCount() + "");
-                while (cursorForPromotionGift.moveToNext()) {
-                    String promotionGiftId = cursorForPromotionGift.getString(cursorForPromotionGift.getColumnIndex(DatabaseContract.PromotionGift.promotionPlanId));
-                    Log.i("promotionGiftId", promotionGiftId + "");
-                    Cursor cursorForPromotionGiftItem = database.rawQuery("select * from " + DatabaseContract.PromotionGiftItem.tb + " where " + DatabaseContract.PromotionGiftItem.promotionPlanId + " = '" + promotionGiftId + "'", null);
-                    while (cursorForPromotionGiftItem.moveToNext()) {
-                        promotionProductId = cursorForPromotionGiftItem.getString(cursorForPromotionGiftItem.getColumnIndex(DatabaseContract.PromotionGiftItem.stockId));
-                        Log.i("promotionProductId", promotionProductId + "");
-                        Cursor cursorForProductName = database.rawQuery("select * from PRODUCT WHERE ID = '" + promotionProductId + "'", null);
-                        while (cursorForProductName.moveToNext()) {
-                            promotionProductName = cursorForProductName.getString(cursorForProductName.getColumnIndex("PRODUCT_NAME"));
-                            Log.i("promotionProductName", promotionProductName + ">>not null");
-                        }
-                        promotionProductQty = cursorForPromotionGiftItem.getInt(cursorForPromotionGiftItem.getColumnIndex(DatabaseContract.PromotionGiftItem.quantity));
-                    }
-                }
-
-                Promotion promotion = new Promotion();
-                promotion.setPromotionPrice(promotionPrice);
-                promotion.setPromotionProductId(promotionProductId);
-                promotion.setPromotionProductName(promotionProductName);
-                promotion.setPromotionQty(promotionProductQty);
-
-                /*if (promotionPrice != 0.0) {
-                    promotion.setPromotionPrice(promotionPrice);
-                }
-                if (promotionProductId != null || !promotionProductId.equals("")) {
-                    promotion.setPromotionProductId(promotionProductId);
-                }
-                if (!promotionProductName.equals("") || promotionProductName != null) {
-                    promotion.setPromotionProductName(promotionProductName);
-                }
-                if (promotionProductQty != 0) {
-                    promotion.setPromotionQty(promotionProductQty);
-                }*/
-                if (promotion.getPromotionQty() != 0 && !promotion.getPromotionProductName().equals("")) {
-                    promotionArrayList.add(promotion);
-                }
-            }
-        }
-
-        setPromotionProductListView();
     }
 
     private void setPromotionProductListView() {
@@ -629,12 +555,20 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         } else {
 
             if (isSameCustomer(customer.getId())) {
-
+                updateDepartureTimeForSalemanRoute(customer.getId());
                 updateSaleVisitRecord(customer.getId());
             }
 
             Utils.backToCustomer(SaleCheckoutActivity.this);
         }
+    }
+
+    private void updateDepartureTimeForSalemanRoute(int customerId) {
+        database.beginTransaction();
+        database.execSQL("update " + DatabaseContract.temp_for_saleman_route.TABLE + " set " + DatabaseContract.temp_for_saleman_route.DEPARTURE_TIME + " = '"+Utils.getCurrentDate(true)+"'" +
+                " where " + DatabaseContract.temp_for_saleman_route.CUSTOMER_ID + " = "+customerId+"");
+        database.setTransactionSuccessful();
+        database.endTransaction();
     }
 
     /**
@@ -653,7 +587,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
     /**
      * Get customer payment method.
      *
-     * @return C : cash, B : bank, R : Credit
+     * @return CA : cash, B : bank, CR : Credit
      */
     private String getPaymentMethod() {
         int selectedRadio = bankOrCashRadioGroup.getCheckedRadioButtonId();
@@ -662,7 +596,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             paymentMethod = "B";
 
         } else if (selectedRadio == R.id.activity_sale_checkout_radio_cash) {
-            paymentMethod = "C";
+            paymentMethod = "CA";
         }
         return paymentMethod;
     }
@@ -692,12 +626,12 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         String latiString = "", longiString = "";
         Double latitude = 0.0, longitude = 0.0, latiDouble = 0.0, longDouble = 0.0;
 
-        while (locationCursor.moveToNext()) {
+        while(locationCursor.moveToNext()) {
             latiString = locationCursor.getString(locationCursor.getColumnIndex("LATITUDE"));
             longiString = locationCursor.getString(locationCursor.getColumnIndex("LONGITUDE"));
         }
 
-        if (latiString != null && longiString != null) {
+        if(latiString != null && longiString != null && !latiString.equals("") && !longiString.equals("") && !latiString.equals("0") && !longiString.equals("0")) {
             latiDouble = Double.parseDouble(latiString.substring(0, 7));
             longDouble = Double.parseDouble(longiString.substring(0, 7));
         }
@@ -707,17 +641,35 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             String lat = String.valueOf(gpsTracker.getLatitude());
             String lon = String.valueOf(gpsTracker.getLongitude());
 
-            if (!lat.equals(null) && !lon.equals(null) && lat.length() > 6 && lon.length() > 6) {
-                latitude = Double.parseDouble(lat.substring(0, 7));
-                longitude = Double.parseDouble(lon.substring(0, 7));
+            if(!lat.equals(null) && !lon.equals(null) && lat.length() > 6 && lon.length() > 6){
+                latitude = Double.parseDouble(lat.substring(0,7));
+                longitude = Double.parseDouble(lon.substring(0,7));
             }
         } else {
             gpsTracker.showSettingsAlert();
         }
 
-        if (latiDouble != null && longDouble != null && latitude != null && longitude != null) {
+        boolean flag1 = false, flag2 = false;
+        if(latiDouble != null && longDouble !=null && latitude != null && longitude != null) {
+            Double lati1 = latiDouble - 0.002;
+            Double lati2 = latiDouble + 0.002;
 
-            if (latitude >= (latiDouble - 0.0001) && latitude <= (latiDouble + 0.0001) && longitude >= (longDouble - 0.0001) && longitude <= (longDouble + 0.0001)) {
+            if(latitude >= lati1 && latitude <= lati2) {
+                flag1 = true;
+            } else if(latitude.equals(latiDouble)) {
+                flag1 = true;
+            }
+
+            Double longi1 = longDouble - 0.002;
+            Double longi2 = longDouble + 0.002;
+
+            if(longitude >= longi1 && longitude <= longi2) {
+                flag2 = true;
+            } else if(longitude.equals(longDouble)) {
+                flag2 = true;
+            }
+
+            if(flag1 || flag2) {
                 return true;
             }
         }
@@ -752,7 +704,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
      * Save data to database
      */
     private void saveDatas(String cashOrLoanOrBank) {
-        String customerId = customer.getCustomerId();
+        String customerId = String.valueOf(customer.getId());
         String saleDate = Utils.getCurrentDate(true);
 
         String invoiceId = invoiceIdTextView.getText().toString();
@@ -779,8 +731,14 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         }
 
         String receiptPersonName = receiptPersonEditText.getText().toString();
+        String salePersonId = "";
 
-        String salePersonId = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
+        try {
+            salePersonId = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Utils.backToLogin(this);
+        }
 
         String invoiceTime = Utils.getCurrentDate(true);
         Log.i("invoiceTime", invoiceTime);
@@ -812,6 +770,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
             for (Promotion promotion : promotionArrayList) {
                 database.execSQL("UPDATE PRODUCT SET PRESENT_QTY = PRESENT_QTY + " + promotion.getPromotionQty() + " WHERE PRODUCT_ID = \'" + soldProduct.getProduct().getId() + "\'");
+                database.execSQL("UPDATE PRODUCT SET REMAINING_QTY = REMAINING_QTY - " + promotion.getPromotionQty() + " WHERE ID = '" + promotion.getPromotionProductId() + "'");
             }
         }
         database.execSQL("INSERT INTO INVOICE VALUES (\""
@@ -859,10 +818,12 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         intent.putExtra(SaleActivity.REMAINING_AMOUNT_KEY, this.remainingAmount);
         intent.putExtra(SaleActivity.CUSTOMER_INFO_KEY, this.customer);
         intent.putExtra(SaleActivity.SOLD_PROUDCT_LIST_KEY, this.soldProductList);
+
+        intent.putExtra(SaleCheckoutActivity.PRESENT_PROUDCT_LIST_KEY, this.promotionArrayList);
         /*if (this.orderedInvoice != null) {
             intent.putExtra(SaleActivity.ORDERED_INVOICE_KEY, this.orderedInvoice.toString());
         }*/
-        intent.putExtra("SaleExchange", "no");
+        intent.putExtra("SaleExchange", check);
         startActivity(intent);
         finish();
     }
@@ -872,15 +833,27 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
         String cashOrBank = getPaymentMethod();
 
-        if (isFullyPaid()) {
-            saveDatas(cashOrBank);
-            saleOrExchange();
+        if (receiptPersonEditText.getText().toString().equals("") || receiptPersonEditText.getText().toString().equals(null)) {
+            receiptPersonEditText.setError("Please enter receipt person");
         } else {
-            if (cashOrBank.equals("B")) {
-                Utils.commonDialog("Insufficient Pay Amount!", SaleCheckoutActivity.this);
-            } else {
-                saveDatas("R");
+
+            if (isFullyPaid()) {
+                cashOrBank = "CA";
+                saveDatas(cashOrBank);
                 saleOrExchange();
+            } else {
+                if (cashOrBank.equals("B")) {
+                    if (branchEditText.getText().toString().equals("") || branchEditText.getText().toString().equals(null)) {
+                        branchEditText.setError("Please enter bank account");
+                    } else if(accountEditText.getText().toString().equals("") || accountEditText.getText().toString().equals(null)) {
+                        accountEditText.setError("Please enter bank name");
+                    } else {
+                        Utils.commonDialog("Insufficient Pay Amount!", SaleCheckoutActivity.this);
+                    }
+                } else {
+                    saveDatas("CR");
+                    saleOrExchange();
+                }
             }
         }
     }
@@ -968,7 +941,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             } else {
                 qtyTextView.setVisibility(View.GONE);
             }
-            if (promotion.getPromotionPrice() != 0.0) {
+            if (promotion.getPromotionPrice()!= null && promotion.getPromotionPrice() != 0.0) {
                 priceTextView.setText(promotion.getPromotionPrice() + "");
             } else {
                 priceTextView.setVisibility(View.GONE);

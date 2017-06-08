@@ -4,18 +4,70 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-	<Spinner
-		android:id="@+id/customer_spinner_fragment_invoice_report"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"/>
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
+		<Spinner
+			android:id="@+id/customer_spinner_fragment_invoice_report"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" />
+
+		<LinearLayout
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentEnd="true"
+			android:layout_alignParentRight="true"
+			android:layout_alignParentTop="true">
+
+			<TextView
+				android:id="@+id/txt_view_from_date"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="FROM DATE : " />
+
+			<EditText
+				android:id="@+id/edit_text_sale_report_from_date"
+				android:layout_width="120dp"
+				android:layout_height="wrap_content"
+				android:focusable="false"/>
+
+			<TextView
+				android:id="@+id/txt_view_to_date"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="TO DATE : " />
+
+			<EditText
+				android:id="@+id/edit_text_sale_report_to_date"
+				android:layout_width="120dp"
+				android:layout_height="wrap_content"
+				android:focusable="false"/>
+
+			<Button
+				android:id="@+id/btn_sale_report_search"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Search"
+				style="@style/Base.Widget.AppCompat.Button.Small"/>
+
+			<Button
+				android:id="@+id/btn_sale_report_clear"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Clear"
+				style="@style/Base.Widget.AppCompat.Button.Small"/>
+
+		</LinearLayout>
+	</RelativeLayout>
 
 	<LinearLayout
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:padding="10dp"
-        android:background="#898989">
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:background="#898989"
+		android:padding="10dp">
 
-	    <TextView
+	<TextView
 	        android:layout_width="0dp"
 	        android:layout_height="wrap_content"
 	        android:layout_weight="1"

@@ -28,7 +28,7 @@
             android:layout_centerVertical="true"
             android:layout_toRightOf="@+id/cancel_img"
             android:gravity="center"
-            android:src="@drawable/ic_save_xh_btn"
+            android:src="@drawable/ic_done_hx_btn"
             android:layout_marginLeft="20dp"/>
 
         <TextView
@@ -231,6 +231,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="2"
                             android:textStyle="bold"
+                            android:inputType="number"
                             android:gravity="center_horizontal" />
                     </LinearLayout>
 

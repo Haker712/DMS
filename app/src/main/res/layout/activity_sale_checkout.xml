@@ -195,6 +195,10 @@
 
         </RelativeLayout>
 
+        <ScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
         <LinearLayout
             android:layout_width="270dp"
             android:layout_height="match_parent"
@@ -475,6 +479,7 @@
                             android:id="@+id/activity_sale_checkout_radio_cash"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:checked="true"
                             android:text="Cash"/>
 
                     </RadioGroup>
@@ -493,7 +498,7 @@
                         android:layout_marginRight="10dp"
                         android:layout_weight="2"
                         android:gravity="right"
-                        android:text="Branch Name : " />
+                        android:text="Bank Name : " />
 
                     <EditText
                         android:id="@+id/edit_txt_branch_name"
@@ -625,7 +630,7 @@
             </LinearLayout>
 
         </LinearLayout>
-
+        </ScrollView>
     </LinearLayout>
 
 </LinearLayout>

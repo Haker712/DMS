@@ -105,6 +105,10 @@ public class FragmentDeliveryReport extends Fragment {
         return view;
     }
 
+    private void getDeliveryUpload() {
+
+    }
+
     private ArrayList<SoldProduct> getProductList(List<DeliverItem> deliverItemList) {
 
         ArrayList<SoldProduct> soldProductList = new ArrayList<SoldProduct>();
@@ -140,7 +144,7 @@ public class FragmentDeliveryReport extends Fragment {
     private Customer getCustomerFromDB(String customerId) {
         Customer customer = null;
         SQLiteDatabase database = new Database(getActivity()).getDataBase();
-        Cursor cursor = database.rawQuery("SELECT * FROM CUSTOMER WHERE CUSTOMER_ID = \'" + customerId + "\';", null);
+        Cursor cursor = database.rawQuery("SELECT * FROM CUSTOMER WHERE ID = \'" + customerId + "\';", null);
         while (cursor.moveToNext()) {
             customer = new Customer(
                     cursor.getString(cursor.getColumnIndex("CUSTOMER_ID"))

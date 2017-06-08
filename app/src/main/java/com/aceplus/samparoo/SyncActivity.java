@@ -21,114 +21,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aceplus.samparoo.customer.SaleOrderCheckoutActivity;
-import com.aceplus.samparoo.model.CompetitorActivity;
-import com.aceplus.samparoo.model.Customer;
-import com.aceplus.samparoo.model.Posm;
-import com.aceplus.samparoo.model.PosmByCustomer;
-import com.aceplus.samparoo.model.Promotion;
-import com.aceplus.samparoo.model.SaleReturn;
-import com.aceplus.samparoo.model.SaleReturnDetail;
-import com.aceplus.samparoo.model.ShopType;
-import com.aceplus.samparoo.model.forApi.AddnewCustomerRequest;
-import com.aceplus.samparoo.model.PreOrder;
-import com.aceplus.samparoo.model.PreOrderProduct;
-import com.aceplus.samparoo.model.forApi.CashReceiveApi;
-import com.aceplus.samparoo.model.forApi.CashReceiveItemApi;
-import com.aceplus.samparoo.model.forApi.CashReceiveRequest;
-import com.aceplus.samparoo.model.forApi.CashReceiveRequestData;
-import com.aceplus.samparoo.model.forApi.ClassOfProduct;
-import com.aceplus.samparoo.model.forApi.CompanyInformation;
-import com.aceplus.samparoo.model.forApi.CompanyInformationResponse;
-import com.aceplus.samparoo.model.forApi.CompanyInfromationData;
-import com.aceplus.samparoo.model.forApi.CompetitorSizeinstoreshareData;
-import com.aceplus.samparoo.model.forApi.CompetitorSizeinstoreshareRequest;
-import com.aceplus.samparoo.model.forApi.Competitor_Activity;
-import com.aceplus.samparoo.model.forApi.CreditForApi;
-import com.aceplus.samparoo.model.forApi.CreditResponse;
-import com.aceplus.samparoo.model.forApi.Currency;
-import com.aceplus.samparoo.model.forApi.CustomerBalanceForApi;
-import com.aceplus.samparoo.model.forApi.CustomerData;
+import com.aceplus.samparoo.model.*;
+import com.aceplus.samparoo.model.forApi.*;
 import com.aceplus.samparoo.model.forApi.CustomerFeedback;
-import com.aceplus.samparoo.model.forApi.CustomerForApi;
-import com.aceplus.samparoo.model.forApi.CustomerResponse;
-import com.aceplus.samparoo.model.forApi.CustomerVisitRequest;
-import com.aceplus.samparoo.model.forApi.CustomerVisitRequestData;
-import com.aceplus.samparoo.model.forApi.CustomerVisitResponse;
-import com.aceplus.samparoo.model.forApi.DataForSaleManRoute;
-import com.aceplus.samparoo.model.forApi.DataForSaleTarget;
-import com.aceplus.samparoo.model.forApi.DataForVolumeDiscount;
-import com.aceplus.samparoo.model.forApi.DataforMarketing;
-import com.aceplus.samparoo.model.forApi.DataforSaleUpload;
-import com.aceplus.samparoo.model.forApi.DeliveryApi;
-import com.aceplus.samparoo.model.forApi.DeliveryForApi;
-import com.aceplus.samparoo.model.forApi.DeliveryItemApi;
-import com.aceplus.samparoo.model.forApi.DeliveryItemForApi;
-import com.aceplus.samparoo.model.forApi.DeliveryRequest;
-import com.aceplus.samparoo.model.forApi.DeliveryRequestData;
-import com.aceplus.samparoo.model.forApi.DeliveryResponse;
-import com.aceplus.samparoo.model.forApi.DisplayAssessment;
-import com.aceplus.samparoo.model.forApi.DisplayAssessmentData;
-import com.aceplus.samparoo.model.forApi.DisplayAssessmentRequest;
-import com.aceplus.samparoo.model.forApi.District;
-import com.aceplus.samparoo.model.forApi.DownloadMarketing;
-import com.aceplus.samparoo.model.forApi.ERouteReport;
-import com.aceplus.samparoo.model.forApi.GeneralData;
-import com.aceplus.samparoo.model.forApi.GeneralResponse;
-import com.aceplus.samparoo.model.forApi.GroupCode;
-import com.aceplus.samparoo.model.forApi.Invoice;
-import com.aceplus.samparoo.model.forApi.InvoiceDetail;
-import com.aceplus.samparoo.model.forApi.InvoicePresent;
-import com.aceplus.samparoo.model.forApi.InvoiceResponse;
-import com.aceplus.samparoo.model.forApi.Location;
-import com.aceplus.samparoo.model.forApi.OutletStockAvailability;
-import com.aceplus.samparoo.model.forApi.OutletStockAvailabilityItem;
-import com.aceplus.samparoo.model.forApi.Outlet_Sizeinstore_Data;
-import com.aceplus.samparoo.model.forApi.Outlet_Sizeinstore_request;
-import com.aceplus.samparoo.model.forApi.PosmByCustomerApi;
-import com.aceplus.samparoo.model.forApi.PosmByCustomerRequest;
-import com.aceplus.samparoo.model.forApi.PosmByCustomerRequestData;
-import com.aceplus.samparoo.model.forApi.PosmForApi;
-import com.aceplus.samparoo.model.forApi.PosmShopTypeResponse;
-import com.aceplus.samparoo.model.forApi.PreOrderApi;
-import com.aceplus.samparoo.model.forApi.PreOrderDetailApi;
-import com.aceplus.samparoo.model.forApi.PreOrderPresentApi;
-import com.aceplus.samparoo.model.forApi.PreOrderRequest;
-import com.aceplus.samparoo.model.forApi.PreOrderRequestData;
-import com.aceplus.samparoo.model.forApi.ProductCategory;
-import com.aceplus.samparoo.model.forApi.ProductForApi;
-import com.aceplus.samparoo.model.forApi.ProductResponse;
-import com.aceplus.samparoo.model.forApi.ProductType;
-import com.aceplus.samparoo.model.forApi.PromotionDate;
-import com.aceplus.samparoo.model.forApi.PromotionForApi;
-import com.aceplus.samparoo.model.forApi.PromotionGift;
-import com.aceplus.samparoo.model.forApi.PromotionGiftItem;
-import com.aceplus.samparoo.model.forApi.PromotionPrice;
-import com.aceplus.samparoo.model.forApi.PromotionResponse;
-import com.aceplus.samparoo.model.forApi.SaleHistory;
-import com.aceplus.samparoo.model.forApi.SaleHistoryDetail;
-import com.aceplus.samparoo.model.forApi.SaleHistoryResponse;
-import com.aceplus.samparoo.model.forApi.SaleManRouteRequest;
-import com.aceplus.samparoo.model.forApi.SaleReturnApi;
-import com.aceplus.samparoo.model.forApi.SaleReturnItem;
-import com.aceplus.samparoo.model.forApi.SaleReturnRequest;
-import com.aceplus.samparoo.model.forApi.SaleReturnRequestData;
-import com.aceplus.samparoo.model.forApi.SaleTargetForCustomer;
-import com.aceplus.samparoo.model.forApi.SaleTargetForSaleMan;
-import com.aceplus.samparoo.model.forApi.SaleTargetResponse;
-import com.aceplus.samparoo.model.forApi.SaleVisitRecord;
-import com.aceplus.samparoo.model.forApi.ShopTypeForApi;
-import com.aceplus.samparoo.model.forApi.SizeInStoreShare;
-import com.aceplus.samparoo.model.forApi.SizeInStoreShareItem;
-import com.aceplus.samparoo.model.forApi.StandardExternalCheck;
-import com.aceplus.samparoo.model.forApi.StateDivision;
-import com.aceplus.samparoo.model.forApi.Township;
-import com.aceplus.samparoo.model.forApi.UM;
-import com.aceplus.samparoo.model.forApi.VolumeDiscount;
-import com.aceplus.samparoo.model.forApi.VolumeDiscountFilter;
-import com.aceplus.samparoo.model.forApi.VolumeDiscountItem;
-import com.aceplus.samparoo.model.forApi.TsaleRequest;
-import com.aceplus.samparoo.model.forApi.VolumeDiscountResponse;
-import com.aceplus.samparoo.model.forApi.VolumediscountfilterItem;
 import com.aceplus.samparoo.retrofit.DownloadService;
 import com.aceplus.samparoo.retrofit.RetrofitServiceFactory;
 import com.aceplus.samparoo.retrofit.UploadService;
@@ -142,7 +37,9 @@ import com.google.gson.GsonBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -168,6 +65,8 @@ public class SyncActivity extends AppCompatActivity {
     @InjectView(R.id.textViewError)
     TextView textViewError;
 
+    int currencyId = 0;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -177,17 +76,28 @@ public class SyncActivity extends AppCompatActivity {
 
         sqLiteDatabase = new Database(this).getDataBase();
 
-        if (LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "") != null) {
-            saleman_Id = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
+        try {
+            if (LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "") != null) {
+                saleman_Id = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
+            }
+
+            if (LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, "") != null) {
+                saleman_No = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, "");
+            }
+
+            if (LoginActivity.mySharedPreference.getString(Constant.SALEMAN_PWD, "") != null) {
+                saleman_Pwd = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_PWD, "");
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Utils.backToLogin(this);
         }
 
-        if (LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, "") != null) {
-            saleman_No = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, "");
+        Cursor currencyCursor = sqLiteDatabase.rawQuery("SELECT id FROM currency WHERE currency = 'MMK'", null);
+        while(currencyCursor.moveToNext()) {
+            currencyId = currencyCursor.getInt(currencyCursor.getColumnIndex("id"));
         }
-
-        if (LoginActivity.mySharedPreference.getString(Constant.SALEMAN_PWD, "") != null) {
-            saleman_Pwd = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_PWD, "");
-        }
+        currencyCursor.close();
 
     }
 
@@ -205,12 +115,47 @@ public class SyncActivity extends AppCompatActivity {
     @OnClick(R.id.buttonUpload)
     void upload() {
         services = "";
-        uploadInvoiceToSever();
+        uploadCustomertoserver();
     }
 
     @OnClick(R.id.buttonClearData)
     void clearAllData() {
         showConfirmDialog();
+    }
+
+    @OnClick(R.id.buttonReissue)
+    void reissue() {
+        downloadReissueFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
+    }
+
+    @OnClick(R.id.buttonSaleVisitRecord)
+    void saleVisit() {
+        uploadSaleManRoute();
+    }
+
+    private List<TSaleFeedbackData> getUnsellReasonFromDb() {
+
+        List<TSaleFeedback> feedbackList = new ArrayList<>();
+
+        Cursor feedbackCursor = sqLiteDatabase.rawQuery("SELECT * FROM " + DatabaseContract.TSaleFeedback.tb, null);
+
+        while(feedbackCursor.moveToNext()) {
+            TSaleFeedback customerFeedback = new TSaleFeedback();
+            customerFeedback.setId(feedbackCursor.getString(feedbackCursor.getColumnIndex(DatabaseContract.TSaleFeedback.INVOICE_NO)));
+            customerFeedback.setInvoiceDate(feedbackCursor.getString(feedbackCursor.getColumnIndex(DatabaseContract.TSaleFeedback.INVOICE_DATE)));
+            customerFeedback.setCustomerId(feedbackCursor.getString(feedbackCursor.getColumnIndex(DatabaseContract.TSaleFeedback.CUSTOMER_NO)));
+            customerFeedback.setSaleManId(feedbackCursor.getInt(feedbackCursor.getColumnIndex(DatabaseContract.TSaleFeedback.SALEMAN_ID)));
+            customerFeedback.setCustomerFeedbackId(feedbackCursor.getInt(feedbackCursor.getColumnIndex(DatabaseContract.TSaleFeedback.FEEDBACK_NO)));
+            customerFeedback.setDescription(feedbackCursor.getString(feedbackCursor.getColumnIndex(DatabaseContract.TSaleFeedback.DESCRIPTION)));
+            customerFeedback.setRemark(feedbackCursor.getString(feedbackCursor.getColumnIndex(DatabaseContract.TSaleFeedback.REMARK)));
+            feedbackList.add(customerFeedback);
+        }
+
+        List<TSaleFeedbackData> feedbackDataList = new ArrayList<>();
+        TSaleFeedbackData tSaleFeedbackData = new TSaleFeedbackData();
+        tSaleFeedbackData.setFeedBackList(feedbackList);
+        feedbackDataList.add(tSaleFeedbackData);
+        return feedbackDataList;
     }
 
     /**
@@ -389,42 +334,6 @@ public class SyncActivity extends AppCompatActivity {
         Log.i("customerCursor>>>", cursor.getCount() + "");
     }
 
-    /*private void insertCustomers(List<Customer> customerList) {
-        for (Customer customer : customerList) {
-
-            Cursor cursor = sqLiteDatabase.rawQuery("select * from CUSTOMER where CUSTOMER_ID = '" + customer.getCustomerId() + "'", null);
-            //if (cursor.getCount() == 0) {
-            Log.i("not", "exist");
-            ContentValues cv = new ContentValues();
-            cv.put("CUSTOMER_ID", customer.getCustomerId());
-            cv.put("CUSTOMER_NAME", customer.getCustomerName());
-            cv.put("CUSTOMER_TYPE_ID", customer.getCustomerTypeId());
-            cv.put("CUSTOMER_TYPE_NAME", customer.getCustomerTypeName());
-            cv.put("ADDRESS", customer.getAddress());
-            cv.put("PH", customer.getPhone());
-            cv.put("township_number", customer.getTownship());
-            cv.put("CREDIT_TERM", customer.getCreditTerms());
-            cv.put("CREDIT_LIMIT", customer.getCreditLimit());
-            cv.put("CREDIT_AMT", customer.getCreditAmt());
-            cv.put("DUE_AMT", customer.getDueAmt());
-            cv.put("PREPAID_AMT", customer.getPrepaidAmt());
-            cv.put("PAYMENT_TYPE", customer.getPaymentType());
-            cv.put("IS_IN_ROUTE", customer.isInRoute());
-
-            cv.put("LATITUDE", customer.getLatitude());
-            cv.put("LONGITUDE", customer.getLongitude());
-            cv.put("VISIT_RECORD", customer.getVisitRecord());
-            cv.put("district_id", customer.getDistrict_id());
-            cv.put("state_division_id", customer.getState_division_id());
-            cv.put("contact_person", customer.getContact_person());
-            cv.put("customer_category_no", customer.getCustomer_category_no());
-            sqLiteDatabase.insert("CUSTOMER", null, cv);
-            //}
-        }
-        Cursor cursor = sqLiteDatabase.rawQuery("select * from CUSTOMER", null);
-        Log.i("customerCursor>>>", cursor.getCount() + "");
-    }*/
-
     private void downloadProductsFromServer(String paramData) {
         //Utils.callDialog("Please wait...", this);
 
@@ -435,11 +344,9 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<ProductResponse> call, Response<ProductResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        //Utils.cancelDialog();
-
-                        //Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
 
                         List<ProductForApi> productList = new ArrayList<ProductForApi>();
+
                         productList = response.body().getDataForProductList().get(0).getProductList();
                         Log.i("productList>>>", productList.size() + "");
 
@@ -449,8 +356,7 @@ public class SyncActivity extends AppCompatActivity {
 
                         sqLiteDatabase.setTransactionSuccessful();
                         sqLiteDatabase.endTransaction();
-
-                        downloadPromotionFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
+                        confirmRequestSuccessForProduct(1);
                     } else {
                         Utils.cancelDialog();
                         textViewError.setText(response.body().getAceplusStatusMessage());
@@ -492,13 +398,61 @@ public class SyncActivity extends AppCompatActivity {
             cv.put("PURCHASE_PRICE", product.getPurchasePrice());
             cv.put("DISCOUNT_TYPE", product.getProductTypeId());
             cv.put("UM", product.getUmId());
-            sqLiteDatabase.insert("PRODUCT", null, cv);
+            sqLiteDatabase.insertOrThrow("PRODUCT", null, cv);
         }
     }
 
-    private void downloadPromotionFromServer(String paramData) {
-        //Utils.callDialog("Please wait...", this);
+    /**
+     * For reissue service
+     *
+     * @param productList ProductForApiList
+     */
+    private void insertOrUpdateProduct(List<ProductForApi> productList) {
 
+        for (ProductForApi product : productList) {
+            ContentValues cv = new ContentValues();
+            cv.put("ID", product.getId());
+            cv.put("PRODUCT_ID", product.getProductId());
+            cv.put("CATEGORY_ID", product.getCategoryId());
+            cv.put("GROUP_ID", product.getGroupId());
+            cv.put("PRODUCT_NAME", product.getProductName());
+            cv.put("TOTAL_QTY", product.getProductName());
+            cv.put("REMAINING_QTY", product.getTotal_Qty());
+            cv.put("SELLING_PRICE", product.getSellingPrice());
+            cv.put("PURCHASE_PRICE", product.getPurchasePrice());
+            cv.put("DISCOUNT_TYPE", product.getProductTypeId());
+            cv.put("UM", product.getUmId());
+
+            String[] whereArgs = {product.getId()};
+
+            if (checkDuplicate(product.getId()) && product.getTotal_Qty() != 0) {
+                String query = "UPDATE PRODUCT SET TOTAL_QTY = TOTAL_QTY + " + product.getTotal_Qty() + ", REMAINING_QTY = REMAINING_QTY + " + product.getTotal_Qty() + " WHERE ID = " + product.getId();
+                sqLiteDatabase.execSQL(query);
+            }
+
+            if (!checkDuplicate(product.getId())){
+                sqLiteDatabase.insertOrThrow("PRODUCT", null, cv);
+            }
+        }
+    }
+
+    /**
+     * Check duplicate product in table with product id/
+     *
+     * @param id product id
+     * @return true : duplicate; otherwise : false
+     */
+    private boolean checkDuplicate(String id) {
+        Cursor duplicateCursor = sqLiteDatabase.rawQuery("SELECT COUNT(*) FROM PRODUCT WHERE ID = " + id, null);
+        int count = duplicateCursor.getCount();
+
+        if(count > 0) {
+            return true;
+        }
+        else return false;
+    }
+
+    private void downloadPromotionFromServer(String paramData) {
         DownloadService downloadService = RetrofitServiceFactory.createService(DownloadService.class);
         Call<PromotionResponse> call = downloadService.getPromotion(paramData);
         call.enqueue(new Callback<PromotionResponse>() {
@@ -506,10 +460,6 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<PromotionResponse> call, Response<PromotionResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        //Utils.cancelDialog();
-
-                        //Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
-
                         sqLiteDatabase.beginTransaction();
 
                         insertPromotion(response.body().getPromotionForApi());
@@ -623,10 +573,6 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<VolumeDiscountResponse> call, Response<VolumeDiscountResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        //Utils.cancelDialog();
-
-                        //Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
-
                         sqLiteDatabase.beginTransaction();
 
                         sqLiteDatabase.execSQL("delete from " + DatabaseContract.VolumeDiscount.tb);
@@ -771,10 +717,6 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<GeneralResponse> call, Response<GeneralResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        //Utils.cancelDialog();
-
-                        //Toast.makeText(SyncActivity.this, R.string.download_success, Toast.LENGTH_SHORT).show();
-
                         sqLiteDatabase.beginTransaction();
 
                         insertGeneral(response.body().getData());
@@ -845,14 +787,10 @@ public class SyncActivity extends AppCompatActivity {
      * PLin
      ***/
 
-
     /***
      * Company Information Download by PLin
      ***/
-
-
     private void downloadCompanyInformationfromServer(String paramdata) {
-
 
         DownloadService downloadService = RetrofitServiceFactory.createService(DownloadService.class);
         Call<CompanyInformationResponse> call = downloadService.getCompanyInformationFromApi(paramdata);
@@ -863,16 +801,9 @@ public class SyncActivity extends AppCompatActivity {
                 if (response.code() == 200) {
 
                     if (response.body().getAceplusStatusCode() == 200) {
-
-
-                        //Utils.cancelDialog();
-
-                        //Toast.makeText(SyncActivity.this, R.string.download_success, Toast.LENGTH_SHORT).show();
-
                         sqLiteDatabase.beginTransaction();
 
                         insertCompanyInformationData((ArrayList<CompanyInfromationData>) response.body().getData());
-
 
                         sqLiteDatabase.setTransactionSuccessful();
                         sqLiteDatabase.endTransaction();
@@ -914,15 +845,7 @@ public class SyncActivity extends AppCompatActivity {
 
         Log.i("DataListSize", companyInfromationDataList.size() + "");
 
-//        for (CompanyInfromationData companyInfromationData : companyInfromationDataList) {
-//
-//            insertCompanyInformation((ArrayList<CompanyInformation>) companyInfromationData.getCompanyInformation());
-//
-//        }
-
         insertCompanyInformation((ArrayList<CompanyInformation>) companyInfromationDataList.get(0).getCompanyInformation());
-
-
     }
 
     private void insertCompanyInformation(ArrayList<CompanyInformation> companyInformationList) {
@@ -993,11 +916,6 @@ public class SyncActivity extends AppCompatActivity {
         }
     }
 
-    /***
-     * Company Information Download by PLin
-     ***/
-
-
     private void insertMarkting(List<DataforMarketing> dataforMarketingList) {
 
         for (DataforMarketing dataforMarketing : dataforMarketingList) {
@@ -1005,10 +923,6 @@ public class SyncActivity extends AppCompatActivity {
             insertStandardExternalCheck(dataforMarketing.getStandardExternalCheck());
 
         }
-
-
-    /* Log.i("ImageName", dataforMarketingList.get(0).getStandardExternalCheck().get(0).getImageName());*/
-
     }
 
     private void insertStandardExternalCheck(List<StandardExternalCheck> standardExternalCheckList) {
@@ -1024,14 +938,11 @@ public class SyncActivity extends AppCompatActivity {
             contentValues.put(DatabaseContract.MARKETING.IMAGE, standardExternalCheck.getImage());
 
             sqLiteDatabase.insert(DatabaseContract.MARKETING.TABLE, null, contentValues);
-
-
         }
 
     }
 
     private void downloadMarketingfromServer(final String paramData) {
-
 
         DownloadService downloadService = RetrofitServiceFactory.createService(DownloadService.class);
         Call<DownloadMarketing> call = downloadService.getMarketingFromApi(paramData);
@@ -1041,7 +952,6 @@ public class SyncActivity extends AppCompatActivity {
                 if (response.code() == 200) {
 
                     if (response.body().getAceplusStatusCode() == 200) {
-                        //Utils.cancelDialog();
                         sqLiteDatabase.beginTransaction();
 
                         insertMarkting(response.body().getData());
@@ -1198,9 +1108,6 @@ public class SyncActivity extends AppCompatActivity {
             contentValues.put(DatabaseContract.Product_Category.CATEGORY_NAME,productCategory.getCategory_Name());
 
             sqLiteDatabase.insert(DatabaseContract.Product_Category.tb,null,contentValues);
-
-
-
         }
 
     }
@@ -1208,8 +1115,6 @@ public class SyncActivity extends AppCompatActivity {
     private void uploadInvoiceToSever() {
 
         String paramData = "";
-        Utils.callDialog("Please wait...", this);
-
         DataforSaleUpload dataforSaleUpload = new DataforSaleUpload();
         List<DataforSaleUpload> dataforSaleUploads = new ArrayList<>();
 
@@ -1244,7 +1149,7 @@ public class SyncActivity extends AppCompatActivity {
                         }
                         services += getResources().getString(R.string.sale);
 
-                        uploadCustomertoserver();
+                        uploadPreOrderToServer();
                     } else if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
                         onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
                     }
@@ -1261,8 +1166,6 @@ public class SyncActivity extends AppCompatActivity {
                 Utils.commonDialog(t.getMessage(), SyncActivity.this);
 
             }
-
-
         });
     }
 
@@ -1270,7 +1173,7 @@ public class SyncActivity extends AppCompatActivity {
 
         List<Invoice> invoiceList = new ArrayList<>();
 
-        Cursor cursor_invoice = sqLiteDatabase.rawQuery("select * from INVOICE", null);
+        Cursor cursor_invoice = sqLiteDatabase.rawQuery("select * from INVOICE WHERE SALE_DATE >= DATE('now')", null);
 
         while (cursor_invoice.moveToNext()) {
 
@@ -1284,7 +1187,7 @@ public class SyncActivity extends AppCompatActivity {
             Double totalPayAmount = cursor_invoice.getDouble(cursor_invoice.getColumnIndex("PAY_AMOUNT"));
             Double totalRefundAmount = cursor_invoice.getDouble(cursor_invoice.getColumnIndex("REFUND_AMOUNT"));
             String receiptPerson = cursor_invoice.getString(cursor_invoice.getColumnIndex("RECEIPT_PERSON_NAME"));
-
+            String invoiceStatus = cursor_invoice.getString(cursor_invoice.getColumnIndex("CASH_OR_CREDIT"));
 
             invoice.setId(invoice_Id);
             invoice.setCustomerId(customer_Id);
@@ -1300,11 +1203,12 @@ public class SyncActivity extends AppCompatActivity {
             //invoice.setDeviceId(cursor_invoice.getString(cursor_invoice.getColumnIndex("DEVICE_ID")));
             invoice.setDeviceId("");
             invoice.setInvoiceTime(cursor_invoice.getString(cursor_invoice.getColumnIndex("INVOICE_TIME")));
-
+            invoice.setCurrencyId(currencyId);
+            invoice.setInvoiceStatus(invoiceStatus);
 
             List<InvoiceDetail> invoiceDetailList = new ArrayList<>();
 
-            Cursor cur_invoiceDetail = sqLiteDatabase.rawQuery("select * from INVOICE_PRODUCT", null);
+            Cursor cur_invoiceDetail = sqLiteDatabase.rawQuery("select * from INVOICE_PRODUCT WHERE INVOICE_PRODUCT_ID = '" + invoice.getId() + "'", null);
             while (cur_invoiceDetail.moveToNext()) {
                 InvoiceDetail invoiceDetail = new InvoiceDetail();
                 String tsale_Id = cur_invoiceDetail.getString(cur_invoiceDetail.getColumnIndex("INVOICE_PRODUCT_ID"));
@@ -1337,7 +1241,6 @@ public class SyncActivity extends AppCompatActivity {
 
     private List<InvoicePresent> getInvoicepresentData() {
 
-
         List<InvoicePresent> invoicePresentList = new ArrayList<>();
 
         Cursor cursor_InvoicePresent = sqLiteDatabase.rawQuery("select * from INVOICE_PRESENT", null);
@@ -1355,10 +1258,9 @@ public class SyncActivity extends AppCompatActivity {
             invoicePresent.setPcAddress("");
             invoicePresent.setLocationId(cursor_InvoicePresent.getString(cursor_InvoicePresent.getColumnIndex("location_id")));
             invoicePresent.setPrice(cursor_InvoicePresent.getDouble(cursor_InvoicePresent.getColumnIndex("price")));
-
+            invoicePresent.setCurrencyId(currencyId);
             invoicePresentList.add(invoicePresent);
         }
-
 
         return invoicePresentList;
     }
@@ -1372,6 +1274,7 @@ public class SyncActivity extends AppCompatActivity {
         while (cursor.moveToNext()) {
 
             CustomerForApi customerForApi = new CustomerForApi();
+            int  id = cursor.getInt(cursor.getColumnIndex("id"));
             String townshipId = cursor.getString(cursor.getColumnIndex("township_number"));
             String contact_person = cursor.getString(cursor.getColumnIndex("contact_person"));
             String customer_Id = cursor.getString(cursor.getColumnIndex("CUSTOMER_ID"));
@@ -1394,6 +1297,7 @@ public class SyncActivity extends AppCompatActivity {
             String districtId = cursor.getString(cursor.getColumnIndex("district_id"));
             String statedivisionId = cursor.getString(cursor.getColumnIndex("state_division_id"));
 
+            customerForApi.setId(id);
             customerForApi.setTownshipNumber(townshipId);
             customerForApi.setContactPerson(contact_person);
             customerForApi.setcUSTOMERID(customer_Id);
@@ -1417,12 +1321,9 @@ public class SyncActivity extends AppCompatActivity {
             customerForApi.setState_division_id(Integer.parseInt(statedivisionId));
 
             customerForApiList.add(customerForApi);
-
-
         }
 
         return customerForApiList;
-
     }
 
     private void uploadCustomertoserver() {
@@ -1430,8 +1331,9 @@ public class SyncActivity extends AppCompatActivity {
         String paramData = "";
 
         CustomerData customerData = new CustomerData();
-        List<CustomerData> customerDatas = new ArrayList<>();
+        final List<CustomerData> customerDatas = new ArrayList<>();
 
+        Utils.callDialog("Please wait...", this);
 
         customerData.setCustomerForApiList(getCustomerData());
         customerDatas.add(customerData);
@@ -1462,8 +1364,14 @@ public class SyncActivity extends AppCompatActivity {
                             services += ",";
                         }
                         services += " " + getResources().getString(R.string.customer_title);
+                       /* sqLiteDatabase.beginTransaction();
+                        for(CustomerForApi c : customerDatas.get(0).getCustomerForApiList()) {
+                            sqLiteDatabase.execSQL("UPDATE CUSTOMER SET FLAG = 0 WHERE id = " + c.getId());
+                        }
+                        sqLiteDatabase.setTransactionSuccessful();
+                        sqLiteDatabase.endTransaction();*/
 
-                        uploadPreOrderToServer();
+                        uploadInvoiceToSever();
                     } else {
                         if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
                             onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
@@ -1518,8 +1426,6 @@ public class SyncActivity extends AppCompatActivity {
                             updateDeleteFlag(DatabaseContract.PreOrder.tb, 1, DatabaseContract.PreOrder.invoice_id, preOrderRequest.getData().get(0).getData().get(0).getId());
                             updateDeleteFlag(DatabaseContract.PreOrderDetail.tb, 1, DatabaseContract.PreOrderDetail.sale_order_id, preOrderRequest.getData().get(0).getData().get(0).getId());
                             updateDeleteFlag("PRE_ORDER_PRESENT", 1, "pre_order_id", preOrderRequest.getData().get(0).getData().get(0).getId());
-                            /*deleteDataAfterUpload("PRE_ORDER", "INVOICE_ID", preOrderRequest.getData().get(0).getData().get(0).getId());
-                            deleteDataAfterUpload("PRE_ORDER_PRODUCT", "SALE_ORDER_ID", preOrderRequest.getData().get(0).getData().get(0).getId());*/
                         }
 
                         sqLiteDatabase.setTransactionSuccessful();
@@ -1632,12 +1538,12 @@ public class SyncActivity extends AppCompatActivity {
     private List<PreOrder> getPreOrderFromDatabase() {
         List<PreOrder> preOrderList = new ArrayList<>();
 
-        Cursor cursorPreOrder = sqLiteDatabase.rawQuery("select P.*, (SELECT CUSTOMER.id from CUSTOMER WHERE CUSTOMER.CUSTOMER_ID = P.CUSTOMER_ID) AS CUS_ID from PRE_ORDER AS P WHERE P.DELETE_FLAG = 0", null);
+        Cursor cursorPreOrder = sqLiteDatabase.rawQuery("select P.* from PRE_ORDER AS P WHERE P.DELETE_FLAG = 0", null);
 
         while (cursorPreOrder.moveToNext()) {
             PreOrder preOrder = new PreOrder();
             preOrder.setInvoiceId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("INVOICE_ID")));
-            preOrder.setCustomerId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("CUS_ID")));
+            preOrder.setCustomerId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("CUSTOMER_ID")));
             preOrder.setSalePersonId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("SALEPERSON_ID")));
             preOrder.setDeviceId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("DEV_ID")));
             preOrder.setPreOrderDate(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("PREORDER_DATE")));
@@ -1697,6 +1603,7 @@ public class SyncActivity extends AppCompatActivity {
             preOrderPresentApi.setSaleOrderId(cursorPreOrderPresent.getString(cursorPreOrderPresent.getColumnIndex("pre_order_id")));
             preOrderPresentApi.setProductId(Integer.parseInt(cursorPreOrderPresent.getString(cursorPreOrderPresent.getColumnIndex("stock_id"))));
             preOrderPresentApi.setQuantity(cursorPreOrderPresent.getInt(cursorPreOrderPresent.getColumnIndex("quantity")));
+            preOrderPresentList.add(preOrderPresentApi);
         }
 
         return preOrderPresentList;
@@ -1723,16 +1630,11 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        //Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
-
                         sqLiteDatabase.beginTransaction();
 
                         if (saleReturnRequest.getData() != null && saleReturnRequest.getData().get(0).getData().size() > 0) {
                             updateDeleteFlag("SALE_RETURN", 1, "SALE_RETURN_ID", saleReturnRequest.getData().get(0).getData().get(0).getInvoiceNo());
                             updateDeleteFlag("SALE_RETURN_DETAIL", 1, "SALE_RETURN_ID", saleReturnRequest.getData().get(0).getData().get(0).getInvoiceNo());
-
-                            /*deleteDataAfterUpload("SALE_RETURN", "SALE_RETURN_ID", saleReturnRequest.getData().get(0).getData().get(0).getInvoiceNo());
-                            deleteDataAfterUpload("SALE_RETURN_DETAIL", "SALE_RETURN_ID", saleReturnRequest.getData().get(0).getData().get(0).getInvoiceNo());*/
                         }
 
                         sqLiteDatabase.setTransactionSuccessful();
@@ -1784,6 +1686,7 @@ public class SyncActivity extends AppCompatActivity {
             saleReturnApi.setPcAddress(saleReturn.getPcAddress());
             saleReturnApi.setAmount(saleReturn.getAmt());
             saleReturnApi.setPayAmount(saleReturn.getPayAmt());
+            saleReturnApi.setCurrencyId(currencyId);
 
             List<SaleReturnDetail> saleReturnDetailList = getSaleReturnDetailFromDatabase(saleReturn.getSaleReturnId());
 
@@ -1974,8 +1877,6 @@ public class SyncActivity extends AppCompatActivity {
      * Upload PosmByCustomer to server.
      */
     private void uploadPosmByCustomerToServer() {
-        //Utils.callDialog("Please wait...", this);
-
         final PosmByCustomerRequest posmByCustomerRequest = getPosmByCustomerRequest();
 
         String paramData = getJsonFromObject(posmByCustomerRequest);
@@ -1991,14 +1892,10 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        //Utils.cancelDialog();
-                        //Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
-
                         sqLiteDatabase.beginTransaction();
 
                         if (posmByCustomerRequest.getData() != null && posmByCustomerRequest.getData().get(0).getPosmByCustomerApiList().size() > 0) {
                             updateDeleteFlag("POSM_BY_CUSTOMER", 1, "INVOICE_NO", posmByCustomerRequest.getData().get(0).getPosmByCustomerApiList().get(0).getInvoiceNo());
-                            //deleteDataAfterUpload("POSM_BY_CUSTOMER", "INVOICE_NO", posmByCustomerRequest.getData().get(0).getPosmByCustomerApiList().get(0).getInvoiceNo());
                         }
 
                         sqLiteDatabase.setTransactionSuccessful();
@@ -2109,8 +2006,6 @@ public class SyncActivity extends AppCompatActivity {
      * @param param parameter to request api
      */
     private void downloadDeliveryFromApi(String param) {
-        //Utils.callDialog("Please wait...", this);
-
         DownloadService downloadService = RetrofitServiceFactory.createService(DownloadService.class);
         Call<DeliveryResponse> call = downloadService.getDeliveryFromApi(param);
 
@@ -2119,8 +2014,6 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<DeliveryResponse> call, Response<DeliveryResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        //Utils.cancelDialog();
-
                         List<DeliveryForApi> deliveryForApiList = response.body().getDataForDeliveryList().get(0).getDeliveryForApiList();
 
                         Log.i("DeliveryForApiList >>>", deliveryForApiList.size() + "");
@@ -2222,7 +2115,6 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        //Utils.cancelDialog();
 
                         if (!services.equals("")) {
                             services += ",";
@@ -2230,16 +2122,6 @@ public class SyncActivity extends AppCompatActivity {
                         services += " " + getResources().getString(R.string.delivery);
 
                         uploadCashReceiveToServer();
-                       /* sqLiteDatabase.beginTransaction();
-
-                        if(deliveryRequest.getData() != null && deliveryRequest.getData().get(0).getDeliveryApiList().size() > 0) {
-                            deleteDataAfterUpload(DatabaseContract.DELIVERY_UPLOAD.TABLE, DatabaseContract.DELIVERY_UPLOAD.INVOICE_NO, deliveryRequest.getData().get(0).getDeliveryApiList().get(0).getInvoiceNo());
-                            deleteDataAfterUpload(DatabaseContract.DELIVERY_ITEM_UPLOAD.TABLE, DatabaseContract.DELIVERY_ITEM_UPLOAD.DELIVERY_ID, deliveryRequest.getData().get(0).getDeliveryApiList().get(0).getInvoiceNo());
-                        }
-
-                        sqLiteDatabase.setTransactionSuccessful();
-                        sqLiteDatabase.endTransaction();*/
-
                     }
                 } else {
                     if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
@@ -2282,24 +2164,24 @@ public class SyncActivity extends AppCompatActivity {
 
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        //Utils.cancelDialog();
-                        //Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
+
                         if (!services.equals("")) {
                             services += ",";
                         }
 
                         services += " " + getResources().getString(R.string.display_assessment);
 
-//                        uploadOutletSizeinstortoserver();
                         uploadCompetitorSizeinstoresharetoserver();
 
-                    }
-                } else {
-                    if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
-                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
                     } else {
-                        Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
+                        if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
+                            onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                        }
                     }
+
+                } else {
+                    Utils.cancelDialog();
+                    Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
                 }
 
             }
@@ -2367,255 +2249,9 @@ public class SyncActivity extends AppCompatActivity {
 
     }
 
-
-    /**
-     * upload out outletandsizeinstore to server by BL
-     */
-
-//    private void uploadOutletSizeinstortoserver() {
-//
-//        final Outlet_Sizeinstore_request outlet_sizeinstore_request = outlet_sizeinstore_request();
-//
-//        final String paramData = getJsonFromObject(outlet_sizeinstore_request);
-//        Log.i("PaRam", paramData);
-//
-//        UploadService uploadService = RetrofitServiceFactory.createService(UploadService.class);
-//
-//        Call<InvoiceResponse> call = uploadService.uploadcompetitorsizeinstore(paramData);
-//
-//        call.enqueue(new Callback<InvoiceResponse>() {
-//            @Override
-//            public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
-//
-//                if (response.code() == 200) {
-//                    if (response.body().getAceplusStatusCode() == 200) {
-//                        Utils.cancelDialog();
-//                        //Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
-//                        if (!services.equals("")) {
-//                            services += ",";
-//                        }
-//
-//                        services += " " + getResources().getString(R.string.outlet_stock_availability);
-//
-//                        //uploadCustomerVisitToServer();
-//                    }
-//                } else {
-//                    if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
-//                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
-//                    } else {
-//                        Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
-//                    }
-//                }
-//
-//            }
-//
-//            @Override
-//            public void onFailure(Call<InvoiceResponse> call, Throwable t) {
-//
-//                Utils.cancelDialog();
-//                Utils.commonDialog(t.getMessage(), SyncActivity.this);
-//
-//            }
-//        });
-//
-//
-//    }
-//
-//    private Outlet_Sizeinstore_request outlet_sizeinstore_request() {
-//
-//        Outlet_Sizeinstore_request outlet_sizeinstore_request = new Outlet_Sizeinstore_request();
-//
-//        outlet_sizeinstore_request.setData(setOutLetSizeinStoreData());
-//        outlet_sizeinstore_request.setPassword("");
-//        outlet_sizeinstore_request.setSiteActivationKey(Constant.SITE_ACTIVATION_KEY);
-//        outlet_sizeinstore_request.setTabletActivationKey(Constant.TABLET_ACTIVATION_KEY);
-//        outlet_sizeinstore_request.setUserId(saleman_Id);
-//
-//
-//        return outlet_sizeinstore_request;
-//
-//    }
-//
-//    private List<Outlet_Sizeinstore_Data> setOutLetSizeinStoreData() {
-//
-//
-//        List<Outlet_Sizeinstore_Data> outlet_sizeinstore_dataList = new ArrayList<>();
-//
-//        Outlet_Sizeinstore_Data outlet_sizeinstore_data = new Outlet_Sizeinstore_Data();
-//
-//        outlet_sizeinstore_data.setOutletStockAvailability(setOutLetData());
-//        outlet_sizeinstore_data.setSizeInStoreShare(setSizeinStoreData());
-//
-//
-//        outlet_sizeinstore_dataList.add(outlet_sizeinstore_data);
-//
-//        return outlet_sizeinstore_dataList;
-//
-//    }
-//
-//    private List<OutletStockAvailability> setOutLetData() {
-//
-//        List<OutletStockAvailability> outletStockAvailabilityList = new ArrayList<>();
-//        int Customer_Id = 0;
-//
-//        Cursor cursor1 = sqLiteDatabase.rawQuery("select * from outlet_stock_availability", null);
-//
-//        while (cursor1.moveToNext()) {
-//
-//            OutletStockAvailability outletStockAvailability = new OutletStockAvailability();
-//
-//            String availabilityNo = cursor1.getString(cursor1.getColumnIndex("outlet_stock_availability_id"));
-//            String cus_Id = cursor1.getString(cursor1.getColumnIndex("customer_id"));
-//            String date = cursor1.getString(cursor1.getColumnIndex("date"));
-//
-//
-//            Cursor cursor2 = sqLiteDatabase.rawQuery("select * from CUSTOMER where CUSTOMER_ID='" + cus_Id + "'", null);
-//
-//            while (cursor2.moveToNext()) {
-//
-//                Customer_Id = cursor2.getInt(cursor2.getColumnIndex("id"));
-//
-//            }
-//
-//            outletStockAvailability.setOutletStockAvailabilityNo(availabilityNo);
-//            outletStockAvailability.setCustomerId(Customer_Id);
-//            outletStockAvailability.setDate(date);
-//
-//            outletStockAvailability.setOutletStockAvailabilityItem(getOutletDetailDatafromDB());
-//
-//            outletStockAvailabilityList.add(outletStockAvailability);
-//
-//
-//        }
-//
-//        cursor1.close();
-//        return outletStockAvailabilityList;
-//
-//    }
-//
-//    private List<OutletStockAvailabilityItem> getOutletDetailDatafromDB() {
-//
-//        int Stock_Id = 0;
-//
-//        List<OutletStockAvailabilityItem> outletStockAvailabilityItemList = new ArrayList<>();
-//
-//
-//        Cursor cursor = sqLiteDatabase.rawQuery("select * from outlet_stock_availability_detail", null);
-//
-//        while (cursor.moveToNext()) {
-//
-//            OutletStockAvailabilityItem outletStockAvailabilityItem = new OutletStockAvailabilityItem();
-//
-//            String outletStockAvailabilityNo = cursor.getString(cursor.getColumnIndex("outlet_stock_availability_id"));
-//            String product_id = cursor.getString(cursor.getColumnIndex("product_id"));
-//            int quantity = cursor.getInt(cursor.getColumnIndex("quantity"));
-//
-//            Cursor cursor1 = sqLiteDatabase.rawQuery("select * from PRODUCT where PRODUCT_ID='" + product_id + "'", null);
-//
-//            while (cursor1.moveToNext()) {
-//
-//                Stock_Id = cursor1.getInt(cursor1.getColumnIndex("ID"));
-//
-//            }
-//
-//
-//            outletStockAvailabilityItem.setOutletStockAvailabilityNo(outletStockAvailabilityNo);
-//            outletStockAvailabilityItem.setStockId(Stock_Id);
-//            outletStockAvailabilityItem.setQuantity(quantity);
-//
-//            outletStockAvailabilityItemList.add(outletStockAvailabilityItem);
-//
-//        }
-//
-//        cursor.close();
-//        return outletStockAvailabilityItemList;
-//    }
-//
-//    private List<SizeInStoreShare> setSizeinStoreData() {
-//        List<SizeInStoreShare> sizeInStoreShareList = new ArrayList<>();
-//
-//        int Customer_Id = 0;
-//
-//        Cursor cursor = sqLiteDatabase.rawQuery("select * from  size_in_store_share", null);
-//
-//        while (cursor.moveToNext()) {
-//
-//            SizeInStoreShare sizeInStoreShare = new SizeInStoreShare();
-//
-//            String sizeInStoreShareNo = cursor.getString(cursor.getColumnIndex("size_in_store_share_id"));
-//            String cus_Id = cursor.getString(cursor.getColumnIndex("customer_id"));
-//            String date = cursor.getString(cursor.getColumnIndex("date"));
-//
-//
-//            Cursor cursor2 = sqLiteDatabase.rawQuery("select * from CUSTOMER where CUSTOMER_ID='" + cus_Id + "'", null);
-//
-//            while (cursor2.moveToNext()) {
-//
-//                Customer_Id = cursor2.getInt(cursor2.getColumnIndex("id"));
-//
-//            }
-//
-//            sizeInStoreShare.setSizeInStoreShareNo(sizeInStoreShareNo);
-//            sizeInStoreShare.setCustomerId(Customer_Id);
-//            sizeInStoreShare.setDate(date);
-//            sizeInStoreShare.setSizeInStoreShareItem(getSizeinStoreDetailfromDB());
-//
-//
-//            sizeInStoreShareList.add(sizeInStoreShare);
-//
-//        }
-//
-//        return sizeInStoreShareList;
-//
-//    }
-//
-//    private List<SizeInStoreShareItem> getSizeinStoreDetailfromDB() {
-//
-//        int Stock_Id = 0;
-//
-//        List<SizeInStoreShareItem> sizeInStoreShareItemList = new ArrayList<>();
-//
-//        Cursor cursor = sqLiteDatabase.rawQuery("select * from size_in_store_share_detail", null);
-//
-//        while (cursor.moveToNext()) {
-//            SizeInStoreShareItem sizeInStoreShareItem = new SizeInStoreShareItem();
-//
-//            String sizeInStoreShareNo = cursor.getString(cursor.getColumnIndex("size_in_store_share_id"));
-//            String productId = cursor.getString(cursor.getColumnIndex("product_id"));
-//            int sizeInStoreSharePercent = cursor.getInt(cursor.getColumnIndex("size_in_store_share_percent"));
-//
-//
-//            Cursor cursor1 = sqLiteDatabase.rawQuery("select * from PRODUCT where PRODUCT_ID='" + productId + "'", null);
-//
-//            while (cursor1.moveToNext()) {
-//
-//                Stock_Id = cursor1.getInt(cursor1.getColumnIndex("ID"));
-//
-//            }
-//
-//
-//            sizeInStoreShareItem.setSizeInStoreShareNo(sizeInStoreShareNo);
-//            sizeInStoreShareItem.setStockId(Stock_Id);
-//            sizeInStoreShareItem.setSizeInStoreSharePercent(sizeInStoreSharePercent);
-//
-//            sizeInStoreShareItemList.add(sizeInStoreShareItem);
-//
-//
-//        }
-//        cursor.close();
-//        return sizeInStoreShareItemList;
-//    }
-
-    /**
-     * upload out outletandsizeinstore to server by BL
-     */
-
-
     /**
      * upload out competitorsizeinstoreshare to server by BL
      */
-
-
     public void uploadCompetitorSizeinstoresharetoserver() {
 
         final CompetitorSizeinstoreshareRequest competitorSizeinstoreshareRequest = competitorSizeinstoreshareRequest();
@@ -2632,9 +2268,9 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
 
                 if (response.code() == 200) {
+
                     if (response.body().getAceplusStatusCode() == 200) {
-                        Utils.cancelDialog();
-                        //Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
+
                         if (!services.equals("")) {
                             services += ",";
                         }
@@ -2642,20 +2278,21 @@ public class SyncActivity extends AppCompatActivity {
                         services += " " + getResources().getString(R.string.outlet_stock_availability);
 
                         uploadCustomerVisitToServer();
+
+                    } else {
+                        if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
+                            onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                        }
                     }
                 } else {
-                    if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
-                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
-                    } else {
-                        Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
-                    }
+                    Utils.cancelDialog();
+                    Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
                 }
 
             }
 
             @Override
             public void onFailure(Call<InvoiceResponse> call, Throwable t) {
-
                 Utils.cancelDialog();
                 Utils.commonDialog(t.getMessage(), SyncActivity.this);
 
@@ -2697,7 +2334,6 @@ public class SyncActivity extends AppCompatActivity {
 
         List<Competitor_Activity> competitor_activityList = new ArrayList<>();
 
-
         Cursor cursor = sqLiteDatabase.rawQuery("select * from COMPETITOR_ACTIVITY ", null);
 
         while (cursor.moveToNext()) {
@@ -2715,11 +2351,7 @@ public class SyncActivity extends AppCompatActivity {
             competitor_activity.setActivities(activity);
 
             competitor_activityList.add(competitor_activity);
-
-
         }
-
-
         return competitor_activityList;
     }
 
@@ -2738,7 +2370,6 @@ public class SyncActivity extends AppCompatActivity {
             String cus_Id = cursor.getString(cursor.getColumnIndex("customer_id"));
             String date = cursor.getString(cursor.getColumnIndex("date"));
 
-
             Cursor cursor2 = sqLiteDatabase.rawQuery("select * from CUSTOMER where CUSTOMER_ID='" + cus_Id + "'", null);
 
             while (cursor2.moveToNext()) {
@@ -2752,13 +2383,10 @@ public class SyncActivity extends AppCompatActivity {
             sizeInStoreShare.setDate(date);
             sizeInStoreShare.setSizeInStoreShareItem(getSizeinStoreDetailfromDB());
 
-
             sizeInStoreShareList.add(sizeInStoreShare);
-
         }
 
         return sizeInStoreShareList;
-
     }
 
     private List<SizeInStoreShareItem> getSizeinStoreDetailfromDB() {
@@ -2774,8 +2402,7 @@ public class SyncActivity extends AppCompatActivity {
 
             String sizeInStoreShareNo = cursor.getString(cursor.getColumnIndex("size_in_store_share_id"));
             String productId = cursor.getString(cursor.getColumnIndex("product_id"));
-            int sizeInStoreSharePercent = cursor.getInt(cursor.getColumnIndex("size_in_store_share_percent"));
-
+            int sizeInStoreSharePercent = cursor.getInt(cursor.getColumnIndex("size_in_store_share_amount"));
 
             Cursor cursor1 = sqLiteDatabase.rawQuery("select * from PRODUCT where PRODUCT_ID='" + productId + "'", null);
 
@@ -2785,16 +2412,14 @@ public class SyncActivity extends AppCompatActivity {
 
             }
 
-
             sizeInStoreShareItem.setSizeInStoreShareNo(sizeInStoreShareNo);
             sizeInStoreShareItem.setStockId(Stock_Id);
             sizeInStoreShareItem.setSizeInStoreSharePercent(sizeInStoreSharePercent);
 
             sizeInStoreShareItemList.add(sizeInStoreShareItem);
-
-
         }
         cursor.close();
+
         return sizeInStoreShareItemList;
     }
 
@@ -2976,7 +2601,7 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        //Utils.cancelDialog();
+
                         if (!services.equals("")) {
                             services += ",";
                         }
@@ -2989,8 +2614,6 @@ public class SyncActivity extends AppCompatActivity {
                             onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
                         }
                     }
-
-
                 } else {
                     Utils.cancelDialog();
                     Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
@@ -3109,8 +2732,6 @@ public class SyncActivity extends AppCompatActivity {
 
         String paramData = "";
 
-        //Utils.callDialog("Please wait...", this);
-
         CustomerVisitRequest customerVisitRequest = new CustomerVisitRequest();
 
         customerVisitRequest.setSiteActivationKey(Constant.SITE_ACTIVATION_KEY);
@@ -3129,16 +2750,11 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        //Utils.cancelDialog();
                         if (!services.equals("")) {
                             services += ",";
                         }
                         services += "CUSTOMER VISIT RECORD ";
-                        uploadSaleManRoute();
-                        /*if (!services.equals("")) {
-                            services += " are successfully uploaded";
-                            Utils.commonDialog(services, SyncActivity.this);
-                        }*/
+                        uploadUnsellReasonToServer();
                     } else {
                         if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
                             onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
@@ -3171,10 +2787,7 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<CustomerVisitResponse> call, Response<CustomerVisitResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        //Utils.cancelDialog();
                         textViewError.setText("");
-
-                        //Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
 
                         List<SaleVisitRecord> saleVisitRecordList = new ArrayList<>();
                         saleVisitRecordList = response.body().getCustomerVisitRequestDataList().get(0).getSaleVisitRecordList();
@@ -3288,49 +2901,48 @@ public class SyncActivity extends AppCompatActivity {
         saleManRouteRequest.setPassword("");//it is empty string bcoz json format using gson cannot accept encrypted
 
         List<ERouteReport> eRouteReportList = getDatasForSaleManRoute();
-        List<DataForSaleManRoute> dataForSaleManRouteList = new ArrayList<>();
-        DataForSaleManRoute dataForSaleManRoute = new DataForSaleManRoute();
-        dataForSaleManRoute.setERouteReport(eRouteReportList);
-        dataForSaleManRouteList.add(dataForSaleManRoute);
-        saleManRouteRequest.setData(dataForSaleManRouteList);
 
-        paramData = getJsonFromObject(saleManRouteRequest);
-        Log.i("Param_SAL_ROUTE", paramData);
+        if(eRouteReportList.size() > 0) {
+            Utils.callDialog("Please wait...", this);
+            List<DataForSaleManRoute> dataForSaleManRouteList = new ArrayList<>();
+            DataForSaleManRoute dataForSaleManRoute = new DataForSaleManRoute();
+            dataForSaleManRoute.setERouteReport(eRouteReportList);
+            dataForSaleManRouteList.add(dataForSaleManRoute);
+            saleManRouteRequest.setData(dataForSaleManRouteList);
 
-        UploadService uploadService = RetrofitServiceFactory.createService(UploadService.class);
-        Call<InvoiceResponse> call = uploadService.uploadSaleManRoute(paramData);
-        call.enqueue(new Callback<InvoiceResponse>() {
-            @Override
-            public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
-                if (response.code() == 200) {
-                    if (response.body().getAceplusStatusCode() == 200) {
-                        Utils.cancelDialog();
-                        if (!services.equals("")) {
-                            services += ",";
+            paramData = getJsonFromObject(saleManRouteRequest);
+            Log.i("Param_SAL_ROUTE", paramData);
+
+            UploadService uploadService = RetrofitServiceFactory.createRealTimeService(UploadService.class);
+            Call<InvoiceResponse> call = uploadService.uploadSaleManRoute(paramData);
+            call.enqueue(new Callback<InvoiceResponse>() {
+                @Override
+                public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
+                    if (response.code() == 200) {
+                        if (response.body().getAceplusStatusCode() == 200) {
+                            Utils.cancelDialog();
+                            Utils.commonDialog("Sale Man Route has successfully uploaded", SyncActivity.this);
+                        } else {
+                            if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
+                                onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                            }
                         }
-                        services += "E ROUTE REPORT ";
-                        if (!services.equals("")) {
-                            services += " are successfully uploaded";
-                            Utils.commonDialog(services, SyncActivity.this);
-                        }
+
                     } else {
-                        if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
-                            onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
-                        }
+                        Utils.cancelDialog();
+                        Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
                     }
-
-                } else {
-                    Utils.cancelDialog();
-                    Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
                 }
-            }
 
-            @Override
-            public void onFailure(Call<InvoiceResponse> call, Throwable t) {
-                Utils.cancelDialog();
-                Utils.commonDialog(t.getMessage(), SyncActivity.this);
-            }
-        });
+                @Override
+                public void onFailure(Call<InvoiceResponse> call, Throwable t) {
+                    Utils.cancelDialog();
+                    Utils.commonDialog(t.getMessage(), SyncActivity.this);
+                }
+            });
+        } else {
+            Utils.commonDialog("No ERoute to upload", this);
+        }
     }
 
     private ArrayList<ERouteReport> getDatasForSaleManRoute() {
@@ -3362,10 +2974,7 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<SaleTargetResponse> call, Response<SaleTargetResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        //Utils.cancelDialog();
                         textViewError.setText("");
-
-                        //Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
 
                         List<SaleTargetForCustomer> saleTargetCustomerList = response.body().getDataForSaleTargetList().get(0).getSaleTargetForCustomerList();
                         List<SaleTargetForSaleMan> saleTargetSaleMenList = response.body().getDataForSaleTargetList().get(0).getSaleTargetForSaleManList();
@@ -3459,12 +3068,8 @@ public class SyncActivity extends AppCompatActivity {
             public void onResponse(Call<SaleHistoryResponse> call, Response<SaleHistoryResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        //Utils.cancelDialog();
                         textViewError.setText("");
-
-                        //Toast.makeText(SyncActivity.this, response.body().getAceplusStatusMessage(), Toast.LENGTH_SHORT).show();
-                        Toast.makeText(SyncActivity.this, getResources().getString(R.string.download_success), Toast.LENGTH_SHORT).show();
-
+                        Utils.cancelDialog();
                         List<SaleHistory> saleHistoryCustomerList = response.body().getDataForSaleHistoryList().get(0).getSaleHistoryList();
 
                         Log.i("saleHistoryRecordList>>>", saleHistoryCustomerList.size() + "");
@@ -3477,6 +3082,8 @@ public class SyncActivity extends AppCompatActivity {
 
                         sqLiteDatabase.setTransactionSuccessful();
                         sqLiteDatabase.endTransaction();
+
+                        Utils.commonDialog(getResources().getString(R.string.download_success), SyncActivity.this);
 
                     } else {
                         Utils.cancelDialog();
@@ -3517,6 +3124,7 @@ public class SyncActivity extends AppCompatActivity {
             cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.REFUND_AMOUNT, saleHistory.getTotalRefundAmt());
             cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.SALE_PERSON_ID, saleHistory.getSalepersonId());
             cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.LOCATION_CODE, saleHistory.getLocationCode());
+            cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.CASH_OR_CREDIT, saleHistory.getInvoiceStatus());
             cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.DEVICE_ID, saleHistory.getDeviceId());
             insertSaleHistoryDetail(saleHistory.getSaleHistoryDetailList());
             sqLiteDatabase.insert(DatabaseContract.SALE_HISTORY.TABLE, null, cvForSaleHistory);
@@ -3533,6 +3141,141 @@ public class SyncActivity extends AppCompatActivity {
             cvForSaleHistoryDetail.put(DatabaseContract.SALE_HISTORY_DETAIL.DISCOUNT_AMOUNT, saleHistoryDetail.getDiscountAmt());
             sqLiteDatabase.insert(DatabaseContract.SALE_HISTORY_DETAIL.TABLE, null, cvForSaleHistoryDetail);
         }
+    }
+
+    /**
+     * Send success message to API service in order to update downloaded flag.
+     */
+    private void confirmRequestSuccessForProduct(final int reIssue) {
+        ConfirmRequestSuccess confirmRequestSuccess = new ConfirmRequestSuccess();
+        confirmRequestSuccess.setSiteActivationKey(Constant.SITE_ACTIVATION_KEY);
+        confirmRequestSuccess.setTabletActivationKey(Constant.TABLET_ACTIVATION_KEY);
+        confirmRequestSuccess.setUserId(saleman_Id);
+        confirmRequestSuccess.setRoute(String.valueOf(getRouteID(saleman_Id)));
+        confirmRequestSuccess.setDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+        confirmRequestSuccess.setSuccessCode(200);
+        String paramData = getJsonFromObject(confirmRequestSuccess);
+        Log.i("ParamData", paramData);
+
+        UploadService uploadService = RetrofitServiceFactory.createService(UploadService.class);
+        Call<InvoiceResponse> call = uploadService.confirmDownloadSuccess(paramData);
+        call.enqueue(new Callback<InvoiceResponse>() {
+            @Override
+            public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
+                if (response.code() == 200) {
+                    if (response.body().getAceplusStatusCode() == 200) {
+                        Log.i("Confirm Product :-> ", "PRODUCT fOR " + Calendar.getInstance() + "hAs beEn sUcCEssfuLly uPdATEd");
+
+                        if(reIssue == 1) {
+                            downloadPromotionFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
+                        } else {
+                            Utils.commonDialog("Successfully downloaded", SyncActivity.this);
+                        }
+
+                    } else if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    }
+
+                } else {
+                    Utils.cancelDialog();
+                    Utils.commonDialog("Products are not successfully downloaded", SyncActivity.this);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<InvoiceResponse> call, Throwable t) {
+                Utils.cancelDialog();
+                Utils.commonDialog(t.getMessage(), SyncActivity.this);
+            }
+        });
+    }
+
+    public void downloadReissueFromServer(String paramData) {
+        Utils.callDialog("Please wait...", this);
+
+        DownloadService downloadService = RetrofitServiceFactory.createService(DownloadService.class);
+        Call<ProductResponse> call = downloadService.getProduct(paramData);
+        call.enqueue(new Callback<ProductResponse>() {
+            @Override
+            public void onResponse(Call<ProductResponse> call, Response<ProductResponse> response) {
+                if (response.code() == 200) {
+                    if (response.body().getAceplusStatusCode() == 200) {
+                        Utils.cancelDialog();
+                        List<ProductForApi> productList = new ArrayList<ProductForApi>();
+
+                        productList = response.body().getDataForProductList().get(0).getProductList();
+                        Log.i("productList>>>", productList.size() + "");
+
+                        sqLiteDatabase.beginTransaction();
+
+                        insertOrUpdateProduct(productList);
+
+                        sqLiteDatabase.setTransactionSuccessful();
+                        sqLiteDatabase.endTransaction();
+                        confirmRequestSuccessForProduct(0);
+                    } else {
+                        Utils.cancelDialog();
+                        Utils.commonDialog(response.body().getAceplusStatusMessage(), SyncActivity.this);
+                    }
+
+                } else {
+
+                    if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    } else {
+                        Utils.cancelDialog();
+                        Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
+                    }
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ProductResponse> call, Throwable t) {
+                Utils.cancelDialog();
+                Utils.commonDialog(t.getMessage(), SyncActivity.this);
+            }
+        });
+    }
+
+    private void uploadUnsellReasonToServer() {
+        CustomerFeedbackRequest feedbackRequest = new CustomerFeedbackRequest();
+        feedbackRequest.setSiteActivationKey(Constant.SITE_ACTIVATION_KEY);
+        feedbackRequest.setTabletActivationKey(Constant.TABLET_ACTIVATION_KEY);
+        feedbackRequest.setUserId(saleman_Id);
+        feedbackRequest.setPassword("");//it is empty string bcoz json format using gson cannot accept encrypted
+        feedbackRequest.setRoute(String.valueOf(getRouteID(saleman_Id)));
+        feedbackRequest.setData(getUnsellReasonFromDb());
+
+        String paramData = getJsonFromObject(feedbackRequest);
+
+        Log.i("ParamData", paramData);
+
+        UploadService uploadService = RetrofitServiceFactory.createService(UploadService.class);
+        Call<InvoiceResponse> call = uploadService.uploadUnsellReason(paramData);
+        call.enqueue(new Callback<InvoiceResponse>() {
+            @Override
+            public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
+                if (response.code() == 200) {
+                    if (response.body().getAceplusStatusCode() == 200) {
+                        Utils.cancelDialog();
+                        Utils.commonDialog("Successfully Uploaded. ", SyncActivity.this);
+                    } else if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    }
+
+                } else {
+                    Utils.cancelDialog();
+                    Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<InvoiceResponse> call, Throwable t) {
+                Utils.cancelDialog();
+                Utils.commonDialog(t.getMessage(), SyncActivity.this);
+            }
+        });
     }
 
     @OnClick(R.id.cancel_img)

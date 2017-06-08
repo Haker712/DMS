@@ -1,19 +1,27 @@
 package com.aceplus.samparoo.customer;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Address;
 import android.location.Geocoder;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.aceplus.samparoo.R;
 import com.aceplus.samparoo.utils.Database;
@@ -21,6 +29,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -41,7 +50,7 @@ public class AddNewCustomerLocationActivity extends FragmentActivity {
 
     SQLiteDatabase database;
 
-    GoogleMap googleMap;
+    GoogleMap map;
     SharedPreferences sharedPreferences;
 
     ImageView backImg;
@@ -68,15 +77,9 @@ public class AddNewCustomerLocationActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_new_customer_map);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        /*try {
 
-            userInfo = new JSONObject(getIntent().getStringExtra(USER_INFO_KEY));
-        } catch (JSONException e) {
-
-            e.printStackTrace();
-        }*/
         database = new Database(this).getDataBase();
-        getSaleManRouteDB();
+        //getSaleManRouteDB();
         registerIDs();
         catchEvents();
     }
@@ -106,24 +109,54 @@ public class AddNewCustomerLocationActivity extends FragmentActivity {
         } else {
             SupportMapFragment fm = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
-            googleMap = fm.getMap();
+            fm.getMapAsync(new OnMapReadyCallback() {
+                @Override
+                public void onMapReady(GoogleMap googleMap) {
+                    map = googleMap;
 
-            googleMap.setMyLocationEnabled(true);
+                    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if (ContextCompat.checkSelfPermission(AddNewCustomerLocationActivity.this,
+                                Manifest.permission.ACCESS_FINE_LOCATION)
+                                == PackageManager.PERMISSION_GRANTED) {
+                            //Location Permission already granted
 
-            sharedPreferences = getSharedPreferences("location", 0);
+                            map.setMyLocationEnabled(true);
+                        } else {
+                            //Request Location Permission
+                            checkLocationPermission();
+                        }
+                    }
 
-            locationCount = sharedPreferences.getInt("locationCount", 0);
+                    map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
 
-            String zoom = sharedPreferences.getString("zoom", "15");
+                        @Override
+                        public void onMapClick(LatLng point) {
+                            if (markerCount == 0) {
+                                drawMarker(point);
+                                customerLat = String.valueOf(point.latitude);
+                                customerLng = String.valueOf(point.longitude);
+                                markerCount++;
+                            }
+                        }
+                    });
+                    map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+                        @Override
+                        public void onMapLongClick(LatLng point) {
+                            map.clear();
+                            markerCount = 0;
+                            customerLat = null;
+                            customerLng = null;
+                        }
+                    });
 
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude, longitude)));
-
-            googleMap.animateCamera(CameraUpdateFactory.zoomTo(Float.parseFloat(zoom)));
+                    if (!(customerLat == null)) {
+                        drawMarker(new LatLng(Double.valueOf(customerLat), Double.valueOf(customerLng)));
+                    }
+                }
+            });
         }
 
-        if (!(customerLat == null)) {
-            drawMarker(new LatLng(Double.valueOf(customerLat), Double.valueOf(customerLng)));
-        }
+
 
         searchImg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,7 +173,7 @@ public class AddNewCustomerLocationActivity extends FragmentActivity {
                     try {
                         android.location.Address address = addressList.get(0);
                         LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-                        googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+                        map.animateCamera(CameraUpdateFactory.newLatLng(latLng));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -148,27 +181,6 @@ public class AddNewCustomerLocationActivity extends FragmentActivity {
             }
         });
 
-        googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-
-            @Override
-            public void onMapClick(LatLng point) {
-                if (markerCount == 0) {
-                    drawMarker(point);
-                    customerLat = String.valueOf(point.latitude);
-                    customerLng = String.valueOf(point.longitude);
-                    markerCount++;
-                }
-            }
-        });
-        googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
-            @Override
-            public void onMapLongClick(LatLng point) {
-                googleMap.clear();
-                markerCount = 0;
-                customerLat = null;
-                customerLng = null;
-            }
-        });
         backImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -203,8 +215,9 @@ public class AddNewCustomerLocationActivity extends FragmentActivity {
     private void drawMarker(LatLng point) {
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(point);
-        googleMap.addMarker(markerOptions);
+        map.addMarker(markerOptions);
     }
+/*
 
     private void getSaleManRouteDB() {
         database.beginTransaction();
@@ -218,6 +231,71 @@ public class AddNewCustomerLocationActivity extends FragmentActivity {
         cursor.close();
         database.setTransactionSuccessful();
         database.endTransaction();
+    }
+*/
+
+    final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    private void checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                new android.support.v7.app.AlertDialog.Builder(this)
+                        .setTitle("Location Permission Needed")
+                        .setMessage("This app needs the Location permission, please accept to use location functionality")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ActivityCompat.requestPermissions(AddNewCustomerLocationActivity.this,
+                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                        MY_PERMISSIONS_REQUEST_LOCATION );
+                            }
+                        }).create()
+                        .show();
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_LOCATION );
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // location-related task you need to do.
+                    if (ContextCompat.checkSelfPermission(this,
+                            Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+
+                        map.setMyLocationEnabled(true);
+                    }
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
     }
 }
 

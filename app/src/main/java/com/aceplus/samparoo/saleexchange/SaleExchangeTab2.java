@@ -13,7 +13,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,6 +51,13 @@ public class SaleExchangeTab2 extends Fragment {
     Double dicount_amount;
     Double total_amount;
 
+    EditText fromDateEditTxt, toDateEditTxt;
+
+    Button searchBtn, clearBtn;
+    Spinner customerSpinner;
+
+    TextView fromDateTxtView, toDateTxtView;
+
     Saleinvoicedetail saleinvoicedetail;
     List<Saleinvoicedetail> saleinvoicedetailList = new ArrayList<Saleinvoicedetail>();
 
@@ -57,6 +67,20 @@ public class SaleExchangeTab2 extends Fragment {
 
 
         View view = inflater.inflate(R.layout.fragment_sale_invoice_report, container, false);
+
+        customerSpinner = (Spinner) view.findViewById(R.id.customer_spinner_fragment_invoice_report);
+        fromDateEditTxt = (EditText) view.findViewById(R.id.edit_text_sale_report_from_date);
+        toDateEditTxt = (EditText) view.findViewById(R.id.edit_text_sale_report_to_date);
+        searchBtn = (Button) view.findViewById(R.id.btn_sale_report_search);
+        clearBtn = (Button) view.findViewById(R.id.btn_sale_report_clear);
+        fromDateTxtView = (TextView) view.findViewById(R.id.txt_view_from_date);
+        toDateTxtView = (TextView) view.findViewById(R.id.txt_view_to_date);
+
+        customerSpinner.setVisibility(View.GONE);
+        fromDateEditTxt.setVisibility(View.GONE);
+        toDateEditTxt.setVisibility(View.GONE);
+        searchBtn.setVisibility(View.GONE);
+        clearBtn.setVisibility(View.GONE);
 
         database = new Database(getActivity()).getDataBase();
         saleInvoiceReportsArrayList = getSaleInvoiceReports();
@@ -87,8 +111,17 @@ public class SaleExchangeTab2 extends Fragment {
                     String produc_Id = cursor_Invoice_Id.getString(cursor_Invoice_Id.getColumnIndex("PRODUCT_ID"));
                     Log.i("product_Id", produc_Id + "aaa");
                     quantity = cursor_Invoice_Id.getString(cursor_Invoice_Id.getColumnIndex("SALE_QUANTITY"));
-                    dicount_amount = Double.valueOf(cursor_Invoice_Id.getString(cursor_Invoice_Id.getColumnIndex("DISCOUNT_AMOUNT")));
-                    total_amount = Double.valueOf(cursor_Invoice_Id.getString(cursor_Invoice_Id.getColumnIndex("TOTAL_AMOUNT")));
+
+                    String dAmt = cursor_Invoice_Id.getString(cursor_Invoice_Id.getColumnIndex("DISCOUNT_AMOUNT"));
+                    String tAmt = cursor_Invoice_Id.getString(cursor_Invoice_Id.getColumnIndex("TOTAL_AMOUNT"));
+
+                    if(dAmt != null) {
+                        dicount_amount = Double.valueOf(dAmt);
+                    }
+
+                    if(tAmt != null) {
+                        total_amount = Double.valueOf(tAmt);
+                    }
 
                     Cursor cursor_product_Id = database.rawQuery("SELECT * FROM PRODUCT WHERE PRODUCT_ID='" + produc_Id + "'", null);
                     Log.i("cur_count", cursor_product_Id.getCount() + "");
@@ -203,7 +236,7 @@ public class SaleExchangeTab2 extends Fragment {
 
         ArrayList<JSONObject> saleInvoiceReportsArrayList = new ArrayList<JSONObject>();
 
-        Cursor cursor = database.rawQuery("SELECT * FROM INVOICE", null);
+        Cursor cursor = database.rawQuery("SELECT * FROM INVOICE WHERE INVOICE_ID LIKE 'SX%'", null);
         while (cursor.moveToNext()) {
 
             JSONObject saleInvoiceReportJsonObject = new JSONObject();

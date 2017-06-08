@@ -9,9 +9,11 @@ import android.database.sqlite.SQLiteDatabase;
  */
 public class Constant {
 
-    public static String BASE_URL = "http://192.168.11.57:9292/api/v1/";
+    //public static String BASE_URL = "http://192.168.11.57:9292/api/v1/";
+    public static String REAL_TIME_URL= "http://205.144.171.174/Ace-dms/PresaleORder/presaleorder.svc/";
+    public static String REAL_TIME_AP_URL= "http://128.199.226.122:8080/api/v1/";
     //public static String BASE_URL = "";
-    //public static String BASE_URL = "http://192.168.137.1:9000/api/v1/";//test ip for bi2
+    public static String BASE_URL = "http://192.168.0.81:9000/api/v1/";//test ip for bi2
 
     public static String KEY_CHANGE_URL = "change_url";
 
@@ -26,6 +28,10 @@ public class Constant {
     public static String SALEMAN_NAME = "saleman_name";
 
     public static String SALEMAN_PWD = "saleman_pwd";
+
+    public static String TABLET_KEY = "tablet_key";
+
+    public static String MAX_KEY = "max_key";
 
     public static String ADDNEWCUSTOMERCOUNT="addnewcustomerCount";
 

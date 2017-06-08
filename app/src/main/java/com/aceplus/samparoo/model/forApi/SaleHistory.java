@@ -83,6 +83,10 @@ public class SaleHistory {
     @Expose
     private String deviceId;
 
+    @SerializedName("invoice_status")
+    @Expose
+    private String invoiceStatus;
+
     /**
      * invoice_detail
      */
@@ -268,6 +272,15 @@ public class SaleHistory {
      */
     public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
+    }
+
+
+    public String getInvoiceStatus() {
+        return invoiceStatus;
+    }
+
+    public void setInvoiceStatus(String invoiceStatus) {
+        this.invoiceStatus = invoiceStatus;
     }
 
     /**

@@ -22,6 +22,12 @@ public class LoginResponse {
     @SerializedName("route")
     @Expose
     private Integer route;
+    @SerializedName("tablet_id")
+    @Expose
+    private Integer tabletKey;
+    @SerializedName("max_id")
+    @Expose
+    private Integer maxKey;
     @SerializedName("data")
     @Expose
     private List<DataForLogin> dataForLogin = null;
@@ -56,6 +62,22 @@ public class LoginResponse {
 
     public void setRoute(Integer route) {
         this.route = route;
+    }
+
+    public Integer getTabletKey() {
+        return tabletKey;
+    }
+
+    public void setTabletKey(Integer tabletKey) {
+        this.tabletKey = tabletKey;
+    }
+
+    public Integer getMaxKey() {
+        return maxKey;
+    }
+
+    public void setMaxKey(Integer maxKey) {
+        this.maxKey = maxKey;
     }
 
     public List<DataForLogin> getDataForLogin() {

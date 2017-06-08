@@ -30,6 +30,12 @@ public class PromotionAdaper extends FragmentStatePagerAdapter {
             case 1:
                 TabFragmentPromotionGift tab2 = new TabFragmentPromotionGift();
                 return tab2;
+            case 2:
+                TabFragmentVolumeDiscount tab3 = new TabFragmentVolumeDiscount();
+                return tab3;
+            case 3:
+                TabFragmentVolumeDiscountFilter tab4 = new TabFragmentVolumeDiscountFilter();
+                return tab4;
             default:
                 return null;
         }

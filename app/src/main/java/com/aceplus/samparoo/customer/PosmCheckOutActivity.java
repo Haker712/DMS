@@ -147,7 +147,13 @@ public class PosmCheckOutActivity extends AppCompatActivity implements OnActionC
 
     private void setSoldProductInformation() {
         saleDateTextView.setText(Utils.getCurrentDate(false));
-        txt_invoiceId.setText(Utils.getInvoiceNoForPOSM(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + ""));
+
+        try {
+            txt_invoiceId.setText(Utils.getInvoiceNoForPOSM(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + ""));
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Utils.backToLogin(this);
+        }
 
         double totalAmount = 0.0;
         for (SoldProduct soldProduct : soldProductList) {
@@ -202,7 +208,12 @@ public class PosmCheckOutActivity extends AppCompatActivity implements OnActionC
 
             posmByCustomer.setInvoiceDate((new SimpleDateFormat("yyyy/MM/dd").format(new Date())));
 
-            posmByCustomer.setSaleManId(LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, ""));
+            try {
+                posmByCustomer.setSaleManId(LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, ""));
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+                Utils.backToLogin(this);
+            }
 
             posmByCustomer.setQuantity(soldProduct.getQuantity());
 

@@ -144,7 +144,17 @@ public class DisplayAssessmentFragment extends Fragment {
 
             String encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
 
-            String saleman_Id= LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID,"");
+            String saleman_Id = "";
+
+            String invoice_Id = "";
+
+            try {
+                saleman_Id = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
+                invoice_Id = Utils.getInvoiceNo(getActivity(), LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.FOR_DISPLAY_ASSESSMENT);
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+                Utils.backToLogin(this.getActivity());
+            }
 
             customer=MainFragmentActivity.customer;
 
@@ -160,8 +170,6 @@ public class DisplayAssessmentFragment extends Fragment {
 
 
             String saleDate = Utils.getCurrentDate(true);
-
-            String invoice_Id= Utils.getInvoiceNo(getActivity(), LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode+"", Utils.FOR_DISPLAY_ASSESSMENT);
 
 
             ContentValues contentValues = new ContentValues();

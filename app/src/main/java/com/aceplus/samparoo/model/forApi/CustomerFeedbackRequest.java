@@ -6,10 +6,10 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 /**
- * Created by haker on 2/7/17.
+ * Created by aceplus_mobileteam on 6/5/17.
  */
 
-public class LoginRequest {
+public class CustomerFeedbackRequest {
 
     @SerializedName("site_activation_key")
     @Expose
@@ -23,18 +23,12 @@ public class LoginRequest {
     @SerializedName("password")
     @Expose
     private String password;
-    @SerializedName("date")
-    @Expose
-    private String date;
     @SerializedName("route")
     @Expose
-    private Integer route;
-    @SerializedName("tablet_key")
-    @Expose
-    private String tabletKey;
+    private String route;
     @SerializedName("data")
     @Expose
-    private List<Object> data = null;
+    private List<TSaleFeedbackData> data = null;
 
     public String getSiteActivationKey() {
         return siteActivationKey;
@@ -68,35 +62,19 @@ public class LoginRequest {
         this.password = password;
     }
 
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    public Integer getRoute() {
+    public String getRoute() {
         return route;
     }
 
-    public void setRoute(Integer route) {
+    public void setRoute(String route) {
         this.route = route;
     }
 
-    public List<Object> getData() {
+    public List<TSaleFeedbackData> getData() {
         return data;
     }
 
-    public void setData(List<Object> data) {
+    public void setData(List<TSaleFeedbackData> data) {
         this.data = data;
-    }
-
-    public String getTabletKey() {
-        return tabletKey;
-    }
-
-    public void setTabletKey(String tabletKey) {
-        this.tabletKey = tabletKey;
     }
 }

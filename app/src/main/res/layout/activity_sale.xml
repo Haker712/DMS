@@ -27,7 +27,7 @@
             android:layout_marginLeft="20dp"
             android:layout_toRightOf="@+id/cancel_img"
             android:gravity="center"
-            android:src="@drawable/ic_checkout_xh_btn" />
+            android:src="@drawable/ic_done_hx_btn" />
 
         <TextView
             android:id="@+id/title"

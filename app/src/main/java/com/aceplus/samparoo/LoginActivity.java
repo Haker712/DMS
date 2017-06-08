@@ -146,12 +146,13 @@ public class LoginActivity extends AppCompatActivity {
      * to user from application.
      */
     void askPermission() {
-        String [] permissionArr = new String[5];
+        String [] permissionArr = new String[6];
         permissionArr[0] = android.Manifest.permission.READ_EXTERNAL_STORAGE;
         permissionArr[1] = Manifest.permission.ACCESS_COARSE_LOCATION;
         permissionArr[2] = Manifest.permission.ACCESS_FINE_LOCATION;
         permissionArr[3] = Manifest.permission.ACCESS_NETWORK_STATE;
         permissionArr[4] = Manifest.permission.ACCESS_WIFI_STATE;
+        permissionArr[5] = Manifest.permission.SEND_SMS;
 
         permissionRequest = PermissionHelper.with(LoginActivity.this)
                 .build(permissionArr)
@@ -180,7 +181,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
             else {
-                loginWithApi(Utils.createParamData(editTextUserID.getText().toString(), Utils.encodePassword(editTextPassword.getText().toString()), 0));
+                loginWithApi(Utils.createLoginParamData(editTextUserID.getText().toString(), Utils.encodePassword(editTextPassword.getText().toString()), 0, Utils.getDeviceId(LoginActivity.this)));
             }
         }
     }
@@ -280,6 +281,8 @@ public class LoginActivity extends AppCompatActivity {
                                 myEditor.putString(Constant.SALEMAN_NO, dataForLoginArrayList.get(0).getSaleMan().get(0).getSaleManNo());
                                 myEditor.putString(Constant.SALEMAN_NAME, dataForLoginArrayList.get(0).getSaleMan().get(0).getSaleManName());
                                 myEditor.putString(Constant.SALEMAN_PWD, dataForLoginArrayList.get(0).getSaleMan().get(0).getPassword());
+                                myEditor.putInt(Constant.TABLET_KEY, response.body().getTabletKey());
+                                myEditor.putInt(Constant.MAX_KEY, response.body().getMaxKey());
                                 myEditor.commit();
 
                                 sqLiteDatabase.beginTransaction();
@@ -307,6 +310,8 @@ public class LoginActivity extends AppCompatActivity {
                         else {
                             Utils.commonDialog("You have no route.", LoginActivity.this);
                         }
+                    } else {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
                     }
 
                 }
@@ -466,7 +471,7 @@ public class LoginActivity extends AppCompatActivity {
             textViewCurrentIP.setText(mySharedPreference.getString(Constant.KEY_CHANGE_URL, ""));
         }
 
-        editTextNewIP.setText("192.168.:9999");
+        editTextNewIP.setText("http://192.168.:9999/api/v1/");
 
         textViewCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -485,7 +490,7 @@ public class LoginActivity extends AppCompatActivity {
                 myEditor.putString(Constant.KEY_CHANGE_URL, new_ip);
                 myEditor.commit();
 
-                Constant.changeUrl(new_ip);
+                Constant.BASE_URL = new_ip;
 
                 dialog.dismiss();
                 dialogBoxView = null;

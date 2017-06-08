@@ -3,13 +3,11 @@ package com.aceplus.samparoo.model.forApi;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
-
 /**
- * Created by haker on 2/7/17.
+ * Created by yma on 5/8/17.
  */
 
-public class LoginRequest {
+public class ConfirmRequestSuccess {
 
     @SerializedName("site_activation_key")
     @Expose
@@ -20,21 +18,15 @@ public class LoginRequest {
     @SerializedName("user_id")
     @Expose
     private String userId;
-    @SerializedName("password")
-    @Expose
-    private String password;
     @SerializedName("date")
     @Expose
     private String date;
     @SerializedName("route")
     @Expose
-    private Integer route;
-    @SerializedName("tablet_key")
-    @Expose
-    private String tabletKey;
+    private String route;
     @SerializedName("data")
     @Expose
-    private List<Object> data = null;
+    private int successCode;
 
     public String getSiteActivationKey() {
         return siteActivationKey;
@@ -60,14 +52,6 @@ public class LoginRequest {
         this.userId = userId;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public String getDate() {
         return date;
     }
@@ -76,27 +60,20 @@ public class LoginRequest {
         this.date = date;
     }
 
-    public Integer getRoute() {
+    public String getRoute() {
         return route;
     }
 
-    public void setRoute(Integer route) {
+    public void setRoute(String route) {
         this.route = route;
     }
 
-    public List<Object> getData() {
-        return data;
+    public int getSuccessCode() {
+        return successCode;
     }
 
-    public void setData(List<Object> data) {
-        this.data = data;
+    public void setSuccessCode(int successCode) {
+        this.successCode = successCode;
     }
 
-    public String getTabletKey() {
-        return tabletKey;
-    }
-
-    public void setTabletKey(String tabletKey) {
-        this.tabletKey = tabletKey;
-    }
 }

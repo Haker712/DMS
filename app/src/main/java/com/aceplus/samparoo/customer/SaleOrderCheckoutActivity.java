@@ -40,6 +40,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -155,6 +157,9 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
     TextView volDisForPreOrder;
 
+    RadioGroup bankOrCashRadioGroup;
+    RadioButton bankRadio, cashRadio;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -163,15 +168,27 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
         Utils.setOnActionClickListener(this);
 
-        saleman_Id = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
-        saleman_No = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, "");
-        saleman_Pwd = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_PWD, "");
+        try {
+            saleman_Id = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
+            saleman_No = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, "");
+            saleman_Pwd = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_PWD, "");
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Utils.backToLogin(this);
+        }
 
         this.remainingAmount = getIntent().getDoubleExtra(this.REMAINING_AMOUNT_KEY, 0);
         this.customer = (Customer) getIntent().getSerializableExtra(this.CUSTOMER_INFO_KEY);
         this.isPreOrder = getIntent().getBooleanExtra(SaleOrderActivity.IS_PRE_ORDER, false);
         this.isDelivery = getIntent().getBooleanExtra(SaleOrderActivity.IS_DELIVERY, false);
-        soldProductList = (ArrayList<SoldProduct>) getIntent().getSerializableExtra(this.SOLD_PROUDCT_LIST_KEY);
+
+        if (getIntent().getSerializableExtra(SOLD_PROUDCT_LIST_KEY) != null) {
+            soldProductList = (ArrayList<SoldProduct>) getIntent().getSerializableExtra(SOLD_PROUDCT_LIST_KEY);
+        }
+
+        if (getIntent().getSerializableExtra(PRESENT_PROUDCT_LIST_KEY) != null) {
+            promotionArrayList = (ArrayList<Promotion>) getIntent().getSerializableExtra(PRESENT_PROUDCT_LIST_KEY);
+        }
 
         if (getIntent().getSerializableExtra(this.ORDERED_INVOICE_KEY) != null) {
             orderedInvoice = (Deliver) getIntent().getSerializableExtra(this.ORDERED_INVOICE_KEY);
@@ -211,7 +228,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
         calculateNetAmount();
 
-        showPromotionData();
+        setPromotionProductListView();
         catchEvents();
     }
 
@@ -271,6 +288,9 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         volDisForPreOrderLayout = (LinearLayout) findViewById(R.id.volDisForPreOrderLayout);
         volDisForPreOrder = (TextView) findViewById(R.id.volumeDiscount);
         paymentMethodLayout = (LinearLayout) findViewById(R.id.paymentMethodLayout);
+        bankOrCashRadioGroup = (RadioGroup) findViewById(R.id.activity_sale_checkout_radio_group);
+        bankRadio = (RadioButton) findViewById(R.id.activity_sale_checkout_radio_bank);
+        cashRadio = (RadioButton) findViewById(R.id.activity_sale_checkout_radio_cash);
     }
 
     /**
@@ -285,7 +305,6 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         payAmountLayout.setVisibility(View.GONE);
         receiptPersonLayout.setVisibility(View.GONE);
         volDisForPreOrderLayout.setVisibility(View.GONE);
-        paymentMethodLayout.setVisibility(View.GONE);
         if(isDelivery) {
             totalInfoForPreOrderLayout.setVisibility(View.GONE);
             volumeDiscountLayout.setVisibility(View.GONE);
@@ -293,6 +312,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             advancedPaidAmountLayout.setVisibility(View.VISIBLE);
             receiptPersonLayout.setVisibility(View.VISIBLE);
             txt_table_header_foc.setVisibility(View.VISIBLE);
+            paymentMethodLayout.setVisibility(View.GONE);
         }
     }
 
@@ -305,7 +325,12 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
     private void setSoldProductInformation() {
         saleDateTextView.setText(Utils.getCurrentDate(false));
-        txt_invoiceId.setText(Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.forPreOrderSale));
+        try {
+            txt_invoiceId.setText(Utils.getInvoiceNo(this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.forPreOrderSale));
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Utils.backToLogin(this);
+        }
     }
 
     private void calculateVolumeDiscount() {
@@ -318,7 +343,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         boolean isAllAreCategory = false;
 
         double buy_amt = totalAmount;
-        Cursor cursor = database.rawQuery("select * from VOLUME_DISCOUNT_FILTER WHERE '" + Utils.getCurrentDate(true) + "' BETWEEN START_DATE AND END_DATE", null);
+        Cursor cursor = database.rawQuery("select * from VOLUME_DISCOUNT_FILTER WHERE date('" + Utils.getCurrentDate(true) + "') BETWEEN date(START_DATE) AND date(END_DATE)", null);
         Log.i("VolumeDisFilterCursor", cursor.getCount() + "");
         while (cursor.moveToNext()) {
             volDisFilterId = cursor.getString(cursor.getColumnIndex(DatabaseContract.VolumeDiscountFilter.id));
@@ -377,7 +402,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         double buy_amt = totalAmount;
         Double fromSaleAmt, toSaleAmt, discountPercentForVolDis;
 
-        Cursor cursor = database.rawQuery("select * from VOLUME_DISCOUNT WHERE '" + Utils.getCurrentDate(true) + "' BETWEEN START_DATE AND END_DATE", null);
+        Cursor cursor = database.rawQuery("select * from VOLUME_DISCOUNT WHERE date('" + Utils.getCurrentDate(true) + "') BETWEEN date(START_DATE) AND date(END_DATE)", null);
         Log.i("VolumeDiscountCursor", cursor.getCount() + "");
         while (cursor.moveToNext()) {
             volDisId = cursor.getString(cursor.getColumnIndex(DatabaseContract.VolumeDiscount.id));
@@ -387,34 +412,40 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                 for (SoldProduct soldProduct : soldProductList) {
                     buy_amt = soldProduct.getProduct().getPrice() * soldProduct.getQuantity();
                 }
-
-               /* double promotion_price = 0.0;
+                calculateInvoiceDiscountAmount(buy_amt, volDisId);
+               /* */
+            } else {
+                double promotion_price = 0.0;
                 for (Promotion promotion : promotionArrayList) {
                     promotion_price += promotion.getPromotionPrice();
                 }
-                buy_amt += promotion_price;*/
+                buy_amt = buy_amt - promotion_price;
+                calculateInvoiceDiscountAmount(buy_amt, volDisId);
             }
-
 
             Log.i("buy_amt", buy_amt + "");
             Log.i("volDisId", volDisId);
-
-            Cursor cusorForVolDisItem = database.rawQuery("SELECT * FROM VOLUME_DISCOUNT_ITEM WHERE VOLUME_DISCOUNT_ID = '" + volDisId + "' " +
-                    "and " + buy_amt + " >= FROM_SALE_AMT and "+ buy_amt +"<= TO_SALE_AMT;", null);
-            Log.i("cusorForVolDisItem", cusorForVolDisItem.getCount() + "");
-
-            while (cusorForVolDisItem.moveToNext()) {
-                fromSaleAmt = cusorForVolDisItem.getDouble(cusorForVolDisItem.getColumnIndex(DatabaseContract.VolumeDiscountItem.fromSaleAmt));
-                toSaleAmt = cusorForVolDisItem.getDouble(cusorForVolDisItem.getColumnIndex(DatabaseContract.VolumeDiscountItem.toSaleAmt));
-                discountPercentForVolDis = cusorForVolDisItem.getDouble(cusorForVolDisItem.getColumnIndex(DatabaseContract.VolumeDiscountItem.discountPercent));
-
-                totalVolumeDiscount = totalAmount * (discountPercentForVolDis / 100);
-            }
-
-            Log.i("totalInvoiceDiscount ----->>>>>>>", totalVolumeDiscount + "");
         }
 
         volDisForPreOrder.setText(Utils.formatAmount(totalVolumeDiscount));
+    }
+
+    void calculateInvoiceDiscountAmount(Double buy_amt, String volDisId) {
+
+        Double fromSaleAmt, toSaleAmt, discountPercentForVolDis;
+        Cursor cusorForVolDisItem = database.rawQuery("SELECT * FROM VOLUME_DISCOUNT_ITEM WHERE VOLUME_DISCOUNT_ID = '" + volDisId + "' " +
+                "and " + buy_amt + " >= FROM_SALE_AMT and " + buy_amt + "<= TO_SALE_AMT;", null);
+        Log.i("cusorForVolDisItem", cusorForVolDisItem.getCount() + "");
+
+        while (cusorForVolDisItem.moveToNext()) {
+            fromSaleAmt = cusorForVolDisItem.getDouble(cusorForVolDisItem.getColumnIndex(DatabaseContract.VolumeDiscountItem.fromSaleAmt));
+            toSaleAmt = cusorForVolDisItem.getDouble(cusorForVolDisItem.getColumnIndex(DatabaseContract.VolumeDiscountItem.toSaleAmt));
+            discountPercentForVolDis = cusorForVolDisItem.getDouble(cusorForVolDisItem.getColumnIndex(DatabaseContract.VolumeDiscountItem.discountPercent));
+
+            totalVolumeDiscount = buy_amt * (discountPercentForVolDis / 100);
+        }
+
+        Log.i("totalInvoiceDiscount ----->>>>>>>", totalVolumeDiscount + "");
     }
 
     private void showPromotionData() {
@@ -752,7 +783,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
     /**
      * Insert pre-order to database.
      */
-    void insertPreOrderInformation() {
+    void insertPreOrderInformation(String cashOrBank) {
         double netAmount = 0;
 
         PreOrder preOrder = new PreOrder();
@@ -762,10 +793,16 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         }
 
         if(SaleOrderCheckoutActivity.this.customer != null) {
-            preOrder.setCustomerId(SaleOrderCheckoutActivity.this.customer.getCustomerId());
+            preOrder.setCustomerId(String.valueOf(SaleOrderCheckoutActivity.this.customer.getId()));
         }
 
-        preOrder.setSalePersonId(LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, ""));
+        try {
+            preOrder.setSalePersonId(LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, ""));
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Utils.backToLogin(this);
+        }
+
         //preOrder.setDeviceId(Utils.getDeviceId(SaleOrderCheckoutActivity.this));
         preOrder.setDeviceId("");
         preOrder.setPreOrderDate(new SimpleDateFormat("yyyy/MM/dd").format(new Date()));
@@ -794,6 +831,14 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             preOrderProduct.setPrice(soldProduct.getProduct().getPrice());
             preOrderProduct.setTotalAmt(soldProduct.getTotalAmount());
             preOrderProductList.add(preOrderProduct);
+
+            database.execSQL("UPDATE PRODUCT SET REMAINING_QTY = REMAINING_QTY - " + soldProduct.getQuantity()
+                    + ", SOLD_QTY = SOLD_QTY + " + soldProduct.getQuantity() + " WHERE PRODUCT_ID = \'" + soldProduct.getProduct().getId() + "\'");
+
+            for (Promotion promotion : promotionArrayList) {
+                database.execSQL("UPDATE PRODUCT SET PRESENT_QTY = PRESENT_QTY + " + promotion.getPromotionQty() + " WHERE PRODUCT_ID = \'" + soldProduct.getProduct().getId() + "\'");
+                database.execSQL("UPDATE PRODUCT SET REMAINING_QTY = REMAINING_QTY - " + promotion.getPromotionQty() + " WHERE ID = '" + promotion.getPromotionProductId() + "'");
+            }
         }
 
         preOrder.setNetAmount(netAmount);
@@ -882,7 +927,6 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         }
     }
 
-
     /**
      * Upload pre order data to server
      */
@@ -896,7 +940,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
         Log.i("ParamData",paramData);
 
-        UploadService uploadService = RetrofitServiceFactory.createService(UploadService.class);
+        UploadService uploadService = RetrofitServiceFactory.createRealTimeService(UploadService.class);
 
         Call<InvoiceResponse> call = uploadService.uploadPreOrderData(paramData);
 
@@ -915,6 +959,66 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
                             /*deletePreOrderAfterUpload(preOrderRequest.getData().get(0).getData().get(0).getId());
                             deletePreOrderProductAfterUpload(preOrderRequest.getData().get(0).getData().get(0).getId());*/
+                        }
+
+                        database.setTransactionSuccessful();
+                        database.endTransaction();
+                        Utils.cancelDialog();
+
+                        Snackbar snackbar = Snackbar
+                                .make(lv_soldProductList, R.string.upload_succes_msg, Snackbar.LENGTH_INDEFINITE)
+                                .setAction("DONE", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Utils.backToCustomer(SaleOrderCheckoutActivity.this);
+                                    }
+                                });
+
+                        snackbar.show();
+                    }
+                } else {
+                    if(response.body() != null && response.body().getAceplusStatusMessage().length() != 0 ) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    } else {
+                        Utils.cancelDialog();
+                        Utils.commonDialog(getResources().getString(R.string.server_error), SaleOrderCheckoutActivity.this);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<InvoiceResponse> call, Throwable t) {
+                Utils.cancelDialog();
+                Utils.commonDialog(t.getMessage(), SaleOrderCheckoutActivity.this);
+            }
+        });
+    }
+
+    /**
+     * Upload pre order data for real time
+     */
+    private void uploadPreOrderRealTime() {
+
+        final PreOrderRequest preOrderRequest = getPreOrderRequest();
+
+        String paramData = getJsonFromObject(preOrderRequest);
+
+        Log.i("ParamData",paramData);
+
+        UploadService uploadService = RetrofitServiceFactory.createRealTimeService(UploadService.class);
+
+        Call<InvoiceResponse> call = uploadService.uploadRealTimePreOrderData(paramData);
+
+        call.enqueue(new Callback<InvoiceResponse>() {
+            @Override
+            public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
+                if (response.code() == 200) {
+                    if (response.body().getAceplusStatusCode() == 200) {
+                        database.beginTransaction();
+
+                        if(preOrderRequest.getData() != null && preOrderRequest.getData().get(0).getData().size() > 0) {
+                            updateDeleteFlag(DatabaseContract.PreOrder.tb, 1, DatabaseContract.PreOrder.invoice_id, preOrderRequest.getData().get(0).getData().get(0).getId());
+                            updateDeleteFlag(DatabaseContract.PreOrderDetail.tb, 1, DatabaseContract.PreOrderDetail.sale_order_id, preOrderRequest.getData().get(0).getData().get(0).getId());
                         }
 
                         database.setTransactionSuccessful();
@@ -1047,12 +1151,12 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
     private List<PreOrder> getPreOrderFromDatabase() {
         List<PreOrder> preOrderList = new ArrayList<>();
 
-        Cursor cursorPreOrder = database.rawQuery("select P.*, (SELECT CUSTOMER.id from CUSTOMER WHERE CUSTOMER.CUSTOMER_ID = P.CUSTOMER_ID) AS CUS_ID from PRE_ORDER AS P WHERE P.DELETE_FLAG = 0", null);
+        Cursor cursorPreOrder = database.rawQuery("select P.* from PRE_ORDER AS P WHERE P.DELETE_FLAG = 0", null);
 
         while (cursorPreOrder.moveToNext()) {
             PreOrder preOrder = new PreOrder();
             preOrder.setInvoiceId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("INVOICE_ID")));
-            preOrder.setCustomerId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("CUS_ID")));
+            preOrder.setCustomerId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("CUSTOMER_ID")));
             preOrder.setSalePersonId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("SALEPERSON_ID")));
             preOrder.setDeviceId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("DEV_ID")));
             preOrder.setPreOrderDate(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("PREORDER_DATE")));
@@ -1148,7 +1252,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             intent.putExtra(SaleOrderActivity.SOLD_PROUDCT_LIST_KEY
                     , SaleOrderCheckoutActivity.this.soldProductList);
             intent.putExtra(SaleOrderCheckoutActivity.PRESENT_PROUDCT_LIST_KEY
-                    , SaleOrderCheckoutActivity.this.products);
+                    , SaleOrderCheckoutActivity.this.promotionArrayList);
             intent.putExtra(SaleOrderActivity.IS_PRE_ORDER
                     , SaleOrderCheckoutActivity.this.isPreOrder);
             intent.putExtra(SaleOrderActivity.IS_DELIVERY
@@ -1180,17 +1284,26 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
     private void insertDeliveryDataToDatabase(Deliver deliver) {
 
         String saleDate = Utils.getCurrentDate(true);
-        String invoiceId = Utils.getInvoiceNo(SaleOrderCheckoutActivity.this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), String.valueOf(locationCode), Utils.FOR_DELIVERY);
+        String invoiceId = "";
+        String salePersonId = "";
+
+        try {
+            invoiceId = Utils.getInvoiceNo(SaleOrderCheckoutActivity.this, LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), String.valueOf(locationCode), Utils.FOR_DELIVERY);
+            salePersonId = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Utils.backToLogin(this);
+        }
+
         double totalAmount = deliver.getAmount();
         double paidAmount = deliver.getPaidAmount();
-        String salePersonId = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
         String dueDate = Utils.getCurrentDate(true);
         String invoiceTime = Utils.getCurrentDate(true);
         database.beginTransaction();
         int totalQuantity = insertDeliveryDataItemToDatabase(soldProductList, invoiceId);
 
         database.execSQL("INSERT INTO INVOICE VALUES (\""
-                + customer.getCustomerId() + "\", \""
+                + customer.getId() + "\", \""
                 + saleDate + "\", \""
                 + invoiceId + "\", \""
                 + totalAmount + "\", \""
@@ -1261,6 +1374,10 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             database.execSQL("UPDATE PRODUCT SET REMAINING_QTY = REMAINING_QTY - " + soldProduct.getQuantity()
                     + ", DELIVERY_QTY = DELIVERY_QTY + " + soldProduct.getQuantity() + " WHERE PRODUCT_ID = \'" + soldProduct.getProduct().getId() + "\'");
 
+            database.execSQL("UPDATE DELIVERY_ITEM SET RECEIVED_QTY = " + soldProduct.getQuantity() + ", ORDER_QTY = ORDER_QTY - " + soldProduct.getQuantity() + " WHERE STOCK_NO = \'" + soldProduct.getProduct().getStockId() + "\'");
+
+            database.execSQL("UPDATE DELIVERY_ITEM SET DELIVERY_FLG = 1 WHERE ORDER_QTY < 1 AND STOCK_NO = \'" + soldProduct.getProduct().getId() + "\'");
+
             for (Promotion promotion : promotionArrayList) {
                 database.execSQL("UPDATE PRODUCT SET PRESENT_QTY = PRESENT_QTY + " + promotion.getPromotionQty() + " WHERE PRODUCT_ID = \'" + soldProduct.getProduct().getId() + "\'");
             }
@@ -1299,10 +1416,19 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
     @Override
     public void onActionClick(String type) {
+        String cashOrBank = getPaymentMethod();
+
         if(isPreOrder) {
-            insertPreOrderInformation();
+            if (isFullyPaid()) {
+                cashOrBank = "CA";
+                insertPreOrderInformation(cashOrBank);
+            } else {
+                insertPreOrderInformation("CR");
+            }
+
             if(isOnline()) {
                 uploadPreOrderToServer();
+                //uploadPreOrderRealTime();
             } else {
                 sendSMSMessage();
             }
@@ -1326,6 +1452,46 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
             insertDeliveryDataToDatabase(orderedInvoice);
             toDeliveryActivity();
+        }
+    }
+
+    /**
+     * Get customer payment method.
+     *
+     * @return CA : cash, B : bank, CR : Credit
+     */
+    private String getPaymentMethod() {
+        int selectedRadio = bankOrCashRadioGroup.getCheckedRadioButtonId();
+        String paymentMethod = "";
+        if (selectedRadio == R.id.activity_sale_checkout_radio_bank) {
+            paymentMethod = "B";
+
+        } else if (selectedRadio == R.id.activity_sale_checkout_radio_cash) {
+            paymentMethod = "CA";
+        }
+        return paymentMethod;
+    }
+
+    /**
+     * Check for fully paid
+     *
+     * @return true : fully paid; false : not fully paid
+     */
+    private boolean isFullyPaid() {
+        double pay_amount = 0.0, net_amount = 0.0;
+
+        if (!prepaidAmt.getText().toString().equals("")) {
+            pay_amount = Double.parseDouble(prepaidAmt.getText().toString().replace(",", ""));
+        }
+
+        if (!netAmountTextView.getText().toString().equals("")) {
+            net_amount = Double.parseDouble(netAmountTextView.getText().toString().replace(",", ""));
+        }
+
+        if (pay_amount == 0.0 || pay_amount < net_amount) {
+            return false;
+        } else {
+            return true;
         }
     }
 
@@ -1442,7 +1608,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             } else {
                 qtyTextView.setVisibility(View.GONE);
             }
-            if (promotion.getPromotionPrice() != 0.0) {
+            if (promotion.getPromotionPrice() != null && promotion.getPromotionPrice() != 0.0) {
                 priceTextView.setText(promotion.getPromotionPrice() + "");
             } else {
                 priceTextView.setVisibility(View.GONE);

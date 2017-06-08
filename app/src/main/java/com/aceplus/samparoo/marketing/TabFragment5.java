@@ -105,8 +105,12 @@ public class TabFragment5 extends Fragment implements OnActionClickListener {
         } catch (JSONException e) {
             e.printStackTrace();
         }*/
-        size_in_store_share_id = Utils.getInvoiceNo(getActivity(), LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.FOR_SIZE_IN_STORE_SHARE);
-
+        try {
+            size_in_store_share_id = Utils.getInvoiceNo(getActivity(), LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.FOR_SIZE_IN_STORE_SHARE);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Utils.backToLogin(this.getActivity());
+        }
 
         // Hide keyboard on startup.
         activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);

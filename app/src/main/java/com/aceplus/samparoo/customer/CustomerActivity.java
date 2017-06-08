@@ -99,7 +99,7 @@ public class CustomerActivity extends AppCompatActivity {
     CustomerListArrayAdapter customerListArrayAdapter;
 
     Customer customer;
-    ArrayList<String> customerIdArrayList = new ArrayList<String>();
+    ArrayList<Integer> customerIdArrayList = new ArrayList<>();
     ArrayList<CustomerLocation> visitRecordArrayList = new ArrayList<>();
 
     View buttongp;
@@ -261,7 +261,7 @@ public class CustomerActivity extends AppCompatActivity {
                     Log.i("distance", distance + "");
 
                     if (distance >= 50) {
-                        updateDepartureTimeForSalemanRoute(customer_id);
+                        //updateDepartureTimeForSalemanRoute(customer_id);
                     }
                 }
             }
@@ -273,10 +273,12 @@ public class CustomerActivity extends AppCompatActivity {
         }
     }
 
-    private void updateDepartureTimeForSalemanRoute(int customerId) {
+    private void updateTimeForSalemanRoute(String saleman_Id, int customerId) {
+        String query = "update " + DatabaseContract.temp_for_saleman_route.TABLE + " set " + DatabaseContract.temp_for_saleman_route.ARRIVAL_TIME + " = '"+Utils.getCurrentDate(true)+"', " + DatabaseContract.temp_for_saleman_route.DEPARTURE_TIME + " = '"+Utils.getCurrentDate(true)+"'" +
+                " where " + DatabaseContract.temp_for_saleman_route.SALEMAN_ID + " = "+saleman_Id+"" +
+                " and " + DatabaseContract.temp_for_saleman_route.CUSTOMER_ID + " = "+customer.getId()+"";
         database.beginTransaction();
-        database.execSQL("update " + DatabaseContract.temp_for_saleman_route.TABLE + " set " + DatabaseContract.temp_for_saleman_route.DEPARTURE_TIME + " = '"+Utils.getCurrentDate(true)+"'" +
-                " where " + DatabaseContract.temp_for_saleman_route.CUSTOMER_ID + " = "+customerId+"");
+        database.execSQL(query);
         database.setTransactionSuccessful();
         database.endTransaction();
     }
@@ -289,10 +291,11 @@ public class CustomerActivity extends AppCompatActivity {
     @OnClick(R.id.ok)
     void Ok() {
 
-        Intent intent = new Intent(this, SaleReturnActivity.class);
-        intent.putExtra("SaleExchange", "yes");
-        intent.putExtra(SaleActivity.CUSTOMER_INFO_KEY, customer);
-        startActivity(intent);
+        if(didCustomerSelected()) {
+            Intent intent = new Intent(this, SaleReturnActivity.class);intent.putExtra("SaleExchange", "yes");
+            intent.putExtra(SaleActivity.CUSTOMER_INFO_KEY, customer);
+            startActivity(intent);
+        }
 
     }
 
@@ -401,12 +404,22 @@ public class CustomerActivity extends AppCompatActivity {
                 visitRecord = customer.getVisitRecord();
 
                 if (isSameCustomer(customer.getId())) {
-                    String saleman_id = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
+
+                    String saleman_id = "";
+                    try {
+                        saleman_id = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                        Utils.backToLogin(CustomerActivity.this);
+                    }
+
                     Cursor cursorForSaleManRoute = database.rawQuery("select * from " + DatabaseContract.temp_for_saleman_route.TABLE +
                             " where " + DatabaseContract.temp_for_saleman_route.SALEMAN_ID + " = "+saleman_id+"" +
                             " and " + DatabaseContract.temp_for_saleman_route.CUSTOMER_ID + " = "+customer.getId()+"", null);
                     if (cursorForSaleManRoute.getCount() == 0) {
                         insertFirstDataForSalemanRoute(saleman_id, customer.getId());
+                    } else if(cursorForSaleManRoute.getCount() > 0) {
+                        updateTimeForSalemanRoute(saleman_id, customer.getId());
                     }
                 }
             }
@@ -474,7 +487,7 @@ public class CustomerActivity extends AppCompatActivity {
         contentValues.put(DatabaseContract.temp_for_saleman_route.LATITUDE, customer.getLatitude());
         contentValues.put(DatabaseContract.temp_for_saleman_route.LONGITUDE, customer.getLongitude());
         contentValues.put(DatabaseContract.temp_for_saleman_route.ARRIVAL_TIME, Utils.getCurrentDate(true));
-        contentValues.put(DatabaseContract.temp_for_saleman_route.DEPARTURE_TIME, "");
+        contentValues.put(DatabaseContract.temp_for_saleman_route.DEPARTURE_TIME, Utils.getCurrentDate(true));
         contentValues.put(DatabaseContract.temp_for_saleman_route.ROUTE_ID, getRouteID(String.valueOf(saleman_id)));
         database.insert(DatabaseContract.temp_for_saleman_route.TABLE, null, contentValues);
         database.setTransactionSuccessful();
@@ -540,7 +553,7 @@ public class CustomerActivity extends AppCompatActivity {
             longiString = locationCursor.getString(locationCursor.getColumnIndex("LONGITUDE"));
         }
 
-        if(latiString != null && longiString != null) {
+        if(latiString != null && longiString != null && !latiString.equals("") && !longiString.equals("") && !latiString.equals("0") && !longiString.equals("0")) {
             latiDouble = Double.parseDouble(latiString.substring(0, 7));
             longDouble = Double.parseDouble(longiString.substring(0, 7));
         }
@@ -558,9 +571,27 @@ public class CustomerActivity extends AppCompatActivity {
             gpsTracker.showSettingsAlert();
         }
 
+        boolean flag1 = false, flag2 = false;
         if(latiDouble != null && longDouble !=null && latitude != null && longitude != null) {
+            Double lati1 = latiDouble - 0.002;
+            Double lati2 = latiDouble + 0.002;
 
-            if(latitude >= (latiDouble - 0.0001) && latitude <= (latiDouble + 0.0001) && longitude >= (longDouble - 0.0001) && longitude <= (longDouble + 0.0001)) {
+            if(latitude >= lati1 && latitude <= lati2) {
+                flag1 = true;
+            } else if(latitude.equals(latiDouble)) {
+                flag1 = true;
+            }
+
+            Double longi1 = longDouble - 0.002;
+            Double longi2 = longDouble + 0.002;
+
+            if(longitude >= longi1 && longitude <= longi2) {
+                flag2 = true;
+            } else if(longitude.equals(longDouble)) {
+                flag2 = true;
+            }
+
+            if(flag1 || flag2) {
                 return true;
             }
         }
@@ -602,41 +633,26 @@ public class CustomerActivity extends AppCompatActivity {
             @Override
             public void onClick(View arg0) {
 
-
-                int count = 0;
-                Cursor cursor = database.rawQuery(
-                        "SELECT COUNT(*) AS COUNT FROM DID_CUSTOMER_FEEDBACK", null);
-                if (cursor.moveToNext()) {
-
-                    count = cursor.getInt(cursor.getColumnIndex("COUNT"));
-                }
-
-                if (count > 0) {
-
-                    new AlertDialog.Builder(CustomerActivity.this)
-                            .setTitle("General sale")
-                            .setMessage("Your uploaded customer feedbacks is not clear yet.\n"
-                                    + "Before sale, clear all data.")
-                            .setPositiveButton("OK", null)
-                            .show();
-
-                    return;
-                }
-
-
                 if (didCustomerSelected()) {
                     boolean customerNoDid = true;
                     Cursor cur = database.rawQuery("SELECT * FROM DID_CUSTOMER_FEEDBACK", null);
                     customerIdArrayList.clear();
                     while (cur.moveToNext()) {
-                        String customerId = cur.getString(cur.getColumnIndex("CUSTOMER_NO"));
+                        int customerId = cur.getInt(cur.getColumnIndex("CUSTOMER_NO"));
                         customerIdArrayList.add(customerId);
                     }
 
                     for (int i = 0; i < customerIdArrayList.size(); i++) {
-                        if (customer.getCustomerId().equals(customerIdArrayList.get(i))) {
+                        if (customer.getId() == customerIdArrayList.get(i)) {
                             customerNoDid = false;
-                            Toast.makeText(CustomerActivity.this, "This customer have customer feedback report.Please check!", Toast.LENGTH_LONG).show();
+
+                            new AlertDialog.Builder(CustomerActivity.this)
+                                    .setTitle("General sale")
+                                    .setMessage("This customer already have customer feedback report. Please check!")
+                                    .setPositiveButton("OK", null)
+                                    .show();
+
+                            return;
                         }
                     }
                     if (customerNoDid == true) {
@@ -652,7 +668,7 @@ public class CustomerActivity extends AppCompatActivity {
                         while (cursor.moveToNext()) {
 
                             customerFeedbacks.add(new CustomerFeedback(
-                                    cursor.getString(cursor.getColumnIndex(DatabaseContract.CustomerFeedback.INVOICE_NO))
+                                    cursor.getString(cursor.getColumnIndex(DatabaseContract.CustomerFeedback.ID))
                                     , cursor.getString(cursor.getColumnIndex(DatabaseContract.CustomerFeedback.INVOICE_DATE))
                                     , cursor.getString(cursor.getColumnIndex(DatabaseContract.CustomerFeedback.REMARK))));
                         }
@@ -664,15 +680,21 @@ public class CustomerActivity extends AppCompatActivity {
 
                                     @Override
                                     public void onClick(DialogInterface arg0, int arg1) {
+                                        String salemanId = "";
 
+                                        try {
+                                            salemanId = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
+                                        } catch (NullPointerException e) {
+                                            e.printStackTrace();
+                                            Utils.backToLogin(CustomerActivity.this);
+                                        }
 
-                                        String salemanId = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
                                         String deviceId = Utils.getDeviceId(CustomerActivity.this);
                                         String invoiceNumber = Utils.getInvoiceNo(getApplicationContext(), salemanId, String.valueOf(getLocationCode()), Utils.MODE_CUSTOMER_FEEDBACK);
-                                        String invoiceDate = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
-                                        String customerNumber = customer.getCustomerId();
+                                        String invoiceDate = customerFeedbacks.get(descriptionsSpinner.getSelectedItemPosition()).getInvoiceDate();
+                                        int customerNumber = customer.getId();
                                         String locationNumber = String.valueOf(getLocationCode());
-                                        String feedbackNumber = customerFeedbacks.get(descriptionsSpinner.getSelectedItemPosition()).getInvoiceNumber();
+                                        int feedbackNumber = Integer.parseInt(customerFeedbacks.get(descriptionsSpinner.getSelectedItemPosition()).getInvoiceNumber());
                                         String feedbackDate = customerFeedbacks.get(descriptionsSpinner.getSelectedItemPosition()).getInvoiceDate();
                                         String serialNumber = "";
                                         String description = customerFeedbacks.get(descriptionsSpinner.getSelectedItemPosition()).getDescription();

@@ -73,7 +73,7 @@ public class FragmentSaleComparisonReport extends Fragment {
 
         registerIDS();
 
-        getTargetSaleDB();
+        getTargetSaleDB(-1);
 
         getCustomerListFromDB();
         getGroupCodeListFromDB();
@@ -113,6 +113,9 @@ public class FragmentSaleComparisonReport extends Fragment {
     private void updateChartData() {
         if(customerIdArr != null && customerIdArr.size() != 0) {
             customerId = customerIdArr.get(spinnerCustomer.getSelectedItemPosition());
+            getTargetSaleDB(Integer.parseInt(customerId));
+        } else {
+            getTargetSaleDB(-1);
         }
 
         if(categoryIdArr != null && categoryIdArr.size() != 0) {
@@ -122,6 +125,7 @@ public class FragmentSaleComparisonReport extends Fragment {
         if(groupIdArr != null && groupIdArr.size() != 0) {
             groupId = groupIdArr.get(spinnerGroup.getSelectedItemPosition());
         }
+
 
         getActualSaleDB(customerId, categoryId, groupId);
         initialize();
@@ -242,7 +246,7 @@ public class FragmentSaleComparisonReport extends Fragment {
      */
     private void getActualSaleDB(String customerId, String categoryId, String groupId) {
 
-        String query = "SELECT IP.TOTAL_AMOUNT, P.PRODUCT_ID, IP.SALE_QUANTITY FROM INVOICE_PRODUCT AS IP, PRODUCT AS P, INVOICE AS INV WHERE P.PRODUCT_ID = IP.PRODUCT_ID";
+        String query = "SELECT IP.TOTAL_AMOUNT, P.PRODUCT_ID, IP.SALE_QUANTITY FROM INVOICE_PRODUCT AS IP, PRODUCT AS P, INVOICE AS INV WHERE P.ID = IP.PRODUCT_ID";
         String customerCondtion = " AND INV.CUSTOMER_ID = '" + customerId + "'";
         String groupCondtion = " AND P.GROUP_ID = '" + groupId + "'";
         String categoryCondition = " AND P.CATEGORY_ID = '" + categoryId + "'";
@@ -263,9 +267,22 @@ public class FragmentSaleComparisonReport extends Fragment {
         Cursor cursor = database.rawQuery(query, null);
 
         while (cursor.moveToNext()) {
-            String productId = cursor.getString(cursor.getColumnIndex("PRODUCT_ID"));
-            int saleQty = Integer.parseInt(cursor.getString(cursor.getColumnIndex("SALE_QUANTITY")));
-            double totalSaleAmount = Double.parseDouble(cursor.getString(cursor.getColumnIndex("TOTAL_AMOUNT")));
+            String productId = "";
+
+            if(cursor.getString(cursor.getColumnIndex("PRODUCT_ID")) != null) {
+                productId = cursor.getString(cursor.getColumnIndex("PRODUCT_ID"));
+            }
+
+            double saleQty = 0.0;
+            if(cursor.getString(cursor.getColumnIndex("SALE_QUANTITY")) != null) {
+                saleQty = Double.parseDouble(cursor.getString(cursor.getColumnIndex("SALE_QUANTITY")));
+            }
+
+            double totalSaleAmount = 0.0;
+            if(cursor.getString(cursor.getColumnIndex("TOTAL_AMOUNT")) != null) {
+                totalSaleAmount = Double.parseDouble(cursor.getString(cursor.getColumnIndex("TOTAL_AMOUNT")));
+            }
+
             double sellingPrice = totalSaleAmount / saleQty;
 
             SaleTarget saleTarget = new SaleTarget();
@@ -281,9 +298,16 @@ public class FragmentSaleComparisonReport extends Fragment {
     /**
      * Get sale target from db.
      */
-    private void getTargetSaleDB() {
+    private void getTargetSaleDB(int customerIdFromSpinner) {
         saleTargetArrayList.clear();
-        Cursor cursor = database.rawQuery("SELECT * FROM sale_target_customer", null);
+        String query = "SELECT * FROM sale_target_customer";
+        String customerCondtion = " WHERE CUSTOMER_ID = '" + customerIdFromSpinner + "'";
+
+        if(customerIdFromSpinner != -1) {
+            query += customerCondtion;
+        }
+
+        Cursor cursor = database.rawQuery(query, null);
         while (cursor.moveToNext()) {
             String id = cursor.getString(cursor.getColumnIndex(DatabaseContract.SALE_TARGET.ID));
             String fromDate = cursor.getString(cursor.getColumnIndex(DatabaseContract.SALE_TARGET.FROM_DATE));
@@ -324,9 +348,9 @@ public class FragmentSaleComparisonReport extends Fragment {
         customerNameArr = new ArrayList<>();
         customerNameArr.add("All Customer");
 
-        Cursor cursorCustomer = database.rawQuery("SELECT CUSTOMER_ID, CUSTOMER_NAME FROM CUSTOMER", null);
+        Cursor cursorCustomer = database.rawQuery("SELECT id, CUSTOMER_NAME FROM CUSTOMER", null);
         while (cursorCustomer.moveToNext()) {
-            customerIdArr.add(cursorCustomer.getString(cursorCustomer.getColumnIndex("CUSTOMER_ID")));
+            customerIdArr.add(cursorCustomer.getString(cursorCustomer.getColumnIndex("id")));
             customerNameArr.add(cursorCustomer.getString(cursorCustomer.getColumnIndex("CUSTOMER_NAME")));
         }
     }
