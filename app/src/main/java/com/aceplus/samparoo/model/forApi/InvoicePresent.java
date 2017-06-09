@@ -28,6 +28,12 @@ public class InvoicePresent {
     @SerializedName("currency_id")
     @Expose
     private int currencyId;
+    @SerializedName("rate")
+    @Expose
+    private double rate;
+    @SerializedName("s_price")
+    @Expose
+    private double s_price;
 
     public String getLocationId() {
         return locationId;
@@ -84,5 +90,21 @@ public class InvoicePresent {
 
     public void setCurrencyId(int currencyId) {
         this.currencyId = currencyId;
+    }
+
+    public double getRate() {
+        return rate;
+    }
+
+    public void setRate(double rate) {
+        this.rate = rate;
+    }
+
+    public double getS_price() {
+        return s_price;
+    }
+
+    public void setS_price(double s_price) {
+        this.s_price = s_price;
     }
 }

@@ -26,6 +26,24 @@ public class InvoiceDetail {
     @SerializedName("discount_percent")
     @Expose
     private Double discountPercent;
+    @SerializedName("s_price")
+    @Expose
+    private Double s_price;
+    @SerializedName("p_price")
+    @Expose
+    private Double p_price;
+    @SerializedName("promotion_price")
+    @Expose
+    private Double promotionPrice;
+    @SerializedName("promotion_plan_id")
+    @Expose
+    private Double promotion_plan_id;
+    @SerializedName("volume_discount_percent")
+    @Expose
+    private Double volumeDiscountPercent;
+    @SerializedName("exclude")
+    @Expose
+    private int exclude;
 
     public String getTsaleId() {
         return tsaleId;
@@ -75,6 +93,51 @@ public class InvoiceDetail {
         this.discountPercent = discountPercent;
     }
 
+    public Double getS_price() {
+        return s_price;
+    }
 
+    public void setS_price(Double s_price) {
+        this.s_price = s_price;
+    }
 
+    public Double getP_price() {
+        return p_price;
+    }
+
+    public void setP_price(Double p_price) {
+        this.p_price = p_price;
+    }
+
+    public Double getPromotionPrice() {
+        return promotionPrice;
+    }
+
+    public void setPromotionPrice(Double promotionPrice) {
+        this.promotionPrice = promotionPrice;
+    }
+
+    public Double getPromotion_plan_id() {
+        return promotion_plan_id;
+    }
+
+    public void setPromotion_plan_id(Double promotion_plan_id) {
+        this.promotion_plan_id = promotion_plan_id;
+    }
+
+    public Double getVolumeDiscountPercent() {
+        return volumeDiscountPercent;
+    }
+
+    public void setVolumeDiscountPercent(Double volumeDiscountPercent) {
+        this.volumeDiscountPercent = volumeDiscountPercent;
+    }
+
+    public int getExclude() {
+        return exclude;
+    }
+
+    public void setExclude(int exclude) {
+        this.exclude = exclude;
+    }
 }

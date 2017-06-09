@@ -553,7 +553,7 @@ public class CustomerActivity extends AppCompatActivity {
             longiString = locationCursor.getString(locationCursor.getColumnIndex("LONGITUDE"));
         }
 
-        if(latiString != null && longiString != null && !latiString.equals("") && !longiString.equals("") && !latiString.equals("0") && !longiString.equals("0")) {
+        if(latiString != null && longiString != null && !latiString.equals("") && !longiString.equals("") && !latiString.equals("0") && !longiString.equals("0") && latiString.length() > 6 && longiString.length() > 6) {
             latiDouble = Double.parseDouble(latiString.substring(0, 7));
             longDouble = Double.parseDouble(longiString.substring(0, 7));
         }
@@ -690,7 +690,7 @@ public class CustomerActivity extends AppCompatActivity {
                                         }
 
                                         String deviceId = Utils.getDeviceId(CustomerActivity.this);
-                                        String invoiceNumber = Utils.getInvoiceNo(getApplicationContext(), salemanId, String.valueOf(getLocationCode()), Utils.MODE_CUSTOMER_FEEDBACK);
+                                        String invoiceNumber = Utils.getInvoiceNo(getApplicationContext(), salemanId, String.valueOf(getLocationCode()), Utils.FOR_OTHERS);
                                         String invoiceDate = customerFeedbacks.get(descriptionsSpinner.getSelectedItemPosition()).getInvoiceDate();
                                         int customerNumber = customer.getId();
                                         String locationNumber = String.valueOf(getLocationCode());

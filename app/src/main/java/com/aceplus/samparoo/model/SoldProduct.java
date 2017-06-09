@@ -15,7 +15,8 @@ public class SoldProduct implements Serializable {
 
     private boolean isForPackage;
     private double extraDiscount;
-
+    private double discountPercent;
+    private double discountAmount;
     private ArrayList<String> serialList;
 
     private int orderedQuantity;
@@ -223,5 +224,21 @@ public class SoldProduct implements Serializable {
 
     public void setFocStatus(boolean focStatus) {
         this.focStatus = focStatus;
+    }
+
+    public double getDiscountPercent() {
+        return discountPercent;
+    }
+
+    public void setDiscountPercent(double discountPercent) {
+        this.discountPercent = discountPercent;
+    }
+
+    public double getDiscountAmount() {
+        return discountAmount;
+    }
+
+    public void setDiscountAmount(double discountAmount) {
+        this.discountAmount = discountAmount;
     }
 }

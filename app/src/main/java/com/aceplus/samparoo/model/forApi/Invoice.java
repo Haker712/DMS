@@ -57,6 +57,18 @@ public class Invoice {
     @SerializedName("invoice_status")
     @Expose
     private String invoiceStatus;
+    @SerializedName("discount_percent")
+    @Expose
+    private String discountPercent;
+    @SerializedName("rate")
+    @Expose
+    private String rate;
+    @SerializedName("tax_amount")
+    @Expose
+    private String taxAmount;
+    @SerializedName("dueDate")
+    @Expose
+    private String dueDate;
 
     public String getId() {
         return id;
@@ -184,5 +196,37 @@ public class Invoice {
 
     public void setInvoiceStatus(String invoiceStatus) {
         this.invoiceStatus = invoiceStatus;
+    }
+
+    public String getDiscountPercent() {
+        return discountPercent;
+    }
+
+    public void setDiscountPercent(String discountPercent) {
+        this.discountPercent = discountPercent;
+    }
+
+    public String getRate() {
+        return rate;
+    }
+
+    public void setRate(String rate) {
+        this.rate = rate;
+    }
+
+    public String getTaxAmount() {
+        return taxAmount;
+    }
+
+    public void setTaxAmount(String taxAmount) {
+        this.taxAmount = taxAmount;
+    }
+
+    public String getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(String dueDate) {
+        this.dueDate = dueDate;
     }
 }

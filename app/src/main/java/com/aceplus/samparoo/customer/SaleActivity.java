@@ -859,7 +859,7 @@ public class SaleActivity extends AppCompatActivity {
             longiString = locationCursor.getString(locationCursor.getColumnIndex("LONGITUDE"));
         }
 
-        if(latiString != null && longiString != null && !latiString.equals("") && !longiString.equals("") && !latiString.equals("0") && !longiString.equals("0")) {
+        if(latiString != null && longiString != null && !latiString.equals("") && !longiString.equals("") && !latiString.equals("0") && !longiString.equals("0") && latiString.length() > 6 && longiString.length() > 6) {
             latiDouble = Double.parseDouble(latiString.substring(0, 7));
             longDouble = Double.parseDouble(longiString.substring(0, 7));
         }

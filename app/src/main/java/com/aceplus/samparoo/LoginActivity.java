@@ -304,7 +304,7 @@ public class LoginActivity extends AppCompatActivity {
                                 startActivity(intent);
                                 finish();
                             } else {
-                                Utils.commonDialog(getResources().getString(R.string.server_error), LoginActivity.this);
+                                Utils.commonDialog("No route for this sale man!", LoginActivity.this);
                             }
                         }
                         else {
