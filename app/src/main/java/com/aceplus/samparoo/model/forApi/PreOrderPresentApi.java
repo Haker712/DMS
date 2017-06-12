@@ -17,6 +17,9 @@ public class PreOrderPresentApi {
     @SerializedName("quantity")
     @Expose
     private Integer quantity;
+    @SerializedName("status")
+    @Expose
+    private String status;
 
     public String getSaleOrderId() {
         return saleOrderId;
@@ -40,5 +43,13 @@ public class PreOrderPresentApi {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

@@ -1188,6 +1188,10 @@ public class SyncActivity extends AppCompatActivity {
             Double totalRefundAmount = cursor_invoice.getDouble(cursor_invoice.getColumnIndex("REFUND_AMOUNT"));
             String receiptPerson = cursor_invoice.getString(cursor_invoice.getColumnIndex("RECEIPT_PERSON_NAME"));
             String invoiceStatus = cursor_invoice.getString(cursor_invoice.getColumnIndex("CASH_OR_CREDIT"));
+            Double totalDiscountPer = cursor_invoice.getDouble(cursor_invoice.getColumnIndex("TOTAL_DISCOUNT_PERCENT"));
+            String rate = cursor_invoice.getString(cursor_invoice.getColumnIndex("RATE"));
+            Double tax = cursor_invoice.getDouble(cursor_invoice.getColumnIndex("TAX_AMOUNT"));
+            String dueDate = cursor_invoice.getString(cursor_invoice.getColumnIndex("DUE_DATE"));
 
             invoice.setId(invoice_Id);
             invoice.setCustomerId(customer_Id);
@@ -1200,11 +1204,14 @@ public class SyncActivity extends AppCompatActivity {
             invoice.setReceiptPerson(receiptPerson);
             invoice.setSalepersonId(cursor_invoice.getInt(cursor_invoice.getColumnIndex("SALE_PERSON_ID")));
             invoice.setLocationCode(cursor_invoice.getInt(cursor_invoice.getColumnIndex("LOCATION_CODE")));
-            //invoice.setDeviceId(cursor_invoice.getString(cursor_invoice.getColumnIndex("DEVICE_ID")));
-            invoice.setDeviceId("");
+            invoice.setDeviceId(cursor_invoice.getString(cursor_invoice.getColumnIndex("DEVICE_ID")));
             invoice.setInvoiceTime(cursor_invoice.getString(cursor_invoice.getColumnIndex("INVOICE_TIME")));
             invoice.setCurrencyId(currencyId);
             invoice.setInvoiceStatus(invoiceStatus);
+            invoice.setDiscountPercent(totalDiscountPer);
+            invoice.setRate(Double.parseDouble(rate));
+            invoice.setTaxAmount(tax);
+            invoice.setDueDate(dueDate);
 
             List<InvoiceDetail> invoiceDetailList = new ArrayList<>();
 
@@ -1212,12 +1219,16 @@ public class SyncActivity extends AppCompatActivity {
             while (cur_invoiceDetail.moveToNext()) {
                 InvoiceDetail invoiceDetail = new InvoiceDetail();
                 String tsale_Id = cur_invoiceDetail.getString(cur_invoiceDetail.getColumnIndex("INVOICE_PRODUCT_ID"));
-                String product_Id = cur_invoiceDetail.getString(cur_invoiceDetail.getColumnIndex("PRODUCT_ID"));
+                int product_Id = cur_invoiceDetail.getInt(cur_invoiceDetail.getColumnIndex("PRODUCT_ID"));
                 int quantity = cur_invoiceDetail.getInt(cur_invoiceDetail.getColumnIndex("SALE_QUANTITY"));
                 Double discountAmount = cur_invoiceDetail.getDouble(cur_invoiceDetail.getColumnIndex("DISCOUNT_AMOUNT"));
                 Double amount = cur_invoiceDetail.getDouble(cur_invoiceDetail.getColumnIndex("TOTAL_AMOUNT"));
                 Double discount_percent = cur_invoiceDetail.getDouble(cur_invoiceDetail.getColumnIndex("DISCOUNT_PERCENT"));
-
+                Double sPrice = cur_invoiceDetail.getDouble(cur_invoiceDetail.getColumnIndex("S_PRICE"));
+                Double pPrice = cur_invoiceDetail.getDouble(cur_invoiceDetail.getColumnIndex("P_PRICE"));
+                Double promotionPrice = cur_invoiceDetail.getDouble(cur_invoiceDetail.getColumnIndex("PROMOTION_PRICE"));
+                int promotionPlanId = cur_invoiceDetail.getInt(cur_invoiceDetail.getColumnIndex("PROMOTION_PLAN_ID"));
+                int exclude = cur_invoiceDetail.getInt(cur_invoiceDetail.getColumnIndex("EXCLUDE"));
 
                 invoiceDetail.setTsaleId(tsale_Id);
                 invoiceDetail.setProductId(product_Id);
@@ -1225,6 +1236,11 @@ public class SyncActivity extends AppCompatActivity {
                 invoiceDetail.setDiscountAmt(discountAmount);
                 invoiceDetail.setAmt(amount);
                 invoiceDetail.setDiscountPercent(discount_percent);
+                invoiceDetail.setS_price(sPrice);
+                invoiceDetail.setP_price(pPrice);
+                invoiceDetail.setPromotionPrice(promotionPrice);
+                invoiceDetail.setPromotion_plan_id(promotionPlanId);
+                invoiceDetail.setExclude(exclude);
 
                 invoiceDetailList.add(invoiceDetail);
             }
@@ -1253,12 +1269,11 @@ public class SyncActivity extends AppCompatActivity {
             invoicePresent.setTsaleId(tsale_Id);
             invoicePresent.setStockId(stock_Id);
             invoicePresent.setQuantity(quantity);
-
-            //invoicePresent.setPcAddress(cursor_InvoicePresent.getString(cursor_InvoicePresent.getColumnIndex("pc_address")));
-            invoicePresent.setPcAddress("");
+            invoicePresent.setPcAddress(cursor_InvoicePresent.getString(cursor_InvoicePresent.getColumnIndex("pc_address")));
             invoicePresent.setLocationId(cursor_InvoicePresent.getString(cursor_InvoicePresent.getColumnIndex("location_id")));
             invoicePresent.setPrice(cursor_InvoicePresent.getDouble(cursor_InvoicePresent.getColumnIndex("price")));
             invoicePresent.setCurrencyId(currencyId);
+            invoicePresent.setRate(cursor_InvoicePresent.getDouble(cursor_InvoicePresent.getColumnIndex("rate")));
             invoicePresentList.add(invoicePresent);
         }
 
@@ -1483,8 +1498,6 @@ public class SyncActivity extends AppCompatActivity {
             preOrderApi.setLocationId(preOrder.getLocationId());
             preOrderApi.setDiscount(preOrder.getDiscount());
             preOrderApi.setDiscountPer(preOrder.getDiscountPer());
-            preOrderApi.setVolumeDiscount(preOrder.getVolumeDiscount());
-            preOrderApi.setVolumeDiscountPer(preOrder.getVolumeDiscountPer());
 
             for (PreOrderPresentApi preOrderPresentApi : getPreOrderPresentFromDatabase(preOrder.getInvoiceId())) {
                 preOrderPresentApiList.add(preOrderPresentApi);
@@ -1502,6 +1515,8 @@ public class SyncActivity extends AppCompatActivity {
                 preOrderDetailApi.setVolumeDiscount(preOrderProduct.getVolumeDiscount());
                 preOrderDetailApi.setVolumeDiscountPer(preOrderProduct.getVolumeDiscountPer());
                 preOrderDetailApi.setExclude(preOrderProduct.getExclude());
+                preOrderDetailApi.setS_Price(preOrderProduct.getPrice());
+                preOrderDetailApi.setPromotionPlanId(preOrderProduct.getPromotionPlanId());
                 preOrderDetailApiList.add(preOrderDetailApi);
             }
 
@@ -1553,8 +1568,7 @@ public class SyncActivity extends AppCompatActivity {
             preOrder.setLocationId(cursorPreOrder.getInt(cursorPreOrder.getColumnIndex(DatabaseContract.PreOrder.location_id)));
             preOrder.setDiscount(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex(DatabaseContract.PreOrder.discount)));
             preOrder.setDiscountPer(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex(DatabaseContract.PreOrder.discount_per)));
-            preOrder.setVolumeDiscount(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex(DatabaseContract.PreOrder.volume_discount)));
-            preOrder.setVolumeDiscountPer(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex(DatabaseContract.PreOrder.volume_discount_per)));
+            preOrder.setTaxAmount(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex("TAX_AMOUNT")));
             preOrderList.add(preOrder);
         }
 
@@ -1582,6 +1596,8 @@ public class SyncActivity extends AppCompatActivity {
             preOrderProduct.setVolumeDiscount(cursorPreOrderProduct.getDouble(cursorPreOrderProduct.getColumnIndex(DatabaseContract.PreOrderDetail.volume_discount)));
             preOrderProduct.setVolumeDiscountPer(cursorPreOrderProduct.getDouble(cursorPreOrderProduct.getColumnIndex(DatabaseContract.PreOrderDetail.volume_discount_per)));
             preOrderProduct.setExclude(cursorPreOrderProduct.getInt(cursorPreOrderProduct.getColumnIndex(DatabaseContract.PreOrderDetail.exclude)));
+            preOrderProduct.setPromotionPlanId(cursorPreOrderProduct.getInt(cursorPreOrderProduct.getColumnIndex("PROMOTION_PLAN_ID")));
+
             preOrderProductList.add(preOrderProduct);
         }
 
@@ -1603,6 +1619,7 @@ public class SyncActivity extends AppCompatActivity {
             preOrderPresentApi.setSaleOrderId(cursorPreOrderPresent.getString(cursorPreOrderPresent.getColumnIndex("pre_order_id")));
             preOrderPresentApi.setProductId(Integer.parseInt(cursorPreOrderPresent.getString(cursorPreOrderPresent.getColumnIndex("stock_id"))));
             preOrderPresentApi.setQuantity(cursorPreOrderPresent.getInt(cursorPreOrderPresent.getColumnIndex("quantity")));
+            preOrderPresentApi.setStatus(cursorPreOrderPresent.getString(cursorPreOrderPresent.getColumnIndex("status")));
             preOrderPresentList.add(preOrderPresentApi);
         }
 
@@ -3178,7 +3195,7 @@ public class SyncActivity extends AppCompatActivity {
 
                 } else {
                     Utils.cancelDialog();
-                    Utils.commonDialog("Products are not successfully downloaded", SyncActivity.this);
+                    Utils.commonDialog("Reissue products are not successfully downloaded", SyncActivity.this);
                 }
             }
 

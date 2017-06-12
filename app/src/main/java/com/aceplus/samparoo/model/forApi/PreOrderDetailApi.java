@@ -35,6 +35,15 @@ public class PreOrderDetailApi {
     @SerializedName("promotion_price")
     @Expose
     private Double promotionPrice;
+
+    @SerializedName("s_price")
+    @Expose
+    private Double S_Price;
+
+    @SerializedName("promotion_plan_id")
+    @Expose
+    private int promotionPlanId;
+
     @SerializedName("volume_discount")
     @Expose
     private Double volumeDiscount;
@@ -129,5 +138,21 @@ public class PreOrderDetailApi {
 
     public void setExclude(Integer exclude) {
         this.exclude = exclude;
+    }
+
+    public Double getS_Price() {
+        return S_Price;
+    }
+
+    public void setS_Price(Double s_Price) {
+        S_Price = s_Price;
+    }
+
+    public int getPromotionPlanId() {
+        return promotionPlanId;
+    }
+
+    public void setPromotionPlanId(int promotionPlanId) {
+        this.promotionPlanId = promotionPlanId;
     }
 }

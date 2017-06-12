@@ -29,6 +29,10 @@ public class SoldProduct implements Serializable {
 
     boolean focStatus;
 
+    String promotionPlanId;
+
+    int exclude;
+
     public SoldProduct(){}
 
     public SoldProduct(Product product, Boolean isForPackage) {
@@ -240,5 +244,21 @@ public class SoldProduct implements Serializable {
 
     public void setDiscountAmount(double discountAmount) {
         this.discountAmount = discountAmount;
+    }
+
+    public String getPromotionPlanId() {
+        return promotionPlanId;
+    }
+
+    public void setPromotionPlanId(String promotionPlanId) {
+        this.promotionPlanId = promotionPlanId;
+    }
+
+    public int getExclude() {
+        return exclude;
+    }
+
+    public void setExclude(int exclude) {
+        this.exclude = exclude;
     }
 }

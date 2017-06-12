@@ -143,17 +143,20 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
     TextView titleTextView;
 
+    String taxType = "";
+    double taxPercent = 0.0, taxAmt = 0.0;
+    boolean adapterFlag = true;
+
     ArrayList<Promotion> promotionArrayList = new ArrayList<>();
     PromotionProductCustomAdapter promotionProductCustomAdapter;
 
-    Double totalVolumeDiscount = 0.0;
     int exclude = 0;
     double totalAmount = 0.0, totalAmountForProduct = 0.0, netAmtTotal = 0.0;
 
     int locationCode = 0;
     String locationCodeName = "";
 
-    double totalAmountForVolumeDiscount = 0.0;
+    Double totalVolumeDiscount = 0.0, totalVolumeDiscountPercent = 0.0;
 
     TextView volDisForPreOrder;
 
@@ -207,11 +210,11 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         txt_tableHeaderQty.setText(R.string.ordered_qty);
         titleTextView.setText("SALE ORDER CHECKOUT");
 
-        for (SoldProduct soldProduct : soldProductList) {
+        /*for (SoldProduct soldProduct : soldProductList) {
 
             totalAmount += soldProduct.getTotalAmount();
         }
-        txt_totalAmount.setText(Utils.formatAmount(totalAmount));
+        txt_totalAmount.setText(Utils.formatAmount(totalAmount));*/
 
         Cursor cursorForLocation = database.rawQuery("select * from Location", null);
         while (cursorForLocation.moveToNext()) {
@@ -225,6 +228,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         }
         hideUnnecessaryView();
         setSoldProductToListView();
+        calculateTotalAmountForProduct();
 
         calculateNetAmount();
 
@@ -232,8 +236,24 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         catchEvents();
     }
 
+    private void calculateTotalAmountForProduct() {
+        double soldPrice = 0.0;
+
+        for(SoldProduct soldProduct : soldProductList) {
+            if (soldProduct.getPromotionPrice() == 0.0) {
+                soldPrice = soldProduct.getProduct().getPrice();
+            } else {
+                soldPrice = soldProduct.getPromotionPrice();
+            }
+
+            double buy_amt = soldPrice * soldProduct.getQuantity();
+            totalAmount += buy_amt;
+        }
+    }
+
+
     void calculateNetAmount() {
-        double totalAmountForVolumeDiscount = 0.0;
+        /*double totalAmountForVolumeDiscount = 0.0;
         double totalItemDiscountAmount = 0.0;
         for (SoldProduct soldProduct : soldProductList) {
 
@@ -246,14 +266,14 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         }
 
         txt_totalAmount.setText(Utils.formatAmount(totalAmount));
-
+*/
         setSoldProductInformation();
 
-        calculateVolumeDiscount();
-        calculateInvoiceDiscount();
+        //calculateVolumeDiscount();
+        //calculateInvoiceDiscount();
 
-        netAmtTotal = totalAmount - totalItemDiscountAmount - totalVolumeDiscount;
-        netAmountTextView.setText(Utils.formatAmount(netAmtTotal));
+        /*netAmtTotal = totalAmount - totalItemDiscountAmount - totalVolumeDiscount;
+        netAmountTextView.setText(Utils.formatAmount(netAmtTotal));*/
     }
 
     /**
@@ -298,13 +318,13 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
      */
     private void hideUnnecessaryView() {
         txt_tableHeaderUM.setVisibility(View.GONE);
-        txt_tableHeaderDiscount.setVisibility(View.GONE);
+        //txt_tableHeaderDiscount.setVisibility(View.GONE);
         advancedPaidAmountLayout.setVisibility(View.GONE);
         netAmountLayout.setVisibility(View.VISIBLE);
         refundLayout.setVisibility(View.GONE);
         payAmountLayout.setVisibility(View.GONE);
         receiptPersonLayout.setVisibility(View.GONE);
-        volDisForPreOrderLayout.setVisibility(View.GONE);
+        //volDisForPreOrderLayout.setVisibility(View.GONE);
         if(isDelivery) {
             totalInfoForPreOrderLayout.setVisibility(View.GONE);
             volumeDiscountLayout.setVisibility(View.GONE);
@@ -333,198 +353,171 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         }
     }
 
-    private void calculateVolumeDiscount() {
+    private void calculateVolumeDiscount(SoldProduct soldProduct, int position) {
         String volDisFilterId = "";
-        String category = "", group = "";
-        double discount_percent = 0.0, discount_amt = 0.0, discount_price = 0.0;
 
-        String categoryProduct = "", groupProduct = "";
+        double soldPrice = 0.0;
 
-        boolean isAllAreCategory = false;
-
-        double buy_amt = totalAmount;
-        Cursor cursor = database.rawQuery("select * from VOLUME_DISCOUNT_FILTER WHERE date('" + Utils.getCurrentDate(true) + "') BETWEEN date(START_DATE) AND date(END_DATE)", null);
-        Log.i("VolumeDisFilterCursor", cursor.getCount() + "");
-        while (cursor.moveToNext()) {
-            volDisFilterId = cursor.getString(cursor.getColumnIndex(DatabaseContract.VolumeDiscountFilter.id));
-            exclude = cursor.getInt(cursor.getColumnIndex(DatabaseContract.VolumeDiscountFilter.exclude));
-            if (exclude == 0) {
-
-                for (SoldProduct soldProduct : soldProductList) {
-                    buy_amt = soldProduct.getProduct().getPrice() * soldProduct.getQuantity();
-                }
-
-               /* double promotion_price = 0.0;
-                for (Promotion promotion : promotionArrayList) {
-                    promotion_price += promotion.getPromotionPrice();
-                }
-                buy_amt += promotion_price;*/
-            }
-            Log.i("buy_amt", buy_amt + "");
-            Log.i("volDisFilterId", volDisFilterId);
-            Cursor cusorForVolDisFilterItem = database.rawQuery("SELECT * FROM VOLUME_DISCOUNT_FILTER_ITEM WHERE VOLUME_DISCOUNT_ID = '" + volDisFilterId + "' " +
-                    "and FROM_SALE_AMOUNT <= " + buy_amt + " and TO_SALE_AMOUNT >= " + buy_amt + " ", null);
-            Log.i("cursorForVolDisFilterItem", cusorForVolDisFilterItem.getCount() + "");
-            while (cusorForVolDisFilterItem.moveToNext()) {
-                category = cusorForVolDisFilterItem.getString(cusorForVolDisFilterItem.getColumnIndex(DatabaseContract.VolumeDiscountFilterItem.categoryId));
-                group = cusorForVolDisFilterItem.getString(cusorForVolDisFilterItem.getColumnIndex(DatabaseContract.VolumeDiscountFilterItem.groupCodeId));
-                discount_percent = cusorForVolDisFilterItem.getDouble(cusorForVolDisFilterItem.getColumnIndex(DatabaseContract.VolumeDiscountFilterItem.discountPercent));
-            }
-
-            Log.i("category", category + ", group : " + group + ", discount_percent : " + discount_percent);
+        if (soldProduct.getPromotionPrice() == 0.0) {
+            soldPrice = soldProduct.getProduct().getPrice();
+        } else {
+            soldPrice = soldProduct.getPromotionPrice();
         }
 
-        //check category and group for product
-        for (SoldProduct soldProduct : soldProductList) {
-            Cursor cursorForProduct = database.rawQuery("select * from PRODUCT WHERE PRODUCT_ID = '" + soldProduct.getProduct().getId() + "'", null);
-            while (cursorForProduct.moveToNext()) {
-                categoryProduct = String.valueOf(cursorForProduct.getInt(cursorForProduct.getColumnIndex("CATEGORY_ID")));
-                groupProduct = cursorForProduct.getString(cursorForProduct.getColumnIndex("GROUP_ID"));
-            }
+        double buy_amt = soldPrice * soldProduct.getQuantity();
+        soldProduct.setTotalAmt(buy_amt);
+        Log.i("buy_amt", buy_amt + "");
 
-            if (category.equals(categoryProduct)) {
-                isAllAreCategory = true;
-            } else {
-                isAllAreCategory = false;
+        try {
+            Cursor cursor = database.rawQuery("select * from VOLUME_DISCOUNT_FILTER WHERE date('" + Utils.getCurrentDate(true) + "') BETWEEN date(START_DATE) AND date(END_DATE)", null);
+            Log.i("VolumeDisFilterCursor", cursor.getCount() + "");
+            while (cursor.moveToNext()) {
+                volDisFilterId = cursor.getString(cursor.getColumnIndex(DatabaseContract.VolumeDiscountFilter.id));
+                exclude = cursor.getInt(cursor.getColumnIndex(DatabaseContract.VolumeDiscountFilter.exclude));
+                soldProduct.setExclude(exclude);
+                Log.i("volDisFilterId", volDisFilterId);
+
+                if(exclude == 0) {
+                    double percent = getDiscountPercent(volDisFilterId, soldProduct.getProduct().getStockId(), soldProduct.getTotalAmt());
+                    if (percent > 0) {
+                        double discountAmount = soldProduct.getTotalAmt() * (percent / 100);
+                        soldProduct.setDiscountPercent(percent);
+                        soldProduct.setDiscountAmount(discountAmount);
+                        soldProduct.setTotalAmt(soldProduct.getTotalAmount());
+                    }
+                } else {
+                    if(soldProduct.getPromotionPrice() == 0.0) {
+                        double percent = getDiscountPercent(volDisFilterId, soldProduct.getProduct().getStockId(), soldProduct.getTotalAmt());
+                        if (percent > 0) {
+                            double discountAmount = soldProduct.getTotalAmt() * (percent / 100);
+                            soldProduct.setDiscountPercent(percent);
+                            soldProduct.setDiscountAmount(discountAmount);
+                            soldProduct.setTotalAmt(soldProduct.getTotalAmount());
+                        }
+                    }
+                }
+
             }
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //discountTextView.setText(Utils.formatAmount(totalVolumeDiscount));
+    }
+
+    private double getDiscountPercent(String volDisFilterId, int productId, double buy_amt) {
+        String categoryProduct = "", groupProduct = "";
+        String category = "", group = "";
+        boolean isAllAreCategory = false;
+        double discount_percent = 0.0, discount_amt = 0.0, discount_price = 0.0;
+
+        Cursor cusorForVolDisFilterItem = database.rawQuery("SELECT * FROM VOLUME_DISCOUNT_FILTER_ITEM WHERE VOLUME_DISCOUNT_ID = '" + volDisFilterId + "' " +
+                "and FROM_SALE_AMOUNT <= " + buy_amt + " and TO_SALE_AMOUNT >= " + buy_amt + " ", null);
+        Log.i("cusorForVolDisFilterItem", cusorForVolDisFilterItem.getCount() + "");
+
+        while (cusorForVolDisFilterItem.moveToNext()) {
+            category = cusorForVolDisFilterItem.getString(cusorForVolDisFilterItem.getColumnIndex(DatabaseContract.VolumeDiscountFilterItem.categoryId));
+            group = cusorForVolDisFilterItem.getString(cusorForVolDisFilterItem.getColumnIndex(DatabaseContract.VolumeDiscountFilterItem.groupCodeId));
+            discount_percent = cusorForVolDisFilterItem.getDouble(cusorForVolDisFilterItem.getColumnIndex(DatabaseContract.VolumeDiscountFilterItem.discountPercent));
+        }
+
+        Log.i("category", category + ", group : " + group + ", discount_percent : " + discount_percent);
+
+        //check category and group for product
+        Cursor cursorForProduct = database.rawQuery("select * from PRODUCT WHERE ID = '" + productId + "'", null);
+        while (cursorForProduct.moveToNext()) {
+            categoryProduct = String.valueOf(cursorForProduct.getInt(cursorForProduct.getColumnIndex("CATEGORY_ID")));
+            groupProduct = cursorForProduct.getString(cursorForProduct.getColumnIndex("GROUP_ID"));
+        }
+
+        if (category.equals(categoryProduct)) {
+            isAllAreCategory = true;
+        } else {
+            isAllAreCategory = false;
         }
 
         if (isAllAreCategory) {
-            totalVolumeDiscount = totalAmount * (discount_percent / 100);
-            Log.i("totalVolumeDiscount", totalVolumeDiscount + "");
+            return discount_percent;
         }
-
-        volDisForPreOrder.setText(Utils.formatAmount(totalVolumeDiscount));
+        else {
+            return 0;
+        }
     }
 
     private void calculateInvoiceDiscount() {
         String volDisId;
-        double buy_amt = totalAmount;
-        Double fromSaleAmt, toSaleAmt, discountPercentForVolDis;
+        double buy_amt = 0.0, itemDiscountAmt = 0.0, noPromoBuyAmt = 0.0;
 
-        Cursor cursor = database.rawQuery("select * from VOLUME_DISCOUNT WHERE date('" + Utils.getCurrentDate(true) + "') BETWEEN date(START_DATE) AND date(END_DATE)", null);
+        for(SoldProduct soldProduct : soldProductList) {
+            buy_amt += soldProduct.getTotalAmt();
+        }
+
+
+        String query = "select * from VOLUME_DISCOUNT WHERE date('" + Utils.getCurrentDate(true) + "') BETWEEN date(START_DATE) AND date(END_DATE)";
+        Cursor cursor = database.rawQuery(query, null);
         Log.i("VolumeDiscountCursor", cursor.getCount() + "");
         while (cursor.moveToNext()) {
             volDisId = cursor.getString(cursor.getColumnIndex(DatabaseContract.VolumeDiscount.id));
             exclude = cursor.getInt(cursor.getColumnIndex(DatabaseContract.VolumeDiscount.exclude));
 
             if (exclude == 0) {
-                for (SoldProduct soldProduct : soldProductList) {
-                    buy_amt = soldProduct.getProduct().getPrice() * soldProduct.getQuantity();
+                for (SoldProduct promotion : soldProductList) {
+                    itemDiscountAmt += promotion.getDiscountAmount();
                 }
-                calculateInvoiceDiscountAmount(buy_amt, volDisId);
-               /* */
+
+                calculateInvoiceDiscountAmount(totalAmount, volDisId);
             } else {
-                double promotion_price = 0.0;
-                for (Promotion promotion : promotionArrayList) {
-                    promotion_price += promotion.getPromotionPrice();
+                for (SoldProduct soldProduct : soldProductList) {
+                    itemDiscountAmt += soldProduct.getDiscountAmount();
+
+                    if(soldProduct.getPromotionPrice() == 0.0 && soldProduct.getDiscountPercent() == 0.0) {
+                        noPromoBuyAmt += soldProduct.getTotalAmt();
+                    }
                 }
-                buy_amt = buy_amt - promotion_price;
-                calculateInvoiceDiscountAmount(buy_amt, volDisId);
+
+                calculateInvoiceDiscountAmount(noPromoBuyAmt, volDisId);
             }
 
             Log.i("buy_amt", buy_amt + "");
             Log.i("volDisId", volDisId);
-        }
+            getTaxAmount();
+            taxAmt = calculateTax(totalAmount);
 
-        volDisForPreOrder.setText(Utils.formatAmount(totalVolumeDiscount));
+            txt_totalAmount.setText(Utils.formatAmount(totalAmount));
+            double netAmount = 0.0;
+            if(taxType.equalsIgnoreCase("E")) {
+                netAmount = totalAmount - totalVolumeDiscount - itemDiscountAmt + taxAmt;
+            } else {
+                netAmount = totalAmount - totalVolumeDiscount - itemDiscountAmt;
+            }
+            netAmountTextView.setText(Utils.formatAmount(netAmount));
+            volDisForPreOrder.setText(Utils.formatAmount(totalVolumeDiscount));
+        }
     }
 
     void calculateInvoiceDiscountAmount(Double buy_amt, String volDisId) {
 
-        Double fromSaleAmt, toSaleAmt, discountPercentForVolDis;
+        Double discountPercentForVolDis;
         Cursor cusorForVolDisItem = database.rawQuery("SELECT * FROM VOLUME_DISCOUNT_ITEM WHERE VOLUME_DISCOUNT_ID = '" + volDisId + "' " +
                 "and " + buy_amt + " >= FROM_SALE_AMT and " + buy_amt + "<= TO_SALE_AMT;", null);
         Log.i("cusorForVolDisItem", cusorForVolDisItem.getCount() + "");
 
         while (cusorForVolDisItem.moveToNext()) {
-            fromSaleAmt = cusorForVolDisItem.getDouble(cusorForVolDisItem.getColumnIndex(DatabaseContract.VolumeDiscountItem.fromSaleAmt));
-            toSaleAmt = cusorForVolDisItem.getDouble(cusorForVolDisItem.getColumnIndex(DatabaseContract.VolumeDiscountItem.toSaleAmt));
             discountPercentForVolDis = cusorForVolDisItem.getDouble(cusorForVolDisItem.getColumnIndex(DatabaseContract.VolumeDiscountItem.discountPercent));
-
             totalVolumeDiscount = buy_amt * (discountPercentForVolDis / 100);
+            totalVolumeDiscountPercent = discountPercentForVolDis;
         }
 
         Log.i("totalInvoiceDiscount ----->>>>>>>", totalVolumeDiscount + "");
-    }
-
-    private void showPromotionData() {
-
-        Cursor cursor = database.rawQuery("select * from " + DatabaseContract.PromotionDate.tb + "", null);
-        Log.i("cursor", cursor.getCount() + "");
-        while (cursor.moveToNext()) {
-            String promotionPlanId = "";
-
-            promotionPlanId = cursor.getString(cursor.getColumnIndex(DatabaseContract.PromotionDate.promotionPlanId));
-            Log.i("promotionPlanId", promotionPlanId);
-
-            for (SoldProduct soldProduct : soldProductList) {
-
-                String promotionProductId = "";
-                String promotionProductName = "";
-                int promotionProductQty = 0;
-                double promotionPrice = 0.0;
-
-                int buy_qty = soldProduct.getProduct().getSoldQty();
-                String stock_id_old = soldProduct.getProduct().getId();
-                Log.i("stock_id_old", stock_id_old);
-                String stock_id_new = "";
-                Cursor cursorForStockId = database.rawQuery("select * from PRODUCT where PRODUCT_ID = '" + stock_id_old + "'", null);
-                while (cursorForStockId.moveToNext()) {
-                    stock_id_new = cursorForStockId.getString(cursorForStockId.getColumnIndex("ID"));
-                    Log.i("stock_id_new", stock_id_new + "");
-                }
-                Cursor cursorForPromotionPrice = database.rawQuery("select * from " + DatabaseContract.PromotionPrice.tb + " where " + DatabaseContract.PromotionPrice.promotionPlanId + " = '" + promotionPlanId + "'" +
-                        " and " + DatabaseContract.PromotionPrice.fromQuantity + " <= " + buy_qty + " and " + DatabaseContract.PromotionPrice.toQuantity + " >= " + buy_qty + " and " + DatabaseContract.PromotionPrice.stockId + " = '" + stock_id_new + "'", null);
-                Log.i("PriceCount", cursorForPromotionPrice.getCount() + "");
-                while (cursorForPromotionPrice.moveToNext()) {
-                    promotionPrice = cursorForPromotionPrice.getDouble(cursorForPromotionPrice.getColumnIndex(DatabaseContract.PromotionPrice.promotionPrice));
-                }
-                Log.i("promotionPrice", promotionPrice + "");
-                Cursor cursorForPromotionGift = database.rawQuery("select * from " + DatabaseContract.PromotionGift.tb + " where " + DatabaseContract.PromotionGift.promotionPlanId + " = '" + promotionPlanId + "'" +
-                        " and " + DatabaseContract.PromotionGift.fromQuantity + " <= " + buy_qty + " and " + DatabaseContract.PromotionGift.toQuantity + " >= " + buy_qty + " and " + DatabaseContract.PromotionGift.stockId + " = '" + stock_id_new + "'", null);
-                Log.i("GiftCount", cursorForPromotionGift.getCount() + "");
-                while (cursorForPromotionGift.moveToNext()) {
-                    String promotionGiftId = cursorForPromotionGift.getString(cursorForPromotionGift.getColumnIndex(DatabaseContract.PromotionGift.promotionPlanId));
-                    Log.i("promotionGiftId", promotionGiftId + "");
-                    Cursor cursorForPromotionGiftItem = database.rawQuery("select * from " + DatabaseContract.PromotionGiftItem.tb + " where " + DatabaseContract.PromotionGiftItem.promotionPlanId + " = '" + promotionGiftId + "'", null);
-                    while (cursorForPromotionGiftItem.moveToNext()) {
-                        promotionProductId = cursorForPromotionGiftItem.getString(cursorForPromotionGiftItem.getColumnIndex(DatabaseContract.PromotionGiftItem.stockId));
-                        Log.i("promotionProductId", promotionProductId + "");
-                        Cursor cursorForProductName = database.rawQuery("select * from PRODUCT WHERE ID = '" + promotionProductId + "'", null);
-                        while (cursorForProductName.moveToNext()) {
-                            promotionProductName = cursorForProductName.getString(cursorForProductName.getColumnIndex("PRODUCT_NAME"));
-                            Log.i("promotionProductName", promotionProductName + ">>not null");
-                        }
-                        promotionProductQty = cursorForPromotionGiftItem.getInt(cursorForPromotionGiftItem.getColumnIndex(DatabaseContract.PromotionGiftItem.quantity));
-                    }
-                }
-
-                Promotion promotion = new Promotion();
-                promotion.setPromotionPrice(promotionPrice);
-                promotion.setPromotionProductId(promotionProductId);
-                promotion.setPromotionProductName(promotionProductName);
-                promotion.setPromotionQty(promotionProductQty);
-
-                /*if (promotionPrice != 0.0) {
-                    promotion.setPromotionPrice(promotionPrice);
-                }
-                if (promotionProductId != null || !promotionProductId.equals("")) {
-                    promotion.setPromotionProductId(promotionProductId);
-                }
-                if (!promotionProductName.equals("") || promotionProductName != null) {
-                    promotion.setPromotionProductName(promotionProductName);
-                }
-                if (promotionProductQty != 0) {
-                    promotion.setPromotionQty(promotionProductQty);
-                }*/
-                if (promotion.getPromotionQty() != 0 && !promotion.getPromotionProductName().equals("")) {
-                    promotionArrayList.add(promotion);
-                }
-            }
+        double discountAmount = 0.0, discountPercentage = 0.0;
+        for(SoldProduct soldProduct : soldProductList) {
+            discountAmount += soldProduct.getDiscountAmount();
+            discountPercentage = (soldProduct.getDiscountAmount() * 100) / totalAmount;
+            totalVolumeDiscountPercent += discountPercentage;
         }
 
-        setPromotionProductListView();
+        //totalVolumeDiscountPercent
     }
 
     private void setPromotionProductListView() {
@@ -803,8 +796,9 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             Utils.backToLogin(this);
         }
 
-        //preOrder.setDeviceId(Utils.getDeviceId(SaleOrderCheckoutActivity.this));
-        preOrder.setDeviceId("");
+        preOrder.setDeviceId(Utils.getDeviceId(SaleOrderCheckoutActivity.this));
+
+        //preOrder.setDeviceId("");
         preOrder.setPreOrderDate(new SimpleDateFormat("yyyy/MM/dd").format(new Date()));
 
         Calendar calendar = Calendar.getInstance();
@@ -829,6 +823,14 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             preOrderProduct.setProductId(soldProduct.getProduct().getStockId());
             preOrderProduct.setOrderQty(soldProduct.getQuantity());
             preOrderProduct.setPrice(soldProduct.getProduct().getPrice());
+            preOrderProduct.setPromotionPrice(soldProduct.getPromotionPrice());
+
+            if(soldProduct.getPromotionPlanId() != null) {
+                preOrderProduct.setPromotionPlanId(Integer.parseInt(soldProduct.getPromotionPlanId()));
+            }
+
+            preOrderProduct.setVolumeDiscount(soldProduct.getDiscountAmount());
+            preOrderProduct.setVolumeDiscountPer(soldProduct.getDiscountPercent());
             preOrderProduct.setTotalAmt(soldProduct.getTotalAmount());
             preOrderProductList.add(preOrderProduct);
 
@@ -841,12 +843,11 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             }
         }
 
-        preOrder.setNetAmount(netAmount);
+        preOrder.setNetAmount(totalAmount);
         preOrder.setLocationId(locationCode);
-        preOrder.setDiscount(0.0);
-        preOrder.setDiscountPer(0.0);
-        preOrder.setVolumeDiscount(totalVolumeDiscount);
-        preOrder.setVolumeDiscountPer(0.0);
+        preOrder.setDiscount(totalVolumeDiscount);
+        preOrder.setDiscountPer(totalVolumeDiscountPercent);
+        preOrder.setTaxAmount(taxAmt);
 
         database.beginTransaction();
 
@@ -873,9 +874,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         contentValues.put(DatabaseContract.PreOrder.location_id, preOrder.getLocationId());
         contentValues.put(DatabaseContract.PreOrder.discount, preOrder.getDiscount());
         contentValues.put(DatabaseContract.PreOrder.discount_per, preOrder.getDiscountPer());
-        contentValues.put(DatabaseContract.PreOrder.volume_discount, preOrder.getVolumeDiscount());
-        contentValues.put(DatabaseContract.PreOrder.volume_discount_per, preOrder.getVolumeDiscountPer());
-
+        contentValues.put("TAX_AMOUNT", preOrder.getTaxAmount());
         database.insert(DatabaseContract.PreOrder.tb, null, contentValues);
 
         insertProductList(preOrderProductList);
@@ -888,6 +887,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             contentValues1.put("pc_address", preOrder.getDeviceId());
             contentValues1.put("location_id", locationCode);
             contentValues1.put("price", promotion.getPromotionPrice());
+            contentValues1.put("status", "");
             contentValues1.put("DELETE_FLAG", 0);
             database.insert("PRE_ORDER_PRESENT", null, contentValues1);
         }
@@ -1091,15 +1091,14 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             preOrderApi.setLocationId(preOrder.getLocationId());
             preOrderApi.setDiscount(preOrder.getDiscount());
             preOrderApi.setDiscountPer(preOrder.getDiscountPer());
-            preOrderApi.setVolumeDiscount(preOrder.getVolumeDiscount());
-            preOrderApi.setVolumeDiscountPer(preOrder.getVolumeDiscountPer());
+            preOrderApi.setTaxAmount(preOrder.getTaxAmount());
 
             for (Promotion promotion : promotionArrayList) {
                 PreOrderPresentApi preOrderPresentApi = new PreOrderPresentApi();
                 preOrderPresentApi.setSaleOrderId(preOrder.getInvoiceId());
                 preOrderPresentApi.setProductId(Integer.parseInt(promotion.getPromotionProductId()));
                 preOrderPresentApi.setQuantity(promotion.getPromotionQty());
-
+                preOrderPresentApi.setStatus("Y");
                 preOrderPresentApiList.add(preOrderPresentApi);
             }
 
@@ -1115,6 +1114,8 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                 preOrderDetailApi.setVolumeDiscount(preOrderProduct.getVolumeDiscount());
                 preOrderDetailApi.setVolumeDiscountPer(preOrderProduct.getVolumeDiscountPer());
                 preOrderDetailApi.setExclude(preOrderProduct.getExclude());
+                preOrderDetailApi.setS_Price(preOrderProduct.getPrice());
+                preOrderDetailApi.setPromotionPlanId(preOrderProduct.getPromotionPlanId());
                 preOrderDetailApiList.add(preOrderDetailApi);
             }
 
@@ -1163,12 +1164,11 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             preOrder.setExpectedDeliveryDate(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("EXPECTED_DELIVERY_DATE")));
             preOrder.setAdvancedPaymentAmount(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex("ADVANCE_PAYMENT_AMOUNT")));
             preOrder.setNetAmount(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex("NET_AMOUNT")));
+            preOrder.setTaxAmount(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex("TAX_AMOUNT")));
             preOrder.setLocationId(cursorPreOrder.getInt(cursorPreOrder.getColumnIndex(DatabaseContract.PreOrder.location_id)));
             preOrder.setDiscount(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex(DatabaseContract.PreOrder.discount)));
             preOrder.setDiscountPer(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex(DatabaseContract.PreOrder.discount_per)));
-            preOrder.setVolumeDiscount(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex(DatabaseContract.PreOrder.volume_discount)));
-            preOrder.setVolumeDiscountPer(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex(DatabaseContract.PreOrder.volume_discount_per)));
-            preOrderList.add(preOrder);
+           preOrderList.add(preOrder);
         }
 
         return preOrderList;
@@ -1307,6 +1307,33 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                 + saleDate + "\", \""
                 + invoiceId + "\", \""
                 + totalAmount + "\", \""
+                + totalVolumeDiscount + "\", \""
+                + paidAmount + "\", \""
+                + "0.0" + "\", \""
+                + receiptPersonEditText.getText().toString() + "\", \""
+                + salePersonId + "\", \""
+                + dueDate + "\", \""
+                + "" + "\", \""
+                + locationCode + "\", \""
+                + Utils.getDeviceId(SaleOrderCheckoutActivity.this) + "\", \""
+                + invoiceTime + "\", "
+                + null + ", "
+                + null + ", "
+                + null + ", "
+                + null + ", \""
+                + invoiceId + "\", "
+                + totalQuantity + ", \""
+                + "" + "\", "
+                + totalVolumeDiscountPercent + ", "
+                + 1 + ", "
+                + taxAmt
+                + ")");
+
+        /*database.execSQL("INSERT INTO INVOICE VALUES (\""
+                + customer.getId() + "\", \""
+                + saleDate + "\", \""
+                + invoiceId + "\", \""
+                + totalAmount + "\", \""
                 + "0.0" + "\", \""
                 + paidAmount + "\", \""
                 + "0.0" + "\", \""
@@ -1323,7 +1350,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                 + null + ", \""
                 + invoiceId + "\", \""
                 + totalQuantity + "\""
-                + ")");
+                + ")");*/
 
         DeliveryApi deliveryApi = new DeliveryApi();
         deliveryApi.setInvoiceNo(invoiceId);
@@ -1495,6 +1522,23 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         }
     }
 
+    void getTaxAmount() {
+        Cursor cursorTax = database.rawQuery("SELECT TaxType, Tax FROM COMPANYINFORMATION", null);
+        while(cursorTax.moveToNext()) {
+            taxType = cursorTax.getString(cursorTax.getColumnIndex("TaxType"));
+            taxPercent = cursorTax.getDouble(cursorTax.getColumnIndex("Tax"));
+        }
+    }
+
+    double calculateTax(double amount) {
+        double taxAmt = 0.0;
+        if(taxPercent != 0.0) {
+            taxAmt = (amount * taxPercent)/100;
+        }
+
+        return taxAmt;
+    }
+
     /**
      * Sold Product List Adapter - to hold sold products
      */
@@ -1550,29 +1594,22 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             });
 
             txt_um.setVisibility(View.GONE);
-            txt_discount.setVisibility(View.GONE);
+            //txt_discount.setVisibility(View.GONE);
 
             txt_name.setText(String.valueOf(soldProduct.getProduct().getName()));
             txt_qty.setText(String.valueOf(soldProduct.getQuantity()));
 
-            if (soldProduct.getPromotionPrice() == 0.0) {
-                txt_price.setText(Utils.formatAmount(soldProduct.getProduct().getPrice()));
-            }
-            else {
-                txt_price.setText(Utils.formatAmount(soldProduct.getPromotionPrice()));
+            calculateVolumeDiscount(soldProduct, position);
+
+            if(soldProductList.size() == position + 1 && adapterFlag) {
+                calculateInvoiceDiscount();
+                adapterFlag = false;
             }
 
-            if (soldProduct.getPromotionPrice() == 0.0) {
-                totalAmountForProduct = soldProduct.getProduct().getPrice() * soldProduct.getQuantity();
-            }
-            else {
-                totalAmountForProduct = soldProduct.getPromotionPrice() * soldProduct.getQuantity();
-            }
+            txt_discount.setText(soldProduct.getDiscountAmount() + "");
 
-            double discountPercent = soldProduct.getDiscount(context) + soldProduct.getExtraDiscount();
-            Double discount = totalAmountForProduct * discountPercent / 100;
-            txt_amount.setText(Utils.formatAmount(totalAmountForProduct - discount));
-
+            txt_price.setText(Utils.formatAmount(soldProduct.getProduct().getPrice()));
+            txt_amount.setText(Utils.formatAmount(soldProduct.getTotalAmount()));
             return view;
         }
     }

@@ -259,9 +259,9 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             Cursor cursor = database.rawQuery("select * from VOLUME_DISCOUNT_FILTER WHERE date('" + Utils.getCurrentDate(true) + "') BETWEEN date(START_DATE) AND date(END_DATE)", null);
             Log.i("VolumeDisFilterCursor", cursor.getCount() + "");
             while (cursor.moveToNext()) {
-                volDisFilterId = cursor.getString(cursor.getColumnIndex(DatabaseContract.VolumeDiscountFilter.discountPlanNo));
+                volDisFilterId = cursor.getString(cursor.getColumnIndex(DatabaseContract.VolumeDiscountFilter.id));
                 exclude = cursor.getInt(cursor.getColumnIndex(DatabaseContract.VolumeDiscountFilter.exclude));
-
+                soldProduct.setExclude(exclude);
                 Log.i("volDisFilterId", volDisFilterId);
 
                 if(exclude == 0) {
@@ -793,7 +793,11 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         String invoiceTime = Utils.getCurrentDate(true);
         Log.i("invoiceTime", invoiceTime);
 
-        String dueDate = saleDate;
+        String dueDate = null;
+
+        if(cashOrLoanOrBank.equals("CR")) {
+            dueDate = saleDate;
+        }
 
         String deviceId = Utils.getDeviceId(this);
 
@@ -808,10 +812,11 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             cvInvoiceProduct.put("DISCOUNT_AMOUNT", soldProduct.getDiscountAmount() + "");
             cvInvoiceProduct.put("TOTAL_AMOUNT", soldProduct.getNetAmount(this));
             cvInvoiceProduct.put("DISCOUNT_PERCENT", soldProduct.getDiscountPercent());
-            cvInvoiceProduct.put("EXTRA_DISCOUNT", soldProduct.getExtraDiscount());
-            cvInvoiceProduct.put("EXTRA_DISCOUNT", soldProduct.getExtraDiscount());
-            cvInvoiceProduct.put("EXTRA_DISCOUNT", soldProduct.getExtraDiscount());
-            cvInvoiceProduct.put("EXTRA_DISCOUNT", soldProduct.getExtraDiscount());
+            cvInvoiceProduct.put("S_PRICE", soldProduct.getProduct().getPrice());
+            cvInvoiceProduct.put("P_PRICE", soldProduct.getProduct().getPurchasePrice());
+            cvInvoiceProduct.put("PROMOTION_PRICE", soldProduct.getPromotionPrice());
+            cvInvoiceProduct.put("PROMOTION_PLAN_ID", soldProduct.getPromotionPlanId());
+            cvInvoiceProduct.put("EXCLUDE", soldProduct.getExclude());
 
             totolQtyForInvoice += soldProduct.getQuantity();
 
@@ -846,7 +851,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                 + null + ", \""
                 + invoiceId + "\", "
                 + totolQtyForInvoice + ", \""
-                + "invoiceStatus" + "\", "
+                + cashOrLoanOrBank + "\", "
                 + totalVolumeDiscountPercent + ", "
                 + 1 + ", "
                 + taxAmt
@@ -859,7 +864,9 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             contentValues.put("quantity", promotion.getPromotionQty());
             contentValues.put("pc_address", deviceId);
             contentValues.put("location_id", locationCode);
-            contentValues.put("price", promotion.getPromotionPrice());
+            contentValues.put("price", promotion.getPrice());
+            contentValues.put("currency_id", promotion.getCurrencyId());
+            contentValues.put("rate", 1);
             database.insert("INVOICE_PRESENT", null, contentValues);
         }
 

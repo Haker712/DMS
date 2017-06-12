@@ -13,7 +13,7 @@ public class InvoiceDetail {
     private String tsaleId;
     @SerializedName("product_id")
     @Expose
-    private String productId;
+    private Integer productId;
     @SerializedName("qty")
     @Expose
     private Integer qty;
@@ -26,10 +26,10 @@ public class InvoiceDetail {
     @SerializedName("discount_percent")
     @Expose
     private Double discountPercent;
-    @SerializedName("s_price")
+    @SerializedName("price")
     @Expose
     private Double s_price;
-    @SerializedName("p_price")
+    @SerializedName("purchase_price")
     @Expose
     private Double p_price;
     @SerializedName("promotion_price")
@@ -37,10 +37,7 @@ public class InvoiceDetail {
     private Double promotionPrice;
     @SerializedName("promotion_plan_id")
     @Expose
-    private Double promotion_plan_id;
-    @SerializedName("volume_discount_percent")
-    @Expose
-    private Double volumeDiscountPercent;
+    private int promotion_plan_id;
     @SerializedName("exclude")
     @Expose
     private int exclude;
@@ -53,11 +50,11 @@ public class InvoiceDetail {
         this.tsaleId = tsaleId;
     }
 
-    public String getProductId() {
+    public int getProductId() {
         return productId;
     }
 
-    public void setProductId(String productId) {
+    public void setProductId(int productId) {
         this.productId = productId;
     }
 
@@ -117,20 +114,12 @@ public class InvoiceDetail {
         this.promotionPrice = promotionPrice;
     }
 
-    public Double getPromotion_plan_id() {
+    public int getPromotion_plan_id() {
         return promotion_plan_id;
     }
 
-    public void setPromotion_plan_id(Double promotion_plan_id) {
+    public void setPromotion_plan_id(int promotion_plan_id) {
         this.promotion_plan_id = promotion_plan_id;
-    }
-
-    public Double getVolumeDiscountPercent() {
-        return volumeDiscountPercent;
-    }
-
-    public void setVolumeDiscountPercent(Double volumeDiscountPercent) {
-        this.volumeDiscountPercent = volumeDiscountPercent;
     }
 
     public int getExclude() {

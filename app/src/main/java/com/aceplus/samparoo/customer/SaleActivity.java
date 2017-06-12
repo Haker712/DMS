@@ -691,6 +691,7 @@ public class SaleActivity extends AppCompatActivity {
             Log.i("PriceCount", cursorForPromotionPrice.getCount() + "");
             while (cursorForPromotionPrice.moveToNext()) {
                 promotion_price = cursorForPromotionPrice.getDouble(cursorForPromotionPrice.getColumnIndex(DatabaseContract.PromotionPrice.promotionPrice));
+                soldProduct.setPromotionPlanId(promotionPlanId);
             }
             Log.i("promotionPrice", promotion_price + "");
 
@@ -716,6 +717,7 @@ public class SaleActivity extends AppCompatActivity {
                         }
                     }
                     if (!flag) {
+                        soldProduct.setPromotionPlanId(promotionPlanId);
                         addPromotionProduct(promotionPlanId);
                     }
                 } else {
@@ -757,6 +759,7 @@ public class SaleActivity extends AppCompatActivity {
         String promotionProductId = "";
         int promotionProductQty = 0;
         String promotionProductName = "";
+        double price = 0.0;
         Cursor cursorForPromotionGiftItem = sqLiteDatabase.rawQuery("select * from " + DatabaseContract.PromotionGiftItem.tb + " where " + DatabaseContract.PromotionGiftItem.promotionPlanId + " = '" + promotionPlanId + "'", null);
         while (cursorForPromotionGiftItem.moveToNext()) {
             promotionProductId = cursorForPromotionGiftItem.getString(cursorForPromotionGiftItem.getColumnIndex(DatabaseContract.PromotionGiftItem.stockId));
@@ -764,6 +767,7 @@ public class SaleActivity extends AppCompatActivity {
             Cursor cursorForProductName = sqLiteDatabase.rawQuery("select * from PRODUCT WHERE ID = '" + promotionProductId + "'", null);
             while (cursorForProductName.moveToNext()) {
                 promotionProductName = cursorForProductName.getString(cursorForProductName.getColumnIndex("PRODUCT_NAME"));
+                price = cursorForProductName.getDouble(cursorForProductName.getColumnIndex("SELLING_PRICE"));
                 Log.i("promotionProductName", promotionProductName + ">>not null");
             }
 
@@ -774,6 +778,8 @@ public class SaleActivity extends AppCompatActivity {
             promotion.setPromotionProductId(promotionProductId);
             promotion.setPromotionProductName(promotionProductName);
             promotion.setPromotionQty(promotionProductQty);
+            promotion.setPrice(price);
+            promotion.setCurrencyId(1);
 
             promotionArrayList.add(promotion);
         }
@@ -783,6 +789,8 @@ public class SaleActivity extends AppCompatActivity {
         String promotionProductId = "";
         int promotionProductQty = 0;
         String promotionProductName = "";
+        double price = 0.0;
+
         Cursor cursorForPromotionGiftItem = sqLiteDatabase.rawQuery("select * from " + DatabaseContract.PromotionGiftItem.tb + " where " + DatabaseContract.PromotionGiftItem.promotionPlanId + " = '" + promotionPlanId + "'", null);
         while (cursorForPromotionGiftItem.moveToNext()) {
             promotionProductId = cursorForPromotionGiftItem.getString(cursorForPromotionGiftItem.getColumnIndex(DatabaseContract.PromotionGiftItem.stockId));
@@ -790,6 +798,7 @@ public class SaleActivity extends AppCompatActivity {
             Cursor cursorForProductName = sqLiteDatabase.rawQuery("select * from PRODUCT WHERE ID = '" + promotionProductId + "'", null);
             while (cursorForProductName.moveToNext()) {
                 promotionProductName = cursorForProductName.getString(cursorForProductName.getColumnIndex("PRODUCT_NAME"));
+                price = cursorForProductName.getDouble(cursorForProductName.getColumnIndex("SELLING_PRICE"));
                 Log.i("promotionProductName", promotionProductName + ">>not null");
             }
 
@@ -800,6 +809,8 @@ public class SaleActivity extends AppCompatActivity {
             promotion.setPromotionProductId(promotionProductId);
             promotion.setPromotionProductName(promotionProductName);
             promotion.setPromotionQty(promotionProductQty);
+            promotion.setPrice(price);
+            promotion.setCurrencyId(1);
 
             for(int i = 0; i < promotionArrayList.size(); i++) {
                 if(promotion.getPromotionPlanId().equals(promotionArrayList.get(i).getPromotionPlanId()) &&
