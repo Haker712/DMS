@@ -90,22 +90,19 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
     private Category[] categories;
 
-    private boolean isPreOrder;
-    private boolean isDelivery;
-    private double remainingAmount;
-
     ArrayList<Promotion> promotionArrayList = new ArrayList<>();
     PromotionProductCustomAdapter promotionProductCustomAdapter;
 
-    Double totalVolumeDiscount = 0.0, totalItemVolumeDis = 0.0, totalVolumeDiscountPercent = 0.0;
+    Double totalVolumeDiscount = 0.0, totalVolumeDiscountPercent = 0.0;
     int exclude = 0;
     double totalAmount = 0.0;
-
+    String taxType = "";
+    double taxPercent = 0.0, taxAmt = 0.0;
     int locationCode = 0;
     String locationCodeName = "";
 
     String check;
-
+    boolean adapterFlag = true;
     LinearLayout layoutBranch, layoutBankAcc;
 
     @Override
@@ -138,7 +135,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         findViewById(R.id.advancedPaidAmountLayout).setVisibility(View.GONE);
         findViewById(R.id.totalInfoForPreOrder).setVisibility(View.GONE);
 
-        findViewById(R.id.tableHeaderDiscount).setVisibility(View.GONE);
+        //findViewById(R.id.tableHeaderDiscount).setVisibility(View.GONE);
 
 
         /*for (SoldProduct soldProduct : soldProductList) {
@@ -215,28 +212,32 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         }
         soldProductListRowAdapter = new SoldProductListRowAdapter(this);
         soldProductsListView.setAdapter(soldProductListRowAdapter);
-
-        calculateInvoiceDiscount();
-
-        for (SoldProduct soldProduct : soldProductList) {
-            totalAmount += soldProduct.getTotalAmount();
-        }
-
-        totalAmountTextView.setText(Utils.formatAmount(totalAmount));
-        netAmountTextView.setText(Utils.formatAmount(totalAmount - totalVolumeDiscount));
-        discountTextView.setText(Utils.formatAmount(totalVolumeDiscount));
-
-
-        double a = Double.parseDouble(this.netAmountTextView.getText().toString().replace(",", ""));
+        calculateTotlaAmountForProduct();
+        /*double a = Double.parseDouble(this.netAmountTextView.getText().toString().replace(",", ""));
         if (Double.parseDouble(this.netAmountTextView.getText().toString().replace(",", ""))
                 <= this.remainingAmount) {
 
             findViewById(R.id.payAmountLayout).setVisibility(View.GONE);
-        }
+        }*/
 
         setPromotionProductListView();
 
         catchEvents();
+    }
+
+    private void calculateTotlaAmountForProduct() {
+        double soldPrice = 0.0;
+
+        for(SoldProduct soldProduct : soldProductList) {
+            if (soldProduct.getPromotionPrice() == 0.0) {
+                soldPrice = soldProduct.getProduct().getPrice();
+            } else {
+                soldPrice = soldProduct.getPromotionPrice();
+            }
+
+            double buy_amt = soldPrice * soldProduct.getQuantity();
+            totalAmount += buy_amt;
+        }
     }
 
     private void calculateVolumeDiscount(SoldProduct soldProduct, int position) {
@@ -251,7 +252,6 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         }
 
         double buy_amt = soldPrice * soldProduct.getQuantity();
-        totalAmount += buy_amt;
         soldProduct.setTotalAmt(buy_amt);
         Log.i("buy_amt", buy_amt + "");
 
@@ -259,18 +259,31 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             Cursor cursor = database.rawQuery("select * from VOLUME_DISCOUNT_FILTER WHERE date('" + Utils.getCurrentDate(true) + "') BETWEEN date(START_DATE) AND date(END_DATE)", null);
             Log.i("VolumeDisFilterCursor", cursor.getCount() + "");
             while (cursor.moveToNext()) {
-                volDisFilterId = cursor.getString(cursor.getColumnIndex(DatabaseContract.VolumeDiscountFilter.id));
+                volDisFilterId = cursor.getString(cursor.getColumnIndex(DatabaseContract.VolumeDiscountFilter.discountPlanNo));
                 exclude = cursor.getInt(cursor.getColumnIndex(DatabaseContract.VolumeDiscountFilter.exclude));
-
 
                 Log.i("volDisFilterId", volDisFilterId);
 
-                double percent = getDiscountPercent(volDisFilterId, soldProduct.getProduct().getStockId(), buy_amt);
-                if (percent > 0) {
-                    double discountAmount = buy_amt * (percent / 100);
-                    soldProduct.setDiscountPercent(percent);
-                    soldProduct.setDiscountAmount(discountAmount);
+                if(exclude == 0) {
+                    double percent = getDiscountPercent(volDisFilterId, soldProduct.getProduct().getStockId(), soldProduct.getTotalAmt());
+                    if (percent > 0) {
+                        double discountAmount = soldProduct.getTotalAmt() * (percent / 100);
+                        soldProduct.setDiscountPercent(percent);
+                        soldProduct.setDiscountAmount(discountAmount);
+                        soldProduct.setTotalAmt(soldProduct.getTotalAmount());
+                    }
+                } else {
+                    if(soldProduct.getPromotionPrice() == 0.0) {
+                        double percent = getDiscountPercent(volDisFilterId, soldProduct.getProduct().getStockId(), soldProduct.getTotalAmt());
+                        if (percent > 0) {
+                            double discountAmount = soldProduct.getTotalAmt() * (percent / 100);
+                            soldProduct.setDiscountPercent(percent);
+                            soldProduct.setDiscountAmount(discountAmount);
+                            soldProduct.setTotalAmt(soldProduct.getTotalAmount());
+                        }
+                    }
                 }
+
             }
         } catch (NullPointerException npe) {
             npe.printStackTrace();
@@ -299,7 +312,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         Log.i("category", category + ", group : " + group + ", discount_percent : " + discount_percent);
 
         //check category and group for product
-        Cursor cursorForProduct = database.rawQuery("select * from PRODUCT WHERE PRODUCT_ID = '" + productId + "'", null);
+        Cursor cursorForProduct = database.rawQuery("select * from PRODUCT WHERE ID = '" + productId + "'", null);
         while (cursorForProduct.moveToNext()) {
             categoryProduct = String.valueOf(cursorForProduct.getInt(cursorForProduct.getColumnIndex("CATEGORY_ID")));
             groupProduct = cursorForProduct.getString(cursorForProduct.getColumnIndex("GROUP_ID"));
@@ -321,7 +334,12 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
     private void calculateInvoiceDiscount() {
         String volDisId;
-        double buy_amt = 0.0;
+        double buy_amt = 0.0, itemDiscountAmt = 0.0, noPromoBuyAmt = 0.0;
+
+        for(SoldProduct soldProduct : soldProductList) {
+            buy_amt += soldProduct.getTotalAmt();
+        }
+
 
         String query = "select * from VOLUME_DISCOUNT WHERE date('" + Utils.getCurrentDate(true) + "') BETWEEN date(START_DATE) AND date(END_DATE)";
         Cursor cursor = database.rawQuery(query, null);
@@ -331,29 +349,38 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             exclude = cursor.getInt(cursor.getColumnIndex(DatabaseContract.VolumeDiscount.exclude));
 
             if (exclude == 0) {
-                double promotion_price = 0.0;
                 for (SoldProduct promotion : soldProductList) {
-                    if(promotion_price != 0.0) {
-                        buy_amt += promotion.getTotalAmt();
+                        noPromoBuyAmt += (promotion.getTotalAmt() - promotion.getDiscountAmount());
+                        itemDiscountAmt += promotion.getDiscountAmount();
+                }
+
+                calculateInvoiceDiscountAmount(totalAmount, volDisId);
+            } else {
+                    for (SoldProduct soldProduct : soldProductList) {
+                        itemDiscountAmt += soldProduct.getDiscountAmount();
+
+                        if(soldProduct.getPromotionPrice() == 0.0 && soldProduct.getDiscountPercent() == 0.0) {
+                            noPromoBuyAmt += soldProduct.getTotalAmt();
                     }
                 }
 
-                calculateInvoiceDiscountAmount(buy_amt, volDisId);
-            } else {
-
-                for (SoldProduct soldProduct : soldProductList) {
-                    double total = soldProduct.getProduct().getPrice() * soldProduct.getQuantity();
-                    buy_amt += total;
-                }
-
-                calculateInvoiceDiscountAmount(buy_amt, volDisId);
+                calculateInvoiceDiscountAmount(totalAmount, volDisId);
             }
-
 
             Log.i("buy_amt", buy_amt + "");
             Log.i("volDisId", volDisId);
+            getTaxAmount();
+            taxAmt = calculateTax(totalAmount);
 
-
+            totalAmountTextView.setText(Utils.formatAmount(totalAmount));
+            double netAmount = 0.0;
+            if(taxType.equalsIgnoreCase("E")) {
+                netAmount = totalAmount - totalVolumeDiscount - itemDiscountAmt + taxAmt;
+            } else {
+                netAmount = totalAmount - totalVolumeDiscount - itemDiscountAmt;
+            }
+            netAmountTextView.setText(Utils.formatAmount(netAmount));
+            discountTextView.setText(Utils.formatAmount(totalVolumeDiscount));
         }
     }
 
@@ -366,19 +393,18 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
         while (cusorForVolDisItem.moveToNext()) {
             discountPercentForVolDis = cusorForVolDisItem.getDouble(cusorForVolDisItem.getColumnIndex(DatabaseContract.VolumeDiscountItem.discountPercent));
-
             totalVolumeDiscount = buy_amt * (discountPercentForVolDis / 100);
             totalVolumeDiscountPercent = discountPercentForVolDis;
         }
 
         Log.i("totalInvoiceDiscount ----->>>>>>>", totalVolumeDiscount + "");
-        double discountAmount = 0.0;
+        double discountAmount = 0.0, discountPercentage = 0.0;
         for(SoldProduct soldProduct : soldProductList) {
             discountAmount += soldProduct.getDiscountAmount();
+            discountPercentage = (soldProduct.getDiscountAmount() * 100) / buy_amt;
+            totalVolumeDiscountPercent += discountPercentage;
         }
 
-        double discountPercentage = (discountAmount * 100) / buy_amt;
-        totalVolumeDiscountPercent += discountPercentage;
         //totalVolumeDiscountPercent
     }
 
@@ -708,6 +734,23 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         }
     }
 
+    void getTaxAmount() {
+        Cursor cursorTax = database.rawQuery("SELECT TaxType, Tax FROM COMPANYINFORMATION", null);
+        while(cursorTax.moveToNext()) {
+            taxType = cursorTax.getString(cursorTax.getColumnIndex("TaxType"));
+            taxPercent = cursorTax.getDouble(cursorTax.getColumnIndex("Tax"));
+        }
+    }
+
+    double calculateTax(double amount) {
+        double taxAmt = 0.0;
+        if(taxPercent != 0.0) {
+            taxAmt = (amount * taxPercent)/100;
+        }
+
+        return taxAmt;
+    }
+
     /**
      * Save data to database
      */
@@ -717,7 +760,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
         String invoiceId = invoiceIdTextView.getText().toString();
 
-        double totalDiscountAmount = 0.0;
+        /*double totalDiscountAmount = 0.0;
         if (discountTextView.getText().toString() != null && !discountTextView.getText().toString().equals("")) {
             totalDiscountAmount = Double.parseDouble(discountTextView.getText().toString().replace(",", ""));
         }
@@ -726,7 +769,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         if (netAmountTextView.getText().toString() != null && !netAmountTextView.getText().toString().equals("")) {
             totalAmount = Double.parseDouble(netAmountTextView.getText().toString().replace(",", ""))
                     + totalDiscountAmount;
-        }
+        }*/
 
         double payAmount = 0.0;
         if (payAmountEditText.getText().toString() != null && !payAmountEditText.getText().toString().equals("")) {
@@ -763,10 +806,12 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             cvInvoiceProduct.put("INVOICE_PRODUCT_ID", invoiceId);
             cvInvoiceProduct.put("PRODUCT_ID", soldProduct.getProduct().getId());
             cvInvoiceProduct.put("SALE_QUANTITY", soldProduct.getQuantity());
-            double discount = soldProduct.getProduct().getPrice() * soldProduct.getDiscount(this) / 100;
-            cvInvoiceProduct.put("DISCOUNT_AMOUNT", discount + "");
+            cvInvoiceProduct.put("DISCOUNT_AMOUNT", soldProduct.getDiscountAmount() + "");
             cvInvoiceProduct.put("TOTAL_AMOUNT", soldProduct.getNetAmount(this));
-            cvInvoiceProduct.put("DISCOUNT_PERCENT", soldProduct.getDiscount(this));
+            cvInvoiceProduct.put("DISCOUNT_PERCENT", soldProduct.getDiscountPercent());
+            cvInvoiceProduct.put("EXTRA_DISCOUNT", soldProduct.getExtraDiscount());
+            cvInvoiceProduct.put("EXTRA_DISCOUNT", soldProduct.getExtraDiscount());
+            cvInvoiceProduct.put("EXTRA_DISCOUNT", soldProduct.getExtraDiscount());
             cvInvoiceProduct.put("EXTRA_DISCOUNT", soldProduct.getExtraDiscount());
 
             totolQtyForInvoice += soldProduct.getQuantity();
@@ -786,7 +831,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                 + saleDate + "\", \""
                 + invoiceId + "\", \""
                 + totalAmount + "\", \""
-                + totalDiscountAmount + "\", \""
+                + totalVolumeDiscount + "\", \""
                 + payAmount + "\", \""
                 + refundAmount + "\", \""
                 + receiptPersonName + "\", \""
@@ -801,7 +846,11 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                 + null + ", "
                 + null + ", \""
                 + invoiceId + "\", "
-                + totolQtyForInvoice
+                + totolQtyForInvoice + ", \""
+                + "invoiceStatus" + "\", "
+                + totalVolumeDiscountPercent + ", "
+                + 1 + ", "
+                + taxAmt
                 + ")");
 
         for (Promotion promotion : promotionArrayList) {
@@ -823,7 +872,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
     public void onBackPressed() {
         Intent intent = new Intent(SaleCheckoutActivity.this
                 , SaleActivity.class);
-        intent.putExtra(SaleActivity.REMAINING_AMOUNT_KEY, this.remainingAmount);
+        //intent.putExtra(SaleActivity.REMAINING_AMOUNT_KEY, this.remainingAmount);
         intent.putExtra(SaleActivity.CUSTOMER_INFO_KEY, this.customer);
         intent.putExtra(SaleActivity.SOLD_PROUDCT_LIST_KEY, this.soldProductList);
 
@@ -889,13 +938,19 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             final TextView qtyTextView = (TextView) view.findViewById(R.id.qty);
             final TextView priceTextView = (TextView) view.findViewById(R.id.price);
             final TextView discountTextView = (TextView) view.findViewById(R.id.discount);
-            discountTextView.setVisibility(View.GONE);
             final TextView totalAmountTextView = (TextView) view.findViewById(R.id.amount);
 
             nameTextView.setText(soldProduct.getProduct().getName());
             umTextView.setText(soldProduct.getProduct().getUm());
             qtyTextView.setText(soldProduct.getQuantity() + "");
+
             calculateVolumeDiscount(soldProduct, position);
+            if(soldProductList.size() == position + 1 && adapterFlag) {
+                calculateInvoiceDiscount();
+                adapterFlag = false;
+            }
+
+            discountTextView.setText(soldProduct.getDiscountAmount() + "");
 
             priceTextView.setText(Utils.formatAmount(soldProduct.getProduct().getPrice()));
             totalAmountTextView.setText(Utils.formatAmount(soldProduct.getTotalAmount()));
