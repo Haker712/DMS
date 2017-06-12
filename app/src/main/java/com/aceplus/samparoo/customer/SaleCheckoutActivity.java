@@ -392,7 +392,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
         while (cusorForVolDisItem.moveToNext()) {
             discountPercentForVolDis = cusorForVolDisItem.getDouble(cusorForVolDisItem.getColumnIndex(DatabaseContract.VolumeDiscountItem.discountPercent));
-            totalVolumeDiscount = totalAmount * (discountPercentForVolDis / 100);
+            totalVolumeDiscount = buy_amt * (discountPercentForVolDis / 100);
             totalVolumeDiscountPercent = discountPercentForVolDis;
         }
 
