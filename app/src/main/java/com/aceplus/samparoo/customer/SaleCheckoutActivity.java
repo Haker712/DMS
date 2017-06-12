@@ -350,7 +350,6 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
             if (exclude == 0) {
                 for (SoldProduct promotion : soldProductList) {
-                        noPromoBuyAmt += (promotion.getTotalAmt() - promotion.getDiscountAmount());
                         itemDiscountAmt += promotion.getDiscountAmount();
                 }
 
@@ -364,7 +363,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                     }
                 }
 
-                calculateInvoiceDiscountAmount(totalAmount, volDisId);
+                calculateInvoiceDiscountAmount(noPromoBuyAmt, volDisId);
             }
 
             Log.i("buy_amt", buy_amt + "");
@@ -393,7 +392,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
         while (cusorForVolDisItem.moveToNext()) {
             discountPercentForVolDis = cusorForVolDisItem.getDouble(cusorForVolDisItem.getColumnIndex(DatabaseContract.VolumeDiscountItem.discountPercent));
-            totalVolumeDiscount = buy_amt * (discountPercentForVolDis / 100);
+            totalVolumeDiscount = totalAmount * (discountPercentForVolDis / 100);
             totalVolumeDiscountPercent = discountPercentForVolDis;
         }
 
@@ -401,7 +400,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         double discountAmount = 0.0, discountPercentage = 0.0;
         for(SoldProduct soldProduct : soldProductList) {
             discountAmount += soldProduct.getDiscountAmount();
-            discountPercentage = (soldProduct.getDiscountAmount() * 100) / buy_amt;
+            discountPercentage = (soldProduct.getDiscountAmount() * 100) / totalAmount;
             totalVolumeDiscountPercent += discountPercentage;
         }
 
