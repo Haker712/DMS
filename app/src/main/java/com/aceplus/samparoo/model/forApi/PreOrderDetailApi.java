@@ -36,7 +36,7 @@ public class PreOrderDetailApi {
     @Expose
     private Double promotionPrice;
 
-    @SerializedName("s_price")
+    @SerializedName("selling_price")
     @Expose
     private Double S_Price;
 
@@ -44,10 +44,10 @@ public class PreOrderDetailApi {
     @Expose
     private int promotionPlanId;
 
-    @SerializedName("volume_discount")
+    @SerializedName("discount_amt")
     @Expose
     private Double volumeDiscount;
-    @SerializedName("volume_discount_per")
+    @SerializedName("discount_percent")
     @Expose
     private Double volumeDiscountPer;
     @SerializedName("exclude")

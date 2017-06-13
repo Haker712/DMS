@@ -81,6 +81,9 @@ public class PreOrderApi {
     @SerializedName("tax_amt")
     @Expose
     private Double taxAmount;
+    @SerializedName("remark")
+    @Expose
+    private String remark;
 
     /**
      * pre order detail
@@ -281,5 +284,13 @@ public class PreOrderApi {
 
     public void setTaxAmount(Double taxAmount) {
         this.taxAmount = taxAmount;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 }

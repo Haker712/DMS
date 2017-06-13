@@ -78,6 +78,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -127,15 +128,15 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
     private ImageView img_back, img_confirmAndPrint;
 
-    private TextView txt_invoiceId, txt_totalAmount, saleDateTextView, netAmountTextView;
+    private TextView txt_invoiceId, txt_totalAmount, saleDateTextView, netAmountTextView, taxTextView;
 
     private TextView txt_tableHeaderDiscount, txt_tableHeaderUM, txt_tableHeaderQty, txt_table_header_foc;
 
     private LinearLayout advancedPaidAmountLayout, totalInfoForGeneralSaleLayout, totalInfoForPreOrderLayout, receiptPersonLayout, refundLayout, payAmountLayout, netAmountLayout, volumeDiscountLayout, volDisForPreOrderLayout;
 
-    private LinearLayout paymentMethodLayout;
+    private LinearLayout paymentMethodLayout, remarkLayout;
 
-    private EditText prepaidAmt, receiptPersonEditText;
+    private EditText prepaidAmt, receiptPersonEditText, remarkEditText;
 
     private ListView lv_soldProductList, promotionPlanItemListView;
 
@@ -207,6 +208,9 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         }*/
 
         registerIDs();
+        findViewById(R.id.tax_layout).setVisibility(View.VISIBLE);
+        remarkLayout.setVisibility(View.VISIBLE);
+
         txt_tableHeaderQty.setText(R.string.ordered_qty);
         titleTextView.setText("SALE ORDER CHECKOUT");
 
@@ -287,6 +291,8 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         txt_tableHeaderQty = (TextView) findViewById(R.id.tableHeaderQty);
         txt_tableHeaderDiscount = (TextView) findViewById(R.id.tableHeaderDiscount);
         txt_table_header_foc = (TextView) findViewById(R.id.tableHeaderFoc);
+        taxTextView = (TextView) findViewById(R.id.tax_txtview);
+        remarkEditText = (EditText) findViewById(R.id.checkout_remark_edit_text) ;
 
         saleDateTextView = (TextView) findViewById(R.id.saleDateTextView);
         txt_invoiceId = (TextView) findViewById(R.id.invoiceId);
@@ -308,6 +314,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         volDisForPreOrderLayout = (LinearLayout) findViewById(R.id.volDisForPreOrderLayout);
         volDisForPreOrder = (TextView) findViewById(R.id.volumeDiscount);
         paymentMethodLayout = (LinearLayout) findViewById(R.id.paymentMethodLayout);
+        remarkLayout = (LinearLayout) findViewById(R.id.checkout_remark_layout);
         bankOrCashRadioGroup = (RadioGroup) findViewById(R.id.activity_sale_checkout_radio_group);
         bankRadio = (RadioButton) findViewById(R.id.activity_sale_checkout_radio_bank);
         cashRadio = (RadioButton) findViewById(R.id.activity_sale_checkout_radio_cash);
@@ -481,8 +488,6 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
             Log.i("buy_amt", buy_amt + "");
             Log.i("volDisId", volDisId);
-            getTaxAmount();
-            taxAmt = calculateTax(totalAmount);
 
             txt_totalAmount.setText(Utils.formatAmount(totalAmount));
             double netAmount = 0.0;
@@ -492,8 +497,13 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                 netAmount = totalAmount - totalVolumeDiscount - itemDiscountAmt;
             }
             netAmountTextView.setText(Utils.formatAmount(netAmount));
-            volDisForPreOrder.setText(Utils.formatAmount(totalVolumeDiscount));
+            volDisForPreOrder.setText(Utils.formatAmount(totalVolumeDiscount)+ " (" + String.format("%.2f", totalVolumeDiscountPercent) + "%)");
+
         }
+
+        getTaxAmount();
+        taxAmt = calculateTax(totalAmount);
+        taxTextView.setText(Utils.formatAmount(taxAmt) + " (" + String.format("%.2f", taxPercent) + "%)");
     }
 
     void calculateInvoiceDiscountAmount(Double buy_amt, String volDisId) {
@@ -848,6 +858,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         preOrder.setDiscount(totalVolumeDiscount);
         preOrder.setDiscountPer(totalVolumeDiscountPercent);
         preOrder.setTaxAmount(taxAmt);
+        preOrder.setRemark(remarkEditText.getText().toString());
 
         database.beginTransaction();
 
@@ -875,6 +886,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         contentValues.put(DatabaseContract.PreOrder.discount, preOrder.getDiscount());
         contentValues.put(DatabaseContract.PreOrder.discount_per, preOrder.getDiscountPer());
         contentValues.put("TAX_AMOUNT", preOrder.getTaxAmount());
+        contentValues.put("REMARK", preOrder.getRemark());
         database.insert(DatabaseContract.PreOrder.tb, null, contentValues);
 
         insertProductList(preOrderProductList);
@@ -887,7 +899,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             contentValues1.put("pc_address", preOrder.getDeviceId());
             contentValues1.put("location_id", locationCode);
             contentValues1.put("price", promotion.getPromotionPrice());
-            contentValues1.put("status", "");
+            contentValues1.put("status", 1);
             contentValues1.put("DELETE_FLAG", 0);
             database.insert("PRE_ORDER_PRESENT", null, contentValues1);
         }
@@ -920,7 +932,9 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             contentValues.put(DatabaseContract.PreOrderDetail.promotion_price, preOrderProduct.getPromotionPrice());
             contentValues.put(DatabaseContract.PreOrderDetail.volume_discount, totalVolumeDiscount);
             contentValues.put(DatabaseContract.PreOrderDetail.volume_discount_per, 0.0);
-            contentValues.put(DatabaseContract.PreOrderDetail.exclude, 1);
+            contentValues.put("DELETE_FLAG", 0);
+            contentValues.put(DatabaseContract.PreOrderDetail.exclude, preOrderProduct.getExclude());
+            contentValues.put("PROMOTION_PLAN_ID", preOrderProduct.getPromotionPlanId());
 
             database.insert(DatabaseContract.PreOrderDetail.tb, null, contentValues);
 
@@ -1092,6 +1106,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             preOrderApi.setDiscount(preOrder.getDiscount());
             preOrderApi.setDiscountPer(preOrder.getDiscountPer());
             preOrderApi.setTaxAmount(preOrder.getTaxAmount());
+            preOrderApi.setRemark(preOrder.getRemark());
 
             for (Promotion promotion : promotionArrayList) {
                 PreOrderPresentApi preOrderPresentApi = new PreOrderPresentApi();

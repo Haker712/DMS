@@ -61,6 +61,8 @@ public class PreOrder implements Cloneable, Serializable {
 
     private Double discountPer;
 
+    private String remark;
+
     /**
      * Getter method of invoiceId
      *
@@ -235,5 +237,13 @@ public class PreOrder implements Cloneable, Serializable {
 
     public void setTaxAmount(Double taxAmount) {
         this.taxAmount = taxAmount;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 }

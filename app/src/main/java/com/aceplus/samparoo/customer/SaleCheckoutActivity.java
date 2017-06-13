@@ -66,7 +66,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
     ListView soldProductsListView, promotionPlanItemListView, promotionPlanGiftListView;
     TextView invoiceIdTextView;
     TextView saleDateTextView;
-    TextView totalAmountTextView;
+    TextView totalAmountTextView, taxTextView;
     TextView advancedPaidAmountTextView;
     TextView discountTextView;
     TextView netAmountTextView;
@@ -103,7 +103,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
     String check;
     boolean adapterFlag = true;
-    LinearLayout layoutBranch, layoutBankAcc;
+    LinearLayout layoutBranch, layoutBankAcc, taxLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -134,7 +134,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
         findViewById(R.id.advancedPaidAmountLayout).setVisibility(View.GONE);
         findViewById(R.id.totalInfoForPreOrder).setVisibility(View.GONE);
-
+        taxLayout.setVisibility(View.VISIBLE);
         //findViewById(R.id.tableHeaderDiscount).setVisibility(View.GONE);
 
 
@@ -368,8 +368,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
             Log.i("buy_amt", buy_amt + "");
             Log.i("volDisId", volDisId);
-            getTaxAmount();
-            taxAmt = calculateTax(totalAmount);
+
 
             totalAmountTextView.setText(Utils.formatAmount(totalAmount));
             double netAmount = 0.0;
@@ -379,8 +378,11 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                 netAmount = totalAmount - totalVolumeDiscount - itemDiscountAmt;
             }
             netAmountTextView.setText(Utils.formatAmount(netAmount));
-            discountTextView.setText(Utils.formatAmount(totalVolumeDiscount));
+            discountTextView.setText(Utils.formatAmount(totalVolumeDiscount) + " (" + String.format("%.2f", totalVolumeDiscountPercent) + "%)");
         }
+        getTaxAmount();
+        taxAmt = calculateTax(totalAmount);
+        taxTextView.setText(Utils.formatAmount(taxAmt) + " (" + String.format("%.2f", taxPercent) + "%)");
     }
 
     void calculateInvoiceDiscountAmount(Double buy_amt, String volDisId) {
@@ -415,6 +417,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         saleDateTextView = (TextView) findViewById(R.id.saleDateTextView);
         invoiceIdTextView = (TextView) findViewById(R.id.invoiceId);
         totalAmountTextView = (TextView) findViewById(R.id.totalAmount);
+        taxTextView = (TextView) findViewById(R.id.tax_txtview);
 
         advancedPaidAmountTextView = (TextView) findViewById(R.id.advancedPaidAmount);
 
@@ -435,7 +438,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         layoutBankAcc = (LinearLayout) findViewById(R.id.bank_account_layout);
         accountEditText = (EditText) findViewById(R.id.edit_txt_account_name);
         branchEditText = (EditText) findViewById(R.id.edit_txt_branch_name);
-
+        taxLayout = (LinearLayout) findViewById(R.id.tax_layout);
     }
 
     private void initCategories() {

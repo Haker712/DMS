@@ -67,6 +67,22 @@ public class SaleReturnApi {
     @Expose
     private int currencyId;
 
+    @SerializedName("Rate")
+    @Expose
+    private double rate;
+
+    @SerializedName("InvoiceStatus")
+    @Expose
+    private String invoiceStatus;
+
+    @SerializedName("SaleManId")
+    @Expose
+    private int saleManId;
+
+    @SerializedName("SaleId")
+    @Expose
+    private int saleId;
+
     /**
      * TSaleReturnItem
      */
@@ -224,5 +240,37 @@ public class SaleReturnApi {
 
     public void setCurrencyId(int currencyId) {
         this.currencyId = currencyId;
+    }
+
+    public double getRate() {
+        return rate;
+    }
+
+    public void setRate(double rate) {
+        this.rate = rate;
+    }
+
+    public String getInvoiceStatus() {
+        return invoiceStatus;
+    }
+
+    public void setInvoiceStatus(String invoiceStatus) {
+        this.invoiceStatus = invoiceStatus;
+    }
+
+    public int getSaleManId() {
+        return saleManId;
+    }
+
+    public void setSaleManId(int saleManId) {
+        this.saleManId = saleManId;
+    }
+
+    public int getSaleId() {
+        return saleId;
+    }
+
+    public void setSaleId(int saleId) {
+        this.saleId = saleId;
     }
 }

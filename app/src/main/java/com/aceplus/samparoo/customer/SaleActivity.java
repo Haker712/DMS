@@ -667,6 +667,8 @@ public class SaleActivity extends AppCompatActivity {
         String promotionProductName = "";
         int promotionProductQty = 0;
 
+        soldProduct.setPromotionPlanId(null);
+
         Cursor cursor = sqLiteDatabase.rawQuery("select * from " + DatabaseContract.PromotionDate.tb + " WHERE DATE(PROMOTION_DATE) = DATE('" + Utils.getCurrentDate(true) + "')", null);
         Log.i("cursor", cursor.getCount() + "");
 

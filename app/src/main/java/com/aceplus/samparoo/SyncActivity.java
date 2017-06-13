@@ -1193,6 +1193,10 @@ public class SyncActivity extends AppCompatActivity {
             Double tax = cursor_invoice.getDouble(cursor_invoice.getColumnIndex("TAX_AMOUNT"));
             String dueDate = cursor_invoice.getString(cursor_invoice.getColumnIndex("DUE_DATE"));
 
+            if(dueDate.equals("null") || dueDate.equals("NULL")) {
+                dueDate = null;
+            }
+
             invoice.setId(invoice_Id);
             invoice.setCustomerId(customer_Id);
             invoice.setDate(sale_date);
@@ -1498,6 +1502,8 @@ public class SyncActivity extends AppCompatActivity {
             preOrderApi.setLocationId(preOrder.getLocationId());
             preOrderApi.setDiscount(preOrder.getDiscount());
             preOrderApi.setDiscountPer(preOrder.getDiscountPer());
+            preOrderApi.setTaxAmount(preOrder.getTaxAmount());
+            preOrderApi.setRemark(preOrder.getRemark());
 
             for (PreOrderPresentApi preOrderPresentApi : getPreOrderPresentFromDatabase(preOrder.getInvoiceId())) {
                 preOrderPresentApiList.add(preOrderPresentApi);
@@ -1704,6 +1710,10 @@ public class SyncActivity extends AppCompatActivity {
             saleReturnApi.setAmount(saleReturn.getAmt());
             saleReturnApi.setPayAmount(saleReturn.getPayAmt());
             saleReturnApi.setCurrencyId(currencyId);
+            saleReturnApi.setRate(1);
+            saleReturnApi.setInvoiceStatus("CR");
+            saleReturnApi.setSaleManId(Integer.parseInt(saleman_Id));
+            saleReturnApi.setSaleId(1);
 
             List<SaleReturnDetail> saleReturnDetailList = getSaleReturnDetailFromDatabase(saleReturn.getSaleReturnId());
 
@@ -2521,8 +2531,33 @@ public class SyncActivity extends AppCompatActivity {
      * @param paramData param data
      */
     private void downloadCreditFromServer(final String paramData) {
+
+        LoginCreditRequest loginRequest = new LoginCreditRequest();
+        loginRequest.setSiteActivationKey(Constant.SITE_ACTIVATION_KEY);
+        loginRequest.setTabletActivationKey(Constant.TABLET_ACTIVATION_KEY);
+        loginRequest.setUserId(saleman_No);
+        loginRequest.setPassword(saleman_Pwd);
+        loginRequest.setDate(Utils.getCurrentDate(false));
+        loginRequest.setRoute(getRouteID(saleman_Id));
+
+        Cursor customerCursor = sqLiteDatabase.rawQuery("SELECT id FROM CUSTOMER", null);
+        ArrayList<CreditApi> creditApiList = new ArrayList<>();
+        List<Integer> idList = new ArrayList<>();
+
+        CreditApi creditApi = new CreditApi();
+
+        while(customerCursor.moveToNext()) {
+            Integer id = customerCursor.getInt(customerCursor.getColumnIndex("id"));
+            idList.add(id);
+        }
+
+        creditApi.setIdList(idList);
+        creditApiList.add(creditApi);
+        loginRequest.setData(creditApiList);
+        String param = getJsonFromObject(loginRequest);
+
         DownloadService downloadService = RetrofitServiceFactory.createService(DownloadService.class);
-        Call<CreditResponse> call = downloadService.getCreditFromApi(paramData);
+        Call<CreditResponse> call = downloadService.getCreditFromApi(param);
         call.enqueue(new Callback<CreditResponse>() {
             @Override
             public void onResponse(Call<CreditResponse> call, Response<CreditResponse> response) {
