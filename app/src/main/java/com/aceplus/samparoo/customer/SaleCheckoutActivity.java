@@ -825,11 +825,13 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             database.execSQL("UPDATE PRODUCT SET REMAINING_QTY = REMAINING_QTY - " + soldProduct.getQuantity()
                     + ", SOLD_QTY = SOLD_QTY + " + soldProduct.getQuantity() + " WHERE PRODUCT_ID = \'" + soldProduct.getProduct().getId() + "\'");
 
-            for (Promotion promotion : promotionArrayList) {
-                database.execSQL("UPDATE PRODUCT SET PRESENT_QTY = PRESENT_QTY + " + promotion.getPromotionQty() + " WHERE PRODUCT_ID = \'" + soldProduct.getProduct().getId() + "\'");
-                database.execSQL("UPDATE PRODUCT SET REMAINING_QTY = REMAINING_QTY - " + promotion.getPromotionQty() + " WHERE ID = '" + promotion.getPromotionProductId() + "'");
-            }
         }
+
+        for(Promotion promotion : promotionArrayList) {
+            database.execSQL("UPDATE PRODUCT SET PRESENT_QTY = PRESENT_QTY + " + promotion.getPromotionQty() + " WHERE ID = \'" + promotion.getPromotionProductId() + "\'");
+            database.execSQL("UPDATE PRODUCT SET REMAINING_QTY = REMAINING_QTY - " + promotion.getPromotionQty() + " WHERE ID = '" + promotion.getPromotionProductId() + "'");
+        }
+
         database.execSQL("INSERT INTO INVOICE VALUES (\""
                 + customerId + "\", \""
                 + saleDate + "\", \""
