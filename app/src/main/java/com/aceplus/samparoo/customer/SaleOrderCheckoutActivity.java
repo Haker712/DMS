@@ -1403,7 +1403,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
             database.execSQL("UPDATE DELIVERY_ITEM SET RECEIVED_QTY = " + soldProduct.getQuantity() + ", ORDER_QTY = ORDER_QTY - " + soldProduct.getQuantity() + " WHERE STOCK_NO = \'" + soldProduct.getProduct().getStockId() + "\'");
 
-            database.execSQL("UPDATE DELIVERY_ITEM SET DELIVERY_FLG = 1 WHERE ORDER_QTY < 1 AND STOCK_NO = \'" + soldProduct.getProduct().getId() + "\'");
+            database.execSQL("UPDATE DELIVERY_ITEM SET DELIVERY_FLG = 1 WHERE ORDER_QTY < 1 AND STOCK_NO = \'" + soldProduct.getProduct().getStockId() + "\'");
         }
 
         for (Promotion promotion : promotionArrayList) {
