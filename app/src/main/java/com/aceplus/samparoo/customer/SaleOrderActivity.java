@@ -723,7 +723,7 @@ public class SaleOrderActivity extends AppCompatActivity {
 
         int buy_qty = soldProduct.getProduct().getSoldQty();
         String stock_id_old = soldProduct.getProduct().getId();
-
+        soldProduct.setPromotionPlanId(null);
         String promotionPlanId = "";
 
         String stock_id_new = "";
@@ -768,8 +768,7 @@ public class SaleOrderActivity extends AppCompatActivity {
                         }
                     }
                     if (!flag) {
-                        soldProduct.setPromotionPlanId(promotionPlanId);
-                        addPromotionProduct(promotionPlanId);
+                        addPromotionProduct(soldProduct, promotionPlanId);
                     }
                 } else {
                     boolean flag = false;
@@ -807,7 +806,7 @@ public class SaleOrderActivity extends AppCompatActivity {
         return count;
     }
 
-    void addPromotionProduct(String promotionPlanId) {
+    void addPromotionProduct(SoldProduct soldProduct, String promotionPlanId) {
         String promotionProductId = "";
         int promotionProductQty = 0;
         String promotionProductName = "";
@@ -827,6 +826,7 @@ public class SaleOrderActivity extends AppCompatActivity {
 
             Promotion promotion = new Promotion();
             promotion.setPromotionPlanId(promotionPlanId);
+            soldProduct.setPromotionPlanId(promotionPlanId);
             promotion.setPromotionProductId(promotionProductId);
             promotion.setPromotionProductName(promotionProductName);
             promotion.setPromotionQty(promotionProductQty);

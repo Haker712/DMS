@@ -44,6 +44,7 @@ import com.aceplus.samparoo.utils.Utils;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 /**
@@ -94,7 +95,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
     PromotionProductCustomAdapter promotionProductCustomAdapter;
 
     Double totalVolumeDiscount = 0.0, totalVolumeDiscountPercent = 0.0;
-    int exclude = 0;
+    Integer exclude = 0;
     double totalAmount = 0.0;
     String taxType = "";
     double taxPercent = 0.0, taxAmt = 0.0;
@@ -261,12 +262,13 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             while (cursor.moveToNext()) {
                 volDisFilterId = cursor.getString(cursor.getColumnIndex(DatabaseContract.VolumeDiscountFilter.id));
                 exclude = cursor.getInt(cursor.getColumnIndex(DatabaseContract.VolumeDiscountFilter.exclude));
-                soldProduct.setExclude(exclude);
+
                 Log.i("volDisFilterId", volDisFilterId);
 
                 if(exclude == 0) {
                     double percent = getDiscountPercent(volDisFilterId, soldProduct.getProduct().getStockId(), soldProduct.getTotalAmt());
                     if (percent > 0) {
+                        soldProduct.setExclude(exclude);
                         double discountAmount = soldProduct.getTotalAmt() * (percent / 100);
                         soldProduct.setDiscountPercent(percent);
                         soldProduct.setDiscountAmount(discountAmount);
@@ -276,6 +278,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                     if(soldProduct.getPromotionPrice() == 0.0) {
                         double percent = getDiscountPercent(volDisFilterId, soldProduct.getProduct().getStockId(), soldProduct.getTotalAmt());
                         if (percent > 0) {
+                            soldProduct.setExclude(exclude);
                             double discountAmount = soldProduct.getTotalAmt() * (percent / 100);
                             soldProduct.setDiscountPercent(percent);
                             soldProduct.setDiscountAmount(discountAmount);
@@ -302,6 +305,10 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         Cursor cusorForVolDisFilterItem = database.rawQuery("SELECT * FROM VOLUME_DISCOUNT_FILTER_ITEM WHERE VOLUME_DISCOUNT_ID = '" + volDisFilterId + "' " +
                 "and FROM_SALE_AMOUNT <= " + buy_amt + " and TO_SALE_AMOUNT >= " + buy_amt + " ", null);
         Log.i("cusorForVolDisFilterItem", cusorForVolDisFilterItem.getCount() + "");
+
+        if(cusorForVolDisFilterItem.getCount() == 0) {
+            exclude = null;
+        }
 
         while (cusorForVolDisFilterItem.moveToNext()) {
             category = cusorForVolDisFilterItem.getString(cusorForVolDisFilterItem.getColumnIndex(DatabaseContract.VolumeDiscountFilterItem.categoryId));
@@ -378,11 +385,11 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                 netAmount = totalAmount - totalVolumeDiscount - itemDiscountAmt;
             }
             netAmountTextView.setText(Utils.formatAmount(netAmount));
-            discountTextView.setText(Utils.formatAmount(totalVolumeDiscount) + " (" + String.format("%.2f", totalVolumeDiscountPercent) + "%)");
+            discountTextView.setText(Utils.formatAmount(totalVolumeDiscount) + " (" + new DecimalFormat("#0.00").format(totalVolumeDiscountPercent) + "%)");
         }
         getTaxAmount();
         taxAmt = calculateTax(totalAmount);
-        taxTextView.setText(Utils.formatAmount(taxAmt) + " (" + String.format("%.2f", taxPercent) + "%)");
+        taxTextView.setText(Utils.formatAmount(taxAmt) + " (" + new DecimalFormat("#0.00").format(taxPercent) + "%)");
     }
 
     void calculateInvoiceDiscountAmount(Double buy_amt, String volDisId) {

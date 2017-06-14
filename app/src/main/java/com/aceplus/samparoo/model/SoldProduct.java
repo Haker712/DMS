@@ -31,7 +31,7 @@ public class SoldProduct implements Serializable {
 
     String promotionPlanId;
 
-    int exclude;
+    Integer exclude;
 
     public SoldProduct(){}
 
@@ -254,11 +254,11 @@ public class SoldProduct implements Serializable {
         this.promotionPlanId = promotionPlanId;
     }
 
-    public int getExclude() {
+    public Integer getExclude() {
         return exclude;
     }
 
-    public void setExclude(int exclude) {
+    public void setExclude(Integer exclude) {
         this.exclude = exclude;
     }
 }

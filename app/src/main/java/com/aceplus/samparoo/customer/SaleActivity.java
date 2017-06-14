@@ -719,8 +719,7 @@ public class SaleActivity extends AppCompatActivity {
                         }
                     }
                     if (!flag) {
-                        soldProduct.setPromotionPlanId(promotionPlanId);
-                        addPromotionProduct(promotionPlanId);
+                        addPromotionProduct(soldProduct, promotionPlanId);
                     }
                 } else {
                     boolean flag = false;
@@ -757,7 +756,7 @@ public class SaleActivity extends AppCompatActivity {
         return count;
     }
 
-    void addPromotionProduct(String promotionPlanId) {
+    void addPromotionProduct(SoldProduct soldProduct, String promotionPlanId) {
         String promotionProductId = "";
         int promotionProductQty = 0;
         String promotionProductName = "";
@@ -777,6 +776,7 @@ public class SaleActivity extends AppCompatActivity {
 
             Promotion promotion = new Promotion();
             promotion.setPromotionPlanId(promotionPlanId);
+            soldProduct.setPromotionPlanId(promotionPlanId);
             promotion.setPromotionProductId(promotionProductId);
             promotion.setPromotionProductName(promotionProductName);
             promotion.setPromotionQty(promotionProductQty);

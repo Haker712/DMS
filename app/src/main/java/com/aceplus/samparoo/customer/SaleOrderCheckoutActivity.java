@@ -151,7 +151,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
     ArrayList<Promotion> promotionArrayList = new ArrayList<>();
     PromotionProductCustomAdapter promotionProductCustomAdapter;
 
-    int exclude = 0;
+    Integer exclude = 0;
     double totalAmount = 0.0, totalAmountForProduct = 0.0, netAmtTotal = 0.0;
 
     int locationCode = 0;
@@ -370,7 +370,6 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         } else {
             soldPrice = soldProduct.getPromotionPrice();
         }
-
         double buy_amt = soldPrice * soldProduct.getQuantity();
         soldProduct.setTotalAmt(buy_amt);
         Log.i("buy_amt", buy_amt + "");
@@ -381,12 +380,13 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             while (cursor.moveToNext()) {
                 volDisFilterId = cursor.getString(cursor.getColumnIndex(DatabaseContract.VolumeDiscountFilter.id));
                 exclude = cursor.getInt(cursor.getColumnIndex(DatabaseContract.VolumeDiscountFilter.exclude));
-                soldProduct.setExclude(exclude);
+
                 Log.i("volDisFilterId", volDisFilterId);
 
                 if(exclude == 0) {
                     double percent = getDiscountPercent(volDisFilterId, soldProduct.getProduct().getStockId(), soldProduct.getTotalAmt());
                     if (percent > 0) {
+                        soldProduct.setExclude(exclude);
                         double discountAmount = soldProduct.getTotalAmt() * (percent / 100);
                         soldProduct.setDiscountPercent(percent);
                         soldProduct.setDiscountAmount(discountAmount);
@@ -396,6 +396,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                     if(soldProduct.getPromotionPrice() == 0.0) {
                         double percent = getDiscountPercent(volDisFilterId, soldProduct.getProduct().getStockId(), soldProduct.getTotalAmt());
                         if (percent > 0) {
+                            soldProduct.setExclude(exclude);
                             double discountAmount = soldProduct.getTotalAmt() * (percent / 100);
                             soldProduct.setDiscountPercent(percent);
                             soldProduct.setDiscountAmount(discountAmount);
@@ -422,6 +423,10 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         Cursor cusorForVolDisFilterItem = database.rawQuery("SELECT * FROM VOLUME_DISCOUNT_FILTER_ITEM WHERE VOLUME_DISCOUNT_ID = '" + volDisFilterId + "' " +
                 "and FROM_SALE_AMOUNT <= " + buy_amt + " and TO_SALE_AMOUNT >= " + buy_amt + " ", null);
         Log.i("cusorForVolDisFilterItem", cusorForVolDisFilterItem.getCount() + "");
+
+        if(cusorForVolDisFilterItem.getCount() == 0) {
+            exclude = null;
+        }
 
         while (cusorForVolDisFilterItem.moveToNext()) {
             category = cusorForVolDisFilterItem.getString(cusorForVolDisFilterItem.getColumnIndex(DatabaseContract.VolumeDiscountFilterItem.categoryId));
@@ -497,13 +502,13 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                 netAmount = totalAmount - totalVolumeDiscount - itemDiscountAmt;
             }
             netAmountTextView.setText(Utils.formatAmount(netAmount));
-            volDisForPreOrder.setText(Utils.formatAmount(totalVolumeDiscount)+ " (" + String.format("%.2f", totalVolumeDiscountPercent) + "%)");
+            volDisForPreOrder.setText(Utils.formatAmount(totalVolumeDiscount)+ " (" + new DecimalFormat("#0.00").format(totalVolumeDiscountPercent) + "%)");
 
         }
 
         getTaxAmount();
         taxAmt = calculateTax(totalAmount);
-        taxTextView.setText(Utils.formatAmount(taxAmt) + " (" + String.format("%.2f", taxPercent) + "%)");
+        taxTextView.setText(Utils.formatAmount(taxAmt) + " (" + new DecimalFormat("#0.00").format(taxPercent) + "%)");
     }
 
     void calculateInvoiceDiscountAmount(Double buy_amt, String volDisId) {
@@ -835,13 +840,22 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             preOrderProduct.setPrice(soldProduct.getProduct().getPrice());
             preOrderProduct.setPromotionPrice(soldProduct.getPromotionPrice());
 
-            if(soldProduct.getPromotionPlanId() != null) {
+            if(soldProduct.getPromotionPlanId() == null) {
+                preOrderProduct.setPromotionPlanId(null);
+            } else {
                 preOrderProduct.setPromotionPlanId(Integer.parseInt(soldProduct.getPromotionPlanId()));
             }
 
             preOrderProduct.setVolumeDiscount(soldProduct.getDiscountAmount());
             preOrderProduct.setVolumeDiscountPer(soldProduct.getDiscountPercent());
             preOrderProduct.setTotalAmt(soldProduct.getTotalAmount());
+
+            if(soldProduct.getExclude() == null) {
+                preOrderProduct.setExclude(null);
+            } else {
+                preOrderProduct.setExclude(soldProduct.getExclude());
+            }
+
             preOrderProductList.add(preOrderProduct);
 
             database.execSQL("UPDATE PRODUCT SET REMAINING_QTY = REMAINING_QTY - " + soldProduct.getQuantity()
@@ -930,8 +944,8 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             contentValues.put(DatabaseContract.PreOrderDetail.price, preOrderProduct.getPrice());
             contentValues.put(DatabaseContract.PreOrderDetail.total_amt, preOrderProduct.getTotalAmt());
             contentValues.put(DatabaseContract.PreOrderDetail.promotion_price, preOrderProduct.getPromotionPrice());
-            contentValues.put(DatabaseContract.PreOrderDetail.volume_discount, totalVolumeDiscount);
-            contentValues.put(DatabaseContract.PreOrderDetail.volume_discount_per, 0.0);
+            contentValues.put(DatabaseContract.PreOrderDetail.volume_discount, preOrderProduct.getVolumeDiscount());
+            contentValues.put(DatabaseContract.PreOrderDetail.volume_discount_per, preOrderProduct.getVolumeDiscountPer());
             contentValues.put("DELETE_FLAG", 0);
             contentValues.put(DatabaseContract.PreOrderDetail.exclude, preOrderProduct.getExclude());
             contentValues.put("PROMOTION_PLAN_ID", preOrderProduct.getPromotionPlanId());

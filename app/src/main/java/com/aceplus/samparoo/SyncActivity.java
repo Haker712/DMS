@@ -1575,6 +1575,7 @@ public class SyncActivity extends AppCompatActivity {
             preOrder.setDiscount(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex(DatabaseContract.PreOrder.discount)));
             preOrder.setDiscountPer(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex(DatabaseContract.PreOrder.discount_per)));
             preOrder.setTaxAmount(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex("TAX_AMOUNT")));
+            preOrder.setRemark(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("REMARK")));
             preOrderList.add(preOrder);
         }
 

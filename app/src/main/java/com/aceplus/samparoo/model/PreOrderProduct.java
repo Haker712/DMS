@@ -47,7 +47,7 @@ public class PreOrderProduct implements Cloneable, Serializable {
 
     private Integer exclude;
 
-    private int promotionPlanId;
+    private Integer promotionPlanId;
 
     /**
      * Getter method for saleOrderId
@@ -171,11 +171,11 @@ public class PreOrderProduct implements Cloneable, Serializable {
         this.exclude = exclude;
     }
 
-    public int getPromotionPlanId() {
+    public Integer getPromotionPlanId() {
         return promotionPlanId;
     }
 
-    public void setPromotionPlanId(int promotionPlanId) {
+    public void setPromotionPlanId(Integer promotionPlanId) {
         this.promotionPlanId = promotionPlanId;
     }
 }
