@@ -20,9 +20,21 @@ public class SizeInStoreShare {
     @SerializedName("CustomerId")
     @Expose
     private Integer customerId;
-    @SerializedName("SizeInStoreShareItem")
+    @SerializedName("StockId")
     @Expose
-    private List<SizeInStoreShareItem> sizeInStoreShareItem = null;
+    private Integer stockId;
+    @SerializedName("Quantity")
+    @Expose
+    private Integer quantity;
+    @SerializedName("Status")
+    @Expose
+    private String status;
+    @SerializedName("Remark")
+    @Expose
+    private String remark;
+    @SerializedName("SaleManId")
+    @Expose
+    private Integer salemanId;
 
     public String getSizeInStoreShareNo() {
         return sizeInStoreShareNo;
@@ -48,13 +60,43 @@ public class SizeInStoreShare {
         this.customerId = customerId;
     }
 
-    public List<SizeInStoreShareItem> getSizeInStoreShareItem() {
-        return sizeInStoreShareItem;
+    public Integer getStockId() {
+        return stockId;
     }
 
-    public void setSizeInStoreShareItem(List<SizeInStoreShareItem> sizeInStoreShareItem) {
-        this.sizeInStoreShareItem = sizeInStoreShareItem;
+    public void setStockId(Integer stockId) {
+        this.stockId = stockId;
     }
 
+    public Integer getQuantity() {
+        return quantity;
+    }
 
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public Integer getSalemanId() {
+        return salemanId;
+    }
+
+    public void setSalemanId(Integer salemanId) {
+        this.salemanId = salemanId;
+    }
 }

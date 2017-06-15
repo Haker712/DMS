@@ -23,6 +23,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.aceplus.samparoo.LoginActivity;
@@ -57,6 +58,7 @@ public class TabFragment5 extends Fragment implements OnActionClickListener {
     private TextView categoryTextView;
     private ListView productsInGivenCategoryListView;
 
+    private EditText remarkEditText;
     private TextView saleDateTextView;
 
     private ListView soldProductListView;
@@ -69,15 +71,17 @@ public class TabFragment5 extends Fragment implements OnActionClickListener {
 
     private SoldProductListRowAdapter soldProductListRowAdapter;
 
+    Spinner statusSpinner;
+
     SQLiteDatabase database;
 
     private ImageView cancelImg, saveImg;
 
-    String size_in_store_share_id;
-    int count = 0;
+    String size_in_store_share_id = "", status = "";
+    int count = 0, salemanId = 0;
     Cursor cursor;
 
-    int locationCode = 0;
+    int locationCode = 0, cus_id = 0;
 
     Product[] products;
 
@@ -85,12 +89,6 @@ public class TabFragment5 extends Fragment implements OnActionClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.tab_fragment_5, container, false);
-
-       /* Toolbar toolbar = (Toolbar) view.findViewById(R.id.app_bar);
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
-        activity.setSupportActionBar(toolbar);
-        activity.getSupportActionBar().setTitle("Size in Store Share");
-        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
 
         activity = (AppCompatActivity) getActivity();
 
@@ -107,6 +105,8 @@ public class TabFragment5 extends Fragment implements OnActionClickListener {
         }*/
         try {
             size_in_store_share_id = Utils.getInvoiceNo(getActivity(), LoginActivity.mySharedPreference.getString(Constant.SALEMAN_NO, ""), locationCode + "", Utils.FOR_SIZE_IN_STORE_SHARE);
+            String saleManString = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
+            salemanId = Integer.parseInt(saleManString);
         } catch (NullPointerException e) {
             e.printStackTrace();
             Utils.backToLogin(this.getActivity());
@@ -129,34 +129,16 @@ public class TabFragment5 extends Fragment implements OnActionClickListener {
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.custom_simple_list_item_1, android.R.id.text1, productsForSearch);
         productsInGivenCategoryListView.setAdapter(arrayAdapter);
 
+        String [] status = new String[3];
+        status[0] = "Quantity";
+        status[1] = "Amount";
+        status[2] = "Percentage";
+
+        ArrayAdapter<String> statusAdapter = new ArrayAdapter<String>(getActivity(), R.layout.custom_simple_list_item_1, android.R.id.text1, status);
+        statusSpinner.setAdapter(statusAdapter);
+
         searchProductTextView.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, productsForSearch));
         searchProductTextView.setThreshold(1);
-
-
-
-//        if (categories.length > 0) {
-//
-//            categoryTextView.setText(categories[0].getName());
-//            currentCategoryIndex = 0;
-//
-//            setProductListView(categories[0].getName());
-//
-//            ArrayList<String> products = new ArrayList<String>();
-//            for (Category category : categories) {
-//
-//                for (Product product : category.getProducts()) {
-//
-//                    products.add(product.getName());
-//                }
-//            }
-//            searchProductTextView.setAdapter(new ArrayAdapter<String>(
-//                    activity, android.R.layout.simple_list_item_1, products));
-//            searchProductTextView.setThreshold(1);
-//        }
-//        else {
-//
-//            categoryTextView.setText("No product");
-//        }
 
         setAdapters();
 
@@ -179,6 +161,8 @@ public class TabFragment5 extends Fragment implements OnActionClickListener {
         productsInGivenCategoryListView = (ListView) view.findViewById(R.id.productsListView);
         saleDateTextView = (TextView) view.findViewById(R.id.saleDateTextView);
         soldProductListView = (ListView) view.findViewById(R.id.soldProductList);
+        statusSpinner = (Spinner) view.findViewById(R.id.spinner_sns_comparison_status);
+        remarkEditText = (EditText) view.findViewById(R.id.edit_size_in_stock_remark);
 
         cancelImg = (ImageView) view.findViewById(R.id.cancel_img);
         saveImg = (ImageView) view.findViewById(R.id.save_img);
@@ -193,55 +177,12 @@ public class TabFragment5 extends Fragment implements OnActionClickListener {
     private void catchEvents() {
         saleDateTextView.setText(Utils.getCurrentDate(false));
 
-//        previousCategoryButton.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View view) {
-//
-//                if (categories.length > 0) {
-//
-//                    if (currentCategoryIndex == 0) {
-//
-//                        currentCategoryIndex = categories.length - 1;
-//                    } else {
-//
-//                        currentCategoryIndex--;
-//                    }
-//
-//                    categoryTextView.setText(categories[currentCategoryIndex].getName());
-//                    setProductListView(categories[currentCategoryIndex].getName());
-//                }
-//            }
-//        });
-//
-//        nextCategoryButton.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View view) {
-//
-//                if (categories.length > 0) {
-//
-//                    if (currentCategoryIndex == categories.length - 1) {
-//
-//                        currentCategoryIndex = 0;
-//                    } else {
-//
-//                        currentCategoryIndex++;
-//                    }
-//
-//                    categoryTextView.setText(categories[currentCategoryIndex].getName());
-//                    setProductListView(categories[currentCategoryIndex].getName());
-//                }
-//            }
-//        });
-
         productsInGivenCategoryListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
 
-//                sellProduct(categoryTextView.getText().toString(), parent.getItemAtPosition(position).toString());
                 Product tempProduct = null;
 
                 for (Product product : products) {
@@ -297,8 +238,7 @@ public class TabFragment5 extends Fragment implements OnActionClickListener {
         saveImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utils.askConfirmationDialog("Save", "Do you want to save?", "", activity);
-
+                Utils.askConfirmationDialog("Save", "Do you want to save?", MainFragmentActivity.SNS, activity);
             }
         });
 
@@ -306,7 +246,6 @@ public class TabFragment5 extends Fragment implements OnActionClickListener {
 
     private void insertintoDB() {
 
-        // String customerName = TabFragment1.customerName;
         String saleDate = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
 
         JSONArray saleProducts = new JSONArray();
@@ -323,18 +262,31 @@ public class TabFragment5 extends Fragment implements OnActionClickListener {
         String saleProduct = saleProducts.toString();
         System.out.println("saleProduct is>>>>>>" + saleProduct.toString());
 
+        Cursor cursor = database.rawQuery("select * from CUSTOMER where CUSTOMER_ID='" + MainFragmentActivity.customerId + "'", null);
+        while (cursor.moveToNext()) {
+            cus_id = cursor.getInt(cursor.getColumnIndex("id"));
+        }
+
         database.beginTransaction();
-        database.execSQL("INSERT INTO size_in_store_share VALUES (\""
-                + size_in_store_share_id + "\", \""
-                + MainFragmentActivity.customerId + "\", \'"
-                + saleDate + "\'"
-                + ")");
+
+        if(statusSpinner.getSelectedItemPosition() == 0) {
+            status = "Q";
+        } else if(statusSpinner.getSelectedItemPosition() == 1) {
+            status = "A";
+        } else if(statusSpinner.getSelectedItemPosition() == 2) {
+            status = "P";
+        }
 
         for (int i = 0; i < soldProductList.size(); i++) {
-            database.execSQL("INSERT INTO size_in_store_share_detail VALUES (\""
+            database.execSQL("INSERT INTO size_in_store_share VALUES (\""
                     + size_in_store_share_id + "\", \""
-                    + soldProductList.get(i).getProduct().getId() + "\", \""
-                    + soldProductList.get(i).getSize_in_store_share() + "\""
+                    + cus_id + "\", \""
+                    + saleDate + "\", \""
+                    + soldProductList.get(i).getProduct().getStockId() + "\", \""
+                    + soldProductList.get(i).getSize_in_store_share() + "\", \""
+                    + status + "\", \""
+                    + remarkEditText.getText().toString() + "\", \""
+                    + salemanId + "\""
                     + ")");
         }
 
@@ -342,37 +294,11 @@ public class TabFragment5 extends Fragment implements OnActionClickListener {
         database.endTransaction();
     }
 
-    private void initCategories() {
-
-        if (categories == null) {
-
-            SQLiteDatabase db = (new Database(activity)).getDataBase();
-
-            Cursor cursor = db.rawQuery(
-                    "SELECT CATEGORY_ID, CATEGORY_NAME"
-                            + " FROM PRODUCT_CATEGORY"
-//                            + " GROUP BY CATEGORY_ID, CATEGORY_NAME", null);
-                    , null);
-
-            categories = new Category[cursor.getCount()];
-            while (cursor.moveToNext()) {
-
-                categories[cursor.getPosition()] = new Category(cursor.getString(cursor.getColumnIndex("CATEGORY_ID")), cursor.getString(cursor.getColumnIndex("CATEGORY_NAME")));
-                categories[cursor.getPosition()].setProducts(getProducts(categories[cursor.getPosition()].getId()));
-            }
-        }
-    }
-
     private Product[] getProducts(String categoryId) {
 
         Product[] products;
 
         SQLiteDatabase db = (new Database(activity)).getDataBase();
-
-//        Cursor cursor = db.rawQuery(
-//                "SELECT PRODUCT_ID, PRODUCT_NAME, SELLING_PRICE"
-//                        + ", PURCHASE_PRICE, DISCOUNT_TYPE, REMAINING_QTY"
-//                        + " FROM PRODUCT WHERE CATEGORY_ID = '" + categoryId + "'", null);
 
         Cursor cursor = db.rawQuery(
                 "SELECT * FROM PRODUCT", null);
@@ -387,101 +313,28 @@ public class TabFragment5 extends Fragment implements OnActionClickListener {
                     , cursor.getDouble(cursor.getColumnIndex("PURCHASE_PRICE"))
                     , cursor.getString(cursor.getColumnIndex("DISCOUNT_TYPE"))
                     , cursor.getInt(cursor.getColumnIndex("REMAINING_QTY")));
-
+            tempProduct.setStockId(cursor.getInt(cursor.getColumnIndex("ID")));
             products[cursor.getPosition()] = tempProduct;
         }
 
         return products;
     }
 
-    private void setProductListView(String categoryName) {
-
-        if (categories.length > 0) {
-
-            Category tempCategory = null;
-
-            for (Category category : categories) {
-
-                if (category.getName().equals(categoryName)) {
-
-                    tempCategory = category;
-                    break;
-                }
-            }
-
-            String[] productNames = null;
-            if (tempCategory != null) {
-
-                productNames = new String[tempCategory.getProducts().length];
-                for (int i = 0; i < productNames.length; i++) {
-
-                    productNames[i] = tempCategory.getProducts()[i].getName();
-                }
-            }
-
-            if (productNames != null) {
-
-                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(activity, R.layout.custom_simple_list_item_1, android.R.id.text1, productNames);
-                productsInGivenCategoryListView.setAdapter(arrayAdapter);
-            }
-        }
-    }
-
-    private void sellProduct(String categoryName, String productName) {
-
-        if (categories != null) {
-
-            Product tempProduct = null;
-
-            if (categoryName != null && categoryName.length() > 0) {
-
-                for (Category category : categories) {
-
-                    if (category.getName().equals(categoryName)) {
-
-                        for (Product product : category.getProducts()) {
-
-                            if (product.getName().equals(productName)) {
-
-                                tempProduct = product;
-                            }
-                        }
-                    }
-                }
-            } else if (productName != null && productName.length() > 0) {
-
-                for (Category category : categories) {
-
-                    for (Product product : category.getProducts()) {
-
-                        if (product.getName().equals(productName)) {
-
-                            tempProduct = product;
-                        }
-                    }
-                }
-            }
-
-            if (tempProduct != null) {
-
-                soldProductList.add(new SoldProduct(tempProduct, false));
-                soldProductListRowAdapter.notifyDataSetChanged();
-            }
-        }
-    }
-
     @Override
     public void onActionClick(String type) {
-        if (soldProductList.size() == 0) {
 
-            new AlertDialog.Builder(activity)
-                    .setTitle("Alert")
-                    .setMessage("You must specify at least one product.")
-                    .setPositiveButton("OK", null)
-                    .show();
+        if(type.equals(MainFragmentActivity.SNS)) {
+            if (soldProductList.size() == 0) {
 
-            return;
-        }
+                new AlertDialog.Builder(activity)
+                        .setTitle("Alert")
+                        .setMessage("You must specify at least one product.")
+                        .setPositiveButton("OK", null)
+                        .show();
+
+                return;
+            }
+
 
         for (SoldProduct soldProduct : soldProductList) {
 
@@ -497,7 +350,11 @@ public class TabFragment5 extends Fragment implements OnActionClickListener {
             }
         }
 
-        insertintoDB();
+            insertintoDB();
+            remarkEditText.setText(null);
+            soldProductList.clear();
+            soldProductListRowAdapter.notifyDataSetChanged();
+        }
     }
 
 

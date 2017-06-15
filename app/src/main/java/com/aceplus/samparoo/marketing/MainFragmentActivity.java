@@ -29,15 +29,14 @@ import org.json.JSONObject;
 
 public class MainFragmentActivity extends AppCompatActivity {
     public static final String CUSTOMER_INFO_KEY = "customer-info-key";
+
+    public static final String DAF = "displayAssessment";
+    public static final String POSM = "posm";
+    public static final String SNS = "sizeAndStock";
+    public static final String COMPETE = "competitor";
+
+
     public static Customer customer;
-
-    public static final String USER_INFO_KEY = "user-info-key";
-    public static JSONObject userInfo;
-
-    final int mode = Activity.MODE_PRIVATE;
-    final String MyPREFS = "MyPreference";
-    SharedPreferences mySharedPreference;
-    SharedPreferences.Editor myEditor;
 
     public static String customerId = "";
 
@@ -66,13 +65,7 @@ public class MainFragmentActivity extends AppCompatActivity {
 
         customer = (Customer) getIntent().getSerializableExtra(CUSTOMER_INFO_KEY);
 
-        mySharedPreference = getSharedPreferences(MyPREFS, mode);
-        myEditor = mySharedPreference.edit();
-
         customerId = customer.getCustomerId();
-
-        myEditor.putString("CustomerID", customerId);
-        myEditor.commit();
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         // tabLayout.addTab(tabLayout.newTab().setText("Outlet External Check"));
@@ -144,22 +137,6 @@ public class MainFragmentActivity extends AppCompatActivity {
         customer = (Customer) getIntent().getSerializableExtra(CUSTOMER_INFO_KEY);
     }
 
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }*/
-
     void askPermission() {
         permissionRequest = PermissionHelper.with(MainFragmentActivity.this).build(Manifest.permission.CAMERA).onPermissionsGranted(onGrantAction).onPermissionsDenied(onDenyAction).request(REQUEST_CAMERA);
     }
@@ -172,7 +149,6 @@ public class MainFragmentActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-
         Utils.backToMarketingActivity(this);
     }
 }

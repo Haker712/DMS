@@ -441,7 +441,7 @@ public class Utils {
             }
 
         }else if (mode.equals(Utils.FOR_DISPLAY_ASSESSMENT)) {
-            Cursor cursor = database.rawQuery("SELECT COUNT(*) AS COUNT FROM DISPLAY_ASSESSMENT", null);
+            Cursor cursor = database.rawQuery("SELECT COUNT(*) AS COUNT FROM OUTLET_VISIBILITY", null);
             if (cursor.moveToNext()) {
 
                 next += cursor.getInt(cursor.getColumnIndex("COUNT")) + 1;

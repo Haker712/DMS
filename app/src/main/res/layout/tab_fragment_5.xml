@@ -92,9 +92,17 @@
                     android:gravity="right"
                     android:orientation="horizontal">
 
+                    <Spinner
+                        android:id="@+id/spinner_sns_comparison_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginRight="10dp"/>
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center"
                         android:text="Date" />
 
                     <TextView
@@ -102,6 +110,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:padding="7dp"
+                        android:layout_gravity="center"
                         android:text="25/05/2015" />
                 </LinearLayout>
 
@@ -142,13 +151,23 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
                     android:layout_margin="10dp"
+                    android:orientation="horizontal"
+                    android:gravity="end"
                     android:padding="10dp">
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
-                        android:layout_weight="10" />
+                        android:layout_weight="1"
+                        android:textSize="22sp"
+                        android:text="Remark : "/>
+
+                    <EditText
+                        android:id="@+id/edit_size_in_stock_remark"
+                        android:layout_width="0dp"
+                        android:layout_weight="3"
+                        android:layout_height="wrap_content" />
 
                     <!--<TextView
                         android:layout_width="0dp"
