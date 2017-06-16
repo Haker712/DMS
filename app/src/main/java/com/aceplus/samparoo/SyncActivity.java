@@ -2196,7 +2196,7 @@ public class SyncActivity extends AppCompatActivity {
                         if (!services.equals("")) {
                             services += ",";
                         }
-
+                        updateDeleteFlag("OUTLET_VISIBILITY", 1, "INVOICE_NO", displayAssessmentRequest.getData().get(0).getDisplayAssessment().get(0).getInvoiceNo());
                         services += " " + getResources().getString(R.string.display_assessment);
 
                         uploadCompetitorSizeinstoresharetoserver();

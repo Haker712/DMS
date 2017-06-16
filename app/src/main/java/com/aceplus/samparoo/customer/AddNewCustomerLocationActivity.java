@@ -113,7 +113,7 @@ public class AddNewCustomerLocationActivity extends FragmentActivity {
                 @Override
                 public void onMapReady(GoogleMap googleMap) {
                     map = googleMap;
-
+                    map.getUiSettings().setMyLocationButtonEnabled(true);
                     if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         if (ContextCompat.checkSelfPermission(AddNewCustomerLocationActivity.this,
                                 Manifest.permission.ACCESS_FINE_LOCATION)

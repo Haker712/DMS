@@ -70,7 +70,7 @@ public class DisplayAssessmentFragment extends Fragment implements OnActionClick
 
     TextView customerName;
 
-    String encodedImage;
+    String encodedImage = "";
 
     Bitmap picture;
 

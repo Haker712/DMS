@@ -46,11 +46,11 @@ public interface UploadService {
     Call<InvoiceResponse> uploadCashReceive(@Field("param_data") String paramData);
 
     @FormUrlEncoded
-    @POST("upload/displayAssessment ")
+    @POST("upload/visibility")
     Call<InvoiceResponse> uploadDisplayAssessment(@Field("param_data") String paramData);
 
     @FormUrlEncoded
-    @POST("upload/competitorAndSizeAndStock ")
+    @POST("upload/competitorAndSizeAndStock")
     Call<InvoiceResponse> uploadcompetitorsizeinstore(@Field("param_data") String paramData);
 
     @FormUrlEncoded

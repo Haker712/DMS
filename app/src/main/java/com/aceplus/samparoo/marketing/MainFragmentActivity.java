@@ -69,10 +69,10 @@ public class MainFragmentActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         // tabLayout.addTab(tabLayout.newTab().setText("Outlet External Check"));
-        tabLayout.addTab(tabLayout.newTab().setText("Outlet Stock Availability"));
+        tabLayout.addTab(tabLayout.newTab().setText("Display Program"));
         tabLayout.addTab(tabLayout.newTab().setText("POSM"));
         // tabLayout.addTab(tabLayout.newTab().setText("Competitors' Activities"));
-        tabLayout.addTab(tabLayout.newTab().setText("Size and Store Share"));
+        tabLayout.addTab(tabLayout.newTab().setText("Size and Stock Share"));
         // tabLayout.addTab(tabLayout.newTab().setText("Outlet Stock Availability"));
         tabLayout.addTab(tabLayout.newTab().setText("Competitors' Activities"));
 

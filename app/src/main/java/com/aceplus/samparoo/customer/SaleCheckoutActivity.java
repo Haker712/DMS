@@ -29,12 +29,16 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.aceplus.samparoo.LoginActivity;
+import com.aceplus.samparoo.PrintInvoiceActivity;
 import com.aceplus.samparoo.R;
 import com.aceplus.samparoo.model.Category;
 import com.aceplus.samparoo.model.Customer;
 import com.aceplus.samparoo.model.Product;
 import com.aceplus.samparoo.model.Promotion;
 import com.aceplus.samparoo.model.SoldProduct;
+import com.aceplus.samparoo.model.forApi.Invoice;
+import com.aceplus.samparoo.model.forApi.InvoiceDetail;
+import com.aceplus.samparoo.model.forApi.InvoicePresent;
 import com.aceplus.samparoo.myinterface.OnActionClickListener;
 import com.aceplus.samparoo.utils.Constant;
 import com.aceplus.samparoo.utils.Database;
@@ -54,7 +58,10 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
     public static final String REMAINING_AMOUNT_KEY = "remaining-amount-key";
 
-    public static final String USER_INFO_KEY = "user-info-key";
+    public static final String INVOICE = "INVOICE";
+    public static final String INVOICE_DETAIL = "INVOICE_DETAIL";
+    public static final String INVOICE_PRESENT = "INVOICE_PRESENT";
+
     public static final String CUSTOMER_INFO_KEY = "customer-info-key";
     public static final String SOLD_PROUDCT_LIST_KEY = "sold-product-list-key";
     public static final String PRESENT_PROUDCT_LIST_KEY = "presnet-product-list-key";
@@ -75,7 +82,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
     TextView refundTextView;
     EditText receiptPersonEditText, branchEditText, accountEditText;
     private EditText prepaidAmountEditText;
-    ImageView backImg, confirmAndPrintImg;
+    ImageView backImg, confirmAndPrintImg, printImageButton;
     String paymentMethod = "", bankCardNo = "";
     RadioGroup bankOrCashRadioGroup;
     RadioButton bankRadio, cashRadio;
@@ -105,6 +112,8 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
     String check;
     boolean adapterFlag = true;
     LinearLayout layoutBranch, layoutBankAcc, taxLayout;
+    Invoice invoice;
+    ArrayList<InvoiceDetail> invoiceDetailList;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -438,6 +447,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
         backImg = (ImageView) findViewById(R.id.back_img);
         confirmAndPrintImg = (ImageView) findViewById(R.id.confirmAndPrint_img);
+        printImageButton = (ImageView) findViewById(R.id.button_print);
         bankOrCashRadioGroup = (RadioGroup) findViewById(R.id.activity_sale_checkout_radio_group);
         bankRadio = (RadioButton) findViewById(R.id.activity_sale_checkout_radio_bank);
         cashRadio = (RadioButton) findViewById(R.id.activity_sale_checkout_radio_cash);
@@ -584,6 +594,19 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                     layoutBranch.setVisibility(View.GONE);
                     layoutBankAcc.setVisibility(View.GONE);
                 }
+            }
+        });
+
+        printImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SaleCheckoutActivity.this, PrintInvoiceActivity.class);
+                intent.putExtra(SaleCheckoutActivity.INVOICE, SaleCheckoutActivity.this.invoice);
+                intent.putExtra(SaleCheckoutActivity.INVOICE_DETAIL
+                        , SaleCheckoutActivity.this.invoiceDetailList);
+                intent.putExtra(SaleCheckoutActivity.INVOICE_PRESENT
+                        , SaleCheckoutActivity.this.promotionArrayList);
+                startActivity(intent);
             }
         });
 
@@ -815,6 +838,21 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
         database.beginTransaction();
         for (SoldProduct soldProduct : soldProductList) {
+            InvoiceDetail invoiceDetail = new InvoiceDetail();
+            invoiceDetail.setTsaleId(invoiceId);
+            invoiceDetail.setProductId(soldProduct.getProduct().getStockId());
+            invoiceDetail.setQty(soldProduct.getQuantity());
+            invoiceDetail.setDiscountAmt(soldProduct.getDiscountAmount());
+            invoiceDetail.setAmt(soldProduct.getNetAmount(this));
+            invoiceDetail.setDiscountPercent(soldProduct.getDiscountPercent());
+            invoiceDetail.setS_price(soldProduct.getProduct().getPrice());
+            invoiceDetail.setP_price(soldProduct.getProduct().getPurchasePrice());
+            invoiceDetail.setPromotionPrice(soldProduct.getPromotionPrice());
+            invoiceDetail.setPromotion_plan_id(Integer.parseInt(soldProduct.getPromotionPlanId()));
+            invoiceDetail.setExclude(soldProduct.getExclude());
+            invoiceDetailList.add(invoiceDetail);
+
+            invoiceDetail.setTsaleId(invoiceId);
             ContentValues cvInvoiceProduct = new ContentValues();
             cvInvoiceProduct.put("INVOICE_PRODUCT_ID", invoiceId);
             cvInvoiceProduct.put("PRODUCT_ID", soldProduct.getProduct().getId());
@@ -841,6 +879,27 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             database.execSQL("UPDATE PRODUCT SET PRESENT_QTY = PRESENT_QTY + " + promotion.getPromotionQty() + " WHERE ID = \'" + promotion.getPromotionProductId() + "\'");
             database.execSQL("UPDATE PRODUCT SET REMAINING_QTY = REMAINING_QTY - " + promotion.getPromotionQty() + " WHERE ID = '" + promotion.getPromotionProductId() + "'");
         }
+
+
+        invoice.setId(invoiceId);
+        invoice.setCustomerId(customerId);
+        invoice.setDate(saleDate);
+        invoice.setTotalAmt(totalAmount);
+        invoice.setTotalQty(totolQtyForInvoice);
+        invoice.setTotalDiscountAmt(totalVolumeDiscount);
+        invoice.setTotalPayAmt(payAmount);
+        invoice.setTotalRefundAmt(refundAmount);
+        invoice.setReceiptPerson(receiptPersonName);
+        invoice.setSalepersonId(Integer.parseInt(salePersonId));
+        invoice.setLocationCode(locationCode);
+        invoice.setDeviceId(deviceId);
+        invoice.setInvoiceTime(invoiceTime);
+        invoice.setCurrencyId(1);
+        invoice.setInvoiceStatus(cashOrLoanOrBank);
+        invoice.setDiscountPercent(totalVolumeDiscountPercent);
+        invoice.setRate(1);
+        invoice.setTaxAmount(taxAmt);
+        invoice.setDueDate(dueDate);
 
         database.execSQL("INSERT INTO INVOICE VALUES (\""
                 + customerId + "\", \""

@@ -3,12 +3,13 @@ package com.aceplus.samparoo.model.forApi;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by phonelin on 2/13/17.
  */
-public class Invoice {
+public class Invoice implements Serializable{
     @SerializedName("id")
     @Expose
     private String id;

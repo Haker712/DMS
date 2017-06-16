@@ -66,6 +66,7 @@ public class ERouteMapFragment extends Fragment{
             @Override
             public void onMapReady(GoogleMap googleMap) {
                 mMap = googleMap;
+                mMap.getUiSettings().setMyLocationButtonEnabled(true);
 
                 if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     if (ContextCompat.checkSelfPermission(activity,

@@ -18,7 +18,7 @@ public class DisplayAssessment {
     @SerializedName("CustomerId")
     @Expose
     Integer customerId;
-    @SerializedName("SalemanId")
+    @SerializedName("SaleManId")
     @Expose
     Integer saleManId;
     @SerializedName("Image")
@@ -27,7 +27,7 @@ public class DisplayAssessment {
     @SerializedName("ImageName")
     @Expose
     String imageName;
-    @SerializedName("date_and_time")
+    @SerializedName("DateAndTime")
     @Expose
     String dateAndTime;
     @SerializedName("Remark")
