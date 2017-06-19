@@ -24,15 +24,6 @@
             android:src="@drawable/ic_done_hx_btn"
             android:layout_marginLeft="20dp"/>
 
-        <ImageView
-            android:id="@+id/button_print"
-            android:layout_width="@dimen/btn_appbar_width"
-            android:layout_height="@dimen/btn_appbar_height"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/confirmAndPrint_img"
-            android:src="@drawable/ic_done_hx_btn"
-            android:layout_marginLeft="20dp"/>
-
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"

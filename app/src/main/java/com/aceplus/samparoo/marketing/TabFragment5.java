@@ -80,6 +80,7 @@ public class TabFragment5 extends Fragment implements OnActionClickListener {
     String size_in_store_share_id = "", status = "";
     int count = 0, salemanId = 0;
     Cursor cursor;
+    String [] statusArr;
 
     int locationCode = 0, cus_id = 0;
 
@@ -129,12 +130,12 @@ public class TabFragment5 extends Fragment implements OnActionClickListener {
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.custom_simple_list_item_1, android.R.id.text1, productsForSearch);
         productsInGivenCategoryListView.setAdapter(arrayAdapter);
 
-        String [] status = new String[3];
-        status[0] = "Quantity";
-        status[1] = "Amount";
-        status[2] = "Percentage";
+        statusArr = new String[3];
+        statusArr[0] = "Quantity";
+        statusArr[1] = "Amount";
+        statusArr[2] = "Percentage";
 
-        ArrayAdapter<String> statusAdapter = new ArrayAdapter<String>(getActivity(), R.layout.custom_simple_list_item_1, android.R.id.text1, status);
+        ArrayAdapter<String> statusAdapter = new ArrayAdapter<String>(getActivity(), R.layout.custom_simple_list_item_1, android.R.id.text1, statusArr);
         statusSpinner.setAdapter(statusAdapter);
 
         searchProductTextView.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, productsForSearch));
@@ -277,16 +278,27 @@ public class TabFragment5 extends Fragment implements OnActionClickListener {
             status = "P";
         }
 
+        Cursor rowCountCursor = database.rawQuery("SELECT size_in_store_share_id AS COUNT FROM size_in_store_share", null);
+        int rowCount = 0;
+        while(rowCountCursor.moveToNext()) {
+            rowCount = rowCountCursor.getInt(rowCountCursor.getColumnIndex("COUNT")) + 1;
+        }
+
+        if(rowCount == 0) {
+            rowCount = 1;
+        }
+
         for (int i = 0; i < soldProductList.size(); i++) {
-            database.execSQL("INSERT INTO size_in_store_share VALUES (\""
-                    + size_in_store_share_id + "\", \""
+            database.execSQL("INSERT INTO size_in_store_share VALUES ("
+                    + rowCount + ", \""
                     + cus_id + "\", \""
                     + saleDate + "\", \""
                     + soldProductList.get(i).getProduct().getStockId() + "\", \""
                     + soldProductList.get(i).getSize_in_store_share() + "\", \""
                     + status + "\", \""
                     + remarkEditText.getText().toString() + "\", \""
-                    + salemanId + "\""
+                    + salemanId + "\", "
+                    + 0
                     + ")");
         }
 
@@ -390,7 +402,7 @@ public class TabFragment5 extends Fragment implements OnActionClickListener {
                     final View view = layoutInflater.inflate(R.layout.dialog_box_sale_quantity, null);
 
                     final TextView qtytxtview= (TextView) view.findViewById(R.id.dialog_sale_qty_txtView);
-                    qtytxtview.setText("Percent");
+                    qtytxtview.setText(statusArr[statusSpinner.getSelectedItemPosition()]);
 
                     final TextView sizeinstoreshare = (TextView) view.findViewById(R.id.availableQuantity);
                     sizeinstoreshare.setText("Size in Store Share");

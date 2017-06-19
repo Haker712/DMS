@@ -50,7 +50,7 @@ public interface UploadService {
     Call<InvoiceResponse> uploadDisplayAssessment(@Field("param_data") String paramData);
 
     @FormUrlEncoded
-    @POST("upload/competitorAndSizeAndStock")
+    @POST("upload/sizeAndStock")
     Call<InvoiceResponse> uploadcompetitorsizeinstore(@Field("param_data") String paramData);
 
     @FormUrlEncoded

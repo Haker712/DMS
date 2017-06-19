@@ -3,10 +3,12 @@ package com.aceplus.samparoo.model.forApi;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * Created by phonelin on 2/13/17.
  */
-public class InvoiceDetail {
+public class InvoiceDetail implements Serializable{
 
     @SerializedName("tsale_id")
     @Expose
@@ -37,10 +39,10 @@ public class InvoiceDetail {
     private Double promotionPrice;
     @SerializedName("promotion_plan_id")
     @Expose
-    private int promotion_plan_id;
+    private Integer promotion_plan_id;
     @SerializedName("exclude")
     @Expose
-    private int exclude;
+    private Integer exclude;
 
     public String getTsaleId() {
         return tsaleId;
@@ -114,19 +116,19 @@ public class InvoiceDetail {
         this.promotionPrice = promotionPrice;
     }
 
-    public int getPromotion_plan_id() {
+    public Integer getPromotion_plan_id() {
         return promotion_plan_id;
     }
 
-    public void setPromotion_plan_id(int promotion_plan_id) {
+    public void setPromotion_plan_id(Integer promotion_plan_id) {
         this.promotion_plan_id = promotion_plan_id;
     }
 
-    public int getExclude() {
+    public Integer getExclude() {
         return exclude;
     }
 
-    public void setExclude(int exclude) {
+    public void setExclude(Integer exclude) {
         this.exclude = exclude;
     }
 }

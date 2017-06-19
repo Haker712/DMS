@@ -82,7 +82,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
     TextView refundTextView;
     EditText receiptPersonEditText, branchEditText, accountEditText;
     private EditText prepaidAmountEditText;
-    ImageView backImg, confirmAndPrintImg, printImageButton;
+    ImageView backImg, confirmAndPrintImg;
     String paymentMethod = "", bankCardNo = "";
     RadioGroup bankOrCashRadioGroup;
     RadioButton bankRadio, cashRadio;
@@ -112,8 +112,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
     String check;
     boolean adapterFlag = true;
     LinearLayout layoutBranch, layoutBankAcc, taxLayout;
-    Invoice invoice;
-    ArrayList<InvoiceDetail> invoiceDetailList;
+    Invoice invoice = new Invoice();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -385,6 +384,8 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             Log.i("buy_amt", buy_amt + "");
             Log.i("volDisId", volDisId);
 
+            getTaxAmount();
+            taxAmt = calculateTax(totalAmount);
 
             totalAmountTextView.setText(Utils.formatAmount(totalAmount));
             double netAmount = 0.0;
@@ -396,8 +397,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             netAmountTextView.setText(Utils.formatAmount(netAmount));
             discountTextView.setText(Utils.formatAmount(totalVolumeDiscount) + " (" + new DecimalFormat("#0.00").format(totalVolumeDiscountPercent) + "%)");
         }
-        getTaxAmount();
-        taxAmt = calculateTax(totalAmount);
+
         taxTextView.setText(Utils.formatAmount(taxAmt) + " (" + new DecimalFormat("#0.00").format(taxPercent) + "%)");
     }
 
@@ -447,7 +447,6 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
         backImg = (ImageView) findViewById(R.id.back_img);
         confirmAndPrintImg = (ImageView) findViewById(R.id.confirmAndPrint_img);
-        printImageButton = (ImageView) findViewById(R.id.button_print);
         bankOrCashRadioGroup = (RadioGroup) findViewById(R.id.activity_sale_checkout_radio_group);
         bankRadio = (RadioButton) findViewById(R.id.activity_sale_checkout_radio_bank);
         cashRadio = (RadioButton) findViewById(R.id.activity_sale_checkout_radio_cash);
@@ -597,19 +596,6 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             }
         });
 
-        printImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(SaleCheckoutActivity.this, PrintInvoiceActivity.class);
-                intent.putExtra(SaleCheckoutActivity.INVOICE, SaleCheckoutActivity.this.invoice);
-                intent.putExtra(SaleCheckoutActivity.INVOICE_DETAIL
-                        , SaleCheckoutActivity.this.invoiceDetailList);
-                intent.putExtra(SaleCheckoutActivity.INVOICE_PRESENT
-                        , SaleCheckoutActivity.this.promotionArrayList);
-                startActivity(intent);
-            }
-        });
-
     }
 
     /**
@@ -625,7 +611,15 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                 updateSaleVisitRecord(customer.getId());
             }
 
-            Utils.backToCustomer(SaleCheckoutActivity.this);
+            Intent intent = new Intent(SaleCheckoutActivity.this, PrintInvoiceActivity.class);
+            intent.putExtra(SaleCheckoutActivity.INVOICE, SaleCheckoutActivity.this.invoice);
+            intent.putExtra(SaleCheckoutActivity.SOLD_PROUDCT_LIST_KEY
+                    , SaleCheckoutActivity.this.soldProductList);
+            intent.putExtra(SaleCheckoutActivity.INVOICE_PRESENT
+                    , SaleCheckoutActivity.this.promotionArrayList);
+            startActivity(intent);
+
+            //Utils.backToCustomer(SaleCheckoutActivity.this);
         }
     }
 
@@ -836,6 +830,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
         int totolQtyForInvoice = 0;
 
+        ArrayList<InvoiceDetail> invoiceDetailList = new ArrayList<>();
         database.beginTransaction();
         for (SoldProduct soldProduct : soldProductList) {
             InvoiceDetail invoiceDetail = new InvoiceDetail();
@@ -848,8 +843,15 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             invoiceDetail.setS_price(soldProduct.getProduct().getPrice());
             invoiceDetail.setP_price(soldProduct.getProduct().getPurchasePrice());
             invoiceDetail.setPromotionPrice(soldProduct.getPromotionPrice());
-            invoiceDetail.setPromotion_plan_id(Integer.parseInt(soldProduct.getPromotionPlanId()));
-            invoiceDetail.setExclude(soldProduct.getExclude());
+
+            if(soldProduct.getPromotionPlanId() != null && !soldProduct.getPromotionPlanId().equals("")) {
+                invoiceDetail.setPromotion_plan_id(Integer.parseInt(soldProduct.getPromotionPlanId()));
+            }
+
+            if(soldProduct.getExclude() != null && !soldProduct.getExclude().equals("")) {
+                invoiceDetail.setExclude(soldProduct.getExclude());
+            }
+
             invoiceDetailList.add(invoiceDetail);
 
             invoiceDetail.setTsaleId(invoiceId);
@@ -900,6 +902,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         invoice.setRate(1);
         invoice.setTaxAmount(taxAmt);
         invoice.setDueDate(dueDate);
+        invoice.setInvoiceDetail(invoiceDetailList);
 
         database.execSQL("INSERT INTO INVOICE VALUES (\""
                 + customerId + "\", \""

@@ -1442,9 +1442,14 @@ public class SyncActivity extends AppCompatActivity {
                         sqLiteDatabase.beginTransaction();
 
                         if (preOrderRequest.getData() != null && preOrderRequest.getData().get(0).getData().size() > 0) {
-                            updateDeleteFlag(DatabaseContract.PreOrder.tb, 1, DatabaseContract.PreOrder.invoice_id, preOrderRequest.getData().get(0).getData().get(0).getId());
-                            updateDeleteFlag(DatabaseContract.PreOrderDetail.tb, 1, DatabaseContract.PreOrderDetail.sale_order_id, preOrderRequest.getData().get(0).getData().get(0).getId());
-                            updateDeleteFlag("PRE_ORDER_PRESENT", 1, "pre_order_id", preOrderRequest.getData().get(0).getData().get(0).getId());
+                            for(PreOrderApi preOrderApi : preOrderRequest.getData().get(0).getData()) {
+                                updateDeleteFlag(DatabaseContract.PreOrder.tb, 1, DatabaseContract.PreOrder.invoice_id, preOrderApi.getId());
+                                updateDeleteFlag(DatabaseContract.PreOrderDetail.tb, 1, DatabaseContract.PreOrderDetail.sale_order_id, preOrderApi.getId());
+                            }
+
+                            for(PreOrderPresentApi preOrderPresentApi : preOrderRequest.getData().get(0).getPreorderPresent()) {
+                                updateDeleteFlag("PRE_ORDER_PRESENT", 1, "pre_order_id", preOrderPresentApi.getSaleOrderId());
+                            }
                         }
 
                         sqLiteDatabase.setTransactionSuccessful();
@@ -1657,8 +1662,10 @@ public class SyncActivity extends AppCompatActivity {
                         sqLiteDatabase.beginTransaction();
 
                         if (saleReturnRequest.getData() != null && saleReturnRequest.getData().get(0).getData().size() > 0) {
-                            updateDeleteFlag("SALE_RETURN", 1, "SALE_RETURN_ID", saleReturnRequest.getData().get(0).getData().get(0).getInvoiceNo());
-                            updateDeleteFlag("SALE_RETURN_DETAIL", 1, "SALE_RETURN_ID", saleReturnRequest.getData().get(0).getData().get(0).getInvoiceNo());
+                            for(SaleReturnApi saleReturnApi : saleReturnRequest.getData().get(0).getData()) {
+                                updateDeleteFlag("SALE_RETURN", 1, "SALE_RETURN_ID", saleReturnApi.getInvoiceNo());
+                                updateDeleteFlag("SALE_RETURN_DETAIL", 1, "SALE_RETURN_ID", saleReturnApi.getInvoiceNo());
+                            }
                         }
 
                         sqLiteDatabase.setTransactionSuccessful();
@@ -1923,7 +1930,9 @@ public class SyncActivity extends AppCompatActivity {
                         sqLiteDatabase.beginTransaction();
 
                         if (posmByCustomerRequest.getData() != null && posmByCustomerRequest.getData().get(0).getPosmByCustomerApiList().size() > 0) {
-                            updateDeleteFlag("POSM_BY_CUSTOMER", 1, "INVOICE_NO", posmByCustomerRequest.getData().get(0).getPosmByCustomerApiList().get(0).getInvoiceNo());
+                            for(PosmByCustomerApi posmByCustomerApi : posmByCustomerRequest.getData().get(0).getPosmByCustomerApiList()) {
+                                updateDeleteFlag("POSM_BY_CUSTOMER", 1, "INVOICE_NO", posmByCustomerApi.getInvoiceNo());
+                            }
                         }
 
                         sqLiteDatabase.setTransactionSuccessful();
@@ -2196,7 +2205,13 @@ public class SyncActivity extends AppCompatActivity {
                         if (!services.equals("")) {
                             services += ",";
                         }
-                        updateDeleteFlag("OUTLET_VISIBILITY", 1, "INVOICE_NO", displayAssessmentRequest.getData().get(0).getDisplayAssessment().get(0).getInvoiceNo());
+
+                        if(displayAssessmentRequest.getData() != null && displayAssessmentRequest.getData().get(0).getDisplayAssessment().size() > 0) {
+                            for(DisplayAssessment displayAssessment : displayAssessmentRequest.getData().get(0).getDisplayAssessment()) {
+                                updateDeleteFlag("OUTLET_VISIBILITY", 1, "INVOICE_NO", displayAssessment.getInvoiceNo());
+                            }
+                        }
+
                         services += " " + getResources().getString(R.string.display_assessment);
 
                         uploadCompetitorSizeinstoresharetoserver();
@@ -2230,7 +2245,7 @@ public class SyncActivity extends AppCompatActivity {
 
         List<DisplayAssessment> displayAssessmentList = new ArrayList<>();
 
-        Cursor cursor = sqLiteDatabase.rawQuery("select * from OUTLET_VISIBILITY", null);
+        Cursor cursor = sqLiteDatabase.rawQuery("select * from OUTLET_VISIBILITY WHERE DELETE_FLAG = 0", null);
 
         while (cursor.moveToNext()) {
 
@@ -2309,6 +2324,13 @@ public class SyncActivity extends AppCompatActivity {
 
                         services += " " + getResources().getString(R.string.outlet_stock_availability);
 
+                        if (competitorSizeinstoreshareRequest.getData() != null && competitorSizeinstoreshareRequest.getData().get(0).getSizeInStoreShare().size() > 0) {
+
+                            for(SizeInStoreShare sizeInStoreShare : competitorSizeinstoreshareRequest.getData().get(0).getSizeInStoreShare()) {
+                                updateDeleteFlag("size_in_store_share", 1, "size_in_store_share_id", sizeInStoreShare.getSizeInStoreShareNo());
+                            }
+
+                        }
                         uploadCustomerVisitToServer();
 
                     } else {
@@ -2353,7 +2375,6 @@ public class SyncActivity extends AppCompatActivity {
 
         CompetitorSizeinstoreshareData competitorSizeinstoreshareData = new CompetitorSizeinstoreshareData();
 
-        competitorSizeinstoreshareData.setCompetitorActivities(setCompetitorData());
         competitorSizeinstoreshareData.setSizeInStoreShare(setSizeinStoreData());
 
         competitorSizeinstoreshareDataList.add(competitorSizeinstoreshareData);
@@ -2392,7 +2413,7 @@ public class SyncActivity extends AppCompatActivity {
 
         int Customer_Id = 0;
 
-        Cursor cursor = sqLiteDatabase.rawQuery("select * from  size_in_store_share", null);
+        Cursor cursor = sqLiteDatabase.rawQuery("select * from size_in_store_share where DELETE_FLAG = 0", null);
 
         while (cursor.moveToNext()) {
 

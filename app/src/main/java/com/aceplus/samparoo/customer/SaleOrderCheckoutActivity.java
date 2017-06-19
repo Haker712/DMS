@@ -46,6 +46,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aceplus.samparoo.LoginActivity;
+import com.aceplus.samparoo.PrintInvoiceActivity;
 import com.aceplus.samparoo.R;
 import com.aceplus.samparoo.SyncActivity;
 import com.aceplus.samparoo.model.Customer;
@@ -57,6 +58,7 @@ import com.aceplus.samparoo.model.Promotion;
 import com.aceplus.samparoo.model.SoldProduct;
 import com.aceplus.samparoo.model.forApi.DeliveryApi;
 import com.aceplus.samparoo.model.forApi.DeliveryItemApi;
+import com.aceplus.samparoo.model.forApi.Invoice;
 import com.aceplus.samparoo.model.forApi.InvoiceResponse;
 import com.aceplus.samparoo.model.forApi.PreOrderApi;
 import com.aceplus.samparoo.model.forApi.PreOrderDetailApi;
@@ -163,6 +165,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
     RadioGroup bankOrCashRadioGroup;
     RadioButton bankRadio, cashRadio;
+    Invoice invoice;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -494,6 +497,9 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             Log.i("buy_amt", buy_amt + "");
             Log.i("volDisId", volDisId);
 
+            getTaxAmount();
+            taxAmt = calculateTax(totalAmount);
+
             txt_totalAmount.setText(Utils.formatAmount(totalAmount));
             double netAmount = 0.0;
             if(taxType.equalsIgnoreCase("E")) {
@@ -506,8 +512,6 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
         }
 
-        getTaxAmount();
-        taxAmt = calculateTax(totalAmount);
         taxTextView.setText(Utils.formatAmount(taxAmt) + " (" + new DecimalFormat("#0.00").format(taxPercent) + "%)");
     }
 
@@ -776,10 +780,12 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                         if(!phoneNo.equals("")) {
                             sendSMS(phoneNo, msg);
                             insertSMSRecord(phoneNo, msg);
+
+                            toPrintActivity();
                         }
 
                         alertDialog.dismiss();
-                        Utils.backToCustomer(SaleOrderCheckoutActivity.this);
+                        //Utils.backToCustomer(SaleOrderCheckoutActivity.this);
                     }
                 });
             }
@@ -886,6 +892,23 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                 + preOrder.getAdvancedPaymentAmount() + ", \""
                 + preOrder.getNetAmount() + "\""
                 + ")");*/
+
+        invoice = new Invoice();
+        invoice.setId(preOrder.getInvoiceId());
+        invoice.setCustomerId(preOrder.getCustomerId());
+        invoice.setDate(preOrder.getPreOrderDate());
+        invoice.setTotalAmt(totalAmount);
+        invoice.setTotalDiscountAmt(totalVolumeDiscount);
+        invoice.setTotalPayAmt(preOrder.getAdvancedPaymentAmount());
+        invoice.setSalepersonId(Integer.parseInt(preOrder.getSalePersonId()));
+        invoice.setLocationCode(locationCode);
+        invoice.setDeviceId(preOrder.getDeviceId());
+        invoice.setCurrencyId(1);
+        invoice.setInvoiceStatus(cashOrBank);
+        invoice.setDiscountPercent(totalVolumeDiscountPercent);
+        invoice.setRate(1);
+        invoice.setTaxAmount(taxAmt);
+        invoice.setDueDate(preOrder.getExpectedDeliveryDate());
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(DatabaseContract.PreOrder.invoice_id, preOrder.getInvoiceId());
@@ -998,7 +1021,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                                 .setAction("DONE", new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
-                                        Utils.backToCustomer(SaleOrderCheckoutActivity.this);
+                                        toPrintActivity();
                                     }
                                 });
 
@@ -1058,7 +1081,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                                 .setAction("DONE", new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
-                                        Utils.backToCustomer(SaleOrderCheckoutActivity.this);
+                                        //Utils.backToCustomer(SaleOrderCheckoutActivity.this);
                                     }
                                 });
 
@@ -1142,9 +1165,16 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                 preOrderDetailApi.setPromotionPrice(preOrderProduct.getPromotionPrice());
                 preOrderDetailApi.setVolumeDiscount(preOrderProduct.getVolumeDiscount());
                 preOrderDetailApi.setVolumeDiscountPer(preOrderProduct.getVolumeDiscountPer());
-                preOrderDetailApi.setExclude(preOrderProduct.getExclude());
+
+                if(preOrderProduct.getExclude() != null && !preOrderProduct.getExclude().equals("")) {
+                    preOrderDetailApi.setExclude(preOrderProduct.getExclude());
+                }
+
                 preOrderDetailApi.setS_Price(preOrderProduct.getPrice());
-                preOrderDetailApi.setPromotionPlanId(preOrderProduct.getPromotionPlanId());
+
+                if(preOrderProduct.getPromotionPlanId() != null && !preOrderProduct.getPromotionPlanId().equals("")) {
+                    preOrderDetailApi.setPromotionPlanId(preOrderProduct.getPromotionPlanId());
+                }
                 preOrderDetailApiList.add(preOrderDetailApi);
             }
 
@@ -1310,6 +1340,16 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         finish();
     }
 
+    private void toPrintActivity() {
+        Intent intent = new Intent(SaleOrderCheckoutActivity.this, PrintInvoiceActivity.class);
+        intent.putExtra(SaleCheckoutActivity.INVOICE, SaleOrderCheckoutActivity.this.invoice);
+        intent.putExtra(SaleCheckoutActivity.SOLD_PROUDCT_LIST_KEY
+                , SaleOrderCheckoutActivity.this.soldProductList);
+        intent.putExtra(SaleCheckoutActivity.INVOICE_PRESENT
+                , SaleOrderCheckoutActivity.this.promotionArrayList);
+        startActivity(intent);
+    }
+
     private void insertDeliveryDataToDatabase(Deliver deliver) {
 
         String saleDate = Utils.getCurrentDate(true);
@@ -1357,6 +1397,25 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                 + 1 + ", "
                 + taxAmt
                 + ")");
+
+        invoice.setId(invoiceId);
+        invoice.setCustomerId(String.valueOf(customer.getId()));
+        invoice.setDate(saleDate);
+        invoice.setTotalAmt(totalAmount);
+        invoice.setTotalQty(totalQuantity);
+        invoice.setTotalDiscountAmt(totalVolumeDiscount);
+        invoice.setTotalPayAmt(paidAmount);
+        invoice.setReceiptPerson(receiptPersonEditText.getText().toString());
+        invoice.setSalepersonId(Integer.parseInt(salePersonId));
+        invoice.setLocationCode(locationCode);
+        invoice.setDeviceId(Utils.getDeviceId(SaleOrderCheckoutActivity.this));
+        invoice.setInvoiceTime(invoiceTime);
+        invoice.setCurrencyId(1);
+        invoice.setInvoiceStatus(null);
+        invoice.setDiscountPercent(totalVolumeDiscountPercent);
+        invoice.setRate(1);
+        invoice.setTaxAmount(taxAmt);
+        invoice.setDueDate(dueDate);
 
         /*database.execSQL("INSERT INTO INVOICE VALUES (\""
                 + customer.getId() + "\", \""
@@ -1489,6 +1548,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             } else {
                 sendSMSMessage();
             }
+
         } else if(isDelivery) {
             if (SaleOrderCheckoutActivity.this.receiptPersonEditText.getText().length() == 0) {
 
@@ -1508,7 +1568,8 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             }
 
             insertDeliveryDataToDatabase(orderedInvoice);
-            toDeliveryActivity();
+            toPrintActivity();
+            //toDeliveryActivity();
         }
     }
 
