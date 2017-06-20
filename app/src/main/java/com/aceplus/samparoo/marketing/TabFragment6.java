@@ -65,10 +65,6 @@ public class TabFragment6 extends Fragment {
 
     ImageView Cancelimg;
 
-
-
-
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

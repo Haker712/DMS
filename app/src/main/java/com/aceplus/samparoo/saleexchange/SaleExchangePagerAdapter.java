@@ -4,12 +4,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import com.aceplus.samparoo.marketing.TabFragment1;
-import com.aceplus.samparoo.marketing.TabFragment2;
-import com.aceplus.samparoo.marketing.TabFragment3;
-import com.aceplus.samparoo.marketing.TabFragment4;
-import com.aceplus.samparoo.marketing.TabFragment5;
-
 /**
  * Created by phonelin on 2/23/17.
  */

@@ -77,6 +77,8 @@ public class Customer implements Serializable {
     @Expose
     private int shopTypeId;
 
+    private int flag;
+
     public Customer(){}
 
     public Customer(String customerId, String customerName, String customerTypeId, String customerTypeName, String address
@@ -290,5 +292,13 @@ public class Customer implements Serializable {
 
     public void setShopTypeId(int shopTypeId) {
         this.shopTypeId = shopTypeId;
+    }
+
+    public int getFlag() {
+        return flag;
+    }
+
+    public void setFlag(int flag) {
+        this.flag = flag;
     }
 }

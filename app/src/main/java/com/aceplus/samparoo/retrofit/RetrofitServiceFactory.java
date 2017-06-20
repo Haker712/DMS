@@ -40,7 +40,6 @@ public class RetrofitServiceFactory {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         httpClient.addInterceptor(loggingInterceptor);
-        httpClient.addInterceptor(loggingInterceptor);
         httpClient.addInterceptor(new Interceptor() {
             @Override
             public Response intercept(Chain chain) throws IOException {
@@ -80,7 +79,6 @@ public class RetrofitServiceFactory {
 
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        httpClient.addInterceptor(loggingInterceptor);
         httpClient.addInterceptor(loggingInterceptor);
         httpClient.addInterceptor(new Interceptor() {
             @Override

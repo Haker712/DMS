@@ -3,12 +3,13 @@ package com.aceplus.samparoo.model.forApi;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by phonelin on 2/13/17.
  */
-public class Invoice {
+public class Invoice implements Serializable{
     @SerializedName("id")
     @Expose
     private String id;
@@ -57,6 +58,18 @@ public class Invoice {
     @SerializedName("invoice_status")
     @Expose
     private String invoiceStatus;
+    @SerializedName("discount_per")
+    @Expose
+    private double discountPercent;
+    @SerializedName("rate")
+    @Expose
+    private double rate;
+    @SerializedName("tax_amt")
+    @Expose
+    private double taxAmount;
+    @SerializedName("due_date")
+    @Expose
+    private String dueDate;
 
     public String getId() {
         return id;
@@ -184,5 +197,37 @@ public class Invoice {
 
     public void setInvoiceStatus(String invoiceStatus) {
         this.invoiceStatus = invoiceStatus;
+    }
+
+    public double getDiscountPercent() {
+        return discountPercent;
+    }
+
+    public void setDiscountPercent(double discountPercent) {
+        this.discountPercent = discountPercent;
+    }
+
+    public double getRate() {
+        return rate;
+    }
+
+    public void setRate(double rate) {
+        this.rate = rate;
+    }
+
+    public double getTaxAmount() {
+        return taxAmount;
+    }
+
+    public void setTaxAmount(double taxAmount) {
+        this.taxAmount = taxAmount;
+    }
+
+    public String getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(String dueDate) {
+        this.dueDate = dueDate;
     }
 }

@@ -83,7 +83,7 @@ public class FragmentDeliveryInvoiceReport extends Fragment {
                     DeliveryInvoiceDetail deliveryInvoiceDetail = new DeliveryInvoiceDetail();
 
 
-                    qty = cursor.getString(cursor.getColumnIndex("DELIVERY_QTY"));
+                    qty = cursor.getString(cursor.getColumnIndex("QUANTITY"));
                     String pro_Id = cursor.getString(cursor.getColumnIndex("STOCK_ID"));
 
                     Cursor cursor1 = database.rawQuery("select * from PRODUCT where ID='" + pro_Id + "'", null);

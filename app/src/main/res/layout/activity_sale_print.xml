@@ -120,6 +120,7 @@
 			    android:layout_height="wrap_content"
 			    android:layout_marginLeft="5dp" />
 	    </LinearLayout>
+
 	</LinearLayout>
 
 	<RelativeLayout
@@ -137,7 +138,7 @@
             <TextView 
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="4"
+				android:layout_weight="3"
                 android:gravity="center_horizontal"
                 android:text="@string/product"
                 android:textStyle="bold"
@@ -202,7 +203,7 @@
                     android:gravity="right" />
 
                 <TextView
-                    android:id="@+id/totalAmount"
+                    android:id="@+id/print_totalAmount"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
@@ -210,6 +211,8 @@
                     android:gravity="right"
                     android:text="10000" />
             </LinearLayout>
+
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -224,7 +227,7 @@
                     android:gravity="right" />
 
                 <TextView
-                    android:id="@+id/prepaidAmount"
+                    android:id="@+id/print_prepaidAmount"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
@@ -235,7 +238,7 @@
         </LinearLayout>
 
 	    <ListView
-            android:id="@+id/soldProductList"
+            android:id="@+id/print_soldProductList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/headerLayout"

@@ -70,10 +70,10 @@
     <string name="prospect_customer">Prospect Customer</string>
 
     <string name="outlet_external_check">OUTLET EXTERNAL CHECK</string>
-    <string name="display_assessment">DISPLAY ASSESSMENT</string>
+    <string name="display_assessment">DISPLAY PROGRAM</string>
     <string name="competitor_activitites">COMPETITORS ACTIVITIES</string>
     <string name="outlet_stock_availability">OULTET STOCK AVAILABILITY</string>
-    <string name="size_in_store_share">SIZE IN STORE SHARE</string>
+    <string name="size_in_store_share">SIZE AND STOCK SHARE</string>
 
     <string name="route_title">E-ROUTE</string>
     <string name="credit_collection">CREDIT COLLECTION</string>
@@ -118,4 +118,12 @@
     <string name="vd_filter_category">CATEGORY</string>
     <string name="vd_filter_group">GROUP</string>
 
+    <!-- Print -->
+    <string name="str_connected">connected </string>
+    <string name="str_disconnected">not connected to </string>
+    <string name="str_connecting">connecting to </string>
+    <string name="str_exit">Sure exit and close the equipment?</string>
+    <string name="str_scan">scanning equipment</string>
+    <string name="str_device">device</string>
+    <string name="str_scaning">scanning</string>
 </resources>

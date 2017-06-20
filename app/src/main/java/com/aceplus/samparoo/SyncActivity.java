@@ -942,7 +942,7 @@ public class SyncActivity extends AppCompatActivity {
 
     }
 
-    private void downloadMarketingfromServer(final String paramData) {
+    /*private void downloadMarketingfromServer(final String paramData) {
 
         DownloadService downloadService = RetrofitServiceFactory.createService(DownloadService.class);
         Call<DownloadMarketing> call = downloadService.getMarketingFromApi(paramData);
@@ -985,7 +985,7 @@ public class SyncActivity extends AppCompatActivity {
         });
 
 
-    }
+    }*/
 
     private void insertClassOfProduct(List<ClassOfProduct> classOfProductList) {
         for (ClassOfProduct classOfProduct : classOfProductList) {
@@ -1188,6 +1188,14 @@ public class SyncActivity extends AppCompatActivity {
             Double totalRefundAmount = cursor_invoice.getDouble(cursor_invoice.getColumnIndex("REFUND_AMOUNT"));
             String receiptPerson = cursor_invoice.getString(cursor_invoice.getColumnIndex("RECEIPT_PERSON_NAME"));
             String invoiceStatus = cursor_invoice.getString(cursor_invoice.getColumnIndex("CASH_OR_CREDIT"));
+            Double totalDiscountPer = cursor_invoice.getDouble(cursor_invoice.getColumnIndex("TOTAL_DISCOUNT_PERCENT"));
+            String rate = cursor_invoice.getString(cursor_invoice.getColumnIndex("RATE"));
+            Double tax = cursor_invoice.getDouble(cursor_invoice.getColumnIndex("TAX_AMOUNT"));
+            String dueDate = cursor_invoice.getString(cursor_invoice.getColumnIndex("DUE_DATE"));
+
+            if(dueDate.equals("null") || dueDate.equals("NULL")) {
+                dueDate = null;
+            }
 
             invoice.setId(invoice_Id);
             invoice.setCustomerId(customer_Id);
@@ -1200,11 +1208,14 @@ public class SyncActivity extends AppCompatActivity {
             invoice.setReceiptPerson(receiptPerson);
             invoice.setSalepersonId(cursor_invoice.getInt(cursor_invoice.getColumnIndex("SALE_PERSON_ID")));
             invoice.setLocationCode(cursor_invoice.getInt(cursor_invoice.getColumnIndex("LOCATION_CODE")));
-            //invoice.setDeviceId(cursor_invoice.getString(cursor_invoice.getColumnIndex("DEVICE_ID")));
-            invoice.setDeviceId("");
+            invoice.setDeviceId(cursor_invoice.getString(cursor_invoice.getColumnIndex("DEVICE_ID")));
             invoice.setInvoiceTime(cursor_invoice.getString(cursor_invoice.getColumnIndex("INVOICE_TIME")));
             invoice.setCurrencyId(currencyId);
             invoice.setInvoiceStatus(invoiceStatus);
+            invoice.setDiscountPercent(totalDiscountPer);
+            invoice.setRate(Double.parseDouble(rate));
+            invoice.setTaxAmount(tax);
+            invoice.setDueDate(dueDate);
 
             List<InvoiceDetail> invoiceDetailList = new ArrayList<>();
 
@@ -1212,12 +1223,16 @@ public class SyncActivity extends AppCompatActivity {
             while (cur_invoiceDetail.moveToNext()) {
                 InvoiceDetail invoiceDetail = new InvoiceDetail();
                 String tsale_Id = cur_invoiceDetail.getString(cur_invoiceDetail.getColumnIndex("INVOICE_PRODUCT_ID"));
-                String product_Id = cur_invoiceDetail.getString(cur_invoiceDetail.getColumnIndex("PRODUCT_ID"));
+                int product_Id = cur_invoiceDetail.getInt(cur_invoiceDetail.getColumnIndex("PRODUCT_ID"));
                 int quantity = cur_invoiceDetail.getInt(cur_invoiceDetail.getColumnIndex("SALE_QUANTITY"));
                 Double discountAmount = cur_invoiceDetail.getDouble(cur_invoiceDetail.getColumnIndex("DISCOUNT_AMOUNT"));
                 Double amount = cur_invoiceDetail.getDouble(cur_invoiceDetail.getColumnIndex("TOTAL_AMOUNT"));
                 Double discount_percent = cur_invoiceDetail.getDouble(cur_invoiceDetail.getColumnIndex("DISCOUNT_PERCENT"));
-
+                Double sPrice = cur_invoiceDetail.getDouble(cur_invoiceDetail.getColumnIndex("S_PRICE"));
+                Double pPrice = cur_invoiceDetail.getDouble(cur_invoiceDetail.getColumnIndex("P_PRICE"));
+                Double promotionPrice = cur_invoiceDetail.getDouble(cur_invoiceDetail.getColumnIndex("PROMOTION_PRICE"));
+                int promotionPlanId = cur_invoiceDetail.getInt(cur_invoiceDetail.getColumnIndex("PROMOTION_PLAN_ID"));
+                int exclude = cur_invoiceDetail.getInt(cur_invoiceDetail.getColumnIndex("EXCLUDE"));
 
                 invoiceDetail.setTsaleId(tsale_Id);
                 invoiceDetail.setProductId(product_Id);
@@ -1225,6 +1240,11 @@ public class SyncActivity extends AppCompatActivity {
                 invoiceDetail.setDiscountAmt(discountAmount);
                 invoiceDetail.setAmt(amount);
                 invoiceDetail.setDiscountPercent(discount_percent);
+                invoiceDetail.setS_price(sPrice);
+                invoiceDetail.setP_price(pPrice);
+                invoiceDetail.setPromotionPrice(promotionPrice);
+                invoiceDetail.setPromotion_plan_id(promotionPlanId);
+                invoiceDetail.setExclude(exclude);
 
                 invoiceDetailList.add(invoiceDetail);
             }
@@ -1253,12 +1273,11 @@ public class SyncActivity extends AppCompatActivity {
             invoicePresent.setTsaleId(tsale_Id);
             invoicePresent.setStockId(stock_Id);
             invoicePresent.setQuantity(quantity);
-
-            //invoicePresent.setPcAddress(cursor_InvoicePresent.getString(cursor_InvoicePresent.getColumnIndex("pc_address")));
-            invoicePresent.setPcAddress("");
+            invoicePresent.setPcAddress(cursor_InvoicePresent.getString(cursor_InvoicePresent.getColumnIndex("pc_address")));
             invoicePresent.setLocationId(cursor_InvoicePresent.getString(cursor_InvoicePresent.getColumnIndex("location_id")));
             invoicePresent.setPrice(cursor_InvoicePresent.getDouble(cursor_InvoicePresent.getColumnIndex("price")));
             invoicePresent.setCurrencyId(currencyId);
+            invoicePresent.setRate(cursor_InvoicePresent.getDouble(cursor_InvoicePresent.getColumnIndex("rate")));
             invoicePresentList.add(invoicePresent);
         }
 
@@ -1423,9 +1442,14 @@ public class SyncActivity extends AppCompatActivity {
                         sqLiteDatabase.beginTransaction();
 
                         if (preOrderRequest.getData() != null && preOrderRequest.getData().get(0).getData().size() > 0) {
-                            updateDeleteFlag(DatabaseContract.PreOrder.tb, 1, DatabaseContract.PreOrder.invoice_id, preOrderRequest.getData().get(0).getData().get(0).getId());
-                            updateDeleteFlag(DatabaseContract.PreOrderDetail.tb, 1, DatabaseContract.PreOrderDetail.sale_order_id, preOrderRequest.getData().get(0).getData().get(0).getId());
-                            updateDeleteFlag("PRE_ORDER_PRESENT", 1, "pre_order_id", preOrderRequest.getData().get(0).getData().get(0).getId());
+                            for(PreOrderApi preOrderApi : preOrderRequest.getData().get(0).getData()) {
+                                updateDeleteFlag(DatabaseContract.PreOrder.tb, 1, DatabaseContract.PreOrder.invoice_id, preOrderApi.getId());
+                                updateDeleteFlag(DatabaseContract.PreOrderDetail.tb, 1, DatabaseContract.PreOrderDetail.sale_order_id, preOrderApi.getId());
+                            }
+
+                            for(PreOrderPresentApi preOrderPresentApi : preOrderRequest.getData().get(0).getPreorderPresent()) {
+                                updateDeleteFlag("PRE_ORDER_PRESENT", 1, "pre_order_id", preOrderPresentApi.getSaleOrderId());
+                            }
                         }
 
                         sqLiteDatabase.setTransactionSuccessful();
@@ -1483,8 +1507,8 @@ public class SyncActivity extends AppCompatActivity {
             preOrderApi.setLocationId(preOrder.getLocationId());
             preOrderApi.setDiscount(preOrder.getDiscount());
             preOrderApi.setDiscountPer(preOrder.getDiscountPer());
-            preOrderApi.setVolumeDiscount(preOrder.getVolumeDiscount());
-            preOrderApi.setVolumeDiscountPer(preOrder.getVolumeDiscountPer());
+            preOrderApi.setTaxAmount(preOrder.getTaxAmount());
+            preOrderApi.setRemark(preOrder.getRemark());
 
             for (PreOrderPresentApi preOrderPresentApi : getPreOrderPresentFromDatabase(preOrder.getInvoiceId())) {
                 preOrderPresentApiList.add(preOrderPresentApi);
@@ -1502,6 +1526,8 @@ public class SyncActivity extends AppCompatActivity {
                 preOrderDetailApi.setVolumeDiscount(preOrderProduct.getVolumeDiscount());
                 preOrderDetailApi.setVolumeDiscountPer(preOrderProduct.getVolumeDiscountPer());
                 preOrderDetailApi.setExclude(preOrderProduct.getExclude());
+                preOrderDetailApi.setS_Price(preOrderProduct.getPrice());
+                preOrderDetailApi.setPromotionPlanId(preOrderProduct.getPromotionPlanId());
                 preOrderDetailApiList.add(preOrderDetailApi);
             }
 
@@ -1553,8 +1579,8 @@ public class SyncActivity extends AppCompatActivity {
             preOrder.setLocationId(cursorPreOrder.getInt(cursorPreOrder.getColumnIndex(DatabaseContract.PreOrder.location_id)));
             preOrder.setDiscount(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex(DatabaseContract.PreOrder.discount)));
             preOrder.setDiscountPer(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex(DatabaseContract.PreOrder.discount_per)));
-            preOrder.setVolumeDiscount(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex(DatabaseContract.PreOrder.volume_discount)));
-            preOrder.setVolumeDiscountPer(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex(DatabaseContract.PreOrder.volume_discount_per)));
+            preOrder.setTaxAmount(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex("TAX_AMOUNT")));
+            preOrder.setRemark(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("REMARK")));
             preOrderList.add(preOrder);
         }
 
@@ -1582,6 +1608,8 @@ public class SyncActivity extends AppCompatActivity {
             preOrderProduct.setVolumeDiscount(cursorPreOrderProduct.getDouble(cursorPreOrderProduct.getColumnIndex(DatabaseContract.PreOrderDetail.volume_discount)));
             preOrderProduct.setVolumeDiscountPer(cursorPreOrderProduct.getDouble(cursorPreOrderProduct.getColumnIndex(DatabaseContract.PreOrderDetail.volume_discount_per)));
             preOrderProduct.setExclude(cursorPreOrderProduct.getInt(cursorPreOrderProduct.getColumnIndex(DatabaseContract.PreOrderDetail.exclude)));
+            preOrderProduct.setPromotionPlanId(cursorPreOrderProduct.getInt(cursorPreOrderProduct.getColumnIndex("PROMOTION_PLAN_ID")));
+
             preOrderProductList.add(preOrderProduct);
         }
 
@@ -1603,6 +1631,7 @@ public class SyncActivity extends AppCompatActivity {
             preOrderPresentApi.setSaleOrderId(cursorPreOrderPresent.getString(cursorPreOrderPresent.getColumnIndex("pre_order_id")));
             preOrderPresentApi.setProductId(Integer.parseInt(cursorPreOrderPresent.getString(cursorPreOrderPresent.getColumnIndex("stock_id"))));
             preOrderPresentApi.setQuantity(cursorPreOrderPresent.getInt(cursorPreOrderPresent.getColumnIndex("quantity")));
+            preOrderPresentApi.setStatus(cursorPreOrderPresent.getString(cursorPreOrderPresent.getColumnIndex("status")));
             preOrderPresentList.add(preOrderPresentApi);
         }
 
@@ -1633,8 +1662,10 @@ public class SyncActivity extends AppCompatActivity {
                         sqLiteDatabase.beginTransaction();
 
                         if (saleReturnRequest.getData() != null && saleReturnRequest.getData().get(0).getData().size() > 0) {
-                            updateDeleteFlag("SALE_RETURN", 1, "SALE_RETURN_ID", saleReturnRequest.getData().get(0).getData().get(0).getInvoiceNo());
-                            updateDeleteFlag("SALE_RETURN_DETAIL", 1, "SALE_RETURN_ID", saleReturnRequest.getData().get(0).getData().get(0).getInvoiceNo());
+                            for(SaleReturnApi saleReturnApi : saleReturnRequest.getData().get(0).getData()) {
+                                updateDeleteFlag("SALE_RETURN", 1, "SALE_RETURN_ID", saleReturnApi.getInvoiceNo());
+                                updateDeleteFlag("SALE_RETURN_DETAIL", 1, "SALE_RETURN_ID", saleReturnApi.getInvoiceNo());
+                            }
                         }
 
                         sqLiteDatabase.setTransactionSuccessful();
@@ -1687,6 +1718,10 @@ public class SyncActivity extends AppCompatActivity {
             saleReturnApi.setAmount(saleReturn.getAmt());
             saleReturnApi.setPayAmount(saleReturn.getPayAmt());
             saleReturnApi.setCurrencyId(currencyId);
+            saleReturnApi.setRate(1);
+            saleReturnApi.setInvoiceStatus("CR");
+            saleReturnApi.setSaleManId(Integer.parseInt(saleman_Id));
+            saleReturnApi.setSaleId(1);
 
             List<SaleReturnDetail> saleReturnDetailList = getSaleReturnDetailFromDatabase(saleReturn.getSaleReturnId());
 
@@ -1895,7 +1930,9 @@ public class SyncActivity extends AppCompatActivity {
                         sqLiteDatabase.beginTransaction();
 
                         if (posmByCustomerRequest.getData() != null && posmByCustomerRequest.getData().get(0).getPosmByCustomerApiList().size() > 0) {
-                            updateDeleteFlag("POSM_BY_CUSTOMER", 1, "INVOICE_NO", posmByCustomerRequest.getData().get(0).getPosmByCustomerApiList().get(0).getInvoiceNo());
+                            for(PosmByCustomerApi posmByCustomerApi : posmByCustomerRequest.getData().get(0).getPosmByCustomerApiList()) {
+                                updateDeleteFlag("POSM_BY_CUSTOMER", 1, "INVOICE_NO", posmByCustomerApi.getInvoiceNo());
+                            }
                         }
 
                         sqLiteDatabase.setTransactionSuccessful();
@@ -2169,6 +2206,12 @@ public class SyncActivity extends AppCompatActivity {
                             services += ",";
                         }
 
+                        if(displayAssessmentRequest.getData() != null && displayAssessmentRequest.getData().get(0).getDisplayAssessment().size() > 0) {
+                            for(DisplayAssessment displayAssessment : displayAssessmentRequest.getData().get(0).getDisplayAssessment()) {
+                                updateDeleteFlag("OUTLET_VISIBILITY", 1, "INVOICE_NO", displayAssessment.getInvoiceNo());
+                            }
+                        }
+
                         services += " " + getResources().getString(R.string.display_assessment);
 
                         uploadCompetitorSizeinstoresharetoserver();
@@ -2202,28 +2245,32 @@ public class SyncActivity extends AppCompatActivity {
 
         List<DisplayAssessment> displayAssessmentList = new ArrayList<>();
 
-
-        Cursor cursor = sqLiteDatabase.rawQuery("select * from DISPLAY_ASSESSMENT", null);
+        Cursor cursor = sqLiteDatabase.rawQuery("select * from OUTLET_VISIBILITY WHERE DELETE_FLAG = 0", null);
 
         while (cursor.moveToNext()) {
 
             DisplayAssessment displayAssessment = new DisplayAssessment();
             String invoice_No = cursor.getString(cursor.getColumnIndex("INVOICE_NO"));
             String invoice_Date = cursor.getString(cursor.getColumnIndex("INVOICE_DATE"));
-            String customer_Id = cursor.getString(cursor.getColumnIndex("CUSTOMER_ID"));
-            String saleman_Id = cursor.getString(cursor.getColumnIndex("SALE_MAN_ID"));
+            Integer customer_Id = cursor.getInt(cursor.getColumnIndex("CUSTOMER_ID"));
+            Integer saleman_Id = cursor.getInt(cursor.getColumnIndex("SALE_MAN_ID"));
             String image = cursor.getString(cursor.getColumnIndex("IMAGE"));
+            String imageName = cursor.getString(cursor.getColumnIndex("IMAGE_NAME"));
+            String dateAndTime = cursor.getString(cursor.getColumnIndex("DATE_AND_TIME"));
+            String remark = cursor.getString(cursor.getColumnIndex("REMARK"));
 
-            displayAssessment.setInvoice_No(invoice_No);
-            displayAssessment.setInvoice_Date(invoice_Date);
-            displayAssessment.setCustomer_Id(customer_Id);
-            displayAssessment.setSaleman_Id(saleman_Id);
+            displayAssessment.setInvoiceNo(invoice_No);
+            displayAssessment.setInvoiceDate(invoice_Date);
+            displayAssessment.setCustomerId(customer_Id);
+            displayAssessment.setSaleManId(saleman_Id);
             displayAssessment.setImage(image);
+            displayAssessment.setImageName(imageName);
+            displayAssessment.setDateAndTime(dateAndTime);
+            displayAssessment.setRemark(remark);
 
             displayAssessmentList.add(displayAssessment);
 
         }
-
 
         return displayAssessmentList;
     }
@@ -2277,6 +2324,13 @@ public class SyncActivity extends AppCompatActivity {
 
                         services += " " + getResources().getString(R.string.outlet_stock_availability);
 
+                        if (competitorSizeinstoreshareRequest.getData() != null && competitorSizeinstoreshareRequest.getData().get(0).getSizeInStoreShare().size() > 0) {
+
+                            for(SizeInStoreShare sizeInStoreShare : competitorSizeinstoreshareRequest.getData().get(0).getSizeInStoreShare()) {
+                                updateDeleteFlag("size_in_store_share", 1, "size_in_store_share_id", sizeInStoreShare.getSizeInStoreShareNo());
+                            }
+
+                        }
                         uploadCustomerVisitToServer();
 
                     } else {
@@ -2321,7 +2375,6 @@ public class SyncActivity extends AppCompatActivity {
 
         CompetitorSizeinstoreshareData competitorSizeinstoreshareData = new CompetitorSizeinstoreshareData();
 
-        competitorSizeinstoreshareData.setCompetitorActivities(setCompetitorData());
         competitorSizeinstoreshareData.setSizeInStoreShare(setSizeinStoreData());
 
         competitorSizeinstoreshareDataList.add(competitorSizeinstoreshareData);
@@ -2360,28 +2413,29 @@ public class SyncActivity extends AppCompatActivity {
 
         int Customer_Id = 0;
 
-        Cursor cursor = sqLiteDatabase.rawQuery("select * from  size_in_store_share", null);
+        Cursor cursor = sqLiteDatabase.rawQuery("select * from size_in_store_share where DELETE_FLAG = 0", null);
 
         while (cursor.moveToNext()) {
 
             SizeInStoreShare sizeInStoreShare = new SizeInStoreShare();
 
             String sizeInStoreShareNo = cursor.getString(cursor.getColumnIndex("size_in_store_share_id"));
-            String cus_Id = cursor.getString(cursor.getColumnIndex("customer_id"));
+            Integer cus_Id = cursor.getInt(cursor.getColumnIndex("customer_id"));
             String date = cursor.getString(cursor.getColumnIndex("date"));
-
-            Cursor cursor2 = sqLiteDatabase.rawQuery("select * from CUSTOMER where CUSTOMER_ID='" + cus_Id + "'", null);
-
-            while (cursor2.moveToNext()) {
-
-                Customer_Id = cursor2.getInt(cursor2.getColumnIndex("id"));
-
-            }
+            Integer stockId = cursor.getInt(cursor.getColumnIndex("stock_id"));
+            Integer quantity = cursor.getInt(cursor.getColumnIndex("quantity"));
+            String status = cursor.getString(cursor.getColumnIndex("status"));
+            String remark = cursor.getString(cursor.getColumnIndex("remark"));
+            Integer salemanId = cursor.getInt(cursor.getColumnIndex("saleman_id"));
 
             sizeInStoreShare.setSizeInStoreShareNo(sizeInStoreShareNo);
-            sizeInStoreShare.setCustomerId(Customer_Id);
+            sizeInStoreShare.setCustomerId(cus_Id);
             sizeInStoreShare.setDate(date);
-            sizeInStoreShare.setSizeInStoreShareItem(getSizeinStoreDetailfromDB());
+            sizeInStoreShare.setStockId(stockId);
+            sizeInStoreShare.setQuantity(quantity);
+            sizeInStoreShare.setStatus(status);
+            sizeInStoreShare.setRemark(remark);
+            sizeInStoreShare.setSalemanId(salemanId);
 
             sizeInStoreShareList.add(sizeInStoreShare);
         }
@@ -2504,8 +2558,33 @@ public class SyncActivity extends AppCompatActivity {
      * @param paramData param data
      */
     private void downloadCreditFromServer(final String paramData) {
+
+        LoginCreditRequest loginRequest = new LoginCreditRequest();
+        loginRequest.setSiteActivationKey(Constant.SITE_ACTIVATION_KEY);
+        loginRequest.setTabletActivationKey(Constant.TABLET_ACTIVATION_KEY);
+        loginRequest.setUserId(saleman_No);
+        loginRequest.setPassword(saleman_Pwd);
+        loginRequest.setDate(Utils.getCurrentDate(false));
+        loginRequest.setRoute(getRouteID(saleman_Id));
+
+        Cursor customerCursor = sqLiteDatabase.rawQuery("SELECT id FROM CUSTOMER", null);
+        ArrayList<CreditApi> creditApiList = new ArrayList<>();
+        List<Integer> idList = new ArrayList<>();
+
+        CreditApi creditApi = new CreditApi();
+
+        while(customerCursor.moveToNext()) {
+            Integer id = customerCursor.getInt(customerCursor.getColumnIndex("id"));
+            idList.add(id);
+        }
+
+        creditApi.setIdList(idList);
+        creditApiList.add(creditApi);
+        loginRequest.setData(creditApiList);
+        String param = getJsonFromObject(loginRequest);
+
         DownloadService downloadService = RetrofitServiceFactory.createService(DownloadService.class);
-        Call<CreditResponse> call = downloadService.getCreditFromApi(paramData);
+        Call<CreditResponse> call = downloadService.getCreditFromApi(param);
         call.enqueue(new Callback<CreditResponse>() {
             @Override
             public void onResponse(Call<CreditResponse> call, Response<CreditResponse> response) {
@@ -2514,7 +2593,8 @@ public class SyncActivity extends AppCompatActivity {
 
                         insertCreditToDB(response.body().getDataForCreditList().get(0).getCreditForApiList());
                         insertCustomerBalanceToDB(response.body().getDataForCreditList().get(0).getCustomerBalanceList());
-                        downloadMarketingfromServer(paramData);
+                        //downloadMarketingfromServer(paramData);
+                        downloadCustomerVisitFromServer(paramData);
                     } else {
                         Utils.cancelDialog();
                         textViewError.setText(response.body().getAceplusStatusMessage());
@@ -3178,7 +3258,7 @@ public class SyncActivity extends AppCompatActivity {
 
                 } else {
                     Utils.cancelDialog();
-                    Utils.commonDialog("Products are not successfully downloaded", SyncActivity.this);
+                    Utils.commonDialog("Reissue products are not successfully downloaded", SyncActivity.this);
                 }
             }
 
