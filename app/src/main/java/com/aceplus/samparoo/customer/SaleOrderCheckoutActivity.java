@@ -130,7 +130,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
     private ImageView img_back, img_confirmAndPrint;
 
-    private TextView txt_invoiceId, txt_totalAmount, saleDateTextView, netAmountTextView, taxTextView;
+    private TextView txt_invoiceId, txt_totalAmount, saleDateTextView, netAmountTextView, taxTextView, taxLabelTextView;
 
     private TextView txt_tableHeaderDiscount, txt_tableHeaderUM, txt_tableHeaderQty, txt_table_header_foc;
 
@@ -159,7 +159,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
     int locationCode = 0;
     String locationCodeName = "";
 
-    Double totalVolumeDiscount = 0.0, totalVolumeDiscountPercent = 0.0;
+    Double totalVolumeDiscount = 0.0, totalVolumeDiscountPercent = 0.0, totalDiscountAmount = 0.0;
 
     TextView volDisForPreOrder;
 
@@ -295,6 +295,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         txt_tableHeaderDiscount = (TextView) findViewById(R.id.tableHeaderDiscount);
         txt_table_header_foc = (TextView) findViewById(R.id.tableHeaderFoc);
         taxTextView = (TextView) findViewById(R.id.tax_txtview);
+        taxLabelTextView = (TextView) findViewById(R.id.tax_label_salecheckout);
         remarkEditText = (EditText) findViewById(R.id.checkout_remark_edit_text) ;
 
         saleDateTextView = (TextView) findViewById(R.id.saleDateTextView);
@@ -501,10 +502,14 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             taxAmt = calculateTax(totalAmount);
 
             txt_totalAmount.setText(Utils.formatAmount(totalAmount));
+            totalDiscountAmount = totalVolumeDiscount + itemDiscountAmt;
+
             double netAmount = 0.0;
             if(taxType.equalsIgnoreCase("E")) {
-                netAmount = totalAmount - totalVolumeDiscount - itemDiscountAmt + taxAmt;
+                taxLabelTextView.setText("Tax (Exclude) : ");
+                netAmount = totalAmount - totalVolumeDiscount - itemDiscountAmt - taxAmt;
             } else {
+                taxLabelTextView.setText("Tax (Include) : ");
                 netAmount = totalAmount - totalVolumeDiscount - itemDiscountAmt;
             }
             netAmountTextView.setText(Utils.formatAmount(netAmount));
@@ -875,7 +880,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
         preOrder.setNetAmount(totalAmount);
         preOrder.setLocationId(locationCode);
-        preOrder.setDiscount(totalVolumeDiscount);
+        preOrder.setDiscount(totalDiscountAmount);
         preOrder.setDiscountPer(totalVolumeDiscountPercent);
         preOrder.setTaxAmount(taxAmt);
         preOrder.setRemark(remarkEditText.getText().toString());
@@ -898,7 +903,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         invoice.setCustomerId(preOrder.getCustomerId());
         invoice.setDate(preOrder.getPreOrderDate());
         invoice.setTotalAmt(totalAmount);
-        invoice.setTotalDiscountAmt(totalVolumeDiscount);
+        invoice.setTotalDiscountAmt(totalDiscountAmount);
         invoice.setTotalPayAmt(preOrder.getAdvancedPaymentAmount());
         invoice.setSalepersonId(Integer.parseInt(preOrder.getSalePersonId()));
         invoice.setLocationCode(locationCode);
@@ -1376,7 +1381,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                 + saleDate + "\", \""
                 + invoiceId + "\", \""
                 + totalAmount + "\", \""
-                + totalVolumeDiscount + "\", \""
+                + totalDiscountAmount + "\", \""
                 + paidAmount + "\", \""
                 + "0.0" + "\", \""
                 + receiptPersonEditText.getText().toString() + "\", \""
@@ -1403,7 +1408,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         invoice.setDate(saleDate);
         invoice.setTotalAmt(totalAmount);
         invoice.setTotalQty(totalQuantity);
-        invoice.setTotalDiscountAmt(totalVolumeDiscount);
+        invoice.setTotalDiscountAmt(totalDiscountAmount);
         invoice.setTotalPayAmt(paidAmount);
         invoice.setReceiptPerson(receiptPersonEditText.getText().toString());
         invoice.setSalepersonId(Integer.parseInt(salePersonId));

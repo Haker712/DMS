@@ -74,7 +74,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
     ListView soldProductsListView, promotionPlanItemListView, promotionPlanGiftListView;
     TextView invoiceIdTextView;
     TextView saleDateTextView;
-    TextView totalAmountTextView, taxTextView;
+    TextView totalAmountTextView, taxTextView, taxLabelTextView;
     TextView advancedPaidAmountTextView;
     TextView discountTextView;
     TextView netAmountTextView;
@@ -101,7 +101,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
     ArrayList<Promotion> promotionArrayList = new ArrayList<>();
     PromotionProductCustomAdapter promotionProductCustomAdapter;
 
-    Double totalVolumeDiscount = 0.0, totalVolumeDiscountPercent = 0.0;
+    Double totalVolumeDiscount = 0.0, totalVolumeDiscountPercent = 0.0, totalDiscountAmount = 0.0;
     Integer exclude = 0;
     double totalAmount = 0.0;
     String taxType = "";
@@ -389,9 +389,13 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
             totalAmountTextView.setText(Utils.formatAmount(totalAmount));
             double netAmount = 0.0;
+            totalDiscountAmount = totalVolumeDiscount + itemDiscountAmt;
+
             if(taxType.equalsIgnoreCase("E")) {
-                netAmount = totalAmount - totalVolumeDiscount - itemDiscountAmt + taxAmt;
+                taxLabelTextView.setText("Tax (Exclude) : ");
+                netAmount = totalAmount - totalVolumeDiscount - itemDiscountAmt - taxAmt;
             } else {
+                taxLabelTextView.setText("Tax (Include) : ");
                 netAmount = totalAmount - totalVolumeDiscount - itemDiscountAmt;
             }
             netAmountTextView.setText(Utils.formatAmount(netAmount));
@@ -434,6 +438,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         invoiceIdTextView = (TextView) findViewById(R.id.invoiceId);
         totalAmountTextView = (TextView) findViewById(R.id.totalAmount);
         taxTextView = (TextView) findViewById(R.id.tax_txtview);
+        taxLabelTextView = (TextView) findViewById(R.id.tax_label_salecheckout);
 
         advancedPaidAmountTextView = (TextView) findViewById(R.id.advancedPaidAmount);
 
@@ -888,7 +893,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         invoice.setDate(saleDate);
         invoice.setTotalAmt(totalAmount);
         invoice.setTotalQty(totolQtyForInvoice);
-        invoice.setTotalDiscountAmt(totalVolumeDiscount);
+        invoice.setTotalDiscountAmt(totalDiscountAmount);
         invoice.setTotalPayAmt(payAmount);
         invoice.setTotalRefundAmt(refundAmount);
         invoice.setReceiptPerson(receiptPersonName);

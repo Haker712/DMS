@@ -46,8 +46,10 @@ public class PrintInvoiceActivity extends Activity{
     public static final String INVOICE = "INVOICE";
     public static final String INVOICE_DETAIL = "INVOICE_DETAIL";
     public static final String INVOICE_PRESENT = "INVOICE_PRESENT";
+    String taxType = null, branchCode = null;
+    Double taxPercent = 0.0;
 
-    TextView txtSaleDate, txtInvoiceNo, txtSaleMan, txtBranch, totalAmount, prepaidAmount;
+    TextView txtSaleDate, txtInvoiceNo, txtSaleMan, txtBranch, totalAmountTxtView, netAmountTxtView, prepaidAmountTxtView;
     ImageView cancelBtn, printBtn;
     String saleman_Id = "";
     SQLiteDatabase database;
@@ -73,13 +75,14 @@ public class PrintInvoiceActivity extends Activity{
         }
 
         registerIds();
+        getTaxAmount();
         setDataToWidgets();
         printBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Utils.print(PrintInvoiceActivity.this, getCustomerName(invoie.getCustomerId())
                         , invoie.getId()
-                        , getSaleManName(invoie.getSalepersonId()), invoie.getTotalPayAmt(), invoiceDetailList, Utils.PRINT_FOR_NORMAL_SALE
+                        , getSaleManName(invoie.getSalepersonId()), invoie, invoiceDetailList, Utils.PRINT_FOR_NORMAL_SALE
                         , Utils.FOR_OTHERS);
 
             }
@@ -101,17 +104,24 @@ public class PrintInvoiceActivity extends Activity{
         printBtn = (ImageView) findViewById(R.id.print_img);
         cancelBtn = (ImageView) findViewById(R.id.cancel_img);
         soldProductListView = (ListView) findViewById(R.id.print_soldProductList);
-        totalAmount = (TextView) findViewById(R.id.print_totalAmount);
-        prepaidAmount = (TextView) findViewById(R.id.print_prepaidAmount);
+        totalAmountTxtView = (TextView) findViewById(R.id.print_totalAmount);
+        netAmountTxtView = (TextView) findViewById(R.id.print_net_amount);
+        prepaidAmountTxtView = (TextView) findViewById(R.id.print_prepaidAmount);
     }
 
     private void setDataToWidgets() {
         txtSaleDate.setText(invoie.getDate().substring(0,10));
         txtInvoiceNo.setText(invoie.getId());
         txtSaleMan.setText(getSaleManName(invoie.getSalepersonId()));
+        txtBranch.setText(branchCode);
         soldProductListView.setAdapter(new SoldProductListRowAdapter(this));
-        totalAmount.setText(Utils.formatAmount(invoie.getTotalAmt()));
-        prepaidAmount.setText(Utils.formatAmount(invoie.getTotalPayAmt()));
+        totalAmountTxtView.setText(Utils.formatAmount(invoie.getTotalAmt()));
+        if(taxType.equalsIgnoreCase("E")) {
+            netAmountTxtView.setText(Utils.formatAmount(invoie.getTotalAmt() - invoie.getTotalDiscountAmt() - invoie.getTaxAmount()));
+        } else {
+            netAmountTxtView.setText(Utils.formatAmount(invoie.getTotalAmt() - invoie.getTotalDiscountAmt()));
+        }
+        prepaidAmountTxtView.setText(Utils.formatAmount(invoie.getTotalPayAmt()));
     }
 
     private String getSaleManName(int id) {
@@ -176,6 +186,15 @@ public class PrintInvoiceActivity extends Activity{
             priceTextView.setText(Utils.formatAmount(soldProduct.getProduct().getPrice()));
             totalAmountTextView.setText(Utils.formatAmount(soldProduct.getTotalAmount()));
             return view;
+        }
+    }
+
+    void getTaxAmount() {
+        Cursor cursorTax = database.rawQuery("SELECT TaxType, Tax, Branch_Code FROM COMPANYINFORMATION", null);
+        while(cursorTax.moveToNext()) {
+            taxType = cursorTax.getString(cursorTax.getColumnIndex("TaxType"));
+            taxPercent = cursorTax.getDouble(cursorTax.getColumnIndex("Tax"));
+            branchCode = cursorTax.getString(cursorTax.getColumnIndex("Branch_Code"));
         }
     }
 }

@@ -572,6 +572,12 @@ public class SaleActivity extends AppCompatActivity {
                                         return;
                                     }
 
+                                    if(quantity > soldProduct.getProduct().getRemainingQty()) {
+                                        messageTextView.setText("Not Enough Stock !");
+                                        quantityEditText.selectAll();
+                                        return;
+                                    }
+
                                     soldProduct.setQuantity(quantity);
                                     soldProductListRowAdapter.notifyDataSetChanged();
 

@@ -261,7 +261,9 @@ public class SyncActivity extends AppCompatActivity {
 
                         sqLiteDatabase.beginTransaction();
 
-                        insertCustomers(customerList);
+                        if(customerList.size() > 0) {
+                            insertCustomers(customerList);
+                        }
 
                         sqLiteDatabase.setTransactionSuccessful();
                         sqLiteDatabase.endTransaction();
@@ -352,7 +354,9 @@ public class SyncActivity extends AppCompatActivity {
 
                         sqLiteDatabase.beginTransaction();
 
-                        insertProduct(productList);
+                        if(productList.size() > 0) {
+                            insertProduct(productList);
+                        }
 
                         sqLiteDatabase.setTransactionSuccessful();
                         sqLiteDatabase.endTransaction();
@@ -462,7 +466,12 @@ public class SyncActivity extends AppCompatActivity {
                     if (response.body().getAceplusStatusCode() == 200) {
                         sqLiteDatabase.beginTransaction();
 
-                        insertPromotion(response.body().getPromotionForApi());
+                        List<PromotionForApi> promotionForApiList = new ArrayList<>();
+                        promotionForApiList = response.body().getPromotionForApi();
+
+                        if(promotionForApiList.size() > 0) {
+                            insertPromotion(response.body().getPromotionForApi());
+                        }
 
                         sqLiteDatabase.setTransactionSuccessful();
                         sqLiteDatabase.endTransaction();
@@ -803,7 +812,9 @@ public class SyncActivity extends AppCompatActivity {
                     if (response.body().getAceplusStatusCode() == 200) {
                         sqLiteDatabase.beginTransaction();
 
-                        insertCompanyInformationData((ArrayList<CompanyInfromationData>) response.body().getData());
+                        if(response.body().getData().size() > 0) {
+                            insertCompanyInformationData((ArrayList<CompanyInfromationData>) response.body().getData());
+                        }
 
                         sqLiteDatabase.setTransactionSuccessful();
                         sqLiteDatabase.endTransaction();
@@ -1823,6 +1834,7 @@ public class SyncActivity extends AppCompatActivity {
                         sqLiteDatabase.execSQL("delete from POSM");
                         List<ShopTypeForApi> ShopTypeForApiList = response.body().getPosmShopTypeForApiList().get(0).getShopTypeForApiList();
                         List<Posm> posmList = new ArrayList<>();
+
                         for (PosmForApi posmForApi : response.body().getPosmShopTypeForApiList().get(0).getPosmForApiList()) {
                             Posm posm = new Posm();
                             posm.setId(posmForApi.getId());
@@ -1833,8 +1845,10 @@ public class SyncActivity extends AppCompatActivity {
                             posmList.add(posm);
                         }
                         insertPOSM(posmList);
+
                         sqLiteDatabase.execSQL("delete from SHOP_TYPE");
                         List<ShopType> shopTypeList = new ArrayList<>();
+
                         for (ShopTypeForApi shopTypeForApi : response.body().getPosmShopTypeForApiList().get(0).getShopTypeForApiList()) {
                             ShopType shopType = new ShopType();
                             shopType.setId(shopTypeForApi.getId());
@@ -2057,12 +2071,13 @@ public class SyncActivity extends AppCompatActivity {
 
                         sqLiteDatabase.beginTransaction();
 
-                        sqLiteDatabase.execSQL("DELETE FROM " + DatabaseContract.DELIVERY.TABLE);
+                        if(deliveryForApiList.size() > 0) {
+                            sqLiteDatabase.execSQL("DELETE FROM " + DatabaseContract.DELIVERY.TABLE);
+                            sqLiteDatabase.execSQL("DELETE FROM " + DatabaseContract.DELIVERY_ITEM.TABLE);
 
-                        sqLiteDatabase.execSQL("DELETE FROM " + DatabaseContract.DELIVERY_ITEM.TABLE);
-
-                        for (DeliveryForApi deliveryForApi : deliveryForApiList) {
-                            insertDelivery(deliveryForApi);
+                            for (DeliveryForApi deliveryForApi : deliveryForApiList) {
+                                insertDelivery(deliveryForApi);
+                            }
                         }
 
                         sqLiteDatabase.setTransactionSuccessful();
@@ -2591,8 +2606,13 @@ public class SyncActivity extends AppCompatActivity {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
 
-                        insertCreditToDB(response.body().getDataForCreditList().get(0).getCreditForApiList());
-                        insertCustomerBalanceToDB(response.body().getDataForCreditList().get(0).getCustomerBalanceList());
+                        if(response.body().getDataForCreditList().get(0).getCreditForApiList().size() > 0) {
+                            insertCreditToDB(response.body().getDataForCreditList().get(0).getCreditForApiList());
+                        }
+
+                        if(response.body().getDataForCreditList().get(0).getCustomerBalanceList().size() > 0) {
+                            insertCustomerBalanceToDB(response.body().getDataForCreditList().get(0).getCustomerBalanceList());
+                        }
                         //downloadMarketingfromServer(paramData);
                         downloadCustomerVisitFromServer(paramData);
                     } else {
@@ -3064,10 +3084,15 @@ public class SyncActivity extends AppCompatActivity {
 
                         sqLiteDatabase.beginTransaction();
 
-                        deleteDataAfterUpload(DatabaseContract.SALE_TARGET.TABLE_FOR_CUS, null, null);
-                        deleteDataAfterUpload(DatabaseContract.SALE_TARGET.TABLE_FOR_SALEMAN, null, null);
-                        insertSaleTargetCustomer(saleTargetCustomerList);
-                        insertSaleTargetSaleman(saleTargetSaleMenList);
+                        if(saleTargetCustomerList.size() > 0) {
+                            deleteDataAfterUpload(DatabaseContract.SALE_TARGET.TABLE_FOR_CUS, null, null);
+                            insertSaleTargetCustomer(saleTargetCustomerList);
+                        }
+
+                        if(saleTargetSaleMenList.size() > 0) {
+                            deleteDataAfterUpload(DatabaseContract.SALE_TARGET.TABLE_FOR_SALEMAN, null, null);
+                            insertSaleTargetSaleman(saleTargetSaleMenList);
+                        }
 
                         sqLiteDatabase.setTransactionSuccessful();
                         sqLiteDatabase.endTransaction();
@@ -3156,9 +3181,11 @@ public class SyncActivity extends AppCompatActivity {
 
                         sqLiteDatabase.beginTransaction();
 
-                        deleteDataAfterUpload(DatabaseContract.SALE_HISTORY.TABLE, null, null);
-                        deleteDataAfterUpload(DatabaseContract.SALE_HISTORY_DETAIL.TABLE, null, null);
-                        insertSaleHistory(saleHistoryCustomerList);
+                        if(saleHistoryCustomerList.size() > 0) {
+                            deleteDataAfterUpload(DatabaseContract.SALE_HISTORY.TABLE, null, null);
+                            deleteDataAfterUpload(DatabaseContract.SALE_HISTORY_DETAIL.TABLE, null, null);
+                            insertSaleHistory(saleHistoryCustomerList);
+                        }
 
                         sqLiteDatabase.setTransactionSuccessful();
                         sqLiteDatabase.endTransaction();
