@@ -696,7 +696,14 @@ public class Utils {
 
             String name = new String();
             int quantity = soldProduct.getQuantity();
-            double pricePerUnit = soldProduct.getProduct().getPrice();
+            double pricePerUnit = 0.0;
+
+            if(soldProduct.getPromotionPrice() == 0.0) {
+                pricePerUnit = soldProduct.getProduct().getPrice();
+            } else {
+                pricePerUnit = soldProduct.getPromotionPrice();
+            }
+
             double amount = soldProduct.getTotalAmount();
             double pricePerUnitWithDiscount;
             double netAmount;
@@ -816,29 +823,29 @@ public class Utils {
             printDataByteArrayList.add(
                     formatter.format("%1$-13s%2$19s\n%3$-15s%4$17s\n%5$-13s%6$19s\n\n\n"
                             , "Total Amount    :", decimalFormatterWithComma.format(totalAmount)
-                            , "Prepaid Amount  :", decimalFormatterWithComma.format(invoice.getTotalPayAmt())
+                            , taxText, decimalFormatterWithComma.format(invoice.getTaxAmount()) + " (" + taxPercent + "%)"
                             , "Discount        :", decimalFormatterWithComma.format(invoice.getTotalDiscountAmt()) + " (" + new DecimalFormat("#0.00").format(invoice.getDiscountPercent()) +"%)"
-                            , "Pay Amount      :", decimalFormatterWithComma.format(invoice.getTotalPayAmt())
-                            , taxText, decimalFormatterWithComma.format(invoice.getTaxAmount()) + " (" + taxPercent + "%)").toString().getBytes());
+                            , "Prepaid Amount  :", decimalFormatterWithComma.format(invoice.getTotalPayAmt())
+                            , "Pay Amount      :", decimalFormatterWithComma.format(invoice.getTotalPayAmt())).toString().getBytes());
         } else if (mode.equals(Utils.FOR_DELIVERY)) {
 
             printDataByteArrayList.add(
                     formatter.format("%1$-13s%2$19s\n%3$-13s%4$19s\n%5$-13s%6$19s\n%7$-13s%8$19s\n%9$-13s%10$19s\n\n\n"
                             , "Total Amount    :", decimalFormatterWithComma.format(totalAmount)
-                            , "Net Amount      :", decimalFormatterWithComma.format(totalNetAmount)
+                            , taxText, decimalFormatterWithComma.format(invoice.getTaxAmount()) + " (" + taxPercent + "%)"
                             , "Discount        :", decimalFormatterWithComma.format(invoice.getTotalDiscountAmt()) + " (" + new DecimalFormat("#0.00").format(invoice.getDiscountPercent()) +"%)"
-                            , "Pay Amount      :", decimalFormatterWithComma.format(invoice.getTotalPayAmt())
-                            , taxText, decimalFormatterWithComma.format(invoice.getTaxAmount()) + " (" + taxPercent + "%)").toString().getBytes());
+                            , "Net Amount      :", decimalFormatterWithComma.format(totalNetAmount)
+                            , "Pay Amount      :", decimalFormatterWithComma.format(invoice.getTotalPayAmt())).toString().getBytes());
         } else {
 
             printDataByteArrayList.add(
                     formatter.format("%1$-13s%2$19s\n%3$-13s%4$19s\n%5$-13s%6$19s\n%7$-13s%8$19s\n%9$-13s%10$19s\n%11$-13s%12$19s\n\n\n"
                             , "Total Amount    :", decimalFormatterWithComma.format(totalAmount)
-                            , "Net Amount      :", decimalFormatterWithComma.format(totalNetAmount)
+                            , taxText, decimalFormatterWithComma.format(invoice.getTaxAmount()) + " (" + new DecimalFormat("#0.00").format(taxPercent) + "%)"
                             , "Discount        :", decimalFormatterWithComma.format(invoice.getTotalDiscountAmt()) + " (" + new DecimalFormat("#0.00").format(invoice.getDiscountPercent()) +"%)"
+                            , "Net Amount      :", decimalFormatterWithComma.format(totalNetAmount)
                             , "Pay Amount      :", decimalFormatterWithComma.format(invoice.getTotalPayAmt())
-                            , "Change Due      :", decimalFormatterWithComma.format(Math.abs(invoice.getTotalPayAmt() - totalNetAmount))
-                            , taxText, decimalFormatterWithComma.format(invoice.getTaxAmount()) + " (" + new DecimalFormat("#0.00").format(taxPercent) + "%)").toString().getBytes());
+                            , "Change Due      :", decimalFormatterWithComma.format(Math.abs(invoice.getTotalPayAmt() - totalNetAmount))).toString().getBytes());
         }
 
         printDataByteArrayList.add(new byte[]{0x1b, 0x64, 0x02}); // Cut

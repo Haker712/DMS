@@ -183,7 +183,12 @@ public class PrintInvoiceActivity extends Activity{
 
             discountTextView.setText(soldProduct.getDiscountAmount() + "");
 
-            priceTextView.setText(Utils.formatAmount(soldProduct.getProduct().getPrice()));
+            if(soldProduct.getPromotionPrice() == 0.0) {
+                priceTextView.setText(Utils.formatAmount(soldProduct.getProduct().getPrice()));
+            } else {
+                priceTextView.setText(Utils.formatAmount(soldProduct.getPromotionPrice()));
+            }
+
             totalAmountTextView.setText(Utils.formatAmount(soldProduct.getTotalAmount()));
             return view;
         }

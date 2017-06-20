@@ -1704,7 +1704,12 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
             txt_discount.setText(soldProduct.getDiscountAmount() + "");
 
-            txt_price.setText(Utils.formatAmount(soldProduct.getProduct().getPrice()));
+            if(soldProduct.getPromotionPrice() == 0.0) {
+                txt_price.setText(Utils.formatAmount(soldProduct.getProduct().getPrice()));
+            } else {
+                txt_price.setText(Utils.formatAmount(soldProduct.getPromotionPrice()));
+            }
+
             txt_amount.setText(Utils.formatAmount(soldProduct.getTotalAmount()));
             return view;
         }
