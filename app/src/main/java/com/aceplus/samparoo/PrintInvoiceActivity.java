@@ -117,7 +117,7 @@ public class PrintInvoiceActivity extends Activity{
         soldProductListView.setAdapter(new SoldProductListRowAdapter(this));
         totalAmountTxtView.setText(Utils.formatAmount(invoie.getTotalAmt()));
         if(taxType.equalsIgnoreCase("E")) {
-            netAmountTxtView.setText(Utils.formatAmount(invoie.getTotalAmt() - invoie.getTotalDiscountAmt() - invoie.getTaxAmount()));
+            netAmountTxtView.setText(Utils.formatAmount(invoie.getTotalAmt() - invoie.getTotalDiscountAmt() + invoie.getTaxAmount()));
         } else {
             netAmountTxtView.setText(Utils.formatAmount(invoie.getTotalAmt() - invoie.getTotalDiscountAmt()));
         }

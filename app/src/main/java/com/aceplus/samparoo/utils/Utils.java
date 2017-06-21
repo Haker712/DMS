@@ -812,7 +812,7 @@ public class Utils {
         String taxText = "";
         if(taxType.equalsIgnoreCase("E")) {
             taxText = "Tax (Exclude)   :";
-            totalNetAmount = invoice.getTotalAmt() - invoice.getTotalDiscountAmt() - invoice.getTaxAmount();
+            totalNetAmount = invoice.getTotalAmt() - invoice.getTotalDiscountAmt() + invoice.getTaxAmount();
         } else {
             taxText = "Tax (Include)   :";
             totalNetAmount = invoice.getTotalAmt() - invoice.getTotalDiscountAmt();

@@ -507,7 +507,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             double netAmount = 0.0;
             if(taxType.equalsIgnoreCase("E")) {
                 taxLabelTextView.setText("Tax (Exclude) : ");
-                netAmount = totalAmount - totalVolumeDiscount - itemDiscountAmt - taxAmt;
+                netAmount = totalAmount - totalVolumeDiscount - itemDiscountAmt + taxAmt;
             } else {
                 taxLabelTextView.setText("Tax (Include) : ");
                 netAmount = totalAmount - totalVolumeDiscount - itemDiscountAmt;
