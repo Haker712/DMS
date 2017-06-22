@@ -634,6 +634,16 @@ public class CustomerActivity extends AppCompatActivity {
             @Override
             public void onClick(View arg0) {
 
+                if(customer.getFlag() == 1){
+                    new AlertDialog.Builder(CustomerActivity.this)
+                            .setTitle("No Authority")
+                            .setMessage("You need to select old customer.")
+                            .setPositiveButton("OK", null)
+                            .show();
+
+                    return;
+                }
+
                 if (didCustomerSelected()) {
                     boolean customerNoDid = true;
                     Cursor cur = database.rawQuery("SELECT * FROM DID_CUSTOMER_FEEDBACK", null);
@@ -987,16 +997,7 @@ public class CustomerActivity extends AppCompatActivity {
                     .show();
 
             return false;
-        } else if(customer.getFlag() == 1){
-            new AlertDialog.Builder(this)
-                    .setTitle("No Authority")
-                    .setMessage("You need to select old customer.")
-                    .setPositiveButton("OK", null)
-                    .show();
-
-            return false;
         }
-
         return true;
     }
 
