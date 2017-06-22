@@ -178,11 +178,11 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
             if (!table.equals("CLASS")) {
                 String clearQuery = "DELETE FROM " + table;
                 sqLiteDatabase.execSQL(clearQuery);
+                sqLiteDatabase.setTransactionSuccessful();
+                sqLiteDatabase.endTransaction();
                 Log.i("DELETION SUCCESS --> ", "All data from " + table + " has been successfully deleted");
             }
         }
-        sqLiteDatabase.setTransactionSuccessful();
-        sqLiteDatabase.endTransaction();
     }
 
     /**
