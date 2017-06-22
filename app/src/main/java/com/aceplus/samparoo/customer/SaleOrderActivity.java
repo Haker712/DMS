@@ -137,6 +137,8 @@ public class SaleOrderActivity extends AppCompatActivity {
             textViewTitle.setText(R.string.delivery);
         }
 
+        products = getProducts("");
+
         if (getIntent().getSerializableExtra(SOLD_PROUDCT_LIST_KEY) != null) {
 
             soldProductList = (ArrayList<SoldProduct>) getIntent().getSerializableExtra(SOLD_PROUDCT_LIST_KEY);
@@ -176,7 +178,33 @@ public class SaleOrderActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
 
-                sellProduct(null, parent.getItemAtPosition(position).toString());
+                //sellProduct(null, parent.getItemAtPosition(position).toString());
+                Product tempProduct = null;
+
+                for (Product product : products) {
+
+                    if (product.getName().equals(parent.getItemAtPosition(position).toString())) {
+
+                        tempProduct = product;
+                    }
+                }
+
+                if (tempProduct != null) {
+                    boolean sameProduct = false;
+                    for(SoldProduct tempSoldProduct : soldProductList) {
+                        if(tempSoldProduct.getProduct().getStockId() == tempProduct.getStockId()) {
+                            sameProduct = true;
+                            break;
+                        }
+                    }
+
+                    if(!sameProduct) {
+                        soldProductList.add(new SoldProduct(tempProduct, false));
+                        soldProductListRowAdapter.notifyDataSetChanged();
+                    } else {
+                        Utils.commonDialog("Already have this product", SaleOrderActivity.this);
+                    }
+                }
                 searchProductTextView.setText("");
             }
         });
@@ -246,7 +274,7 @@ public class SaleOrderActivity extends AppCompatActivity {
                 if (tempProduct != null) {
                     boolean sameProduct = false;
                     for(SoldProduct tempSoldProduct : soldProductList) {
-                        if(tempSoldProduct.getProduct().equals(tempProduct)) {
+                        if(tempSoldProduct.getProduct().getStockId() == tempProduct.getStockId()) {
                             sameProduct = true;
                             break;
                         }
@@ -358,8 +386,6 @@ public class SaleOrderActivity extends AppCompatActivity {
                 finish();
             }
         });
-
-        products = getProducts("");
 
         //productsForSearch.clear();
         Log.i("products length", products.length + "");

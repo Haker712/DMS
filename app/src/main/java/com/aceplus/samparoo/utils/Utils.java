@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
@@ -37,7 +38,11 @@ import com.starmicronics.stario.StarIOPortException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.channels.FileChannel;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -875,6 +880,40 @@ public class Utils {
         while(cursorTax.moveToNext()) {
             taxType = cursorTax.getString(cursorTax.getColumnIndex("TaxType"));
             taxPercent = cursorTax.getDouble(cursorTax.getColumnIndex("Tax"));
+        }
+    }
+
+    public static void backupDatabase(Context context) {
+        String today = Utils.getCurrentDate(true);
+
+        try {
+            File sd = Environment.getExternalStorageDirectory();
+            File data = Environment.getDataDirectory();
+
+            if (sd.canWrite()) {
+                Toast.makeText(context, "Backup database is starting...",
+                        Toast.LENGTH_SHORT).show();
+                String currentDBPath = "/data/com.aceplus.samparoo/databases/aceplus-dms.sqlite";
+
+                String backupDBPath = "Samparoo_DB_Backup_" + today + ".db";
+                File currentDB = new File(data, currentDBPath);
+
+                String folderPath = "mnt/sdcard/Samparoo_DB_Backup";
+                File f = new File(folderPath);
+                f.mkdir();
+                File backupDB = new File(f, backupDBPath);
+                FileChannel source = new FileInputStream(currentDB).getChannel();
+                FileChannel destination = new FileOutputStream(backupDB).getChannel();
+                destination.transferFrom(source, 0, source.size());
+                source.close();
+                destination.close();
+                Toast.makeText(context, "Backup database Successful!",
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(context, "Please set Permission for Storage in Setting!", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            Toast.makeText(context, "Cannot Backup!", Toast.LENGTH_SHORT).show();
         }
     }
 }

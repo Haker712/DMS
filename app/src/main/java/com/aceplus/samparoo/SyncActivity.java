@@ -20,10 +20,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.aceplus.samparoo.customer.PosmCheckOutActivity;
 import com.aceplus.samparoo.customer.SaleOrderCheckoutActivity;
 import com.aceplus.samparoo.model.*;
 import com.aceplus.samparoo.model.forApi.*;
 import com.aceplus.samparoo.model.forApi.CustomerFeedback;
+import com.aceplus.samparoo.myinterface.OnActionClickListener;
 import com.aceplus.samparoo.retrofit.DownloadService;
 import com.aceplus.samparoo.retrofit.RetrofitServiceFactory;
 import com.aceplus.samparoo.retrofit.UploadService;
@@ -53,7 +55,7 @@ import retrofit2.Response;
 /**
  * Created by haker on 2/3/17.
  */
-public class SyncActivity extends AppCompatActivity {
+public class SyncActivity extends AppCompatActivity implements OnActionClickListener{
 
     String saleman_Id = "", saleman_No = "", saleman_Pwd = "";
 
@@ -73,7 +75,7 @@ public class SyncActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sync);
 
         ButterKnife.inject(this);
-
+        Utils.setOnActionClickListener(this);
         sqLiteDatabase = new Database(this).getDataBase();
 
         try {
@@ -115,12 +117,14 @@ public class SyncActivity extends AppCompatActivity {
     @OnClick(R.id.buttonUpload)
     void upload() {
         services = "";
-        uploadCustomertoserver();
+
+        Utils.askConfirmationDialog("UPLOAD", "Do you want to confirm?", "upload", SyncActivity.this);
     }
 
     @OnClick(R.id.buttonClearData)
     void clearAllData() {
-        showConfirmDialog();
+        //showConfirmDialog();
+        Utils.askConfirmationDialog("DELETE", "Are you sure want to clear all data ?", "delete", SyncActivity.this);
     }
 
     @OnClick(R.id.buttonReissue)
@@ -177,6 +181,8 @@ public class SyncActivity extends AppCompatActivity {
                 Log.i("DELETION SUCCESS --> ", "All data from " + table + " has been successfully deleted");
             }
         }
+        sqLiteDatabase.setTransactionSuccessful();
+        sqLiteDatabase.endTransaction();
     }
 
     /**
@@ -388,21 +394,28 @@ public class SyncActivity extends AppCompatActivity {
     }
 
     private void insertProduct(List<ProductForApi> productList) {
-        sqLiteDatabase.execSQL("delete from PRODUCT");
+
         for (ProductForApi product : productList) {
-            ContentValues cv = new ContentValues();
-            cv.put("ID", product.getId());
-            cv.put("PRODUCT_ID", product.getProductId());
-            cv.put("CATEGORY_ID", product.getCategoryId());
-            cv.put("GROUP_ID", product.getGroupId());
-            cv.put("PRODUCT_NAME", product.getProductName());
-            cv.put("TOTAL_QTY", product.getTotal_Qty());
-            cv.put("REMAINING_QTY", product.getTotal_Qty());
-            cv.put("SELLING_PRICE", product.getSellingPrice());
-            cv.put("PURCHASE_PRICE", product.getPurchasePrice());
-            cv.put("DISCOUNT_TYPE", product.getProductTypeId());
-            cv.put("UM", product.getUmId());
-            sqLiteDatabase.insertOrThrow("PRODUCT", null, cv);
+            if(!checkDuplicate(product.getId())) {
+                ContentValues cv = new ContentValues();
+                cv.put("ID", product.getId());
+                cv.put("PRODUCT_ID", product.getProductId());
+                cv.put("CATEGORY_ID", product.getCategoryId());
+                cv.put("GROUP_ID", product.getGroupId());
+                cv.put("PRODUCT_NAME", product.getProductName());
+                cv.put("TOTAL_QTY", product.getTotal_Qty());
+                cv.put("REMAINING_QTY", product.getTotal_Qty());
+                cv.put("SELLING_PRICE", product.getSellingPrice());
+                cv.put("PURCHASE_PRICE", product.getPurchasePrice());
+                cv.put("DISCOUNT_TYPE", product.getProductTypeId());
+                cv.put("UM", product.getUmId());
+                sqLiteDatabase.insertOrThrow("PRODUCT", null, cv);
+            }
+
+            if(checkDuplicate(product.getId()) && product.getTotal_Qty() != 0) {
+                String query = "UPDATE PRODUCT SET TOTAL_QTY = TOTAL_QTY + " + product.getTotal_Qty() + ", REMAINING_QTY = REMAINING_QTY + " + product.getTotal_Qty() + " WHERE ID = " + product.getId();
+                sqLiteDatabase.execSQL(query);
+            }
         }
     }
 
@@ -447,8 +460,12 @@ public class SyncActivity extends AppCompatActivity {
      * @return true : duplicate; otherwise : false
      */
     private boolean checkDuplicate(String id) {
-        Cursor duplicateCursor = sqLiteDatabase.rawQuery("SELECT COUNT(*) FROM PRODUCT WHERE ID = " + id, null);
-        int count = duplicateCursor.getCount();
+        Cursor duplicateCursor = sqLiteDatabase.rawQuery("SELECT COUNT(*) AS COUNT FROM PRODUCT WHERE ID = " + id, null);
+        int count = 0;
+
+        if (duplicateCursor.moveToNext()){
+            count = duplicateCursor.getInt(duplicateCursor.getColumnIndex("COUNT"));
+        }
 
         if(count > 0) {
             return true;
@@ -3367,6 +3384,9 @@ public class SyncActivity extends AppCompatActivity {
                     if (response.body().getAceplusStatusCode() == 200) {
                         Utils.cancelDialog();
                         Utils.commonDialog("Successfully Uploaded. ", SyncActivity.this);
+                        Utils.backupDatabase(SyncActivity.this);
+                        clearAllTableData();
+                        Utils.backToLogin(SyncActivity.this);
                     } else if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
                         onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
                     }
@@ -3393,5 +3413,15 @@ public class SyncActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Utils.backToHome(this);
+    }
+
+    @Override
+    public void onActionClick(String type) {
+        if(type.equals("upload")) {
+            uploadCustomertoserver();
+        } else if(type.equals("delete")){
+            clearAllTableData();
+            Utils.backToLogin(SyncActivity.this);
+        }
     }
 }
