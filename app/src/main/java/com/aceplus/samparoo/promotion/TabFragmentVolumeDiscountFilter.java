@@ -81,9 +81,9 @@ public class TabFragmentVolumeDiscountFilter extends Fragment {
     private ArrayList<VolumeDiscountFilterForReport> getVolumeDiscountFromDB() {
 
         Cursor cursorVdFilter = sqLiteDatabase.rawQuery("SELECT * FROM " + DatabaseContract.VolumeDiscountFilter.tb, null);
-        VolumeDiscountFilterForReport volumeDiscountFilterForReport = new VolumeDiscountFilterForReport();
 
         while (cursorVdFilter.moveToNext()) {
+            VolumeDiscountFilterForReport volumeDiscountFilterForReport = new VolumeDiscountFilterForReport();
             volumeDiscountFilterForReport.setVolumeDiscountId(cursorVdFilter.getInt(cursorVdFilter.getColumnIndex(DatabaseContract.VolumeDiscountFilter.id)));
             volumeDiscountFilterForReport.setDiscountPlanNo(cursorVdFilter.getString(cursorVdFilter.getColumnIndex(DatabaseContract.VolumeDiscountFilter.discountPlanNo)));
             volumeDiscountFilterForReport.setFromDate(cursorVdFilter.getString(cursorVdFilter.getColumnIndex(DatabaseContract.VolumeDiscountFilter.startDate)));
@@ -91,7 +91,7 @@ public class TabFragmentVolumeDiscountFilter extends Fragment {
             volumeDiscountFilterForReport.setFilterExclude(cursorVdFilter.getString(cursorVdFilter.getColumnIndex(DatabaseContract.VolumeDiscountFilter.exclude)));
 
             Cursor cursorVdFilterItem = sqLiteDatabase.rawQuery("SELECT VDF.*, (SELECT CATEGORY_NAME FROM PRODUCT_CATEGORY WHERE CATEGORY_ID = VDF.CATEGORY_ID) AS CNAME," +
-                    " (SELECT GROUP_NAME FROM PRODUCT_GROUP WHERE GROUP_ID = VDF.GROUP_CODE_ID) AS GNAME FROM " + DatabaseContract.VolumeDiscountFilterItem.tb + " AS VDF WHERE " +
+                    " (SELECT name FROM GROUP_CODE WHERE id = VDF.GROUP_CODE_ID) AS GNAME FROM " + DatabaseContract.VolumeDiscountFilterItem.tb + " AS VDF WHERE " +
                     DatabaseContract.VolumeDiscountFilterItem.volumeDiscountId + " ='" + volumeDiscountFilterForReport.getVolumeDiscountId() + "'", null);
 
             List<VolumeDiscountFilterItemForReport> volumeDiscountFilterItemForReportList = new ArrayList<>();
@@ -157,9 +157,9 @@ public class TabFragmentVolumeDiscountFilter extends Fragment {
 
             if(volumeDiscountFilterForReport.getFilterExclude() != null) {
                 if(volumeDiscountFilterForReport.getFilterExclude().equals("0")) {
-                    txt_filter_exclude.setText("Yes");
-                } else {
                     txt_filter_exclude.setText("No");
+                } else {
+                    txt_filter_exclude.setText("Yes");
                 }
             }
 

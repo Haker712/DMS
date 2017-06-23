@@ -176,6 +176,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
         Log.i("Table counts --> ", String.valueOf(tables.size()));
         for (String table : tables) {
             if (!table.equals("CLASS")) {
+                sqLiteDatabase.beginTransaction();
                 String clearQuery = "DELETE FROM " + table;
                 sqLiteDatabase.execSQL(clearQuery);
                 sqLiteDatabase.setTransactionSuccessful();
