@@ -2,6 +2,7 @@ package com.aceplus.samparoo.customer;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -375,6 +376,21 @@ public class SaleReturnActivity extends AppCompatActivity implements OnActionCli
      * @param saleReturn sale return
      */
     void insertSaleReturn(SaleReturn saleReturn) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("SALE_RETURN_ID", saleReturn.getSaleReturnId());
+        contentValues.put("CUSTOMER_ID", saleReturn.getCustomerId());
+        contentValues.put("LOCATION_ID", saleReturn.getLocationId());
+        contentValues.put("AMT", saleReturn.getAmt());
+        contentValues.put("PAY_AMT", saleReturn.getPayAmt());
+        contentValues.put("PC_ADDRESS", saleReturn.getPcAddress());
+        contentValues.put("RETURNED_DATE", saleReturn.getReturnedDate());
+        contentValues.put("DELETE_FLAG", 0);
+        contentValues.put("RATE", 1);
+        contentValues.put("CURRENCY_ID", 0);
+        contentValues.put("INVOICE_STATUS", 0);
+        contentValues.put("SALE_MAN_ID", saleman_Id);
+        contentValues.put("SALE_ID", 0);
+
         database.execSQL("INSERT INTO SALE_RETURN VALUES (\""
                 + saleReturn.getSaleReturnId() + "\", \""
                 + saleReturn.getCustomerId() + "\", \""

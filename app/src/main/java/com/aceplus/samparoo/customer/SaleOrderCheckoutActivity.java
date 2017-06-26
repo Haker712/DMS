@@ -1403,6 +1403,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                 + taxAmt
                 + ")");
 
+        invoice = new Invoice();
         invoice.setId(invoiceId);
         invoice.setCustomerId(String.valueOf(customer.getId()));
         invoice.setDate(saleDate);
