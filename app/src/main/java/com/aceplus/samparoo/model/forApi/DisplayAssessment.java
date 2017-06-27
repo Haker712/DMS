@@ -24,6 +24,9 @@ public class DisplayAssessment {
     @SerializedName("Image")
     @Expose
     String image;
+    @SerializedName("ImageNo")
+    @Expose
+    String imageNo;
     @SerializedName("ImageName")
     @Expose
     String imageName;
@@ -96,5 +99,13 @@ public class DisplayAssessment {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public String getImageNo() {
+        return imageNo;
+    }
+
+    public void setImageNo(String imageNo) {
+        this.imageNo = imageNo;
     }
 }

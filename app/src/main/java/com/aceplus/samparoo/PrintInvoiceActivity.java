@@ -29,6 +29,7 @@ import com.aceplus.samparoo.utils.Utils;
 import org.json.JSONException;
 import org.w3c.dom.Text;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +50,7 @@ public class PrintInvoiceActivity extends Activity{
     String taxType = null, branchCode = null;
     Double taxPercent = 0.0;
 
-    TextView txtSaleDate, txtInvoiceNo, txtSaleMan, txtBranch, totalAmountTxtView, netAmountTxtView, prepaidAmountTxtView;
+    TextView txtSaleDate, txtInvoiceNo, txtSaleMan, txtBranch, totalAmountTxtView, netAmountTxtView, prepaidAmountTxtView, print_discountAmountTxtView;
     ImageView cancelBtn, printBtn;
     String saleman_Id = "";
     SQLiteDatabase database;
@@ -107,6 +108,7 @@ public class PrintInvoiceActivity extends Activity{
         totalAmountTxtView = (TextView) findViewById(R.id.print_totalAmount);
         netAmountTxtView = (TextView) findViewById(R.id.print_net_amount);
         prepaidAmountTxtView = (TextView) findViewById(R.id.print_prepaidAmount);
+        print_discountAmountTxtView = (TextView) findViewById(R.id.print_discountAmount);
     }
 
     private void setDataToWidgets() {
@@ -122,6 +124,7 @@ public class PrintInvoiceActivity extends Activity{
             netAmountTxtView.setText(Utils.formatAmount(invoie.getTotalAmt() - invoie.getTotalDiscountAmt()));
         }
         prepaidAmountTxtView.setText(Utils.formatAmount(invoie.getTotalPayAmt()));
+        print_discountAmountTxtView.setText(Utils.formatAmount(invoie.getTotalDiscountAmt()) + " (" + new DecimalFormat("#0.00").format(invoie.getDiscountPercent()) + "%)");
     }
 
     private String getSaleManName(int id) {

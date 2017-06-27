@@ -109,7 +109,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
     int locationCode = 0;
     String locationCodeName = "";
 
-    String check;
+    String check, saleReturnInvoiceId;
     boolean adapterFlag = true;
     LinearLayout layoutBranch, layoutBankAcc, taxLayout;
     Invoice invoice = new Invoice();
@@ -137,6 +137,10 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
         if (getIntent().getSerializableExtra(PRESENT_PROUDCT_LIST_KEY) != null) {
             promotionArrayList = (ArrayList<Promotion>) getIntent().getSerializableExtra(PRESENT_PROUDCT_LIST_KEY);
+        }
+
+        if (getIntent().getSerializableExtra(SaleActivity.SALE_RETURN_INVOICEID_KEY) != null) {
+            saleReturnInvoiceId = (String) getIntent().getSerializableExtra(SaleActivity.SALE_RETURN_INVOICEID_KEY);
         }
 
         registerIDs();
@@ -947,6 +951,10 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             contentValues.put("currency_id", promotion.getCurrencyId());
             contentValues.put("rate", 1);
             database.insert("INVOICE_PRESENT", null, contentValues);
+        }
+
+        if(saleReturnInvoiceId != null && !saleReturnInvoiceId.equals("")) {
+            database.execSQL("UPDATE SALE_RETURN SET SALE_ID = '" + invoiceId + "' WHERE SALE_RETURN_ID = '" + saleReturnInvoiceId + "'");
         }
 
         database.setTransactionSuccessful();

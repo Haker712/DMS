@@ -411,9 +411,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
                 cv.put("DISCOUNT_TYPE", product.getProductTypeId());
                 cv.put("UM", product.getUmId());
                 sqLiteDatabase.insertOrThrow("PRODUCT", null, cv);
-            }
-
-            if(checkDuplicate(product.getId()) && product.getTotal_Qty() != 0) {
+            } else if(checkDuplicate(product.getId()) && product.getTotal_Qty() != 0) {
                 String query = "UPDATE PRODUCT SET TOTAL_QTY = TOTAL_QTY + " + product.getTotal_Qty() + ", REMAINING_QTY = REMAINING_QTY + " + product.getTotal_Qty() + " WHERE ID = " + product.getId();
                 sqLiteDatabase.execSQL(query);
             }
@@ -446,9 +444,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
             if (checkDuplicate(product.getId()) && product.getTotal_Qty() != 0) {
                 String query = "UPDATE PRODUCT SET TOTAL_QTY = TOTAL_QTY + " + product.getTotal_Qty() + ", REMAINING_QTY = REMAINING_QTY + " + product.getTotal_Qty() + " WHERE ID = " + product.getId();
                 sqLiteDatabase.execSQL(query);
-            }
-
-            if (!checkDuplicate(product.getId())){
+            } else if (!checkDuplicate(product.getId())){
                 sqLiteDatabase.insertOrThrow("PRODUCT", null, cv);
             }
         }
@@ -1748,9 +1744,13 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
             saleReturnApi.setPayAmount(saleReturn.getPayAmt());
             saleReturnApi.setCurrencyId(currencyId);
             saleReturnApi.setRate(1);
-            saleReturnApi.setInvoiceStatus("CR");
-            saleReturnApi.setSaleManId(Integer.parseInt(saleman_Id));
-            saleReturnApi.setSaleId(1);
+            saleReturnApi.setInvoiceStatus(saleReturn.getInvoiceStatus());
+
+            if(saleReturn.getSaleManId() != null && !saleReturn.getSaleManId().equals("")) {
+                saleReturnApi.setSaleManId(Integer.parseInt(saleReturn.getSaleManId()));
+            }
+
+            saleReturnApi.setSaleId(saleReturn.getSaleId());
 
             List<SaleReturnDetail> saleReturnDetailList = getSaleReturnDetailFromDatabase(saleReturn.getSaleReturnId());
 
@@ -1807,6 +1807,9 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
             saleReturn.setPayAmt(cursorSaleReturn.getDouble(cursorSaleReturn.getColumnIndex("PAY_AMT")));
             saleReturn.setPcAddress(cursorSaleReturn.getString(cursorSaleReturn.getColumnIndex("PC_ADDRESS")));
             saleReturn.setReturnedDate(cursorSaleReturn.getString(cursorSaleReturn.getColumnIndex("RETURNED_DATE")));
+            saleReturn.setInvoiceStatus(cursorSaleReturn.getString(cursorSaleReturn.getColumnIndex("INVOICE_STATUS")));
+            saleReturn.setSaleManId(cursorSaleReturn.getString(cursorSaleReturn.getColumnIndex("SALE_MAN_ID")));
+            saleReturn.setSaleId(cursorSaleReturn.getString(cursorSaleReturn.getColumnIndex("SALE_ID")));
             saleReturnList.add(saleReturn);
         }
 
@@ -2288,6 +2291,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
             Integer customer_Id = cursor.getInt(cursor.getColumnIndex("CUSTOMER_ID"));
             Integer saleman_Id = cursor.getInt(cursor.getColumnIndex("SALE_MAN_ID"));
             String image = cursor.getString(cursor.getColumnIndex("IMAGE"));
+            String imageNo = cursor.getString(cursor.getColumnIndex("IMAGE_NO"));
             String imageName = cursor.getString(cursor.getColumnIndex("IMAGE_NAME"));
             String dateAndTime = cursor.getString(cursor.getColumnIndex("DATE_AND_TIME"));
             String remark = cursor.getString(cursor.getColumnIndex("REMARK"));
@@ -2297,6 +2301,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
             displayAssessment.setCustomerId(customer_Id);
             displayAssessment.setSaleManId(saleman_Id);
             displayAssessment.setImage(image);
+            displayAssessment.setImageNo(imageNo);
             displayAssessment.setImageName(imageName);
             displayAssessment.setDateAndTime(dateAndTime);
             displayAssessment.setRemark(remark);

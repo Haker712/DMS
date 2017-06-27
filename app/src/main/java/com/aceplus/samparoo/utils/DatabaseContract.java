@@ -280,6 +280,14 @@ public class DatabaseContract {
         public static final String FOC_STATUS = "FOC_STATUS";
     }
 
+    public abstract class DELIVERY_PRESENT {
+        public static final String TABLE = "DELIVERY_PRESENT";
+        public static final String ID = "ID";
+        public static final String STOCK_ID = "STOCK_ID";
+        public static final String QUANTITY = "QUANTITY";
+        public static final String SALE_ORDER_ID = "SALE_ORDER_ID";
+    }
+
     public abstract class DELIVERY_UPLOAD {
         public static final String TABLE = "DELIVERY_UPLOAD";
         public static final String INVOICE_NO = "INVOICE_NO";

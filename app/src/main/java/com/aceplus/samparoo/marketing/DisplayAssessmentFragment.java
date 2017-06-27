@@ -41,6 +41,8 @@ import com.aceplus.samparoo.utils.DatabaseContract;
 import com.aceplus.samparoo.utils.Utils;
 
 import java.io.ByteArrayOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import static com.aceplus.samparoo.utils.DatabaseContract.MARKETING.IMAGE;
 
@@ -66,9 +68,9 @@ public class DisplayAssessmentFragment extends Fragment implements OnActionClick
 
     Activity activity;
 
-    EditText takenImageName, remark, imageNo;
+    EditText takenImageName, remark;
 
-    TextView customerName;
+    TextView customerName, imageNoTxtView;
 
     String encodedImage = "";
 
@@ -91,7 +93,7 @@ public class DisplayAssessmentFragment extends Fragment implements OnActionClick
         takenImageName = (EditText) view.findViewById(R.id.edit_display_assess_taken_photo_name);
         remark = (EditText) view.findViewById(R.id.edit_display_assess_remark);
         customerName = (TextView) view.findViewById(R.id.txt_display_assess_customer_name);
-        imageNo = (EditText) view.findViewById(R.id.txt_display_assess_image_no);
+        imageNoTxtView = (TextView) view.findViewById(R.id.txt_display_assess_image_no);
         takenImageView = (ImageView) view.findViewById(R.id.outlet_image);
 
         WindowManager windowManager = (WindowManager) this.getContext().getSystemService(Context.WINDOW_SERVICE);
@@ -192,6 +194,14 @@ public class DisplayAssessmentFragment extends Fragment implements OnActionClick
             takenImageView = (ImageView) view.findViewById(R.id.outlet_image);
             takenImageView.setImageBitmap(picture);
             takenImageView.setAdjustViewBounds(true);
+
+            int imageCount = 0;
+            Cursor cursor = sqLiteDatabase.rawQuery("select COUNT(*) AS COUNT from OUTLET_VISIBILITY", null);
+            while (cursor.moveToNext()) {
+                imageCount = cursor.getInt(cursor.getColumnIndex("COUNT"));
+            }
+
+            imageNoTxtView.setText(customer.getCustomerId() + new SimpleDateFormat("yyMMdd").format(new Date()) + imageCount);
         }
     }
 
@@ -199,6 +209,7 @@ public class DisplayAssessmentFragment extends Fragment implements OnActionClick
         ContentValues contentValues = new ContentValues();
 
         contentValues.put("IMAGE", displayAssessment.getImage());
+        contentValues.put("IMAGE_NO", displayAssessment.getImageNo());
         contentValues.put("SALE_MAN_ID",displayAssessment.getSaleManId());
         contentValues.put("CUSTOMER_ID",displayAssessment.getCustomerId());
         contentValues.put("INVOICE_DATE",displayAssessment.getInvoiceDate());
@@ -216,10 +227,6 @@ public class DisplayAssessmentFragment extends Fragment implements OnActionClick
 
     boolean checkUserInput() {
         boolean flag = true;
-        if(imageNo.getText().toString().length() == 0) {
-            flag = false;
-            imageNo.setError("Please insert image no");
-        }
 
         if(takenImageName.getText().toString().length() == 0) {
             flag = false;
@@ -267,13 +274,14 @@ public class DisplayAssessmentFragment extends Fragment implements OnActionClick
                 displayAssessment.setCustomerId(Cus_id);
                 displayAssessment.setInvoiceDate(saleDate);
                 displayAssessment.setInvoiceNo(invoice_Id);
+                displayAssessment.setImageNo(imageNoTxtView.getText().toString());
                 displayAssessment.setImageName(takenImageName.getText().toString());
                 displayAssessment.setDateAndTime(saleDate);
                 displayAssessment.setRemark(remark.getText().toString());
 
                 insertOutletVisibility(displayAssessment);
 
-                imageNo.setText(null);
+                imageNoTxtView.setText(null);
                 takenImageName.setText(null);
                 remark.setText(null);
                 takenImageView.setImageBitmap(null);

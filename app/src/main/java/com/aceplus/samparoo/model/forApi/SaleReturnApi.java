@@ -81,7 +81,7 @@ public class SaleReturnApi {
 
     @SerializedName("SaleId")
     @Expose
-    private int saleId;
+    private String saleId;
 
     /**
      * TSaleReturnItem
@@ -266,11 +266,11 @@ public class SaleReturnApi {
         this.saleManId = saleManId;
     }
 
-    public int getSaleId() {
+    public String getSaleId() {
         return saleId;
     }
 
-    public void setSaleId(int saleId) {
+    public void setSaleId(String saleId) {
         this.saleId = saleId;
     }
 }
