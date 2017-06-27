@@ -97,29 +97,38 @@ public class POSMFragment extends Fragment {
 
         customer = (Customer) getActivity().getIntent().getSerializableExtra(CUSTOMER_INFO_KEY);
 
-        if (customer != null) {
+        registerUIs();
+
+        if (customer != null && customer.getFlag() != 1) {
             productIds = getProductNamesByStockId(customer.getShopTypeId());
-        }
 
-        if (productIds != null) {
-            if (productIds.length > 0) {
-                for (int i = 0; i < productIds.length; i++) {
-                    Product product = getProduct(productIds[i]);
+            if (productIds != null) {
+                if (productIds.length > 0) {
+                    for (int i = 0; i < productIds.length; i++) {
+                        Product product = getProduct(productIds[i]);
 
-                    if (product != null) {
-                        productList.add(product);
+                        if (product != null) {
+                            productList.add(product);
+                        }
                     }
                 }
             }
+
+            initUIforPosm();
+            registerEvents();
+            setProductListView();
+            initAutoCompleteSearch();
+            initSoldProductRowAdapter();
+        } else {
+            cancelImg.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Utils.backToMarketingActivity(getActivity());
+                }
+            });
+
+            checkoutImg.setVisibility(View.GONE);
         }
-
-        registerUIs();
-        initUIforPosm();
-        registerEvents();
-        setProductListView();
-        initAutoCompleteSearch();
-        initSoldProductRowAdapter();
-
         return view;
     }
 
@@ -283,11 +292,11 @@ public class POSMFragment extends Fragment {
                 Intent intent = new Intent(getActivity()
                         , PosmCheckOutActivity.class);
                 intent.putExtra(PosmCheckOutActivity.SOLD_PROUDCT_LIST_KEY
-                        ,soldProductList);
+                        , soldProductList);
                 intent.putExtra(PosmCheckOutActivity.PRESENT_PROUDCT_LIST_KEY
-                        ,products);
+                        , products);
                 intent.putExtra(PosmCheckOutActivity.CUSTOMER_INFO_KEY
-                        ,customer);
+                        , customer);
 
                 startActivity(intent);
                 getActivity().finish();

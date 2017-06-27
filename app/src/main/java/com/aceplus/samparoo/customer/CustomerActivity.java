@@ -702,7 +702,7 @@ public class CustomerActivity extends AppCompatActivity {
 
                                         String deviceId = Utils.getDeviceId(CustomerActivity.this);
                                         String invoiceNumber = Utils.getInvoiceNo(getApplicationContext(), salemanId, String.valueOf(getLocationCode()), Utils.FOR_OTHERS);
-                                        String invoiceDate = customerFeedbacks.get(descriptionsSpinner.getSelectedItemPosition()).getInvoiceDate();
+                                        String invoiceDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.sss").format(new Date());
                                         int customerNumber = customer.getId();
                                         String locationNumber = String.valueOf(getLocationCode());
                                         int feedbackNumber = Integer.parseInt(customerFeedbacks.get(descriptionsSpinner.getSelectedItemPosition()).getInvoiceNumber());

@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -450,6 +451,8 @@ public class CreditCheckOut_Activity extends Activity implements OnActionClickLi
 
             database.insert(DatabaseContract.CASH_RECEIVE.TABLE, null, cashReceiveCv);
             database.insert(DatabaseContract.CASH_RECEIVE_ITEM.TABLE, null, receiveItemCv);
+
+            database.execSQL("UPDATE " + DatabaseContract.CREDIT.TABLE + " SET " + DatabaseContract.CREDIT.PAY_AMT + " = " + DatabaseContract.CREDIT.PAY_AMT + " + " + creditInvoice.getPayAmt() + " WHERE INVOICE_NO ='" + creditInvoice.getInvoiceNo() + "'");
         }
 
         database.setTransactionSuccessful();
@@ -582,7 +585,11 @@ public class CreditCheckOut_Activity extends Activity implements OnActionClickLi
             invId.setText(creditInv.getInvoiceNo());
             invdate.setText(creditInv.getInvoiceDate());
             invAmt.setText(Utils.formatAmount(creditInv.getAmt()));
-            //statusTxt.setText(creditInv.getStatus());
+
+            if(creditInv.getCreditAmt() == 0.0) {
+                statusTxt.setText("Paid");
+                statusTxt.setTextColor(Color.parseColor("#00aa88"));
+            }
             return rowView;
         }
     }

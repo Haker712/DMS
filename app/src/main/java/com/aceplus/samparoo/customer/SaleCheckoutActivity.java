@@ -866,7 +866,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             invoiceDetail.setTsaleId(invoiceId);
             ContentValues cvInvoiceProduct = new ContentValues();
             cvInvoiceProduct.put("INVOICE_PRODUCT_ID", invoiceId);
-            cvInvoiceProduct.put("PRODUCT_ID", soldProduct.getProduct().getId());
+            cvInvoiceProduct.put("PRODUCT_ID", soldProduct.getProduct().getStockId());
             cvInvoiceProduct.put("SALE_QUANTITY", soldProduct.getQuantity());
             cvInvoiceProduct.put("DISCOUNT_AMOUNT", soldProduct.getDiscountAmount() + "");
             cvInvoiceProduct.put("TOTAL_AMOUNT", soldProduct.getNetAmount(this));

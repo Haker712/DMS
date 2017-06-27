@@ -1673,7 +1673,8 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
                     double totalAmt = txt_totalAmount.getText().length() > 0 ? Double.parseDouble(txt_totalAmount.getText().toString().replace(",", "")) : 0;
-                    double volumeDiscount = volDisForPreOrder.getText().length() > 0 ? Double.parseDouble(volDisForPreOrder.getText().toString().replace(",", "")) : 0;
+                    String[] volumeDiscountAmount = volDisForPreOrder.getText().toString().split(" ");
+                    double volumeDiscount = volDisForPreOrder.getText().length() > 0 ? Double.parseDouble(volumeDiscountAmount[0].replace(",", "")) : 0;
                     double productPrice = txt_amount.getText().length() > 0 ? Double.parseDouble(txt_amount.getText().toString().replace(",", "")) : 0;
 
                     if(isChecked) {

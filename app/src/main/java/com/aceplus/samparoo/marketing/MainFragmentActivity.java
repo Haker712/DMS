@@ -2,6 +2,7 @@ package com.aceplus.samparoo.marketing;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -120,6 +121,16 @@ public class MainFragmentActivity extends AppCompatActivity {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
+
+                if(tab.getPosition() == 1) {
+                    if(customer.getFlag() == 1) {
+                        new AlertDialog.Builder(MainFragmentActivity.this)
+                                .setTitle("No Authority")
+                                .setMessage("POSM cannot be done for this customer")
+                                .setPositiveButton("OK", null)
+                                .show();
+                    }
+                }
             }
 
 

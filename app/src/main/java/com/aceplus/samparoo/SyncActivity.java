@@ -827,6 +827,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
                         sqLiteDatabase.beginTransaction();
 
                         if(response.body().getData().size() > 0) {
+                            sqLiteDatabase.execSQL("DELETE FROM " + DatabaseContract.CompanyInformation.tb);
                             insertCompanyInformationData((ArrayList<CompanyInfromationData>) response.body().getData());
                         }
 
@@ -2629,6 +2630,10 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
 
+                        sqLiteDatabase.beginTransaction();
+                        sqLiteDatabase.execSQL("DELETE FROM " + DatabaseContract.CREDIT.TABLE);
+                        sqLiteDatabase.execSQL("DELETE FROM " + DatabaseContract.CUSTOMER_BALANCE.TABLE);
+
                         if(response.body().getDataForCreditList().get(0).getCreditForApiList().size() > 0) {
                             insertCreditToDB(response.body().getDataForCreditList().get(0).getCreditForApiList());
                         }
@@ -2636,6 +2641,10 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
                         if(response.body().getDataForCreditList().get(0).getCustomerBalanceList().size() > 0) {
                             insertCustomerBalanceToDB(response.body().getDataForCreditList().get(0).getCustomerBalanceList());
                         }
+
+                        sqLiteDatabase.setTransactionSuccessful();
+                        sqLiteDatabase.endTransaction();
+
                         //downloadMarketingfromServer(paramData);
                         downloadCustomerVisitFromServer(paramData);
                     } else {
