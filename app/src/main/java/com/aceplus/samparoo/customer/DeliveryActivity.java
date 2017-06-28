@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import com.aceplus.samparoo.CustomerVisitActivity;
 import com.aceplus.samparoo.model.Deliver;
 import com.aceplus.samparoo.model.DeliverItem;
+import com.aceplus.samparoo.model.forApi.DeliveryPresentForApi;
 import com.aceplus.samparoo.utils.Database;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -91,9 +92,7 @@ public class DeliveryActivity extends AppCompatActivity {
             deliver.setPaidAmount(cursor.getDouble(cursor.getColumnIndex("PAID_AMOUNT")));
 
 
-            Cursor deliveryItemCursor = database.rawQuery("SELECT D.DELIVERY_ID, D.STOCK_NO, D.ORDER_QTY, D.SPRICE " +
-                    "FROM DELIVERY_ITEM D INNER JOIN " +
-                    "PRODUCT ON PRODUCT.ID = D.STOCK_NO AND DELIVERY_FLG = 0;", null);
+            Cursor deliveryItemCursor = database.rawQuery("SELECT * FROM DELIVERY_ITEM WHERE DELIVERY_FLG = 0 AND DELIVERY_ID = '" + deliver.getDeliverId() + "' AND RECEIVED_QTY <> ORDER_QTY", null);
 
             Log.i("deliver_Count -> ", String.valueOf(deliveryItemCursor.getCount()));
             List<DeliverItem> deliverItemList = new ArrayList<>();
@@ -104,10 +103,21 @@ public class DeliveryActivity extends AppCompatActivity {
                 deliverItem.setStockNo(deliveryItemCursor.getString(deliveryItemCursor.getColumnIndex("STOCK_NO")));
                 deliverItem.setOrderQty(deliveryItemCursor.getInt(deliveryItemCursor.getColumnIndex("ORDER_QTY")));
                 deliverItem.setSPrice(deliveryItemCursor.getDouble(deliveryItemCursor.getColumnIndex("SPRICE")));
+                deliverItem.setReceivedQty(deliveryItemCursor.getInt(deliveryItemCursor.getColumnIndex("RECEIVED_QTY")));
 
                 if (deliverItem.getDeliverId() == deliver.getDeliverId()) {
                     deliverItemList.add(deliverItem);
                 }
+            }
+
+            Cursor deliveryPresentCursor = database.rawQuery("SELECT * FROM DELIVERY_PRESENT WHERE SALE_ORDER_ID = '" + deliver.getDeliverId() + "' AND DELIVERY_FLG = 0", null);
+
+            while(deliveryPresentCursor.moveToNext()) {
+                DeliverItem deliverItem = new DeliverItem();
+                deliverItem.setDeliverId(deliveryPresentCursor.getInt(deliveryPresentCursor.getColumnIndex("SALE_ORDER_ID")));
+                deliverItem.setOrderQty(deliveryPresentCursor.getInt(deliveryPresentCursor.getColumnIndex("QUANTITY")));
+                deliverItem.setStockNo(deliveryPresentCursor.getInt(deliveryPresentCursor.getColumnIndex("STOCK_ID")) + "");
+                deliverItemList.add(deliverItem);
             }
 
             deliver.setDeliverItemList(deliverItemList);

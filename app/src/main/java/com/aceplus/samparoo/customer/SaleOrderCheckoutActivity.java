@@ -130,7 +130,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
     private ImageView img_back, img_confirmAndPrint;
 
-    private TextView txt_invoiceId, txt_totalAmount, saleDateTextView, netAmountTextView, taxTextView, taxLabelTextView;
+    private TextView txt_invoiceId, txt_totalAmount, saleDateTextView, netAmountTextView, taxTextView, taxLabelTextView, txtAdvancedPaid;
 
     private TextView txt_tableHeaderDiscount, txt_tableHeaderUM, txt_tableHeaderQty, txt_table_header_foc;
 
@@ -303,6 +303,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         txt_totalAmount = (TextView) findViewById(R.id.totalAmount);
 
         advancedPaidAmountLayout = (LinearLayout) findViewById(R.id.advancedPaidAmountLayout);
+        txtAdvancedPaid = (TextView) findViewById(R.id.advancedPaidAmount);
         totalInfoForGeneralSaleLayout =(LinearLayout) findViewById(R.id.totalInfoForGeneralSale);
         totalInfoForPreOrderLayout =(LinearLayout) findViewById(R.id.totalInfoForPreOrder);
         refundLayout = (LinearLayout) findViewById(R.id.refundLayout);
@@ -352,6 +353,10 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
      */
     private void setSoldProductToListView() {
         lv_soldProductList.setAdapter(new SoldProductCustomAdapter(this));
+
+        if(isDelivery) {
+            txtAdvancedPaid.setText(Utils.formatAmount(orderedInvoice.getPaidAmount()));
+        }
     }
 
     private void setSoldProductInformation() {
@@ -1474,7 +1479,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
             ContentValues cvInvoiceProduct = new ContentValues();
             cvInvoiceProduct.put("INVOICE_PRODUCT_ID", invoiceId);
-            cvInvoiceProduct.put("PRODUCT_ID", soldProduct.getProduct().getId());
+            cvInvoiceProduct.put("PRODUCT_ID", soldProduct.getProduct().getStockId());
             cvInvoiceProduct.put("SALE_QUANTITY", soldProduct.getQuantity());
             double discount = soldProduct.getProduct().getPrice() * soldProduct.getDiscount(this) / 100;
             cvInvoiceProduct.put("DISCOUNT_AMOUNT", discount + "");
@@ -1496,6 +1501,10 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                     + ", DELIVERY_QTY = DELIVERY_QTY + " + soldProduct.getQuantity() + " WHERE PRODUCT_ID = \'" + soldProduct.getProduct().getId() + "\'");
 
             database.execSQL("UPDATE DELIVERY_ITEM SET RECEIVED_QTY = " + soldProduct.getQuantity() + ", ORDER_QTY = ORDER_QTY - " + soldProduct.getQuantity() + " WHERE STOCK_NO = \'" + soldProduct.getProduct().getStockId() + "\'");
+
+            if(soldProduct.getProduct().getPrice() == 0.0) {
+                database.execSQL("UPDATE DELIVERY_PRESENT SET DELIVERY_FLG = 1 WHERE STOCK_ID = " + soldProduct.getProduct().getStockId());
+            }
 
             database.execSQL("UPDATE DELIVERY_ITEM SET DELIVERY_FLG = 1 WHERE ORDER_QTY < 1 AND STOCK_NO = \'" + soldProduct.getProduct().getStockId() + "\'");
         }
@@ -1666,9 +1675,16 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
             if(isDelivery) {
                 checkBox_foc.setVisibility(View.VISIBLE);
+                checkBox_foc.setEnabled(false);
+                soldProduct.setFocStatus(false);
+
+                if(soldProduct.getProduct().getPrice() == 0.0) {
+                    checkBox_foc.setChecked(true);
+                    soldProduct.setFocStatus(true);
+                }
             }
 
-            checkBox_foc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            /*checkBox_foc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
@@ -1689,7 +1705,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                         soldProduct.setFocStatus(false);
                     }
                 }
-            });
+            });*/
 
             txt_um.setVisibility(View.GONE);
             //txt_discount.setVisibility(View.GONE);
@@ -1697,11 +1713,30 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             txt_name.setText(String.valueOf(soldProduct.getProduct().getName()));
             txt_qty.setText(String.valueOf(soldProduct.getQuantity()));
 
-            calculateVolumeDiscount(soldProduct, position);
+            if(!isDelivery) {
+                calculateVolumeDiscount(soldProduct, position);
+            }
 
             if(soldProductList.size() == position + 1 && adapterFlag) {
-                calculateInvoiceDiscount();
-                adapterFlag = false;
+                if(!isDelivery) {
+                    calculateInvoiceDiscount();
+                    adapterFlag = false;
+                } else {
+                    getTaxAmount();
+                    taxAmt = calculateTax(totalAmount);
+                    txt_totalAmount.setText(Utils.formatAmount(totalAmount));
+                    double netAmount = 0.0;
+                    if(taxType.equalsIgnoreCase("E")) {
+                        taxLabelTextView.setText("Tax (Exclude) : ");
+                        netAmount = totalAmount + taxAmt;
+                    } else {
+                        taxLabelTextView.setText("Tax (Include) : ");
+                        netAmount = totalAmount;
+                    }
+                    netAmountTextView.setText(Utils.formatAmount(netAmount));
+                    volDisForPreOrder.setText("0 (0.00%)");
+                    taxTextView.setText(Utils.formatAmount(taxAmt) + " (" + new DecimalFormat("#0.00").format(taxPercent) + "%)");
+                }
             }
 
             txt_discount.setText(soldProduct.getDiscountAmount() + "");

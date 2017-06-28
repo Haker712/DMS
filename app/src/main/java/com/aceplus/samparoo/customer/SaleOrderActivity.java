@@ -315,7 +315,9 @@ public class SaleOrderActivity extends AppCompatActivity {
                                 soldProductListRowAdapter.notifyDataSetChanged();
 
                                 if(soldProductList.size() != 0) {
-                                    calculatePromotinPriceAndGift(soldProductList.get(soldProductList.size()-1));
+                                    if(!isDelivery) {
+                                        calculatePromotinPriceAndGift(soldProductList.get(soldProductList.size()-1));
+                                    }
                                 } else {
                                     promotionArrayList.clear();
                                     updatePromotionProductList();
@@ -657,10 +659,12 @@ public class SaleOrderActivity extends AppCompatActivity {
                                     soldProductListRowAdapter.notifyDataSetChanged();
 
                                     //promotionArrayList.clear();
-                                    double promotionPrice = calculatePromotinPriceAndGift(soldProduct);
-                                    totalPromotionPrice += promotionPrice;
+                                    if (!SaleOrderActivity.this.isDelivery) {
+                                        double promotionPrice = calculatePromotinPriceAndGift(soldProduct);
+                                        totalPromotionPrice += promotionPrice;
+                                        soldProduct.setPromotionPrice(promotionPrice);
+                                    }
 
-                                    soldProduct.setPromotionPrice(promotionPrice);
                                     alertDialog.dismiss();
                                 }
                             });

@@ -1,5 +1,7 @@
 package com.aceplus.samparoo.model;
 
+import com.aceplus.samparoo.model.forApi.DeliveryPresentForApi;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -45,6 +47,11 @@ public class Deliver implements Serializable{
      * deliverItemList
      */
     private List<DeliverItem> deliverItemList;
+
+    /**
+     * deliveryPresentForApiList
+     */
+    private List<DeliveryPresentForApi> deliveryPresentForApiList;
 
     /**
      * Getter method for deliverId
@@ -170,5 +177,23 @@ public class Deliver implements Serializable{
      */
     public void setDeliverItemList(List<DeliverItem> deliverItemList) {
         this.deliverItemList = deliverItemList;
+    }
+
+    /**
+     * Getter method for deliveryPresentForApiList
+     *
+     * @return deliveryPresentForApiList
+     */
+    public List<DeliveryPresentForApi> getDeliveryPresentForApiList() {
+        return deliveryPresentForApiList;
+    }
+
+    /**
+     * Setter method for deliveryPresentForApiList
+     *
+     * @param deliveryPresentForApiList
+     */
+    public void setDeliveryPresentForApiList(List<DeliveryPresentForApi> deliveryPresentForApiList) {
+        this.deliveryPresentForApiList = deliveryPresentForApiList;
     }
 }

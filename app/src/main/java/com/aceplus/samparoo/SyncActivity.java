@@ -2080,7 +2080,32 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
      */
     private void downloadDeliveryFromApi(String param) {
         DownloadService downloadService = RetrofitServiceFactory.createService(DownloadService.class);
-        Call<DeliveryResponse> call = downloadService.getDeliveryFromApi(param);
+
+        LoginCreditRequest loginRequest = new LoginCreditRequest();
+        loginRequest.setSiteActivationKey(Constant.SITE_ACTIVATION_KEY);
+        loginRequest.setTabletActivationKey(Constant.TABLET_ACTIVATION_KEY);
+        loginRequest.setUserId(saleman_No);
+        loginRequest.setPassword(saleman_Pwd);
+        loginRequest.setDate(Utils.getCurrentDate(false));
+        loginRequest.setRoute(getRouteID(saleman_Id));
+
+        Cursor customerCursor = sqLiteDatabase.rawQuery("SELECT id FROM CUSTOMER", null);
+        ArrayList<CreditApi> creditApiList = new ArrayList<>();
+        List<Integer> idList = new ArrayList<>();
+
+        CreditApi creditApi = new CreditApi();
+
+        while(customerCursor.moveToNext()) {
+            Integer id = customerCursor.getInt(customerCursor.getColumnIndex("id"));
+            idList.add(id);
+        }
+
+        creditApi.setIdList(idList);
+        creditApiList.add(creditApi);
+        loginRequest.setData(creditApiList);
+        String param1 = getJsonFromObject(loginRequest);
+
+        Call<DeliveryResponse> call = downloadService.getDeliveryFromApi(param1);
 
         call.enqueue(new Callback<DeliveryResponse>() {
             @Override
@@ -2096,6 +2121,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
                         if(deliveryForApiList.size() > 0) {
                             sqLiteDatabase.execSQL("DELETE FROM " + DatabaseContract.DELIVERY.TABLE);
                             sqLiteDatabase.execSQL("DELETE FROM " + DatabaseContract.DELIVERY_ITEM.TABLE);
+                            sqLiteDatabase.execSQL("DELETE FROM " + DatabaseContract.DELIVERY_PRESENT.TABLE);
 
                             for (DeliveryForApi deliveryForApi : deliveryForApiList) {
                                 insertDelivery(deliveryForApi);
@@ -2149,6 +2175,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
         sqLiteDatabase.insert(DatabaseContract.DELIVERY.TABLE, null, contentValues);
 
         insertDeliveryItem(delivery.getDeliveryItemForApiList());
+        insertDeliveryPresent(delivery.getDeliveryPresentForApiList());
     }
 
     /**
@@ -2167,6 +2194,22 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
             contentValues.put(DatabaseContract.DELIVERY_ITEM.SPRICE, deliveryItem.getSPrice());
             contentValues.put(DatabaseContract.DELIVERY_ITEM.FOC_STATUS, deliveryItem.getFocStatus());
             sqLiteDatabase.insert(DatabaseContract.DELIVERY_ITEM.TABLE, null, contentValues);
+        }
+    }
+
+    /**
+     * Insert deliver item to local database.
+     *
+     * @param deliveryItemList delivery item list
+     */
+    private void insertDeliveryPresent(List<DeliveryPresentForApi> deliveryItemList) {
+        for (DeliveryPresentForApi deliveryItem : deliveryItemList) {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(DatabaseContract.DELIVERY_PRESENT.ID, deliveryItem.getId());
+            contentValues.put(DatabaseContract.DELIVERY_PRESENT.SALE_ORDER_ID, deliveryItem.getSaleOrderId());
+            contentValues.put(DatabaseContract.DELIVERY_PRESENT.STOCK_ID, deliveryItem.getStockId());
+            contentValues.put(DatabaseContract.DELIVERY_PRESENT.QUANTITY, deliveryItem.getQuantity());
+            sqLiteDatabase.insert(DatabaseContract.DELIVERY_PRESENT.TABLE, null, contentValues);
         }
     }
 
