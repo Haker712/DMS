@@ -37,6 +37,10 @@ public class DisplayAssessment {
     @Expose
     String remark;
 
+    String customerNo;
+
+    String customerName;
+
     public String getInvoiceNo() {
         return invoiceNo;
     }
@@ -107,5 +111,21 @@ public class DisplayAssessment {
 
     public void setImageNo(String imageNo) {
         this.imageNo = imageNo;
+    }
+
+    public String getCustomerNo() {
+        return customerNo;
+    }
+
+    public void setCustomerNo(String customerNo) {
+        this.customerNo = customerNo;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
     }
 }

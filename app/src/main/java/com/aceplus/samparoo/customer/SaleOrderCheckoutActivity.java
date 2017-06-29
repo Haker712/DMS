@@ -502,26 +502,24 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
             Log.i("buy_amt", buy_amt + "");
             Log.i("volDisId", volDisId);
-
-            getTaxAmount();
-            taxAmt = calculateTax(totalAmount);
-
-            txt_totalAmount.setText(Utils.formatAmount(totalAmount));
-            totalDiscountAmount = totalVolumeDiscount + itemDiscountAmt;
-
-            double netAmount = 0.0;
-            if(taxType.equalsIgnoreCase("E")) {
-                taxLabelTextView.setText("Tax (Exclude) : ");
-                netAmount = totalAmount - totalVolumeDiscount - itemDiscountAmt + taxAmt;
-            } else {
-                taxLabelTextView.setText("Tax (Include) : ");
-                netAmount = totalAmount - totalVolumeDiscount - itemDiscountAmt;
-            }
-            netAmountTextView.setText(Utils.formatAmount(netAmount));
-            volDisForPreOrder.setText(Utils.formatAmount(totalVolumeDiscount)+ " (" + new DecimalFormat("#0.00").format(totalVolumeDiscountPercent) + "%)");
-
         }
 
+        getTaxAmount();
+        taxAmt = calculateTax(totalAmount);
+
+        txt_totalAmount.setText(Utils.formatAmount(totalAmount));
+        totalDiscountAmount = totalVolumeDiscount + itemDiscountAmt;
+
+        double netAmount = 0.0;
+        if(taxType.equalsIgnoreCase("E")) {
+            taxLabelTextView.setText("Tax (Exclude) : ");
+            netAmount = totalAmount - totalVolumeDiscount - itemDiscountAmt + taxAmt;
+        } else {
+            taxLabelTextView.setText("Tax (Include) : ");
+            netAmount = totalAmount - totalVolumeDiscount - itemDiscountAmt;
+        }
+        netAmountTextView.setText(Utils.formatAmount(netAmount));
+        volDisForPreOrder.setText(Utils.formatAmount(totalVolumeDiscount)+ " (" + new DecimalFormat("#0.00").format(totalVolumeDiscountPercent) + "%)");
         taxTextView.setText(Utils.formatAmount(taxAmt) + " (" + new DecimalFormat("#0.00").format(taxPercent) + "%)");
     }
 

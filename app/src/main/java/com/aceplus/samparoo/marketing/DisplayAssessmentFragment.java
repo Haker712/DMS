@@ -217,6 +217,7 @@ public class DisplayAssessmentFragment extends Fragment implements OnActionClick
         contentValues.put("IMAGE_NAME", displayAssessment.getImageName());
         contentValues.put("DATE_AND_TIME",displayAssessment.getDateAndTime());
         contentValues.put("REMARK", displayAssessment.getRemark());
+        contentValues.put("CUSTOMER_NO",displayAssessment.getCustomerNo());
 
         sqLiteDatabase.beginTransaction();
 
@@ -254,12 +255,12 @@ public class DisplayAssessmentFragment extends Fragment implements OnActionClick
                 }
 
                 String customerId = customer.getCustomerId();
-
+                String customerName = "";
                 Cursor cursor = sqLiteDatabase.rawQuery("select * from CUSTOMER where CUSTOMER_ID='" + customerId + "'", null);
                 while (cursor.moveToNext()) {
 
                     Cus_id = cursor.getInt(cursor.getColumnIndex("id"));
-
+                    customerName = cursor.getString(cursor.getColumnIndex("CUSTOMER_NAME"));
                 }
 
                 String saleDate = Utils.getCurrentDate(true);
@@ -277,6 +278,8 @@ public class DisplayAssessmentFragment extends Fragment implements OnActionClick
                 displayAssessment.setImageNo(imageNoTxtView.getText().toString());
                 displayAssessment.setImageName(takenImageName.getText().toString());
                 displayAssessment.setDateAndTime(saleDate);
+                displayAssessment.setCustomerNo(customerId);
+                displayAssessment.setCustomerName(customerName);
                 displayAssessment.setRemark(remark.getText().toString());
 
                 insertOutletVisibility(displayAssessment);

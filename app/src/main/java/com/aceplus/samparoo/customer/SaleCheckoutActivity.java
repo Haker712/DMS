@@ -359,7 +359,6 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             buy_amt += soldProduct.getTotalAmt();
         }
 
-
         String query = "select * from VOLUME_DISCOUNT WHERE date('" + Utils.getCurrentDate(true) + "') BETWEEN date(START_DATE) AND date(END_DATE)";
         Cursor cursor = database.rawQuery(query, null);
         Log.i("VolumeDiscountCursor", cursor.getCount() + "");
@@ -387,25 +386,24 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
             Log.i("buy_amt", buy_amt + "");
             Log.i("volDisId", volDisId);
-
-            getTaxAmount();
-            taxAmt = calculateTax(totalAmount);
-
-            totalAmountTextView.setText(Utils.formatAmount(totalAmount));
-            double netAmount = 0.0;
-            totalDiscountAmount = totalVolumeDiscount + itemDiscountAmt;
-
-            if(taxType.equalsIgnoreCase("E")) {
-                taxLabelTextView.setText("Tax (Exclude) : ");
-                netAmount = totalAmount - totalVolumeDiscount - itemDiscountAmt + taxAmt;
-            } else {
-                taxLabelTextView.setText("Tax (Include) : ");
-                netAmount = totalAmount - totalVolumeDiscount - itemDiscountAmt;
-            }
-            netAmountTextView.setText(Utils.formatAmount(netAmount));
-            discountTextView.setText(Utils.formatAmount(totalVolumeDiscount) + " (" + new DecimalFormat("#0.00").format(totalVolumeDiscountPercent) + "%)");
         }
 
+        getTaxAmount();
+        taxAmt = calculateTax(totalAmount);
+
+        totalAmountTextView.setText(Utils.formatAmount(totalAmount));
+        double netAmount = 0.0;
+        totalDiscountAmount = totalVolumeDiscount + itemDiscountAmt;
+
+        if(taxType.equalsIgnoreCase("E")) {
+            taxLabelTextView.setText("Tax (Exclude) : ");
+            netAmount = totalAmount - totalVolumeDiscount - itemDiscountAmt + taxAmt;
+        } else {
+            taxLabelTextView.setText("Tax (Include) : ");
+            netAmount = totalAmount - totalVolumeDiscount - itemDiscountAmt;
+        }
+        netAmountTextView.setText(Utils.formatAmount(netAmount));
+        discountTextView.setText(Utils.formatAmount(totalVolumeDiscount) + " (" + new DecimalFormat("#0.00").format(totalVolumeDiscountPercent) + "%)");
         taxTextView.setText(Utils.formatAmount(taxAmt) + " (" + new DecimalFormat("#0.00").format(taxPercent) + "%)");
     }
 
