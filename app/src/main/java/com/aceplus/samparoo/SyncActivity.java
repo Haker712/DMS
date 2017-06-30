@@ -278,6 +278,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
                         downloadProductsFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
                     } else {
                         Utils.cancelDialog();
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
                         textViewError.setText(response.body().getAceplusStatusMessage());
                     }
 
@@ -370,6 +371,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
                         confirmRequestSuccessForProduct(1);
                     } else {
                         Utils.cancelDialog();
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
                         textViewError.setText(response.body().getAceplusStatusMessage());
                     }
 
@@ -493,6 +495,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
                         downloadVolumeDiscountFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
                     } else {
                         Utils.cancelDialog();
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
                         textViewError.setText(response.body().getAceplusStatusMessage());
                     }
 
@@ -614,6 +617,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
                         downloadGenerarlfromSever(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
                     } else {
                         Utils.cancelDialog();
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
                         textViewError.setText(response.body().getAceplusStatusMessage());
                     }
 
@@ -749,6 +753,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
                         downloadPosmShopTypeFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
                     } else {
                         Utils.cancelDialog();
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
                         textViewError.setText(response.body().getAceplusStatusMessage());
                     }
 
@@ -1176,8 +1181,10 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
                         services += getResources().getString(R.string.sale);
 
                         uploadPreOrderToServer();
-                    } else if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
-                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    } else {
+                        if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
+                            onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                        }
                     }
 
                 } else {
@@ -1887,6 +1894,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
                         downloadDeliveryFromApi(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
                     } else {
                         Utils.cancelDialog();
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
                         textViewError.setText(response.body().getAceplusStatusMessage());
                     }
 
@@ -2133,6 +2141,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
                         downloadCreditFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
                     } else {
                         Utils.cancelDialog();
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
                         textViewError.setText(response.body().getAceplusStatusMessage());
                     }
 
@@ -2239,13 +2248,14 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
                         services += " " + getResources().getString(R.string.delivery);
 
                         uploadCashReceiveToServer();
+                    } else {
+                        if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
+                            onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                        }
                     }
                 } else {
-                    if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
-                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
-                    } else {
-                        Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
-                    }
+                    Utils.cancelDialog();
+                    Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
                 }
 
             }
@@ -2692,6 +2702,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
                         downloadCustomerVisitFromServer(paramData);
                     } else {
                         Utils.cancelDialog();
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
                         textViewError.setText(response.body().getAceplusStatusMessage());
                     }
 
@@ -2847,6 +2858,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
             cashReceiveApi.setPaymentType(cursorCashReceiveApi.getString(cursorCashReceiveApi.getColumnIndex(DatabaseContract.CASH_RECEIVE.PAYMENT_TYPE)));
             cashReceiveApi.setCashReceiveType(cursorCashReceiveApi.getString(cursorCashReceiveApi.getColumnIndex(DatabaseContract.CASH_RECEIVE.CASH_RECEIVE_TYPE)));
             cashReceiveApi.setSaleId(cursorCashReceiveApi.getString(cursorCashReceiveApi.getColumnIndex(DatabaseContract.CASH_RECEIVE.SALE_ID)));
+            cashReceiveApi.setSaleManId(cursorCashReceiveApi.getString(cursorCashReceiveApi.getColumnIndex(DatabaseContract.CASH_RECEIVE.SALE_MAN_ID)));
             cashReceiveApi.setCashReceiveItem(getCashReceiveItemFromDB(cashReceiveApi.getReceiveNo()));
             cashReceiveApiList.add(cashReceiveApi);
         }
@@ -2983,6 +2995,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
 
                     } else {
                         Utils.cancelDialog();
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
                         textViewError.setText(response.body().getAceplusStatusMessage());
                     }
 
@@ -3175,6 +3188,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
                         downloadSaleHistoryFromApi(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
                     } else {
                         Utils.cancelDialog();
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
                         textViewError.setText(response.body().getAceplusStatusMessage());
                     }
 
@@ -3266,9 +3280,11 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
                         sqLiteDatabase.endTransaction();
 
                         Utils.commonDialog(getResources().getString(R.string.download_success), SyncActivity.this);
+                        //downloadIncentiveFromApi(paramData);
 
                     } else {
                         Utils.cancelDialog();
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
                         textViewError.setText(response.body().getAceplusStatusMessage());
                     }
 
@@ -3324,6 +3340,111 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
             sqLiteDatabase.insert(DatabaseContract.SALE_HISTORY_DETAIL.TABLE, null, cvForSaleHistoryDetail);
         }
     }
+
+   /* void downloadIncentiveFromApi(String paramData) {
+
+        LoginCreditRequest loginRequest = new LoginCreditRequest();
+        loginRequest.setSiteActivationKey(Constant.SITE_ACTIVATION_KEY);
+        loginRequest.setTabletActivationKey(Constant.TABLET_ACTIVATION_KEY);
+        loginRequest.setUserId(saleman_No);
+        loginRequest.setPassword(saleman_Pwd);
+        loginRequest.setDate(Utils.getCurrentDate(false));
+        loginRequest.setRoute(getRouteID(saleman_Id));
+
+        Cursor customerCursor = sqLiteDatabase.rawQuery("SELECT id FROM CUSTOMER", null);
+        ArrayList<CreditApi> creditApiList = new ArrayList<>();
+        List<Integer> idList = new ArrayList<>();
+
+        CreditApi creditApi = new CreditApi();
+
+        while(customerCursor.moveToNext()) {
+            Integer id = customerCursor.getInt(customerCursor.getColumnIndex("id"));
+            idList.add(id);
+        }
+
+        creditApi.setIdList(idList);
+        creditApiList.add(creditApi);
+        loginRequest.setData(creditApiList);
+        String param1 = getJsonFromObject(loginRequest);
+
+        DownloadService downloadService = RetrofitServiceFactory.createService(DownloadService.class);
+        Call<IncentiveResponse> call = downloadService.getIncentiveFromApi(param1);
+
+        call.enqueue(new Callback<IncentiveResponse>() {
+            @Override
+            public void onResponse(Call<IncentiveResponse> call, Response<IncentiveResponse> response) {
+                if (response.code() == 200) {
+                    if (response.body().getAceplusStatusCode() == 200) {
+                        textViewError.setText("");
+                        Utils.cancelDialog();
+
+                        List<IncentiveForApi> incentiveForApiList = response.body().getDataForIncentive().get(0).getIncentiveList();
+                        sqLiteDatabase.beginTransaction();
+
+                        if(incentiveForApiList.size() > 0) {
+                            sqLiteDatabase.execSQL("DELETE FROM INCENTIVE");
+                            sqLiteDatabase.execSQL("DELETE FROM INCENTIVE_ITEM");
+                        }
+
+                        for(IncentiveForApi incentiveForApi : incentiveForApiList) {
+                            insertIncentiveToDb(incentiveForApi);
+                            sqLiteDatabase.setTransactionSuccessful();
+                            sqLiteDatabase.endTransaction();
+                        }
+
+                        Utils.commonDialog(getResources().getString(R.string.download_success), SyncActivity.this);
+
+                    } else {
+                        Utils.cancelDialog();
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                        textViewError.setText(response.body().getAceplusStatusMessage());
+                    }
+
+                } else {
+
+                    if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
+                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                        textViewError.setText(response.body().getAceplusStatusMessage());
+                    } else {
+                        Utils.cancelDialog();
+                        Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
+                    }
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<IncentiveResponse> call, Throwable t) {
+                Utils.cancelDialog();
+                Utils.commonDialog(t.getMessage(), SyncActivity.this);
+            }
+        });
+    }
+
+    void insertIncentiveToDb(IncentiveForApi incentiveForApi) {
+        ContentValues cv = new ContentValues();
+        cv.put("ID", incentiveForApi.getId());
+        cv.put("INVOICE_NO", incentiveForApi.getInvoiceNo());
+        cv.put("INVOICE_DATE", incentiveForApi.getInvoiceDate());
+        cv.put("STANDARD_EXTERNAL_CHECK_ID", incentiveForApi.getStandardExternalCheckId());
+        cv.put("OUTLET_VISIBILITY_ID", incentiveForApi.getOutletVisibilityId());
+        cv.put("CUSTOMER_ID", incentiveForApi.getCustomerId());
+        cv.put("SALE_MAN_ID", incentiveForApi.getSaleManId());
+        cv.put("INCENTIVE_PROGRAM_NAME", incentiveForApi.getIncentiveProgramName());
+        sqLiteDatabase.insert("INCENTIVE", null, cv);
+
+        for(IncentiveItemForApi incentiveItemForApi : incentiveForApi.getDisplayProgramItem()) {
+            ContentValues cvItem = new ContentValues();
+            cvItem.put("ID", incentiveForApi.getId());
+            cvItem.put("DISPLAY_PROGRAM_ID", incentiveForApi.getInvoiceNo());
+            cvItem.put("INCENTIVE_ID", incentiveForApi.getInvoiceDate());
+            cvItem.put("STOCK_ID", incentiveForApi.getStandardExternalCheckId());
+            cvItem.put("QUANTITY", incentiveForApi.getOutletVisibilityId());
+            cvItem.put("PRICE", incentiveForApi.getCustomerId());
+            sqLiteDatabase.insert("INCENTIVE_ITEM", null, cvItem);
+        }
+    }
+*/
 
     /**
      * Send success message to API service in order to update downloaded flag.
@@ -3445,8 +3566,10 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
                         Utils.backupDatabase(SyncActivity.this);
                         clearAllTableData();
                         Utils.backToLogin(SyncActivity.this);
-                    } else if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
-                        onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                    } else {
+                        if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
+                            onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                        }
                     }
 
                 } else {

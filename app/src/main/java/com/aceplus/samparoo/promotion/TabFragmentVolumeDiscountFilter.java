@@ -147,13 +147,16 @@ public class TabFragmentVolumeDiscountFilter extends Fragment {
 
             txt_filter_discount_from_date.setText(volumeDiscountFilterForReport.getFromDate().substring(0,10));
             txt_filter_discount_to_date.setText(volumeDiscountFilterForReport.getToDate().substring(0,10));
-            txt_filter_discount_from.setText(volumeDiscountFilterForReport.getVolumeDiscountFilterItemForReportList().get(0).getFromSaleAmount());
-            txt_filter_discount_to.setText(volumeDiscountFilterForReport.getVolumeDiscountFilterItemForReportList().get(0).getToSaleAmount());
-            txt_filter_discount.setText(volumeDiscountFilterForReport.getVolumeDiscountFilterItemForReportList().get(0).getFilterDiscountPercent());
-            txt_filter_amount.setText(volumeDiscountFilterForReport.getVolumeDiscountFilterItemForReportList().get(0).getFilterDiscountAmount());
-            txt_filter_price.setText(volumeDiscountFilterForReport.getVolumeDiscountFilterItemForReportList().get(0).getFilterDiscountPrice());
-            txt_filter_category.setText(volumeDiscountFilterForReport.getVolumeDiscountFilterItemForReportList().get(0).getCategoryName());
-            txt_filter_group.setText(volumeDiscountFilterForReport.getVolumeDiscountFilterItemForReportList().get(0).getGroupCodeName());
+
+            if(volumeDiscountFilterForReport.getVolumeDiscountFilterItemForReportList() != null && volumeDiscountFilterForReport.getVolumeDiscountFilterItemForReportList().size() > 0) {
+                txt_filter_discount_from.setText(volumeDiscountFilterForReport.getVolumeDiscountFilterItemForReportList().get(0).getFromSaleAmount());
+                txt_filter_discount_to.setText(volumeDiscountFilterForReport.getVolumeDiscountFilterItemForReportList().get(0).getToSaleAmount());
+                txt_filter_discount.setText(volumeDiscountFilterForReport.getVolumeDiscountFilterItemForReportList().get(0).getFilterDiscountPercent());
+                txt_filter_amount.setText(volumeDiscountFilterForReport.getVolumeDiscountFilterItemForReportList().get(0).getFilterDiscountAmount());
+                txt_filter_price.setText(volumeDiscountFilterForReport.getVolumeDiscountFilterItemForReportList().get(0).getFilterDiscountPrice());
+                txt_filter_category.setText(volumeDiscountFilterForReport.getVolumeDiscountFilterItemForReportList().get(0).getCategoryName());
+                txt_filter_group.setText(volumeDiscountFilterForReport.getVolumeDiscountFilterItemForReportList().get(0).getGroupCodeName());
+            }
 
             if(volumeDiscountFilterForReport.getFilterExclude() != null) {
                 if(volumeDiscountFilterForReport.getFilterExclude().equals("0")) {

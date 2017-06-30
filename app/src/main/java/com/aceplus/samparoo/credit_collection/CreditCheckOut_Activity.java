@@ -24,12 +24,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 
+import com.aceplus.samparoo.LoginActivity;
 import com.aceplus.samparoo.R;
 import com.aceplus.samparoo.customer.SaleCheckoutActivity;
 import com.aceplus.samparoo.model.CreditInvoice;
 import com.aceplus.samparoo.model.CreditInvoiceItems;
 import com.aceplus.samparoo.model.CustomerCredit;
 import com.aceplus.samparoo.myinterface.OnActionClickListener;
+import com.aceplus.samparoo.utils.Constant;
 import com.aceplus.samparoo.utils.Database;
 import com.aceplus.samparoo.utils.DatabaseContract;
 import com.aceplus.samparoo.utils.Utils;
@@ -70,10 +72,8 @@ public class CreditCheckOut_Activity extends Activity implements OnActionClickLi
     ArrayList<CreditInvoice> creditInvoiceSaveList = new ArrayList<>();
     ArrayList<CreditInvoiceItems> creditInvoiceItemsList = new ArrayList<>();
 
-    public static String creditCustomer;
-    public static String creditCustomerAddress;
+    public static String salemanId;
     public static String customerId;
-    public static String creditId;
     private String creditInvoiceId;
     String creditDate;
     String invoiceId;
@@ -93,6 +93,14 @@ public class CreditCheckOut_Activity extends Activity implements OnActionClickLi
         database = new Database(this).getDataBase();
         customerCredit = (CustomerCredit) getIntent().getSerializableExtra(CREDIT_KEY);
         registerIDs();
+
+        try {
+            salemanId = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Utils.backToLogin(this);
+        }
+
         getCreditInvoiceData(customerCredit.getCustomerId());
 //        makeInvoiceNo(this);
         setValueToCustomerAdapter();
@@ -378,6 +386,7 @@ public class CreditCheckOut_Activity extends Activity implements OnActionClickLi
         Cursor cursor = database.rawQuery("SELECT * FROM CREDIT WHERE CUSTOMER_ID = " + customerId, null);
         creditInvoiceList.clear();
         while (cursor.moveToNext()) {
+            Integer id = cursor.getInt(cursor.getColumnIndex("ID"));
             String invoiceId = cursor.getString(cursor.getColumnIndex("INVOICE_NO"));
             String invoiceDate = cursor.getString(cursor.getColumnIndex("INVOICE_DATE"));
             double Amt = cursor.getDouble(cursor.getColumnIndex("AMT"));
@@ -385,6 +394,7 @@ public class CreditCheckOut_Activity extends Activity implements OnActionClickLi
             String flag = cursor.getString(cursor.getColumnIndex("FIRST_PAY_AMT"));
 
             CreditInvoice creditInvoice = new CreditInvoice();
+            creditInvoice.setId(id);
             creditInvoice.setInvoiceNo(invoiceId);
             creditInvoice.setInvoiceDate(invoiceDate);
             creditInvoice.setCustomerId(customerId);
@@ -430,19 +440,27 @@ public class CreditCheckOut_Activity extends Activity implements OnActionClickLi
             //flag = creditInvoice.getStatus();
             ContentValues cashReceiveCv = new ContentValues();
             cashReceiveCv.put(DatabaseContract.CASH_RECEIVE.ID, rowCount + 1);
-            cashReceiveCv.put(DatabaseContract.CASH_RECEIVE.RECEIVE_NO, creditInvoice.getInvoiceNo());
+            cashReceiveCv.put(DatabaseContract.CASH_RECEIVE.RECEIVE_NO, creditInvoice.getInvoiceNo().replace("W", "CR"));
             cashReceiveCv.put(DatabaseContract.CASH_RECEIVE.RECEIVE_DATE, creditInvoice.getInvoiceDate());
             cashReceiveCv.put(DatabaseContract.CASH_RECEIVE.CUSTOMER_ID, creditInvoice.getCustomerId());
             cashReceiveCv.put(DatabaseContract.CASH_RECEIVE.AMOUNT, creditInvoice.getPayAmt());
             cashReceiveCv.put(DatabaseContract.CASH_RECEIVE.CURRENCY_ID, customerCredit.getCurrencyId());
-            cashReceiveCv.put(DatabaseContract.CASH_RECEIVE.STATUS, "");
+
+            if(creditInvoice.getCreditAmt() == 0.0 || creditInvoice.getAmt() == creditInvoice.getPayAmt()) {
+                cashReceiveCv.put(DatabaseContract.CASH_RECEIVE.STATUS, "CA");
+            } else {
+                cashReceiveCv.put(DatabaseContract.CASH_RECEIVE.STATUS, "CR");
+            }
+
             cashReceiveCv.put(DatabaseContract.CASH_RECEIVE.LOCATION_ID, getLocationCode());
             cashReceiveCv.put(DatabaseContract.CASH_RECEIVE.PAYMENT_TYPE, "");
             cashReceiveCv.put(DatabaseContract.CASH_RECEIVE.CASH_RECEIVE_TYPE, "");
-            cashReceiveCv.put(DatabaseContract.CASH_RECEIVE.SALE_ID, "");
+            cashReceiveCv.put(DatabaseContract.CASH_RECEIVE.SALE_ID, creditInvoice.getId());
+            cashReceiveCv.put(DatabaseContract.CASH_RECEIVE.SALE_MAN_ID, salemanId);
+
             //cv.put("FLAG",flag);
             ContentValues receiveItemCv = new ContentValues();
-            receiveItemCv.put(DatabaseContract.CASH_RECEIVE.RECEIVE_NO, creditInvoice.getInvoiceNo());
+            receiveItemCv.put(DatabaseContract.CASH_RECEIVE.RECEIVE_NO, creditInvoice.getInvoiceNo().replace("W", "CR"));
 
             Cursor creditIdCursor = database.rawQuery("SELECT ID FROM " + DatabaseContract.CREDIT.TABLE + " WHERE INVOICE_NO = \'" + creditInvoice.getInvoiceNo() + "\'", null);
             while(creditIdCursor.moveToNext()) {
@@ -586,7 +604,7 @@ public class CreditCheckOut_Activity extends Activity implements OnActionClickLi
             invdate.setText(creditInv.getInvoiceDate());
             invAmt.setText(Utils.formatAmount(creditInv.getAmt()));
 
-            if(creditInv.getCreditAmt() == 0.0) {
+            if(creditInv.getCreditAmt() == 0.0 || creditInv.getPayAmt() == creditInv.getAmt()) {
                 statusTxt.setText("Paid");
                 statusTxt.setTextColor(Color.parseColor("#00aa88"));
             }

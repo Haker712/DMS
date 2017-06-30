@@ -343,6 +343,7 @@ public class DatabaseContract {
         public static final String PAYMENT_TYPE = "PAYMENT_TYPE";
         public static final String CASH_RECEIVE_TYPE = "CASH_RECEIVE_TYPE";
         public static final String SALE_ID = "SALE_ID";
+        public static final String SALE_MAN_ID = "SALE_MAN_ID";
     }
 
     public abstract class CASH_RECEIVE_ITEM {

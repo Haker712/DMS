@@ -519,7 +519,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             netAmount = totalAmount - totalVolumeDiscount - itemDiscountAmt;
         }
         netAmountTextView.setText(Utils.formatAmount(netAmount));
-        volDisForPreOrder.setText(Utils.formatAmount(totalVolumeDiscount)+ " (" + new DecimalFormat("#0.00").format(totalVolumeDiscountPercent) + "%)");
+        volDisForPreOrder.setText(Utils.formatAmount(totalDiscountAmount)+ " (" + new DecimalFormat("#0.00").format(totalVolumeDiscountPercent) + "%)");
         taxTextView.setText(Utils.formatAmount(taxAmt) + " (" + new DecimalFormat("#0.00").format(taxPercent) + "%)");
     }
 

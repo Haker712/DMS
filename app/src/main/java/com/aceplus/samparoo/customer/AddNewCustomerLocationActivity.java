@@ -121,6 +121,17 @@ public class AddNewCustomerLocationActivity extends FragmentActivity {
                             //Location Permission already granted
 
                             map.setMyLocationEnabled(true);
+                            GPSTracker gpsTracker = new GPSTracker(AddNewCustomerLocationActivity.this);
+                            Double lat = 0.0, lon = 0.0;
+
+                            if (gpsTracker.canGetLocation()) {
+                                lat = gpsTracker.getLatitude();
+                                lon = gpsTracker.getLongitude();
+                            }
+
+                            googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lat, lon)));
+                            googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+
                         } else {
                             //Request Location Permission
                             checkLocationPermission();

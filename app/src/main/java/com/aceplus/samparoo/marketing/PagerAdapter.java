@@ -33,6 +33,9 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
             case 3:
                 TabFragment6 tab6 = new TabFragment6();
                 return tab6;
+            /*case 4:
+                IncentiveFragment incentiveFragment = new IncentiveFragment();
+                return incentiveFragment;*/
             default:
                 return null;
         }

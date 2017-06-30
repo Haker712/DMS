@@ -403,7 +403,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             netAmount = totalAmount - totalVolumeDiscount - itemDiscountAmt;
         }
         netAmountTextView.setText(Utils.formatAmount(netAmount));
-        discountTextView.setText(Utils.formatAmount(totalVolumeDiscount) + " (" + new DecimalFormat("#0.00").format(totalVolumeDiscountPercent) + "%)");
+        discountTextView.setText(Utils.formatAmount(totalDiscountAmount) + " (" + new DecimalFormat("#0.00").format(totalVolumeDiscountPercent) + "%)");
         taxTextView.setText(Utils.formatAmount(taxAmt) + " (" + new DecimalFormat("#0.00").format(taxPercent) + "%)");
     }
 
