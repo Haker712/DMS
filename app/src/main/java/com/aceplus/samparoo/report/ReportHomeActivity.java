@@ -579,15 +579,8 @@ public class ReportHomeActivity extends FragmentActivity {
                             , cursorForCustomer.getString(cursorForCustomer.getColumnIndex("CUSTOMER_NAME")));
                 }
 
-                Cursor cursorForCustomerFeedback = database.rawQuery(
-                        "SELECT * FROM CUSTOMER_FEEDBACK"
-                                + " WHERE INV_NO = \"" + cursor.getString(cursor.getColumnIndex("FEEDBACK_NO")) + "\"", null);
-                if (cursorForCustomerFeedback.moveToNext()) {
-
-                    customerFeedbackReportJsonObject.put("description"
-                            , cursorForCustomerFeedback.getString(cursorForCustomerFeedback.getColumnIndex("REMARK")));
-                }
-
+                customerFeedbackReportJsonObject.put("description"
+                        , cursor.getString(cursor.getColumnIndex("DESCRIPTION")));
                 customerFeedbackReportJsonObject.put("remark", cursor.getString(cursor.getColumnIndex("REMARK")));
             } catch (JSONException e) {
 

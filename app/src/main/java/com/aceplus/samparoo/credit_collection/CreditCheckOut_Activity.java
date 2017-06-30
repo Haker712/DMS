@@ -447,13 +447,13 @@ public class CreditCheckOut_Activity extends Activity implements OnActionClickLi
             cashReceiveCv.put(DatabaseContract.CASH_RECEIVE.CURRENCY_ID, customerCredit.getCurrencyId());
 
             if(creditInvoice.getCreditAmt() == 0.0 || creditInvoice.getAmt() == creditInvoice.getPayAmt()) {
-                cashReceiveCv.put(DatabaseContract.CASH_RECEIVE.STATUS, "CA");
+                cashReceiveCv.put(DatabaseContract.CASH_RECEIVE.PAYMENT_TYPE, "CA");
             } else {
-                cashReceiveCv.put(DatabaseContract.CASH_RECEIVE.STATUS, "CR");
+                cashReceiveCv.put(DatabaseContract.CASH_RECEIVE.PAYMENT_TYPE, "CR");
             }
 
             cashReceiveCv.put(DatabaseContract.CASH_RECEIVE.LOCATION_ID, getLocationCode());
-            cashReceiveCv.put(DatabaseContract.CASH_RECEIVE.PAYMENT_TYPE, "");
+            cashReceiveCv.put(DatabaseContract.CASH_RECEIVE.STATUS, "");
             cashReceiveCv.put(DatabaseContract.CASH_RECEIVE.CASH_RECEIVE_TYPE, "");
             cashReceiveCv.put(DatabaseContract.CASH_RECEIVE.SALE_ID, creditInvoice.getId());
             cashReceiveCv.put(DatabaseContract.CASH_RECEIVE.SALE_MAN_ID, salemanId);
