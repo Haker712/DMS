@@ -79,6 +79,8 @@ public class ERouteMapFragment extends Fragment{
                         //Request Location Permission
                         checkLocationPermission();
                     }
+                } else {
+                    mMap.setMyLocationEnabled(true);
                 }
 
                 setCustomerLocation();

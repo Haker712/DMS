@@ -4,10 +4,15 @@
 
     <uses-feature android:glEsVersion="0x00020000" android:required="true" />
 
-    <uses-permission android:name="com.aceplus.samparoo.permission.MAPS_RECEIVE" />
+   <!-- <uses-permission android:name="com.aceplus.samparoo.permission.MAPS_RECEIVE" />
     <permission
         android:name="com.aceplus.samparoo.permission.MAPS_RECEIVE"
-        android:protectionLevel="signature" />
+        android:protectionLevel="signature" />-->
+
+    <permission
+        android:name="com.aceplus.samparoo.permission.MAPS_RECEIVE"
+        android:protectionLevel="signature"/>
+    <uses-permission android:name="com.aceplus.samparoo.permission.MAPS_RECEIVE"/>
 
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -127,15 +132,6 @@
             android:screenOrientation="landscape" />
 
         <activity android:name=".customer.SaleExchangeInfoActivity"
-            android:screenOrientation="landscape" />
-
-        <activity android:name=".print.PrintActivity"
-            android:screenOrientation="landscape" />
-
-        <activity android:name=".print.PrintSettingActivity"
-            android:screenOrientation="landscape" />
-
-        <activity android:name=".print.PrintTextActivity"
             android:screenOrientation="landscape" />
 
         <activity android:name=".PrintInvoiceActivity"

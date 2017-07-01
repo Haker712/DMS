@@ -27,6 +27,7 @@ import com.aceplus.samparoo.R;
 import com.aceplus.samparoo.utils.Database;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -129,13 +130,25 @@ public class AddNewCustomerLocationActivity extends FragmentActivity {
                                 lon = gpsTracker.getLongitude();
                             }
 
-                            googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lat, lon)));
-                            googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+                            //16.849619, 96.128581
+                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), 15));
 
                         } else {
                             //Request Location Permission
                             checkLocationPermission();
                         }
+                    } else {
+                        map.setMyLocationEnabled(true);
+
+                        GPSTracker gpsTracker = new GPSTracker(AddNewCustomerLocationActivity.this);
+                        Double lat = 0.0, lon = 0.0;
+
+                        if (gpsTracker.canGetLocation()) {
+                            lat = gpsTracker.getLatitude();
+                            lon = gpsTracker.getLongitude();
+                        }
+
+                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), 15));
                     }
 
                     map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
