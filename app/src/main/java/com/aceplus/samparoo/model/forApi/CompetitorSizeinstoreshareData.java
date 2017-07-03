@@ -11,20 +11,9 @@ import java.util.List;
 
 public class CompetitorSizeinstoreshareData {
 
-    @SerializedName("CompetitorActivities")
-    @Expose
-    private List<Competitor_Activity> competitorActivities = null;
-    @SerializedName("SizeInStoreShare")
+    @SerializedName("SizeAndStockShare")
     @Expose
     private List<SizeInStoreShare> sizeInStoreShare = null;
-
-    public List<Competitor_Activity> getCompetitorActivities() {
-        return competitorActivities;
-    }
-
-    public void setCompetitorActivities(List<Competitor_Activity> competitorActivities) {
-        this.competitorActivities = competitorActivities;
-    }
 
     public List<SizeInStoreShare> getSizeInStoreShare() {
         return sizeInStoreShare;

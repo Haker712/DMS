@@ -11,7 +11,7 @@ import java.util.List;
 
 public class DisplayAssessmentData {
 
-    @SerializedName("DisplayAssessment")
+    @SerializedName("OutletVisibility")
     @Expose
     private List<DisplayAssessment> displayAssessment = null;
 

@@ -84,6 +84,13 @@ public class CashReceiveApi {
     String saleId;
 
     /**
+     * saleManId
+     */
+    @SerializedName("SaleManId")
+    @Expose
+    String saleManId;
+
+    /**
      * cashReceiveItem
      */
     @SerializedName("TCashReceiveItem")
@@ -286,5 +293,13 @@ public class CashReceiveApi {
      */
     public void setCashReceiveItem(List<CashReceiveItemApi> cashReceiveItem) {
         this.cashReceiveItem = cashReceiveItem;
+    }
+
+    public String getSaleManId() {
+        return saleManId;
+    }
+
+    public void setSaleManId(String saleManId) {
+        this.saleManId = saleManId;
     }
 }

@@ -77,6 +77,13 @@ public class DeliveryForApi {
     List<DeliveryItemForApi> deliveryItemForApiList;
 
     /**
+     * deliveryItemForApiList
+     */
+    @SerializedName("SaleOrderPresent")
+    @Expose
+    List<DeliveryPresentForApi> deliveryPresentForApiList;
+
+    /**
      * Getter method for id
      *
      * @return id
@@ -236,5 +243,23 @@ public class DeliveryForApi {
      */
     public void setDeliveryItemForApiList(List<DeliveryItemForApi> deliveryItemForApiList) {
         this.deliveryItemForApiList = deliveryItemForApiList;
+    }
+
+    /**
+     * Getter method for deliveryPresentForApiList
+     *
+     * @return deliveryPresentForApiList
+     */
+    public List<DeliveryPresentForApi> getDeliveryPresentForApiList() {
+        return deliveryPresentForApiList;
+    }
+
+    /**
+     * Setter method for deliveryPresentForApiList
+     *
+     * @param deliveryPresentForApiList
+     */
+    public void setDeliveryPresentForApiList(List<DeliveryPresentForApi> deliveryPresentForApiList) {
+        this.deliveryPresentForApiList = deliveryPresentForApiList;
     }
 }

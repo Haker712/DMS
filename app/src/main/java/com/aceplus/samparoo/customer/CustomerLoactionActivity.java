@@ -69,10 +69,16 @@ public class CustomerLoactionActivity extends ActionBarActivity {
 
             locationCount = sharedPreferences.getInt("locationCount", 0);
 
-            String zoom = sharedPreferences.getString("zoom", "15");
+            GPSTracker gpsTracker = new GPSTracker(CustomerLoactionActivity.this);
+            Double lat = 0.0, lon = 0.0;
 
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude, longitude)));
-            googleMap.animateCamera(CameraUpdateFactory.zoomTo(Float.parseFloat(zoom)));
+            if (gpsTracker.canGetLocation()) {
+                lat = gpsTracker.getLatitude();
+                lon = gpsTracker.getLongitude();
+            }
+
+            googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lat, lon)));
+            googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
         }
         /*if (visitRecord == 0) {
             drawMarker(new LatLng(latitude, longitude), customerName, address);

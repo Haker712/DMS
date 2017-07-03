@@ -10,20 +10,10 @@ import java.util.List;
  */
 
 public class Outlet_Sizeinstore_Data {
-    @SerializedName("OutletStockAvailability")
-    @Expose
-    private List<OutletStockAvailability> outletStockAvailability = null;
+
     @SerializedName("SizeInStoreShare")
     @Expose
     private List<SizeInStoreShare> sizeInStoreShare = null;
-
-    public List<OutletStockAvailability> getOutletStockAvailability() {
-        return outletStockAvailability;
-    }
-
-    public void setOutletStockAvailability(List<OutletStockAvailability> outletStockAvailability) {
-        this.outletStockAvailability = outletStockAvailability;
-    }
 
     public List<SizeInStoreShare> getSizeInStoreShare() {
         return sizeInStoreShare;

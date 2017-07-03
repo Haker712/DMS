@@ -53,6 +53,7 @@ public class PreOrder implements Cloneable, Serializable {
      */
     Double netAmount;
 
+    Double taxAmount;
 
     private Integer locationId;
 
@@ -60,9 +61,7 @@ public class PreOrder implements Cloneable, Serializable {
 
     private Double discountPer;
 
-    private Double volumeDiscount;
-
-    private Double volumeDiscountPer;
+    private String remark;
 
     /**
      * Getter method of invoiceId
@@ -232,19 +231,19 @@ public class PreOrder implements Cloneable, Serializable {
         this.discountPer = discountPer;
     }
 
-    public Double getVolumeDiscount() {
-        return volumeDiscount;
+    public Double getTaxAmount() {
+        return taxAmount;
     }
 
-    public void setVolumeDiscount(Double volumeDiscount) {
-        this.volumeDiscount = volumeDiscount;
+    public void setTaxAmount(Double taxAmount) {
+        this.taxAmount = taxAmount;
     }
 
-    public Double getVolumeDiscountPer() {
-        return volumeDiscountPer;
+    public String getRemark() {
+        return remark;
     }
 
-    public void setVolumeDiscountPer(Double volumeDiscountPer) {
-        this.volumeDiscountPer = volumeDiscountPer;
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 }

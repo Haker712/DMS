@@ -73,17 +73,18 @@ public class CreditCollectActivity extends Activity {
             int customerId = customerBalanceCursor.getInt(customerBalanceCursor.getColumnIndex(DatabaseContract.CUSTOMER_BALANCE.CUSTOMER_ID));
             int currencyId = customerBalanceCursor.getInt(customerBalanceCursor.getColumnIndex(DatabaseContract.CUSTOMER_BALANCE.CURRENCY_ID));
             double totalBalance = customerBalanceCursor.getInt(customerBalanceCursor.getColumnIndex(DatabaseContract.CUSTOMER_BALANCE.BALANCE));
-
-            String query1 = "SELECT C.PAY_AMT, CUS.CUSTOMER_NAME, CUS.ADDRESS FROM CREDIT AS C INNER JOIN CUSTOMER AS CUS ON CUS.ID = " + customerId;
+            double creditAmount = 0.0;
+            String query1 = "SELECT C.PAY_AMT, C.AMT, CUS.CUSTOMER_NAME, CUS.ADDRESS FROM CREDIT AS C, CUSTOMER AS CUS WHERE CUS.ID = " + customerId + " AND c.customer_id = " + customerId;
             Cursor creditCursor = database.rawQuery(query1, null);
 
             while(creditCursor.moveToNext()) {
                 paidAmt += creditCursor.getDouble(creditCursor.getColumnIndex("PAY_AMT"));
                 customerName = creditCursor.getString(creditCursor.getColumnIndex("CUSTOMER_NAME"));
                 customerAddress = creditCursor.getString(creditCursor.getColumnIndex("ADDRESS"));
+                creditAmount += creditCursor.getDouble(creditCursor.getColumnIndex("AMT"));
             }
             creditCursor.close();
-            unpaidAmt = totalBalance - paidAmt;
+            unpaidAmt = creditAmount - paidAmt;
 
             CustomerCredit customerCredit = new CustomerCredit();
             customerCredit.setCustomerId(customerId);
@@ -92,9 +93,11 @@ public class CreditCollectActivity extends Activity {
             customerCredit.setCustomerAddress(customerAddress);
             customerCredit.setCreditUnpaidAmt(unpaidAmt);
             customerCredit.setCreditPaidAmt(paidAmt);
-            customerCredit.setCreditTotalAmt(totalBalance);
+            customerCredit.setCreditTotalAmt(creditAmount);
 
-            creditList.add(customerCredit);
+            if(creditAmount != 0.0 || paidAmt != 0.0 || unpaidAmt != 0.0) {
+                creditList.add(customerCredit);
+            }
         }
         customerBalanceCursor.close();
 

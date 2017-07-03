@@ -91,6 +91,7 @@ public class FragmentDeliveryReport extends Fragment {
 
                         return;
                     } else if (customer != null && soldProductList.size() != 0) {
+
                         Intent intent = new Intent(getActivity(), SaleOrderActivity.class);
                         intent.putExtra(SaleOrderActivity.IS_DELIVERY, true);
                         intent.putExtra(SaleOrderActivity.CUSTOMER_INFO_KEY, customer);
@@ -121,7 +122,7 @@ public class FragmentDeliveryReport extends Fragment {
 
                 cursor = database.rawQuery(
                         "SELECT * FROM PRODUCT"
-                                + " WHERE ID = '" + deliverItem.getStockNo() + "'", null);
+                                + " WHERE ID = " + deliverItem.getStockNo(), null);
                 if (cursor.moveToNext()) {
 
                     SoldProduct soldProduct = new SoldProduct(new Product(
@@ -134,6 +135,11 @@ public class FragmentDeliveryReport extends Fragment {
                     soldProduct.setOrderedQuantity(deliverItem.getOrderQty());
                     soldProduct.setQuantity(soldProduct.getOrderedQuantity());
                     soldProduct.getProduct().setStockId(Integer.parseInt(deliverItem.getStockNo()));
+
+                    if(deliverItem.getSPrice() == 0.0) {
+                        soldProduct.getProduct().setPrice(0.0);
+                    }
+
                     soldProductList.add(soldProduct);
                 }
 

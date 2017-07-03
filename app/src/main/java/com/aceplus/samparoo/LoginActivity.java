@@ -402,41 +402,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @OnClick(R.id.imageView)
     void backupDB() {
-        /*Calendar now = Calendar.getInstance();
-        String today = now.get(Calendar.DATE) + "." + (now.get(Calendar.MONTH) + 1)
-                + "." + now.get(Calendar.YEAR);*/
-        String today = Utils.getCurrentDate(true);
-
-        try {
-            File sd = Environment.getExternalStorageDirectory();
-            File data = Environment.getDataDirectory();
-
-            if (sd.canWrite()) {
-                Toast.makeText(getApplicationContext(), "Backup database is starting...",
-                        Toast.LENGTH_SHORT).show();
-                String currentDBPath = "/data/com.aceplus.samparoo/databases/aceplus-dms.sqlite";
-
-                String backupDBPath = "Samparoo_DB_Backup_" + today + ".db";
-                File currentDB = new File(data, currentDBPath);
-
-                String folderPath = "mnt/sdcard/Samparoo_DB_Backup";
-                File f = new File(folderPath);
-                f.mkdir();
-                File backupDB = new File(f, backupDBPath);
-                FileChannel source = new FileInputStream(currentDB).getChannel();
-                FileChannel destination = new FileOutputStream(backupDB).getChannel();
-                destination.transferFrom(source, 0, source.size());
-                source.close();
-                destination.close();
-                Toast.makeText(getApplicationContext(), "Backup database Successful!",
-                        Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getApplicationContext(), "Please set Permission for Storage in Setting!", Toast.LENGTH_SHORT).show();
-            }
-        } catch (Exception e) {
-            Toast.makeText(getApplicationContext(), "Cannot Backup!", Toast.LENGTH_SHORT).show();
-        }
-
+        Utils.backupDatabase(LoginActivity.this);
     }
 
     @OnClick(R.id.textViewChangeIP)

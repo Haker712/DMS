@@ -27,18 +27,15 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
             case 1:
                 POSMFragment tab2 = new POSMFragment();
                 return tab2;
-            /*case 2:
-                TabFragment3 tab3 = new TabFragment3();
-                return tab3;*/
             case 2:
                 TabFragment5 tab4 = new TabFragment5();
                 return tab4;
-//            case 3:
-//                TabFragment4 tab5 = new TabFragment4();
-//                return tab5;
             case 3:
                 TabFragment6 tab6 = new TabFragment6();
                 return tab6;
+            /*case 4:
+                IncentiveFragment incentiveFragment = new IncentiveFragment();
+                return incentiveFragment;*/
             default:
                 return null;
         }

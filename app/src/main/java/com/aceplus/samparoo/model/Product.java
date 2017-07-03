@@ -14,6 +14,8 @@ public class Product implements Cloneable, Serializable {
 
     private int stockId;
 
+    public Product(){}
+
     public Product(String id, String name, Double price, Double purchasePrice, String discountType, int remainingQty) {
 
         this.id = id;
@@ -93,5 +95,29 @@ public class Product implements Cloneable, Serializable {
 
     public void setStockId(int stockId) {
         this.stockId = stockId;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public void setPurchasePrice(Double purchasePrice) {
+        this.purchasePrice = purchasePrice;
+    }
+
+    public void setDiscountType(String discountType) {
+        this.discountType = discountType;
+    }
+
+    public void setRemainingQty(int remainingQty) {
+        this.remainingQty = remainingQty;
     }
 }

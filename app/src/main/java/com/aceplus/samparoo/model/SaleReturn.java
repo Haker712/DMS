@@ -46,6 +46,21 @@ public class SaleReturn implements Cloneable, Serializable {
     private String returnedDate;
 
     /**
+     * Invoice status
+     */
+    private String invoiceStatus;
+
+    /**
+     * Sale Man Id
+     */
+    private String saleManId;
+
+    /**
+     * Sale id
+     */
+    private String saleId;
+
+    /**
      * Getter method for saleReturnId
      *
      * @return saleReturnId
@@ -169,5 +184,59 @@ public class SaleReturn implements Cloneable, Serializable {
      */
     public void setReturnedDate(String returnedDate) {
         this.returnedDate = returnedDate;
+    }
+
+    /**
+     * Getter method for invoice status
+     *
+     * @return invoiceStatus
+     */
+    public String getInvoiceStatus() {
+        return invoiceStatus;
+    }
+
+    /**
+     * Setter invoice status
+     *
+     * @param invoiceStatus credit or cash
+     */
+    public void setInvoiceStatus(String invoiceStatus) {
+        this.invoiceStatus = invoiceStatus;
+    }
+
+    /**
+     * Getter method for sale man id
+     *
+     * @return sale man id
+     */
+    public String getSaleManId() {
+        return saleManId;
+    }
+
+    /**
+     * Setter method for sale man id.
+     *
+     * @param saleManId sale man id
+     */
+    public void setSaleManId(String saleManId) {
+        this.saleManId = saleManId;
+    }
+
+    /**
+     * Getter method for sale id
+     *
+     * @return saleId
+     */
+    public String getSaleId() {
+        return saleId;
+    }
+
+    /**
+     * Setter method for sale id
+     *
+     * @param saleId sale id
+     */
+    public void setSaleId(String saleId) {
+        this.saleId = saleId;
     }
 }

@@ -61,6 +61,9 @@ public class FragmentCustomerFeedbackReport extends Fragment {
             TextView remarkTextView = (TextView) view.findViewById(R.id.remark);
 
             try {
+                String customerName = customerFeedbackReportJsonObject.getString("customerName");
+                String description = customerFeedbackReportJsonObject.getString("description");
+                String remark = customerFeedbackReportJsonObject.getString("remark");
 
                 customerNameTextView.setText(customerFeedbackReportJsonObject.getString("customerName"));
                 descriptionTextView.setText(customerFeedbackReportJsonObject.getString("description"));

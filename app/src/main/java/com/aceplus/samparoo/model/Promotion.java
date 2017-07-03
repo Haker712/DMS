@@ -18,6 +18,10 @@ public class Promotion implements Serializable {
 
     int promotionQty;
 
+    Double price;
+
+    int currencyId;
+
     public Double getPromotionPrice() {
         return promotionPrice;
     }
@@ -56,5 +60,21 @@ public class Promotion implements Serializable {
 
     public void setPromotionPlanId(String promotionPlanId) {
         this.promotionPlanId = promotionPlanId;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public int getCurrencyId() {
+        return currencyId;
+    }
+
+    public void setCurrencyId(int currencyId) {
+        this.currencyId = currencyId;
     }
 }

@@ -26,6 +26,11 @@ public class DeliverItem implements Serializable {
     private int orderQty;
 
     /**
+     * received quantity
+     */
+    private int receivedQty;
+
+    /**
      * price
      */
     private double SPrice;
@@ -87,6 +92,24 @@ public class DeliverItem implements Serializable {
      */
     public void setOrderQty(int orderQty) {
         this.orderQty = orderQty;
+    }
+
+    /**
+     * Getter method for receivedQty
+     *
+     * @return receivedQty
+     */
+    public int getReceivedQty() {
+        return receivedQty;
+    }
+
+    /**
+     * Setter method for receivedQty
+     *
+     * @param receivedQty received quantity
+     */
+    public void setReceivedQty(int receivedQty) {
+        this.receivedQty = receivedQty;
     }
 
     /**

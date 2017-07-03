@@ -78,12 +78,12 @@ public class PreOrderApi {
     @SerializedName("discount_per")
     @Expose
     private Double discountPer;
-    @SerializedName("volume_discount")
+    @SerializedName("tax_amt")
     @Expose
-    private Double volumeDiscount;
-    @SerializedName("volume_discount_per")
+    private Double taxAmount;
+    @SerializedName("remark")
     @Expose
-    private Double volumeDiscountPer;
+    private String remark;
 
     /**
      * pre order detail
@@ -260,22 +260,6 @@ public class PreOrderApi {
         this.discountPer = discountPer;
     }
 
-    public Double getVolumeDiscount() {
-        return volumeDiscount;
-    }
-
-    public void setVolumeDiscount(Double volumeDiscount) {
-        this.volumeDiscount = volumeDiscount;
-    }
-
-    public Double getVolumeDiscountPer() {
-        return volumeDiscountPer;
-    }
-
-    public void setVolumeDiscountPer(Double volumeDiscountPer) {
-        this.volumeDiscountPer = volumeDiscountPer;
-    }
-
     /**
      * Getter method of preOrderDetailList
      *
@@ -292,5 +276,21 @@ public class PreOrderApi {
      */
     public void setPreOrderDetailList(List<PreOrderDetailApi> preOrderDetailList) {
         this.preOrderDetailList = preOrderDetailList;
+    }
+
+    public Double getTaxAmount() {
+        return taxAmount;
+    }
+
+    public void setTaxAmount(Double taxAmount) {
+        this.taxAmount = taxAmount;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 }

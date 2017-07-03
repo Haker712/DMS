@@ -2,6 +2,7 @@ package com.aceplus.samparoo.customer;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -308,11 +309,25 @@ public class SaleReturnActivity extends AppCompatActivity implements OnActionCli
         while (cursor.moveToNext()) {
             saleReturn.setLocationId(cursor.getInt(cursor.getColumnIndex("LocationId")));
         }
-        String netAmt = netAmountTextView.getText().toString().replace(",", "");
-        saleReturn.setAmt(Double.parseDouble(netAmt));
+        String netAmtTxt = netAmountTextView.getText().toString().replace(",", "");
+        Double netAmt = Double.parseDouble(netAmtTxt);
+        saleReturn.setAmt(netAmt);
+
+        Double payAmt = 0.0;
+
+        if(returnCashAmtEditText.getText().toString() != null && !returnCashAmtEditText.getText().toString().equals("")) {
+            payAmt = Double.parseDouble(returnCashAmtEditText.getText().toString());
+        }
+
         saleReturn.setPayAmt(Double.parseDouble(returnCashAmtEditText.getText().toString()));
-        saleReturn.setPcAddress("");
+        saleReturn.setPcAddress(Utils.getDeviceId(SaleReturnActivity.this));
         saleReturn.setReturnedDate(saleDate);
+
+        if(payAmt > netAmt || payAmt.equals(netAmt)) {
+            saleReturn.setInvoiceStatus("CA");
+        } else {
+            saleReturn.setInvoiceStatus("CR");
+        }
 
         database.beginTransaction();
 
@@ -375,7 +390,21 @@ public class SaleReturnActivity extends AppCompatActivity implements OnActionCli
      * @param saleReturn sale return
      */
     void insertSaleReturn(SaleReturn saleReturn) {
-        database.execSQL("INSERT INTO SALE_RETURN VALUES (\""
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("SALE_RETURN_ID", saleReturn.getSaleReturnId());
+        contentValues.put("CUSTOMER_ID", saleReturn.getCustomerId());
+        contentValues.put("LOCATION_ID", saleReturn.getLocationId());
+        contentValues.put("AMT", saleReturn.getAmt());
+        contentValues.put("PAY_AMT", saleReturn.getPayAmt());
+        contentValues.put("PC_ADDRESS", saleReturn.getPcAddress());
+        contentValues.put("RETURNED_DATE", saleReturn.getReturnedDate());
+        contentValues.put("DELETE_FLAG", 0);
+        contentValues.put("INVOICE_STATUS", saleReturn.getInvoiceStatus());
+        contentValues.put("SALE_MAN_ID", saleman_Id);
+
+        database.insert("SALE_RETURN", null, contentValues);
+
+/*        database.execSQL("INSERT INTO SALE_RETURN VALUES (\""
                 + saleReturn.getSaleReturnId() + "\", \""
                 + saleReturn.getCustomerId() + "\", \""
                 + saleReturn.getLocationId() + "\", \""
@@ -383,7 +412,7 @@ public class SaleReturnActivity extends AppCompatActivity implements OnActionCli
                 + saleReturn.getPayAmt() + "\", \""
                 + saleReturn.getPcAddress() + "\", \""
                 + saleReturn.getReturnedDate() + "\""
-                + ", 0)");
+                + ", 0)");*/
     }
 
     /**

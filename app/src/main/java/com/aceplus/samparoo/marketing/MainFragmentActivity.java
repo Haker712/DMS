@@ -2,6 +2,7 @@ package com.aceplus.samparoo.marketing;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -29,15 +30,14 @@ import org.json.JSONObject;
 
 public class MainFragmentActivity extends AppCompatActivity {
     public static final String CUSTOMER_INFO_KEY = "customer-info-key";
+
+    public static final String DAF = "displayAssessment";
+    public static final String POSM = "posm";
+    public static final String SNS = "sizeAndStock";
+    public static final String COMPETE = "competitor";
+
+
     public static Customer customer;
-
-    public static final String USER_INFO_KEY = "user-info-key";
-    public static JSONObject userInfo;
-
-    final int mode = Activity.MODE_PRIVATE;
-    final String MyPREFS = "MyPreference";
-    SharedPreferences mySharedPreference;
-    SharedPreferences.Editor myEditor;
 
     public static String customerId = "";
 
@@ -66,20 +66,14 @@ public class MainFragmentActivity extends AppCompatActivity {
 
         customer = (Customer) getIntent().getSerializableExtra(CUSTOMER_INFO_KEY);
 
-        mySharedPreference = getSharedPreferences(MyPREFS, mode);
-        myEditor = mySharedPreference.edit();
-
         customerId = customer.getCustomerId();
-
-        myEditor.putString("CustomerID", customerId);
-        myEditor.commit();
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         // tabLayout.addTab(tabLayout.newTab().setText("Outlet External Check"));
-        tabLayout.addTab(tabLayout.newTab().setText("Outlet Stock Availability"));
+        tabLayout.addTab(tabLayout.newTab().setText("Display Program"));
         tabLayout.addTab(tabLayout.newTab().setText("POSM"));
         // tabLayout.addTab(tabLayout.newTab().setText("Competitors' Activities"));
-        tabLayout.addTab(tabLayout.newTab().setText("Size and Store Share"));
+        tabLayout.addTab(tabLayout.newTab().setText("Size and Stock Share"));
         // tabLayout.addTab(tabLayout.newTab().setText("Outlet Stock Availability"));
         tabLayout.addTab(tabLayout.newTab().setText("Competitors' Activities"));
 
@@ -127,6 +121,16 @@ public class MainFragmentActivity extends AppCompatActivity {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
+
+                if(tab.getPosition() == 1) {
+                    if(customer.getFlag() == 1) {
+                        new AlertDialog.Builder(MainFragmentActivity.this)
+                                .setTitle("No Authority")
+                                .setMessage("POSM cannot be done for this customer")
+                                .setPositiveButton("OK", null)
+                                .show();
+                    }
+                }
             }
 
 
@@ -144,22 +148,6 @@ public class MainFragmentActivity extends AppCompatActivity {
         customer = (Customer) getIntent().getSerializableExtra(CUSTOMER_INFO_KEY);
     }
 
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }*/
-
     void askPermission() {
         permissionRequest = PermissionHelper.with(MainFragmentActivity.this).build(Manifest.permission.CAMERA).onPermissionsGranted(onGrantAction).onPermissionsDenied(onDenyAction).request(REQUEST_CAMERA);
     }
@@ -172,7 +160,6 @@ public class MainFragmentActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-
         Utils.backToMarketingActivity(this);
     }
 }

@@ -188,6 +188,7 @@ public class MarketingActivity extends AppCompatActivity {
                     , cursor.getInt(cursor.getColumnIndex("VISIT_RECORD")));
             customer.setShopTypeId(cursor.getInt(cursor.getColumnIndex("shop_type_id")));
             customer.setId(cursor.getInt(cursor.getColumnIndex("id")));
+            customer.setFlag(cursor.getInt(cursor.getColumnIndex("flag")));
             customers.add(customer);
             customerListForArrayAdapter.add(customer);
         }

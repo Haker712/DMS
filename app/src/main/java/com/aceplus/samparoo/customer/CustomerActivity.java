@@ -371,6 +371,7 @@ public class CustomerActivity extends AppCompatActivity {
                     , cursor.getInt(cursor.getColumnIndex("VISIT_RECORD")));
             customer.setShopTypeId(cursor.getInt(cursor.getColumnIndex("shop_type_id")));
             customer.setId(cursor.getInt(cursor.getColumnIndex("id")));
+            customer.setFlag(cursor.getInt(cursor.getColumnIndex("flag")));
             customers.add(customer);
             customerListForArrayAdapter.add(customer);
 
@@ -633,6 +634,16 @@ public class CustomerActivity extends AppCompatActivity {
             @Override
             public void onClick(View arg0) {
 
+                if(customer.getFlag() == 1){
+                    new AlertDialog.Builder(CustomerActivity.this)
+                            .setTitle("No Authority")
+                            .setMessage("You need to select old customer.")
+                            .setPositiveButton("OK", null)
+                            .show();
+
+                    return;
+                }
+
                 if (didCustomerSelected()) {
                     boolean customerNoDid = true;
                     Cursor cur = database.rawQuery("SELECT * FROM DID_CUSTOMER_FEEDBACK", null);
@@ -691,7 +702,7 @@ public class CustomerActivity extends AppCompatActivity {
 
                                         String deviceId = Utils.getDeviceId(CustomerActivity.this);
                                         String invoiceNumber = Utils.getInvoiceNo(getApplicationContext(), salemanId, String.valueOf(getLocationCode()), Utils.FOR_OTHERS);
-                                        String invoiceDate = customerFeedbacks.get(descriptionsSpinner.getSelectedItemPosition()).getInvoiceDate();
+                                        String invoiceDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.sss").format(new Date());
                                         int customerNumber = customer.getId();
                                         String locationNumber = String.valueOf(getLocationCode());
                                         int feedbackNumber = Integer.parseInt(customerFeedbacks.get(descriptionsSpinner.getSelectedItemPosition()).getInvoiceNumber());
@@ -987,7 +998,6 @@ public class CustomerActivity extends AppCompatActivity {
 
             return false;
         }
-
         return true;
     }
 
