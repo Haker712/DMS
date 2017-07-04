@@ -83,7 +83,7 @@ public class PrintInvoiceActivity extends Activity{
             public void onClick(View v) {
                 Utils.print(PrintInvoiceActivity.this, getCustomerName(invoie.getCustomerId())
                         , invoie.getId()
-                        , getSaleManName(invoie.getSalepersonId()), invoie, invoiceDetailList, Utils.PRINT_FOR_NORMAL_SALE
+                        , getSaleManName(invoie.getSalepersonId()), invoie, invoiceDetailList, invoicePresentList, Utils.PRINT_FOR_NORMAL_SALE
                         , Utils.FOR_OTHERS);
 
             }
