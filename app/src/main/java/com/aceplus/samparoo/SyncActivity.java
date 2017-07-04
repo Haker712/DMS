@@ -1343,11 +1343,12 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
             String dUEATM = "";
             String prepaidATM = "";
             String isinRoute = "";
-            Double Lat = 0.0;
-            Double Long = 0.0;
+            Double Lat = cursor.getDouble(cursor.getColumnIndex("LATITUDE"));
+            Double Long = cursor.getDouble(cursor.getColumnIndex("LONGITUDE"));
             String visitRecord = "";
             String districtId = cursor.getString(cursor.getColumnIndex("district_id"));
             String statedivisionId = cursor.getString(cursor.getColumnIndex("state_division_id"));
+            Integer shopTypeId = cursor.getInt(cursor.getColumnIndex("shop_type_id"));
 
             customerForApi.setId(id);
             customerForApi.setTownshipNumber(townshipId);
@@ -1371,6 +1372,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
             customerForApi.setvISITRECORD(visitRecord);
             customerForApi.setDistrict_id(Integer.parseInt(districtId));
             customerForApi.setState_division_id(Integer.parseInt(statedivisionId));
+            customerForApi.setShop_type_id(shopTypeId);
 
             customerForApiList.add(customerForApi);
         }
@@ -3562,6 +3564,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
                         Utils.cancelDialog();
+                        deleteDataAfterUpload(DatabaseContract.TSaleFeedback.tb, null,null);
                         Utils.commonDialog("Successfully Uploaded. ", SyncActivity.this);
                         Utils.backupDatabase(SyncActivity.this);
                         clearAllTableData();

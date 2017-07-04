@@ -7,7 +7,7 @@ import com.aceplus.samparoo.model.forApi.CustomerVisitResponse;
 import com.aceplus.samparoo.model.forApi.DeliveryResponse;
 import com.aceplus.samparoo.model.forApi.DownloadMarketing;
 import com.aceplus.samparoo.model.forApi.GeneralResponse;
-import com.aceplus.samparoo.model.forApi.IncentiveResponse;
+/*import com.aceplus.samparoo.model.forApi.IncentiveResponse;*/
 import com.aceplus.samparoo.model.forApi.LoginResponse;
 import com.aceplus.samparoo.model.forApi.PosmShopTypeResponse;
 import com.aceplus.samparoo.model.forApi.ProductResponse;
