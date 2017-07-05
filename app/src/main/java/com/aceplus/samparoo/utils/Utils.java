@@ -25,6 +25,7 @@ import com.aceplus.samparoo.LoginActivity;
 import com.aceplus.samparoo.MarketingActivity;
 import com.aceplus.samparoo.customer.CustomerActivity;
 import com.aceplus.samparoo.marketing.MainFragmentActivity;
+import com.aceplus.samparoo.model.Promotion;
 import com.aceplus.samparoo.model.SoldProduct;
 import com.aceplus.samparoo.model.forApi.Invoice;
 import com.aceplus.samparoo.model.forApi.InvoiceDetail;
@@ -567,7 +568,7 @@ public class Utils {
 
     public static void print(final Activity activity, final String customerName, final String invoiceNumber
             , final String salePersonName, final Invoice invoice, final List<SoldProduct> soldProductList
-            , final List<InvoicePresent> presentList, final String printFor, final String mode) {
+            , final List<Promotion> presentList, final String printFor, final String mode) {
 
         List<PortInfo> portInfoList = null;
 
@@ -667,7 +668,7 @@ public class Utils {
 
     private static List<byte[]> getPrintDataByteArrayList(Activity activity, String customerName
             , String invoiceNumber, String salePersonName, Invoice invoice
-            , List<SoldProduct> soldProductList, List<InvoicePresent> presentList, String printFor, String mode) {
+            , List<SoldProduct> soldProductList, List<Promotion> presentList, String printFor, String mode) {
 
         List<byte[]> printDataByteArrayList = new ArrayList<byte[]>();
 
@@ -812,13 +813,13 @@ public class Utils {
         }
         printDataByteArrayList.add("----------------------------------------------\n".getBytes());
 
-        if (presentList.size() > 0) {
+        if (presentList != null && presentList.size() > 0) {
             formatter = new Formatter(new StringBuilder(), Locale.US);
 
             printDataByteArrayList.add(
                     formatter.format(
                             "%1$-10s \t %2$6s \t %3$5s \t %4$13s\n"
-                            , "Present Stock"
+                            , "Gift Item"
                             , "Qty"
                             , "Price"
                             , "Amount").toString().getBytes());
@@ -826,10 +827,10 @@ public class Utils {
             printDataByteArrayList.add("----------------------------------------------\n".getBytes());
 
             /* PRESENT LIST */
-            for (InvoicePresent invoicePresent : presentList) {
+            for (Promotion invoicePresent : presentList) {
                 {
                     String name = new String();
-                    int quantity = invoicePresent.getQuantity();
+                    int quantity = invoicePresent.getPromotionQty();
 
                     // Shorthand the name.
                     String productName = getProductNameAndPrice(invoicePresent);
@@ -858,8 +859,8 @@ public class Utils {
                                 formatter.format(
                                         "%1$-10s \t %2$6s \t %3$5s \t %4$13s\n\n"
                                         , name
-                                        , invoicePresent.getPrice()
                                         , quantity
+                                        , "0.0"
                                         , "0.0").toString().getBytes());
                         formatter.close();
                     }
@@ -871,8 +872,8 @@ public class Utils {
                                 formatter.format(
                                         "%1$-10s \t %2$6s \t %3$5s \t %4$13s\n\n"
                                         , name
-                                        , invoicePresent.getPrice()
                                         , quantity
+                                        , "0.0"
                                         , "0.0").toString().getBytes());
                         formatter.close();
                     }
@@ -990,8 +991,8 @@ public class Utils {
         }
     }
 
-    static String getProductNameAndPrice(InvoicePresent invoicePresent) {
-        Cursor cursorProductName = database.rawQuery("SELECT PRODUCT_NAME, SELLING_PRICE FROM PRODUCT WHERE ID = " + invoicePresent.getStockId(), null);
+    static String getProductNameAndPrice(Promotion invoicePresent) {
+        Cursor cursorProductName = database.rawQuery("SELECT PRODUCT_NAME, SELLING_PRICE FROM PRODUCT WHERE ID = " + invoicePresent.getPromotionProductId(), null);
         String productName = null;
         while(cursorProductName.moveToNext()) {
             productName = cursorProductName.getString(cursorProductName.getColumnIndex("PRODUCT_NAME"));

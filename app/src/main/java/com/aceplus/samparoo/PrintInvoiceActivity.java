@@ -13,12 +13,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.aceplus.samparoo.customer.SaleCheckoutActivity;
+import com.aceplus.samparoo.model.Promotion;
 import com.aceplus.samparoo.model.SoldProduct;
 import com.aceplus.samparoo.model.forApi.Invoice;
 import com.aceplus.samparoo.model.forApi.InvoiceDetail;
@@ -42,7 +45,7 @@ public class PrintInvoiceActivity extends Activity{
 
     Invoice invoie;
     List<SoldProduct> invoiceDetailList;
-    List<InvoicePresent> invoicePresentList;
+    List<Promotion> invoicePresentList;
 
     public static final String INVOICE = "INVOICE";
     public static final String INVOICE_DETAIL = "INVOICE_DETAIL";
@@ -55,7 +58,8 @@ public class PrintInvoiceActivity extends Activity{
     String saleman_Id = "";
     SQLiteDatabase database;
     SoldProductListRowAdapter soldProductListRowAdapter;
-    ListView soldProductListView;
+    PromotionProductCustomAdapter promotionProductCustomAdapter;
+    ListView soldProductListView, promotionPlanItemListView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -68,7 +72,7 @@ public class PrintInvoiceActivity extends Activity{
         }
 
         if (getIntent().getSerializableExtra(PrintInvoiceActivity.INVOICE_PRESENT) != null) {
-            invoicePresentList = (List<InvoicePresent>) getIntent().getSerializableExtra(PrintInvoiceActivity.INVOICE_PRESENT);
+            invoicePresentList = (List<Promotion>) getIntent().getSerializableExtra(PrintInvoiceActivity.INVOICE_PRESENT);
         }
 
         if (getIntent().getSerializableExtra(SaleCheckoutActivity.SOLD_PROUDCT_LIST_KEY) != null) {
@@ -105,6 +109,7 @@ public class PrintInvoiceActivity extends Activity{
         printBtn = (ImageView) findViewById(R.id.print_img);
         cancelBtn = (ImageView) findViewById(R.id.cancel_img);
         soldProductListView = (ListView) findViewById(R.id.print_soldProductList);
+        promotionPlanItemListView = (ListView) findViewById(R.id.promotion_plan_item_listview);
         totalAmountTxtView = (TextView) findViewById(R.id.print_totalAmount);
         netAmountTxtView = (TextView) findViewById(R.id.print_net_amount);
         prepaidAmountTxtView = (TextView) findViewById(R.id.print_prepaidAmount);
@@ -117,6 +122,7 @@ public class PrintInvoiceActivity extends Activity{
         txtSaleMan.setText(getSaleManName(invoie.getSalepersonId()));
         txtBranch.setText(branchCode);
         soldProductListView.setAdapter(new SoldProductListRowAdapter(this));
+        setPromotionProductListView();
         totalAmountTxtView.setText(Utils.formatAmount(invoie.getTotalAmt()));
         if(taxType.equalsIgnoreCase("E")) {
             netAmountTxtView.setText(Utils.formatAmount(invoie.getTotalAmt() - invoie.getTotalDiscountAmt() + invoie.getTaxAmount()));
@@ -151,6 +157,17 @@ public class PrintInvoiceActivity extends Activity{
     public void onBackPressed() {
         super.onBackPressed();
         Utils.backToCustomer(PrintInvoiceActivity.this);
+    }
+
+    private void setPromotionProductListView() {
+        int itemLength = invoicePresentList.size() * 100;
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, itemLength);
+        params.setMargins(20, 0, 0, 20);
+        promotionPlanItemListView.setLayoutParams(params);
+
+        promotionProductCustomAdapter = new PromotionProductCustomAdapter(this);
+        promotionPlanItemListView.setAdapter(promotionProductCustomAdapter);
+        promotionProductCustomAdapter.notifyDataSetChanged();
     }
 
     private class SoldProductListRowAdapter extends ArrayAdapter<SoldProduct> {
@@ -193,6 +210,47 @@ public class PrintInvoiceActivity extends Activity{
             }
 
             totalAmountTextView.setText(Utils.formatAmount(soldProduct.getTotalAmount()));
+            return view;
+        }
+    }
+
+    private class PromotionProductCustomAdapter extends ArrayAdapter<Promotion> {
+
+        final Activity context;
+
+        public PromotionProductCustomAdapter(Activity context) {
+            super(context, R.layout.list_row_promotion, invoicePresentList);
+            this.context = context;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+            final Promotion promotion = invoicePresentList.get(position);
+
+            LayoutInflater layoutInflater = context.getLayoutInflater();
+            View view = layoutInflater.inflate(R.layout.list_row_promotion, null, true);
+
+            final TextView nameTextView = (TextView) view.findViewById(R.id.productName);
+            final TextView qtyTextView = (TextView) view.findViewById(R.id.qty);
+            final TextView priceTextView = (TextView) view.findViewById(R.id.price);
+
+            if (!promotion.getPromotionProductName().equals("") || promotion.getPromotionProductName() != null) {
+                nameTextView.setText(promotion.getPromotionProductName());
+            } else {
+                nameTextView.setVisibility(View.GONE);
+            }
+            if (promotion.getPromotionQty() != 0) {
+                qtyTextView.setText(promotion.getPromotionQty() + "");
+            } else {
+                qtyTextView.setVisibility(View.GONE);
+            }
+            if (promotion.getPromotionPrice()!= null && promotion.getPromotionPrice() != 0.0) {
+                priceTextView.setText(promotion.getPromotionPrice() + "");
+            } else {
+                priceTextView.setVisibility(View.GONE);
+            }
+
             return view;
         }
     }
