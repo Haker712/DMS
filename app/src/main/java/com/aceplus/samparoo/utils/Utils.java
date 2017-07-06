@@ -831,6 +831,7 @@ public class Utils {
                 {
                     String name = new String();
                     int quantity = invoicePresent.getPromotionQty();
+                    double presentPrice = invoicePresent.getPrice();
 
                     // Shorthand the name.
                     String productName = getProductNameAndPrice(invoicePresent);
@@ -860,7 +861,7 @@ public class Utils {
                                         "%1$-10s \t %2$6s \t %3$5s \t %4$13s\n\n"
                                         , name
                                         , quantity
-                                        , "0.0"
+                                        , decimalFormatterWithComma.format(presentPrice)
                                         , "0.0").toString().getBytes());
                         formatter.close();
                     }
@@ -873,7 +874,7 @@ public class Utils {
                                         "%1$-10s \t %2$6s \t %3$5s \t %4$13s\n\n"
                                         , name
                                         , quantity
-                                        , "0.0"
+                                        , decimalFormatterWithComma.format(presentPrice)
                                         , "0.0").toString().getBytes());
                         formatter.close();
                     }
