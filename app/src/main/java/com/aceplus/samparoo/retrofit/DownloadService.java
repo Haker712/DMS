@@ -58,10 +58,10 @@ public interface DownloadService {
     @POST("delivery")
     Call<DeliveryResponse> getDeliveryFromApi(@Field("param_data") String paramData);
 
-    @FormUrlEncoded
+    /*@FormUrlEncoded
     @POST("standardExternalCheck")
     Call<DownloadMarketing> getMarketingFromApi(@Field("param_data") String paramData);
-
+*/
     @FormUrlEncoded
     @POST("creditCollection")
     Call<CreditResponse> getCreditFromApi(@Field("param_data") String paramData);
@@ -82,11 +82,11 @@ public interface DownloadService {
     @POST("saleHistory")
     Call<SaleHistoryResponse> getSaleHistoryFromApi(@Field("param_data") String paramData);
 
-    @FormUrlEncoded
-    @POST("reissue")
-    Call<ProductResponse> getReissueProductFromApi(@Field("param_data") String paramData);
-
     /*@FormUrlEncoded
+    @POST("reissue")
+    Call<ProductResponse> getReissueProductFromApi(@Field("param_data") String paramData);*/
+
+    @FormUrlEncoded
     @POST("incentive")
-    Call<IncentiveResponse> getIncentiveFromApi(@Field("param_data") String paramData);*/
+    Call<IncentiveResponse> getIncentiveFromApi(@Field("param_data") String paramData);
 }

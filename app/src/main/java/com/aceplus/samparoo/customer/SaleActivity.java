@@ -626,7 +626,12 @@ public class SaleActivity extends AppCompatActivity {
             });
 
             TextView discountButtonOrTextView = (TextView) view.findViewById(R.id.promotionPrice);
-            discountButtonOrTextView.setText(Utils.formatAmount(soldProduct.getPromotionPrice()));
+
+            if(soldProduct.getPromotionPrice() == 0.0) {
+                discountButtonOrTextView.setText(Utils.formatAmount(soldProduct.getProduct().getPrice()));
+            } else {
+                discountButtonOrTextView.setText(Utils.formatAmount(soldProduct.getPromotionPrice()));
+            }
 
             nameTextView.setText(soldProduct.getProduct().getName());
 

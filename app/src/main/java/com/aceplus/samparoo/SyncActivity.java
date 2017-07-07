@@ -1343,11 +1343,12 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
             String dUEATM = "";
             String prepaidATM = "";
             String isinRoute = "";
-            Double Lat = 0.0;
-            Double Long = 0.0;
+            Double Lat = cursor.getDouble(cursor.getColumnIndex("LATITUDE"));
+            Double Long = cursor.getDouble(cursor.getColumnIndex("LONGITUDE"));
             String visitRecord = "";
             String districtId = cursor.getString(cursor.getColumnIndex("district_id"));
             String statedivisionId = cursor.getString(cursor.getColumnIndex("state_division_id"));
+            Integer shopTypeId = cursor.getInt(cursor.getColumnIndex("shop_type_id"));
 
             customerForApi.setId(id);
             customerForApi.setTownshipNumber(townshipId);
@@ -1371,6 +1372,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
             customerForApi.setvISITRECORD(visitRecord);
             customerForApi.setDistrict_id(Integer.parseInt(districtId));
             customerForApi.setState_division_id(Integer.parseInt(statedivisionId));
+            customerForApi.setShop_type_id(shopTypeId);
 
             customerForApiList.add(customerForApi);
         }
@@ -3561,8 +3563,50 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
             public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
+                        //Utils.cancelDialog();
+                        uploadIncentiveToServer();
+                    } else {
+                        if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
+                            onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                        }
+                    }
+
+                } else {
+                    Utils.cancelDialog();
+                    Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<InvoiceResponse> call, Throwable t) {
+                Utils.cancelDialog();
+                Utils.commonDialog(t.getMessage(), SyncActivity.this);
+            }
+        });
+    }
+
+    private void uploadIncentiveToServer() {
+        IncentiveUpload incentiveUpload = new IncentiveUpload();
+        incentiveUpload.setSiteActivationKey(Constant.SITE_ACTIVATION_KEY);
+        incentiveUpload.setTabletActivationKey(Constant.TABLET_ACTIVATION_KEY);
+        incentiveUpload.setUserId(saleman_Id);
+        incentiveUpload.setPassword("");//it is empty string bcoz json format using gson cannot accept encrypted
+        incentiveUpload.setRoute(String.valueOf(getRouteID(saleman_Id)));
+        incentiveUpload.setIncentiveUploadList(getIncentiveUploadFromDb());
+
+        String paramData = getJsonFromObject(incentiveUpload);
+
+        Log.i("ParamData", paramData);
+        UploadService uploadService = RetrofitServiceFactory.createService(UploadService.class);
+        Call<InvoiceResponse> call = uploadService.uploadIncentivePaid(paramData);
+
+        call.enqueue(new Callback<InvoiceResponse>() {
+            @Override
+            public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
+                if (response.code() == 200) {
+                    if (response.body().getAceplusStatusCode() == 200) {
                         Utils.cancelDialog();
-                        Utils.commonDialog("Successfully Uploaded. ", SyncActivity.this);
+                        Utils.commonDialog("Successfully Uploaded.", SyncActivity.this);
                         Utils.backupDatabase(SyncActivity.this);
                         clearAllTableData();
                         Utils.backToLogin(SyncActivity.this);
@@ -3584,6 +3628,28 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
                 Utils.commonDialog(t.getMessage(), SyncActivity.this);
             }
         });
+    }
+
+    List<IncentiveUploadData> getIncentiveUploadFromDb() {
+        List<IncentiveUploadData> incentiveUploadDataList = new ArrayList<>();
+        List<IncentivePaidUploadData> incentivePaidUploadDataList = new ArrayList<>();
+
+        Cursor incentiveCursor = sqLiteDatabase.rawQuery("SELECT * FROM INCENTIVE_PAID WHERE DELETE_FLAG = 0", null);
+        while(incentiveCursor.moveToNext()) {
+            IncentivePaidUploadData incentivePaidUploadData = new IncentivePaidUploadData();
+            incentivePaidUploadData.setInvoiceNo(incentiveCursor.getString(incentiveCursor.getColumnIndex("INVOICE_NO")));
+            incentivePaidUploadData.setInvoiceDate(incentiveCursor.getString(incentiveCursor.getColumnIndex("INVOICE_DATE")));
+            incentivePaidUploadData.setCustomerId(incentiveCursor.getInt(incentiveCursor.getColumnIndex("CUSTOMER_ID")));
+            incentivePaidUploadData.setStockId(incentiveCursor.getInt(incentiveCursor.getColumnIndex("STOCK_ID")));
+            incentivePaidUploadData.setQuantity(incentiveCursor.getInt(incentiveCursor.getColumnIndex("QUANTITY")));
+            incentivePaidUploadData.setPaidQuantity(incentiveCursor.getInt(incentiveCursor.getColumnIndex("PAID_QUANTITY")));
+            incentivePaidUploadData.setSaleManId(incentiveCursor.getInt(incentiveCursor.getColumnIndex("SALE_MAN_ID")));
+            incentivePaidUploadDataList.add(incentivePaidUploadData);
+        }
+        IncentiveUploadData incentiveUploadData = new IncentiveUploadData();
+        incentiveUploadData.setIncentivePaidUploadDataList(incentivePaidUploadDataList);
+        incentiveUploadDataList.add(incentiveUploadData);
+        return incentiveUploadDataList;
     }
 
     @OnClick(R.id.cancel_img)

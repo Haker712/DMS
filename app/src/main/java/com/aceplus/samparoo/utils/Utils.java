@@ -25,6 +25,7 @@ import com.aceplus.samparoo.LoginActivity;
 import com.aceplus.samparoo.MarketingActivity;
 import com.aceplus.samparoo.customer.CustomerActivity;
 import com.aceplus.samparoo.marketing.MainFragmentActivity;
+import com.aceplus.samparoo.model.Promotion;
 import com.aceplus.samparoo.model.SoldProduct;
 import com.aceplus.samparoo.model.forApi.Invoice;
 import com.aceplus.samparoo.model.forApi.InvoiceDetail;
@@ -566,7 +567,7 @@ public class Utils {
 
     public static void print(final Activity activity, final String customerName, final String invoiceNumber
             , final String salePersonName, final Invoice invoice, final List<SoldProduct> soldProductList
-            , final String printFor, final String mode) {
+            , final List<Promotion> presentList, final String printFor, final String mode) {
 
         List<PortInfo> portInfoList = null;
 
@@ -632,6 +633,7 @@ public class Utils {
                                                             , salePersonName
                                                             , invoice
                                                             , soldProductList
+                                                            , presentList
                                                             , printFor
                                                             , mode));
                                     starIOPort.writePort(printDataByteArray, 0, printDataByteArray.length);
@@ -665,7 +667,7 @@ public class Utils {
 
     private static List<byte[]> getPrintDataByteArrayList(Activity activity, String customerName
             , String invoiceNumber, String salePersonName, Invoice invoice
-            , List<SoldProduct> soldProductList, String printFor, String mode) {
+            , List<SoldProduct> soldProductList, List<Promotion> presentList, String printFor, String mode) {
 
         List<byte[]> printDataByteArrayList = new ArrayList<byte[]>();
 
@@ -810,6 +812,78 @@ public class Utils {
         }
         printDataByteArrayList.add("----------------------------------------------\n".getBytes());
 
+        if (presentList != null && presentList.size() > 0) {
+            formatter = new Formatter(new StringBuilder(), Locale.US);
+
+            printDataByteArrayList.add(
+                    formatter.format(
+                            "%1$-10s \t %2$6s \t %3$5s \t %4$13s\n"
+                            , "Gift Item"
+                            , "Qty"
+                            , "Price"
+                            , "Amount").toString().getBytes());
+            formatter.close();
+            printDataByteArrayList.add("----------------------------------------------\n".getBytes());
+
+            /* PRESENT LIST */
+            for (Promotion invoicePresent : presentList) {
+                {
+                    String name = new String();
+                    int quantity = invoicePresent.getPromotionQty();
+                    double presentPrice = invoicePresent.getPrice();
+
+                    // Shorthand the name.
+                    String productName = getProductNameAndPrice(invoicePresent);
+
+                    String[] nameFragments = productName.split(" ");
+
+                    String lastIndex = nameFragments[nameFragments.length - 1];
+                    if (lastIndex.length() < 10) {
+                        int requiredSpace = 10 - lastIndex.length();
+                        for (int j = 0; j < requiredSpace; j++) {
+                            nameFragments[nameFragments.length - 1] += " ";
+                        }
+                    }
+
+                    for (int i = 0; i < nameFragments.length; i++) {
+                        if (i != nameFragments.length - 1) {
+                            name += nameFragments[i] + "\n";
+                        } else if (i == nameFragments.length - 1) {
+                            name += nameFragments[i];
+                        }
+                    }
+
+                    if (printFor.equals(Utils.PRINT_FOR_PRE_ORDER)) {
+                        formatter = new Formatter(new StringBuilder(), Locale.US);
+                        printDataByteArrayList.add(
+                                formatter.format(
+                                        "%1$-10s \t %2$6s \t %3$5s \t %4$13s\n\n"
+                                        , name
+                                        , quantity
+                                        , decimalFormatterWithComma.format(presentPrice)
+                                        , "0.0").toString().getBytes());
+                        formatter.close();
+                    }
+
+                    if (!printFor.equals(Utils.PRINT_FOR_PRE_ORDER)) {
+
+                        formatter = new Formatter(new StringBuilder(), Locale.US);
+                        printDataByteArrayList.add(
+                                formatter.format(
+                                        "%1$-10s \t %2$6s \t %3$5s \t %4$13s\n\n"
+                                        , name
+                                        , quantity
+                                        , decimalFormatterWithComma.format(presentPrice)
+                                        , "0.0").toString().getBytes());
+                        formatter.close();
+                    }
+                }
+            }
+            printDataByteArrayList.add("----------------------------------------------\n".getBytes());
+
+        }
+        /* END OF PRESENT LIST */
+
         formatter = new Formatter(new StringBuilder(), Locale.US);
 
         getTaxAmount();
@@ -915,5 +989,15 @@ public class Utils {
         } catch (Exception e) {
             Toast.makeText(context, "Cannot Backup!", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    static String getProductNameAndPrice(Promotion invoicePresent) {
+        Cursor cursorProductName = database.rawQuery("SELECT PRODUCT_NAME, SELLING_PRICE FROM PRODUCT WHERE ID = " + invoicePresent.getPromotionProductId(), null);
+        String productName = null;
+        while(cursorProductName.moveToNext()) {
+            productName = cursorProductName.getString(cursorProductName.getColumnIndex("PRODUCT_NAME"));
+            invoicePresent.setPrice(cursorProductName.getDouble(cursorProductName.getColumnIndex("SELLING_PRICE")));
+        }
+        return productName;
     }
 }

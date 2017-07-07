@@ -264,14 +264,18 @@ public class MarketingActivity extends AppCompatActivity {
         saleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MarketingActivity.this, MainFragmentActivity.class);
-                intent.putExtra(MainFragmentActivity.CUSTOMER_INFO_KEY, customer);
-                startActivity(intent);
-                finish();
+                if(didCustomerSelected()) {
+                    Intent intent = new Intent(MarketingActivity.this, MainFragmentActivity.class);
+                    intent.putExtra(MainFragmentActivity.CUSTOMER_INFO_KEY, customer);
+                    startActivity(intent);
+                    finish();
+                }
+
             }
         });
 
     }
+
 
     /*private void catchEvents() {
 
