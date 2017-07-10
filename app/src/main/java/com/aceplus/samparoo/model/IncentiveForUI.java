@@ -28,6 +28,8 @@ public class IncentiveForUI {
 
     String invoiceDate;
 
+    String incentiveProgramName;
+
     public Integer getCustomerId() {
         return customerId;
     }
@@ -106,5 +108,13 @@ public class IncentiveForUI {
 
     public void setPaidQuantity(Integer paidQuantity) {
         this.paidQuantity = paidQuantity;
+    }
+
+    public String getIncentiveProgramName() {
+        return incentiveProgramName;
+    }
+
+    public void setIncentiveProgramName(String incentiveProgramName) {
+        this.incentiveProgramName = incentiveProgramName;
     }
 }

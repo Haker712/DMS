@@ -247,7 +247,7 @@ public class TabFragment5 extends Fragment implements OnActionClickListener {
 
     private void insertintoDB() {
 
-        String saleDate = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
+        String saleDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.sss").format(new Date());
 
         JSONArray saleProducts = new JSONArray();
         for (SoldProduct soldProduct : soldProductList) {

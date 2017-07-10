@@ -22,27 +22,19 @@ import android.widget.TextView;
 import com.aceplus.samparoo.R;
 import com.aceplus.samparoo.model.forApi.DisplayAssessment;
 import com.aceplus.samparoo.utils.Database;
-import com.aceplus.samparoo.utils.DatabaseContract;
-import com.aceplus.samparoo.utils.Utils;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by aceplus_mobileteam on 6/23/17.
  */
 
-public class DisplayProgramFragment extends Fragment {
+public class FragmentDisplayProgram extends Fragment {
 
     Spinner fromCustomerSpinner, toCustomerSpinner;
     EditText fromDateEditText, toDateEditText;
@@ -75,6 +67,11 @@ public class DisplayProgramFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Register id of every widget in current layout.
+     *
+     * @param view current view
+     */
     void registerIDs(View view) {
         fromCustomerSpinner = (Spinner) view.findViewById(R.id.fragment_dp_spinner_from_customer);
         toCustomerSpinner = (Spinner) view.findViewById(R.id.fragment_dp_spinner_to_customer);
@@ -85,6 +82,9 @@ public class DisplayProgramFragment extends Fragment {
         dpListView = (ListView) view.findViewById(R.id.fragment_dp_lv);
     }
 
+    /**
+     * Get customers from database.
+     */
     void getCustomersFromDb() {
         Cursor cursorCustomer = database.rawQuery("SELECT CUSTOMER_ID, CUSTOMER_NAME, id FROM CUSTOMER", null);
         while (cursorCustomer.moveToNext()) {
@@ -99,6 +99,9 @@ public class DisplayProgramFragment extends Fragment {
         }
     }
 
+    /**
+     * Search display program.
+     */
     void setupAdapter() {
 
         int fromPosition = fromCustomerSpinner.getSelectedItemPosition();
@@ -172,10 +175,13 @@ public class DisplayProgramFragment extends Fragment {
             }
         }
 
-        ArrayAdapter<DisplayAssessment> dpReportArrayAdapter = new DisplayProgramFragment.DisplayProgramReportArrayAdapter(getActivity(), dpList);
+        ArrayAdapter<DisplayAssessment> dpReportArrayAdapter = new FragmentDisplayProgram.DisplayProgramReportArrayAdapter(getActivity(), dpList);
         dpListView.setAdapter(dpReportArrayAdapter);
     }
 
+    /**
+     * Set customer data to spinner
+     */
     void setupSpinner() {
 
         if (customerNameArr != null) {
@@ -186,6 +192,9 @@ public class DisplayProgramFragment extends Fragment {
         }
     }
 
+    /**
+     * Events listeners for view in current layout
+     */
     void catchEvents() {
 
         fromDateEditText.setOnClickListener(new View.OnClickListener() {
@@ -247,6 +256,11 @@ public class DisplayProgramFragment extends Fragment {
         });
     }
 
+    /**
+     * Get display program from database
+     *
+     * @return DisplayAssessment result list
+     */
     List<DisplayAssessment> getDisplayProgramListFromDB() {
 
         String query = "SELECT OV.* FROM OUTLET_VISIBILITY AS OV ";
@@ -301,6 +315,11 @@ public class DisplayProgramFragment extends Fragment {
         return dpList;
     }
 
+    /**
+     * set date to date chooser dialog.
+     *
+     * @param choice 1: start date; 2: end date
+     */
     void chooseDob(final int choice) {
 
         final Calendar myCalendar = Calendar.getInstance();
@@ -332,6 +351,9 @@ public class DisplayProgramFragment extends Fragment {
         dateDialog.show();
     }
 
+    /**
+     * DisplayProgramReportArrayAdapter
+     */
     private class DisplayProgramReportArrayAdapter extends ArrayAdapter<DisplayAssessment> {
 
         public final Activity context;

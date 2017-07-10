@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,9 +19,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aceplus.samparoo.R;
-import com.aceplus.samparoo.customer.FragmentDeliveryReport;
-import com.aceplus.samparoo.model.Customer;
-import com.aceplus.samparoo.model.Posm;
 import com.aceplus.samparoo.utils.Database;
 import com.aceplus.samparoo.utils.Utils;
 
@@ -112,6 +108,8 @@ public class ReportHomeActivity extends FragmentActivity {
                 , "Sale Target & Actual Sale Report"
                 , "Sale Target & Actual Sale Product Report"
                 , "Display Program Report"
+                , "Incentive Program Report"
+                , "Size And Stock Report"
         };
         ArrayAdapter<String> reportsSpinnerAdapter
                 = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, reportNames);
@@ -295,11 +293,24 @@ public class ReportHomeActivity extends FragmentActivity {
                 else if (position == 10) {
 
                     FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                    DisplayProgramFragment fragmentDisplayProgram = new DisplayProgramFragment();
+                    FragmentDisplayProgram fragmentDisplayProgram = new FragmentDisplayProgram();
                     fragmentTransaction.replace(R.id.fragment_report, fragmentDisplayProgram);
                     fragmentTransaction.commit();
                 }
 
+                else if(position == 11) {
+                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    FragmentIncentiveProgramReport fragmentIncentiveProgram = new FragmentIncentiveProgramReport();
+                    fragmentTransaction.replace(R.id.fragment_report, fragmentIncentiveProgram);
+                    fragmentTransaction.commit();
+                }
+
+                else if(position == 12) {
+                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    FragmentSizeAndStockReport fragmentSizeAndStockReport = new FragmentSizeAndStockReport();
+                    fragmentTransaction.replace(R.id.fragment_report, fragmentSizeAndStockReport);
+                    fragmentTransaction.commit();
+                }
             }
 
             @Override

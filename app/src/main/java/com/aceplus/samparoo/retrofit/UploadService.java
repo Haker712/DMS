@@ -72,4 +72,8 @@ public interface UploadService {
     @FormUrlEncoded
     @POST("upload/incentive")
     Call<InvoiceResponse> uploadIncentivePaid(@Field("param_data") String paramData);
+
+    @FormUrlEncoded
+    @POST("upload/competitor")
+    Call<InvoiceResponse> uploadCompetitorActivities(@Field("param_data") String paramData);
 }

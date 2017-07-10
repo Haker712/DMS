@@ -161,11 +161,20 @@ public class TabFragment6 extends Fragment {
                                 contentValues.put("CUSTOMER_ID", Cus_id);
                                 contentValues.put("COMPETITOR_NAME", competitor_name);
                                 contentValues.put("ACTIVITY", activity);
+                                String saleman_Id = "";
+                                try {
+                                    if (LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "") != null) {
+                                        saleman_Id = LoginActivity.mySharedPreference.getString(Constant.SALEMAN_ID, "");
+                                    }
+                                } catch (NullPointerException e) {
+                                    Utils.backToHome(TabFragment6.this.getActivity());
+                                }
+                                contentValues.put("SALE_MAN_ID", saleman_Id);
+                                contentValues.put("INVOICE_DATE", Utils.getCurrentDate(true));
 
                                 database.beginTransaction();
 
                                 database.insert("COMPETITOR_ACTIVITY", null, contentValues);
-
 
                                 database.setTransactionSuccessful();
                                 database.endTransaction();

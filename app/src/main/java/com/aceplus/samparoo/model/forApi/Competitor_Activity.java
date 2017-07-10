@@ -21,6 +21,15 @@ public class Competitor_Activity {
     @SerializedName("Activities")
     @Expose
     private String activities;
+    @SerializedName("Remark")
+    @Expose
+    private String remark;
+    @SerializedName("SaleManId")
+    @Expose
+    private Integer saleManId;
+    @SerializedName("InvoiceDate")
+    @Expose
+    private String invoiceDate;
 
     public String getCompetitorActivitiesNo() {
         return competitorActivitiesNo;
@@ -54,5 +63,27 @@ public class Competitor_Activity {
         this.activities = activities;
     }
 
+    public String getRemark() {
+        return remark;
+    }
 
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public Integer getSaleManId() {
+        return saleManId;
+    }
+
+    public void setSaleManId(Integer saleManId) {
+        this.saleManId = saleManId;
+    }
+
+    public String getInvoiceDate() {
+        return invoiceDate;
+    }
+
+    public void setInvoiceDate(String invoiceDate) {
+        this.invoiceDate = invoiceDate;
+    }
 }

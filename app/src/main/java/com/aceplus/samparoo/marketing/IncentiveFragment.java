@@ -1,7 +1,10 @@
 package com.aceplus.samparoo.marketing;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -20,6 +23,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -53,6 +57,7 @@ public class IncentiveFragment extends Fragment implements OnActionClickListener
     String lastPaidQuantity = "";
     int lastPaidPosition = 0;
     List<IncentiveForUI> incentiveForUIList;
+    IncentiveListItemAdapter incentiveListItemAdapter;
 
     @Nullable
     @Override
@@ -126,14 +131,15 @@ public class IncentiveFragment extends Fragment implements OnActionClickListener
                 Integer fromId = customerIdArr.get(fromCustomerSpinner.getSelectedItemPosition());
                 Integer toId = customerIdArr.get(toCustomerSpinner.getSelectedItemPosition());
 
-                if(fromId > toId){
+                if (fromId > toId) {
                     fromId = customerIdArr.get(toCustomerSpinner.getSelectedItemPosition());
                     toId = customerIdArr.get(fromCustomerSpinner.getSelectedItemPosition());
                 }
 
                 incentiveForUIList = getIncentiveFromDb(fromId, toId);
-                IncentiveListItemAdapter dpReportArrayAdapter = new IncentiveListItemAdapter(getActivity(), R.layout.list_row_incentive_item, incentiveForUIList);
-                incentiveListView.setAdapter(dpReportArrayAdapter);
+                incentiveListItemAdapter = new IncentiveListItemAdapter(getActivity(), R.layout.list_row_incentive_item, incentiveForUIList);
+                incentiveListItemAdapter.notifyDataSetChanged();
+                incentiveListView.setAdapter(incentiveListItemAdapter);
             }
 
             @Override
@@ -149,14 +155,15 @@ public class IncentiveFragment extends Fragment implements OnActionClickListener
                 Integer fromId = customerIdArr.get(fromCustomerSpinner.getSelectedItemPosition());
                 Integer toId = customerIdArr.get(toCustomerSpinner.getSelectedItemPosition());
 
-                if(fromId > toId){
+                if (fromId > toId) {
                     fromId = customerIdArr.get(toCustomerSpinner.getSelectedItemPosition());
                     toId = customerIdArr.get(fromCustomerSpinner.getSelectedItemPosition());
                 }
 
                 incentiveForUIList = getIncentiveFromDb(fromId, toId);
-                IncentiveListItemAdapter dpReportArrayAdapter = new IncentiveListItemAdapter(getActivity(), R.layout.list_row_incentive_item, incentiveForUIList);
-                incentiveListView.setAdapter(dpReportArrayAdapter);
+                incentiveListItemAdapter = new IncentiveListItemAdapter(getActivity(), R.layout.list_row_incentive_item, incentiveForUIList);
+                incentiveListItemAdapter.notifyDataSetChanged();
+                incentiveListView.setAdapter(incentiveListItemAdapter);
             }
 
             @Override
@@ -194,7 +201,7 @@ public class IncentiveFragment extends Fragment implements OnActionClickListener
                 "(SELECT CUSTOMER_ID FROM CUSTOMER WHERE CUSTOMER.id = N.CUSTOMER_ID) AS CUSTOMER_NO "
                 + "FROM INCENTIVE AS N, INCENTIVE_ITEM AS A "
                 + "LEFT JOIN PRODUCT AS P ON P.ID = A.STOCK_ID "
-                + "WHERE N.CUSTOMER_ID BETWEEN " + fromCustomerId + " AND "+ toCustomerId +" AND A.INCENTIVE_ID = N.ID", null);
+                + "WHERE N.CUSTOMER_ID BETWEEN " + fromCustomerId + " AND " + toCustomerId + " AND A.INCENTIVE_ID = N.ID", null);
 
         while (incentiveItemCursor.moveToNext()) {
             IncentiveForUI incentiveForUi = new IncentiveForUI();
@@ -217,32 +224,40 @@ public class IncentiveFragment extends Fragment implements OnActionClickListener
             incentiveForUi.setInvoiceDate(invoiceDate);
             incentiveList.add(incentiveForUi);
         }
+        incentiveList = checkAlreadyPaidIncentive(incentiveList);
         return incentiveList;
     }
 
     /**
-     * Get values of every edit text from list view.
+     * Check incentive is already paid.
      *
-     * @return string list
+     * @param incentiveList IncentiveForUI list
+     * @return no paid incentive list
      */
-    List<String> getAllPaidQuantity() {
-        View v;
-        ArrayList<String> paidQuantityList = new ArrayList<>();
-        EditText et;
-        for (int i = 0; i < incentiveListView.getCount(); i++) {
-            v = incentiveListView.getAdapter().getView(i, null, incentiveListView);
-            et = (EditText) v.findViewById(i);
-            paidQuantityList.add(et.getText().toString());
+    List<IncentiveForUI> checkAlreadyPaidIncentive(List<IncentiveForUI> incentiveList) {
+        List<IncentiveForUI> incentiveForUIList = new ArrayList<>();
+        incentiveForUIList.addAll(incentiveList);
+
+        for(int i = 0; i < incentiveForUIList.size(); i++) {
+            Cursor incentiveCursor = sqLiteDatabase.rawQuery("SELECT * FROM INCENTIVE_PAID WHERE PAID_QUANTITY = QUANTITY", null);
+            while(incentiveCursor.moveToNext()) {
+                String invoiceNo = incentiveCursor.getString(incentiveCursor.getColumnIndex("INVOICE_NO"));
+                Integer stockId = incentiveCursor.getInt(incentiveCursor.getColumnIndex("STOCK_ID"));
+                Integer customerId = incentiveCursor.getInt(incentiveCursor.getColumnIndex("CUSTOMER_ID"));
+                if(invoiceNo.equals(incentiveForUIList.get(i).getInvoiceNo()) && incentiveForUIList.get(i).getStockId().equals(stockId) && incentiveForUIList.get(i).getCustomerId().equals(customerId)) {
+                    incentiveForUIList.remove(i);
+                }
+            }
         }
 
-        return paidQuantityList;
+        return incentiveForUIList;
     }
 
     @Override
     public void onActionClick(String type) {
-        if(type.equals(getResources().getString(R.string.incentive))) {
-            List<String> qtyList = getAllPaidQuantity();
-            qtyList.set(lastPaidPosition,lastPaidQuantity);
+        if (type.equals(getResources().getString(R.string.incentive))) {
+            /*List<String> qtyList = getAllPaidQuantity();
+            qtyList.set(lastPaidPosition, lastPaidQuantity);*/
 
             Integer saleman_Id = null;
             try {
@@ -254,25 +269,14 @@ public class IncentiveFragment extends Fragment implements OnActionClickListener
                 Utils.backToLogin(activity);
             }
 
-            for(int i = 0; i < incentiveForUIList.size(); i ++) {
+            for (int i = 0; i < incentiveForUIList.size(); i++) {
 
-                if(qtyList.get(i) != null) {
-                    incentiveForUIList.get(i).setPaidQuantity(Integer.parseInt(qtyList.get(i)));
-
-                    if(saleman_Id != null) {
-                        incentiveForUIList.get(i).setSaleManId(saleman_Id);
-                    }
+                if (saleman_Id != null) {
+                    incentiveForUIList.get(i).setSaleManId(saleman_Id);
                 }
             }
 
-            long successFlg = insertIncentivePaidToDatabase(incentiveForUIList);
-            if(successFlg != -1) {
-                Toast.makeText(activity, "Insertion Success", Toast.LENGTH_SHORT).show();
-                fromCustomerSpinner.setSelection(0);
-                toCustomerSpinner.setSelection(0);
-            } else {
-                Toast.makeText(activity, "Insertion Fail", Toast.LENGTH_SHORT).show();
-            }
+            insertOrUpdateIncentivePaid(incentiveForUIList);
         }
     }
 
@@ -284,36 +288,25 @@ public class IncentiveFragment extends Fragment implements OnActionClickListener
         Activity activity;
         int resource;
         LayoutInflater layoutInflater;
-        ArrayList<ListItem> tempQtyList = new ArrayList<>();
         ViewHolder holder;
         List<IncentiveForUI> itemList;
+        String[] tempItemQty;
 
         public IncentiveListItemAdapter(Activity activity, int resource, List<IncentiveForUI> itemList) {
             this.activity = activity;
             this.resource = resource;
             this.itemList = itemList;
-
-            for(IncentiveForUI incentiveForUI : itemList) {
-                ListItem listItem = new ListItem();
-
-                if(incentiveForUI.getPaidQuantity() == null) {
-                    listItem.paidQty = 0;
-                } else {
-                    listItem.paidQty = incentiveForUI.getPaidQuantity();
-                }
-                tempQtyList.add(listItem);
-            }
-            notifyDataSetChanged();
+            tempItemQty = new String[itemList.size()];
         }
 
         @Override
         public int getCount() {
-            return tempQtyList.size();
+            return itemList.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return tempQtyList.get(position);
+            return itemList.get(position);
         }
 
         @Override
@@ -325,7 +318,7 @@ public class IncentiveFragment extends Fragment implements OnActionClickListener
         @Override
         public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-            if(convertView == null) {
+            if (convertView == null) {
                 holder = new ViewHolder();
                 layoutInflater = activity.getLayoutInflater();
                 convertView = layoutInflater.inflate(this.resource, null, true);
@@ -343,63 +336,66 @@ public class IncentiveFragment extends Fragment implements OnActionClickListener
             holder.customerNoTextView.setText(itemList.get(position).getCustomerNo());
             holder.customerNameTextView.setText(itemList.get(position).getCustomerName());
             holder.stockNameTextView.setText(itemList.get(position).getIncentiveItemName());
+
             holder.qtyTextView.setText(itemList.get(position).getIncentiveQuantity() + "");
 
-            holder.paidEditText.setText(tempQtyList.get(position).paidQty + "");
-
-            holder.paidEditText.setId(position);
-
-            holder.paidEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            holder.paidEditText.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onFocusChange(View v, boolean hasFocus) {
-                    int position = v.getId();
-                    EditText paidQtyEditText = (EditText) v;
-                    if(!hasFocus) {
-                        try {
-                            tempQtyList.get(position).paidQty = Integer.parseInt(paidQtyEditText.getText().toString());
-                        } catch(NumberFormatException e) {
-                            Toast.makeText(activity, "Invalid Paid Quantity", Toast.LENGTH_SHORT).show();
+                public void onClick(View v) {
+                    LayoutInflater layoutInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    final View dialogView = layoutInflater.inflate(R.layout.dialog_box_sale_quantity, null);
+
+                    final TextView remainingQtyTextView = (TextView) dialogView.findViewById(R.id.availableQuantity);
+                    TextView availableQtyTextView = (TextView) dialogView.findViewById(R.id.txt_dialog_qty);
+                    availableQtyTextView.setText("Incentive Quantity: ");
+                    final EditText quantityEditText = (EditText) dialogView.findViewById(R.id.quantity);
+                    final TextView messageTextView = (TextView) dialogView.findViewById(R.id.message);
+
+                    final AlertDialog alertDialog = new AlertDialog.Builder(activity)
+                            .setView(dialogView)
+                            .setTitle("Sale Quantity")
+                            .setPositiveButton("Confirm", null)
+                            .setNegativeButton("Cancel", null)
+                            .create();
+
+                    alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                        @Override
+                        public void onShow(DialogInterface dialog) {
+                            remainingQtyTextView.setText(itemList.get(position).getIncentiveQuantity() + "");
+                            Button confirmButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                            confirmButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if (quantityEditText.getText().toString().length() == 0) {
+
+                                        messageTextView.setText("You must specify quantity.");
+                                        return;
+                                    }
+
+                                    int quantity = Integer.parseInt(quantityEditText.getText().toString());
+                                    if (quantity > itemList.get(position).getIncentiveQuantity()) {
+                                        messageTextView.setText("More than Given Quantity");
+                                        quantityEditText.selectAll();
+                                        return;
+                                    }
+
+                                    itemList.get(position).setPaidQuantity(quantity);
+                                    holder.paidEditText.setText(quantity + "");
+                                    alertDialog.dismiss();
+                                    incentiveListItemAdapter.notifyDataSetChanged();
+                                }
+                            });
                         }
-                    }
+                    });
+
+                    alertDialog.show();
                 }
             });
 
-            holder.paidEditText.setOnKeyListener(new View.OnKeyListener() {
-                @Override
-                public boolean onKey(View v, int keyCode, KeyEvent event) {
-                    if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-                            (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                        int position = v.getId();
-                        EditText paidQtyEditText = (EditText) v;
-                        try {
-                            tempQtyList.get(position).paidQty = Integer.parseInt(paidQtyEditText.getText().toString());
-                        } catch(NumberFormatException e) {
-                            Toast.makeText(activity, "Invalid Paid Quantity", Toast.LENGTH_SHORT).show();
-                        }
-                        return true;
-                    }
-                    return false;
-                }
-            });
-
-            if(holder.paidEditText.getId() == position) {
-                holder.paidEditText.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable s) {
-                        lastPaidPosition = position;
-                        lastPaidQuantity = s.toString();
-                    }
-                });
+            if (itemList.get(position).getPaidQuantity() != null) {
+                holder.paidEditText.setText(itemList.get(position).getPaidQuantity() + "");
+            } else {
+                holder.paidEditText.setText("0");
             }
 
             return convertView;
@@ -412,38 +408,97 @@ public class IncentiveFragment extends Fragment implements OnActionClickListener
             TextView qtyTextView;
             EditText paidEditText;
         }
-
-        /**
-         * to hold paid quantity from edit text
-         */
-        class ListItem {
-            int paidQty;
-        }
     }
 
     /**
      * Insert incentive paid data to database.
      *
-     * @param incentiveForUIList IncentiveForUI list
+     * @param incentiveForUI IncentiveForUI
      * @return long return -1: error while inserting to table; otherwise success
      */
-    long insertIncentivePaidToDatabase(List<IncentiveForUI> incentiveForUIList) {
+    long insertIncentivePaidToDatabase(IncentiveForUI incentiveForUI) {
         long insertSuccess = 0;
         sqLiteDatabase.beginTransaction();
-        for(IncentiveForUI incentiveForUI : incentiveForUIList) {
-            ContentValues cvForIncentPaid = new ContentValues();
-            cvForIncentPaid.put("INVOICE_NO", incentiveForUI.getInvoiceNo());
-            cvForIncentPaid.put("INVOICE_DATE", incentiveForUI.getInvoiceDate());
-            cvForIncentPaid.put("CUSTOMER_ID", incentiveForUI.getCustomerId());
-            cvForIncentPaid.put("STOCK_ID", incentiveForUI.getStockId());
-            cvForIncentPaid.put("QUANTITY", incentiveForUI.getIncentiveQuantity());
-            cvForIncentPaid.put("PAID_QUANTITY", incentiveForUI.getPaidQuantity());
-            cvForIncentPaid.put("SALE_MAN_ID", incentiveForUI.getSaleManId());
-            cvForIncentPaid.put("DELETE_FLAG", 0);
-            insertSuccess = sqLiteDatabase.insert("INCENTIVE_PAID", null, cvForIncentPaid);
-        }
+        ContentValues cvForIncentPaid = new ContentValues();
+        cvForIncentPaid.put("INVOICE_NO", incentiveForUI.getInvoiceNo());
+        cvForIncentPaid.put("INVOICE_DATE", incentiveForUI.getInvoiceDate());
+        cvForIncentPaid.put("CUSTOMER_ID", incentiveForUI.getCustomerId());
+        cvForIncentPaid.put("STOCK_ID", incentiveForUI.getStockId());
+        cvForIncentPaid.put("QUANTITY", incentiveForUI.getIncentiveQuantity());
+        cvForIncentPaid.put("PAID_QUANTITY", incentiveForUI.getPaidQuantity());
+        cvForIncentPaid.put("SALE_MAN_ID", incentiveForUI.getSaleManId());
+        cvForIncentPaid.put("DELETE_FLAG", 0);
+        insertSuccess = sqLiteDatabase.insert("INCENTIVE_PAID", null, cvForIncentPaid);
         sqLiteDatabase.setTransactionSuccessful();
         sqLiteDatabase.endTransaction();
         return insertSuccess;
+    }
+
+    /**
+     * Insertion or updating data to incentive paid table
+     *
+     * @param incentiveForUIList IncentiveForUI list
+     */
+    void insertOrUpdateIncentivePaid(List<IncentiveForUI> incentiveForUIList) {
+
+        for (IncentiveForUI incentiveForUI : incentiveForUIList) {
+            Cursor cursorIncentive = sqLiteDatabase.rawQuery("SELECT COUNT(*) AS COUNT FROM INCENTIVE_PAID WHERE DELETE_FLAG = 0 " +
+                    "AND INVOICE_NO = '" + incentiveForUI.getInvoiceNo() + "' AND CUSTOMER_ID = " + incentiveForUI.getCustomerId() + " AND " +
+                    "STOCK_ID = " + incentiveForUI.getStockId(), null);
+            int count = 0;
+            while (cursorIncentive.moveToNext()) {
+                count = cursorIncentive.getInt(cursorIncentive.getColumnIndex("COUNT"));
+                if (count > 0) {
+                    int updatedRowCount = updateIncentivePaid(incentiveForUI);
+                    if (updatedRowCount > 0) {
+                        Toast.makeText(activity, "Update Success", Toast.LENGTH_SHORT).show();
+                        fromCustomerSpinner.setSelection(0);
+                        toCustomerSpinner.setSelection(0);
+                    } else {
+                        Toast.makeText(activity, "Update Fail", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    long insertSuccess = insertIncentivePaidToDatabase(incentiveForUI);
+                    if (insertSuccess != -1) {
+                        Toast.makeText(activity, "Insertion Success", Toast.LENGTH_SHORT).show();
+                        fromCustomerSpinner.setSelection(0);
+                        toCustomerSpinner.setSelection(0);
+                        //resetAllDefaultValue();
+                    } else {
+                        Toast.makeText(activity, "Insertion Fail", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Update incentive to database
+     *
+     * @param incentiveForUI IncentiveForUI
+     * @return updated row count
+     */
+    int updateIncentivePaid(IncentiveForUI incentiveForUI) {
+        int updateSuccess = 0;
+        String whereClause = "DELETE_FLAG = 0 AND INVOICE_NO = '" + incentiveForUI.getInvoiceNo() + "' " +
+                "AND CUSTOMER_ID = " + incentiveForUI.getCustomerId() + " AND STOCK_ID = " + incentiveForUI.getStockId() ;
+        sqLiteDatabase.beginTransaction();
+        ContentValues cvForIncentPaid = new ContentValues();
+        cvForIncentPaid.put("INVOICE_NO", incentiveForUI.getInvoiceNo());
+        cvForIncentPaid.put("INVOICE_DATE", incentiveForUI.getInvoiceDate());
+        cvForIncentPaid.put("CUSTOMER_ID", incentiveForUI.getCustomerId());
+        cvForIncentPaid.put("STOCK_ID", incentiveForUI.getStockId());
+        cvForIncentPaid.put("QUANTITY", incentiveForUI.getIncentiveQuantity());
+        cvForIncentPaid.put("PAID_QUANTITY", incentiveForUI.getPaidQuantity());
+        cvForIncentPaid.put("SALE_MAN_ID", incentiveForUI.getSaleManId());
+        cvForIncentPaid.put("DELETE_FLAG", 0);
+        updateSuccess = sqLiteDatabase.update("INCENTIVE_PAID", cvForIncentPaid, whereClause, null);
+        sqLiteDatabase.setTransactionSuccessful();
+        sqLiteDatabase.endTransaction();
+        return updateSuccess;
+    }
+
+    public interface onViewHolderClickListener {
+        void onClickListener(View view, int position);
     }
 }

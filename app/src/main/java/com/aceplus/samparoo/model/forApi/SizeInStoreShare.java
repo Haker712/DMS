@@ -36,6 +36,10 @@ public class SizeInStoreShare {
     @Expose
     private Integer salemanId;
 
+    private String customerNo;
+
+    private String customerName;
+
     public String getSizeInStoreShareNo() {
         return sizeInStoreShareNo;
     }
@@ -98,5 +102,21 @@ public class SizeInStoreShare {
 
     public void setSalemanId(Integer salemanId) {
         this.salemanId = salemanId;
+    }
+
+    public String getCustomerNo() {
+        return customerNo;
+    }
+
+    public void setCustomerNo(String customerNo) {
+        this.customerNo = customerNo;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
     }
 }
