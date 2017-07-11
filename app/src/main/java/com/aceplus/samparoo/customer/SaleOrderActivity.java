@@ -729,7 +729,7 @@ public class SaleOrderActivity extends AppCompatActivity {
             Log.i("netAmount", netAmount + "");
 
             ((TextView) context.findViewById(R.id.netAmountTextView)).setText(Utils.formatAmount(netAmount));
-
+            soldProductListRowAdapter.notifyDataSetChanged();
             return view;
         }
 
