@@ -176,7 +176,7 @@ public class FragmentIncentiveProgramReport extends Fragment{
 
         List<IncentiveForUI> ipList = new ArrayList<>();
 
-        if (fromPosition > toPosition) {
+       /* if (fromPosition > toPosition) {
             fromPosition = toCustomerSpinner.getSelectedItemPosition();
             toPosition = fromCustomerSpinner.getSelectedItemPosition();
         }
@@ -239,6 +239,19 @@ public class FragmentIncentiveProgramReport extends Fragment{
                     ip.setIncentiveProgramName(ip1.getIncentiveProgramName());
                 }
             }
+        }*/
+
+        ipList = getDisplayProgramListFromDB();
+        for (IncentiveForUI ip : ipList) {
+            int index = -1;
+            for(int i = 0; i < customerIdArr.size(); i++) {
+                if(ip.getCustomerId().equals(customerIdArr.get(i))) {
+                    index=i;
+                }
+            }
+
+            ip.setCustomerName(customerNameArr.get(index));
+            ip.setCustomerNo(customerNoList.get(index));
         }
 
         ArrayAdapter<IncentiveForUI> dpReportArrayAdapter = new IncentiveProgramReportArrayAdapter(getActivity(), ipList);

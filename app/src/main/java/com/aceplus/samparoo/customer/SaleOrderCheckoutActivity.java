@@ -213,6 +213,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         }*/
 
         registerIDs();
+        txt_tableHeaderDiscount.setText("Promotion Price");
         findViewById(R.id.tax_layout).setVisibility(View.VISIBLE);
         remarkLayout.setVisibility(View.VISIBLE);
 
@@ -1809,12 +1810,12 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                 }
             }
 
-            txt_discount.setText(soldProduct.getDiscountAmount() + "");
-
             if(soldProduct.getPromotionPrice() == 0.0) {
                 txt_price.setText(Utils.formatAmount(soldProduct.getProduct().getPrice()));
+                txt_discount.setText(Utils.formatAmount(soldProduct.getProduct().getPrice()));
             } else {
                 txt_price.setText(Utils.formatAmount(soldProduct.getPromotionPrice()));
+                txt_discount.setText(Utils.formatAmount(soldProduct.getPromotionPrice()));
             }
 
             txt_amount.setText(Utils.formatAmount(soldProduct.getTotalAmount()));

@@ -222,6 +222,12 @@ public class IncentiveFragment extends Fragment implements OnActionClickListener
             incentiveForUi.setCustomerName(customerName);
             incentiveForUi.setInvoiceNo(invoiceNo);
             incentiveForUi.setInvoiceDate(invoiceDate);
+
+            Cursor cursorIncentivePaid = sqLiteDatabase.rawQuery("SELECT PAID_QUANTITY FROM INCENTIVE_PAID WHERE INVOICE_NO = '" + incentiveForUi.getInvoiceNo() +"'", null);
+            while(cursorIncentivePaid.moveToNext()) {
+                int paidQuantity = cursorIncentivePaid.getInt(cursorIncentivePaid.getColumnIndex("PAID_QUANTITY"));
+                incentiveForUi.setPaidQuantity(paidQuantity);
+            }
             incentiveList.add(incentiveForUi);
         }
         incentiveList = checkAlreadyPaidIncentive(incentiveList);
@@ -244,8 +250,10 @@ public class IncentiveFragment extends Fragment implements OnActionClickListener
                 String invoiceNo = incentiveCursor.getString(incentiveCursor.getColumnIndex("INVOICE_NO"));
                 Integer stockId = incentiveCursor.getInt(incentiveCursor.getColumnIndex("STOCK_ID"));
                 Integer customerId = incentiveCursor.getInt(incentiveCursor.getColumnIndex("CUSTOMER_ID"));
-                if(invoiceNo.equals(incentiveForUIList.get(i).getInvoiceNo()) && incentiveForUIList.get(i).getStockId().equals(stockId) && incentiveForUIList.get(i).getCustomerId().equals(customerId)) {
-                    incentiveForUIList.remove(i);
+                if(incentiveForUIList != null && incentiveForUIList.size() > 0) {
+                    if (invoiceNo.equals(incentiveForUIList.get(i).getInvoiceNo()) && incentiveForUIList.get(i).getStockId().equals(stockId) && incentiveForUIList.get(i).getCustomerId().equals(customerId)) {
+                        incentiveForUIList.remove(i);
+                    }
                 }
             }
         }
@@ -338,7 +346,7 @@ public class IncentiveFragment extends Fragment implements OnActionClickListener
             holder.stockNameTextView.setText(itemList.get(position).getIncentiveItemName());
 
             holder.qtyTextView.setText(itemList.get(position).getIncentiveQuantity() + "");
-
+            holder.paidEditText.setText(itemList.get(position).getPaidQuantity() + "");
             holder.paidEditText.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -425,7 +433,7 @@ public class IncentiveFragment extends Fragment implements OnActionClickListener
         cvForIncentPaid.put("CUSTOMER_ID", incentiveForUI.getCustomerId());
         cvForIncentPaid.put("STOCK_ID", incentiveForUI.getStockId());
         cvForIncentPaid.put("QUANTITY", incentiveForUI.getIncentiveQuantity());
-        cvForIncentPaid.put("PAID_QUANTITY", incentiveForUI.getPaidQuantity());
+        cvForIncentPaid.put("PAID_QUANTITY", "PAID_QUANTITY + " + incentiveForUI.getPaidQuantity());
         cvForIncentPaid.put("SALE_MAN_ID", incentiveForUI.getSaleManId());
         cvForIncentPaid.put("DELETE_FLAG", 0);
         insertSuccess = sqLiteDatabase.insert("INCENTIVE_PAID", null, cvForIncentPaid);
@@ -489,7 +497,7 @@ public class IncentiveFragment extends Fragment implements OnActionClickListener
         cvForIncentPaid.put("CUSTOMER_ID", incentiveForUI.getCustomerId());
         cvForIncentPaid.put("STOCK_ID", incentiveForUI.getStockId());
         cvForIncentPaid.put("QUANTITY", incentiveForUI.getIncentiveQuantity());
-        cvForIncentPaid.put("PAID_QUANTITY", incentiveForUI.getPaidQuantity());
+        cvForIncentPaid.put("PAID_QUANTITY", "PAID_QUANTITY + " + incentiveForUI.getPaidQuantity());
         cvForIncentPaid.put("SALE_MAN_ID", incentiveForUI.getSaleManId());
         cvForIncentPaid.put("DELETE_FLAG", 0);
         updateSuccess = sqLiteDatabase.update("INCENTIVE_PAID", cvForIncentPaid, whereClause, null);

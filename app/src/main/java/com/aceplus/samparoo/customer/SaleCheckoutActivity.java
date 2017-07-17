@@ -151,8 +151,8 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         findViewById(R.id.advancedPaidAmountLayout).setVisibility(View.GONE);
         findViewById(R.id.totalInfoForPreOrder).setVisibility(View.GONE);
         taxLayout.setVisibility(View.VISIBLE);
-        //findViewById(R.id.tableHeaderDiscount).setVisibility(View.GONE);
-
+        TextView discountHeader = (TextView)findViewById(R.id.tableHeaderDiscount);
+        discountHeader.setText("Promotion Price");
 
         /*for (SoldProduct soldProduct : soldProductList) {
 
@@ -1098,12 +1098,12 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                 adapterFlag = false;
             }
 
-            discountTextView.setText(soldProduct.getDiscountAmount() + "");
-
             if(soldProduct.getPromotionPrice() == 0.0) {
                 priceTextView.setText(Utils.formatAmount(soldProduct.getProduct().getPrice()));
+                discountTextView.setText(Utils.formatAmount(soldProduct.getProduct().getPrice()));
             } else {
                 priceTextView.setText(Utils.formatAmount(soldProduct.getPromotionPrice()));
+                discountTextView.setText(Utils.formatAmount(soldProduct.getPromotionPrice()));
             }
 
             totalAmountTextView.setText(Utils.formatAmount(soldProduct.getTotalAmount()));
