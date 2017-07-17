@@ -196,7 +196,7 @@ public class FragmentSaleInvoiceReport extends Fragment {
                         total_amount = 0.0;
                     }
 
-                    Cursor cursor_product_Id = database.rawQuery("SELECT * FROM PRODUCT WHERE PRODUCT_ID='" + produc_Id + "'", null);
+                    Cursor cursor_product_Id = database.rawQuery("SELECT * FROM PRODUCT WHERE ID =" + produc_Id, null);
                     Log.i("cur_count", cursor_product_Id.getCount() + "");
                     while (cursor_product_Id.moveToNext()) {
                         product_name = cursor_product_Id.getString(cursor_product_Id.getColumnIndex("PRODUCT_NAME"));
