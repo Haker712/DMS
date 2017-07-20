@@ -605,8 +605,67 @@ public class SaleOrderActivity extends AppCompatActivity {
             final TextView nameTextView = (TextView) view.findViewById(R.id.name);
             final Button qtyButton = (Button) view.findViewById(R.id.qty);
             final Button focQtyButton = (Button) view.findViewById(R.id.foc_qty_btn);
+            final Button salePriceBtn = (Button) view.findViewById(R.id.sale_activity_price_btn);
 
             if(!isDelivery) {
+
+                salePriceBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                        final View dialogView = layoutInflater.inflate(R.layout.dialog_box_sale_quantity, null);
+
+                        final LinearLayout availQtyLayout = (LinearLayout) dialogView.findViewById(R.id.availableQuantityLayout);
+                        availQtyLayout.setVisibility(View.GONE);
+                        final EditText quantityEditText = (EditText) dialogView.findViewById(R.id.quantity);
+                        final TextView messageTextView = (TextView) dialogView.findViewById(R.id.message);
+                        final TextView quantityTxtView = (TextView) dialogView.findViewById(R.id.dialog_sale_qty_txtView);
+                        quantityTxtView.setText("Promotion Price :");
+
+                        final AlertDialog alertDialog = new AlertDialog.Builder(context)
+                                .setView(dialogView)
+                                .setTitle("Promotion Price")
+                                .setPositiveButton("Confirm", null)
+                                .setNegativeButton("Cancel", null)
+                                .create();
+                        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+
+                            @Override
+                            public void onShow(DialogInterface arg0) {
+
+                                Button confirmButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                                confirmButton.setOnClickListener(new View.OnClickListener() {
+
+                                    @Override
+                                    public void onClick(View arg0) {
+
+                                        if (quantityEditText.getText().toString().length() == 0 || quantityEditText.getText().toString().equalsIgnoreCase("0")) {
+
+                                            messageTextView.setText("You must specify price.");
+                                            return;
+                                        }
+
+                                        String quantity = quantityEditText.getText().toString();
+                                        if(quantity == null && quantity.equals("")) {
+                                            messageTextView.setText("You must specify price.");
+                                            return;
+                                        }
+
+                                        soldProduct.setPromotionPrice(Double.valueOf(quantity));
+
+                                        soldProductListRowAdapter.notifyDataSetChanged();
+                                        alertDialog.dismiss();
+                                    }
+                                });
+                            }
+                        });
+
+                        alertDialog.show();
+                    }
+                });
+
+                salePriceBtn.setText(soldProduct.getPromotionPrice() + "");
+
                 focQtyButton.setVisibility(View.VISIBLE);
                 focQtyButton.setOnClickListener(new View.OnClickListener() {
                     @Override

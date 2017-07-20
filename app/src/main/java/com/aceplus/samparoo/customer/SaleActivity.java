@@ -103,7 +103,7 @@ public class SaleActivity extends AppCompatActivity {
     ArrayList<Promotion> promotionArrayList = new ArrayList<>();
     PromotionProductCustomAdapter promotionProductCustomAdapter;
 
-    double promotionPrice = 0.0;
+    //double promotionPrice = 0.0;
     double totalPromotionPrice = 0.0;
 
     @Override
@@ -544,6 +544,64 @@ public class SaleActivity extends AppCompatActivity {
             final TextView priceTextView = (TextView) view.findViewById(R.id.price);
             final TextView totalAmountTextView = (TextView) view.findViewById(R.id.amount);
             final Button focQtyButton = (Button) view.findViewById(R.id.foc_qty_btn);
+            final Button salePriceBtn = (Button) view.findViewById(R.id.sale_activity_price_btn);
+
+            salePriceBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    final View dialogView = layoutInflater.inflate(R.layout.dialog_box_sale_quantity, null);
+
+                    final LinearLayout availQtyLayout = (LinearLayout) dialogView.findViewById(R.id.availableQuantityLayout);
+                    availQtyLayout.setVisibility(View.GONE);
+                    final EditText quantityEditText = (EditText) dialogView.findViewById(R.id.quantity);
+                    final TextView messageTextView = (TextView) dialogView.findViewById(R.id.message);
+                    final TextView quantityTxtView = (TextView) dialogView.findViewById(R.id.dialog_sale_qty_txtView);
+                    quantityTxtView.setText("Promotion Price :");
+
+                    final AlertDialog alertDialog = new AlertDialog.Builder(context)
+                            .setView(dialogView)
+                            .setTitle("Promotion Price")
+                            .setPositiveButton("Confirm", null)
+                            .setNegativeButton("Cancel", null)
+                            .create();
+                    alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+
+                        @Override
+                        public void onShow(DialogInterface arg0) {
+
+                            Button confirmButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                            confirmButton.setOnClickListener(new View.OnClickListener() {
+
+                                @Override
+                                public void onClick(View arg0) {
+
+                                    if (quantityEditText.getText().toString().length() == 0 || quantityEditText.getText().toString().equalsIgnoreCase("0")) {
+
+                                        messageTextView.setText("You must specify price.");
+                                        return;
+                                    }
+
+                                    String quantity = quantityEditText.getText().toString();
+                                    if(quantity == null && quantity.equals("")) {
+                                        messageTextView.setText("You must specify price.");
+                                        return;
+                                    }
+
+                                    soldProduct.setPromotionPrice(Double.valueOf(quantity));
+
+                                    soldProductListRowAdapter.notifyDataSetChanged();
+                                    alertDialog.dismiss();
+                                }
+                            });
+                        }
+                    });
+
+                    alertDialog.show();
+                }
+            });
+
+            salePriceBtn.setText(soldProduct.getPromotionPrice() + "");
 
             if(!check.equalsIgnoreCase("yes")) {
                 focQtyButton.setVisibility(View.VISIBLE);
@@ -660,7 +718,7 @@ public class SaleActivity extends AppCompatActivity {
                                     soldProductListRowAdapter.notifyDataSetChanged();
 
                                     //promotionArrayList.clear();
-                                    promotionPrice = calculatePromotinPriceAndGift(soldProduct);
+                                    double promotionPrice = calculatePromotinPriceAndGift(soldProduct);
                                     totalPromotionPrice += promotionPrice;
 
                                     soldProduct.setPromotionPrice(promotionPrice);
@@ -713,11 +771,11 @@ public class SaleActivity extends AppCompatActivity {
             priceTextView.setText(Utils.formatAmount(soldProduct.getProduct().getPrice()));
 
             Double totalAmount = 0.0;
-            if (promotionPrice == 0.0) {
+            if (soldProduct.getPromotionPrice() == 0.0) {
                 totalAmount = (soldProduct.getProduct().getPrice() * soldProduct.getQuantity());
                 Log.i("totalAmount1", totalAmount + "");
             } else {
-                totalAmount = promotionPrice * soldProduct.getQuantity();
+                totalAmount = soldProduct.getPromotionPrice() * soldProduct.getQuantity();
                 Log.i("totalAmount2", totalAmount + "");
             }
 
