@@ -1221,6 +1221,8 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
             String rate = cursor_invoice.getString(cursor_invoice.getColumnIndex("RATE"));
             Double tax = cursor_invoice.getDouble(cursor_invoice.getColumnIndex("TAX_AMOUNT"));
             String dueDate = cursor_invoice.getString(cursor_invoice.getColumnIndex("DUE_DATE"));
+            String bankName = cursor_invoice.getString(cursor_invoice.getColumnIndex("BANK_NAME"));
+            String bankAccNo = cursor_invoice.getString(cursor_invoice.getColumnIndex("BANK_ACCOUNT_NO"));
 
             if(dueDate.equals("null") || dueDate.equals("NULL")) {
                 dueDate = null;
@@ -1245,6 +1247,8 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
             invoice.setRate(Double.parseDouble(rate));
             invoice.setTaxAmount(tax);
             invoice.setDueDate(dueDate);
+            invoice.setBankName(bankName);
+            invoice.setBankAccountNo(bankAccNo);
 
             List<InvoiceDetail> invoiceDetailList = new ArrayList<>();
 
@@ -1540,6 +1544,8 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
             preOrderApi.setDiscountPer(preOrder.getDiscountPer());
             preOrderApi.setTaxAmount(preOrder.getTaxAmount());
             preOrderApi.setRemark(preOrder.getRemark());
+            preOrderApi.setBankName(preOrder.getBankName());
+            preOrderApi.setBankAccountNo(preOrder.getBankAccountNo());
 
             for (PreOrderPresentApi preOrderPresentApi : getPreOrderPresentFromDatabase(preOrder.getInvoiceId())) {
                 preOrderPresentApiList.add(preOrderPresentApi);
@@ -1612,6 +1618,8 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
             preOrder.setDiscountPer(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex(DatabaseContract.PreOrder.discount_per)));
             preOrder.setTaxAmount(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex("TAX_AMOUNT")));
             preOrder.setRemark(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("REMARK")));
+            preOrder.setBankName(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("BANK_NAME")));
+            preOrder.setBankAccountNo(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("BANK_ACCOUNT_NO")));
             preOrderList.add(preOrder);
         }
 

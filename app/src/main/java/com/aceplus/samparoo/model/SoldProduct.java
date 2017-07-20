@@ -33,6 +33,8 @@ public class SoldProduct implements Serializable {
 
     Integer exclude;
 
+    int focQuantity;
+
     public SoldProduct(){}
 
     public SoldProduct(Product product, Boolean isForPackage) {
@@ -260,5 +262,13 @@ public class SoldProduct implements Serializable {
 
     public void setExclude(Integer exclude) {
         this.exclude = exclude;
+    }
+
+    public int getFocQuantity() {
+        return focQuantity;
+    }
+
+    public void setFocQuantity(int focQuantity) {
+        this.focQuantity = focQuantity;
     }
 }

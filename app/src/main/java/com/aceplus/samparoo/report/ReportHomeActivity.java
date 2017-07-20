@@ -612,7 +612,7 @@ public class ReportHomeActivity extends FragmentActivity {
                 "SELECT CUSTOMER.CUSTOMER_NAME, ADVANCE_PAYMENT_AMOUNT, NET_AMOUNT, INVOICE_ID"
                         + " FROM PRE_ORDER"
                         + " INNER JOIN CUSTOMER"
-                        + " ON CUSTOMER.CUSTOMER_ID = PRE_ORDER.CUSTOMER_ID"
+                        + " ON CUSTOMER.id = PRE_ORDER.CUSTOMER_ID"
                 , null);
         while (cursor.moveToNext()) {
 

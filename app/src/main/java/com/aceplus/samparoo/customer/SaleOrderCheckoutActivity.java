@@ -138,9 +138,9 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
     private LinearLayout advancedPaidAmountLayout, totalInfoForGeneralSaleLayout, totalInfoForPreOrderLayout, receiptPersonLayout, refundLayout, payAmountLayout, netAmountLayout, volumeDiscountLayout, volDisForPreOrderLayout;
 
-    private LinearLayout paymentMethodLayout, remarkLayout;
+    private LinearLayout paymentMethodLayout, remarkLayout, layoutBranch, layoutBankAcc;
 
-    private EditText prepaidAmt, receiptPersonEditText, remarkEditText;
+    private EditText prepaidAmt, receiptPersonEditText, remarkEditText ,branchEditText, accountEditText;
 
     private ListView lv_soldProductList, promotionPlanItemListView;
 
@@ -326,6 +326,11 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         bankOrCashRadioGroup = (RadioGroup) findViewById(R.id.activity_sale_checkout_radio_group);
         bankRadio = (RadioButton) findViewById(R.id.activity_sale_checkout_radio_bank);
         cashRadio = (RadioButton) findViewById(R.id.activity_sale_checkout_radio_cash);
+
+        accountEditText = (EditText) findViewById(R.id.edit_txt_account_name);
+        branchEditText = (EditText) findViewById(R.id.edit_txt_branch_name);
+        layoutBranch = (LinearLayout) findViewById(R.id.bank_branch_layout);
+        layoutBankAcc = (LinearLayout) findViewById(R.id.bank_account_layout);
     }
 
     /**
@@ -340,13 +345,13 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         payAmountLayout.setVisibility(View.GONE);
         receiptPersonLayout.setVisibility(View.GONE);
         volDisForPreOrderLayout.setVisibility(View.GONE);
+        txt_table_header_foc.setVisibility(View.VISIBLE);
         if(isDelivery) {
             totalInfoForPreOrderLayout.setVisibility(View.GONE);
             volumeDiscountLayout.setVisibility(View.GONE);
             volDisForPreOrderLayout.setVisibility(View.GONE);
             advancedPaidAmountLayout.setVisibility(View.VISIBLE);
             receiptPersonLayout.setVisibility(View.VISIBLE);
-            txt_table_header_foc.setVisibility(View.VISIBLE);
             paymentMethodLayout.setVisibility(View.GONE);
         }
     }
@@ -776,6 +781,26 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             }
         });
 
+        bankRadio.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    layoutBranch.setVisibility(View.VISIBLE);
+                    layoutBankAcc.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        cashRadio.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    layoutBranch.setVisibility(View.GONE);
+                    layoutBankAcc.setVisibility(View.GONE);
+                }
+            }
+        });
+
         // prepaid amount edit text event listener
         prepaidAmt.addTextChangedListener(new TextWatcher() {
 
@@ -937,6 +962,17 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
             database.execSQL("UPDATE PRODUCT SET REMAINING_QTY = REMAINING_QTY - " + soldProduct.getQuantity()
                     + ", SOLD_QTY = SOLD_QTY + " + soldProduct.getQuantity() + " WHERE PRODUCT_ID = \'" + soldProduct.getProduct().getId() + "\'");
+
+            if(soldProduct.getFocQuantity() > 0) {
+                Promotion promotion = new Promotion();
+                promotion.setPromotionPlanId(null);
+                promotion.setPromotionProductId(soldProduct.getProduct().getStockId() + "");
+                promotion.setPromotionProductName(soldProduct.getProduct().getName());
+                promotion.setPromotionQty(soldProduct.getFocQuantity());
+                promotion.setPrice(0.0);
+                promotion.setCurrencyId(1);
+                promotionArrayList.add(promotion);
+            }
         }
 
         for (Promotion promotion : promotionArrayList) {
@@ -950,6 +986,14 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         preOrder.setDiscountPer(totalVolumeDiscountPercent);
         preOrder.setTaxAmount(taxAmt);
         preOrder.setRemark(remarkEditText.getText().toString());
+
+        if(branchEditText.getText().toString() != null && !branchEditText.getText().toString().equals("")) {
+            preOrder.setBankName(branchEditText.getText().toString());
+        }
+
+        if(accountEditText.getText().toString() != null && !accountEditText.getText().toString().equals("")) {
+            preOrder.setBankAccountNo(accountEditText.getText().toString());
+        }
 
         database.beginTransaction();
 
@@ -995,6 +1039,8 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         contentValues.put(DatabaseContract.PreOrder.discount_per, preOrder.getDiscountPer());
         contentValues.put("TAX_AMOUNT", preOrder.getTaxAmount());
         contentValues.put("REMARK", preOrder.getRemark());
+        contentValues.put("BANK_NAME", preOrder.getBankName());
+        contentValues.put("BANK_ACCOUNT_NO", preOrder.getBankAccountNo());
         database.insert(DatabaseContract.PreOrder.tb, null, contentValues);
 
         insertProductList(preOrderProductList);
@@ -1215,6 +1261,8 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             preOrderApi.setDiscountPer(preOrder.getDiscountPer());
             preOrderApi.setTaxAmount(preOrder.getTaxAmount());
             preOrderApi.setRemark(preOrder.getRemark());
+            preOrder.setBankName(preOrder.getBankName());
+            preOrder.setBankAccountNo(preOrder.getBankAccountNo());
 
             for (Promotion promotion : promotionArrayList) {
                 PreOrderPresentApi preOrderPresentApi = new PreOrderPresentApi();
@@ -1466,7 +1514,9 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                 + "" + "\", "
                 + totalVolumeDiscountPercent + ", "
                 + 1 + ", "
-                + taxAmt
+                + taxAmt+ ", \""
+                + "" + "\", \""
+                + "" + "\""
                 + ")");
 
         invoice = new Invoice();
@@ -1615,7 +1665,17 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                 cashOrBank = "CA";
                 insertPreOrderInformation(cashOrBank);
             } else {
-                insertPreOrderInformation("CR");
+                if (cashOrBank.equals("B")) {
+                    if (branchEditText.getText().toString().equals("") || branchEditText.getText().toString().equals(null)) {
+                        branchEditText.setError("Please enter bank account");
+                    } else if (accountEditText.getText().toString().equals("") || accountEditText.getText().toString().equals(null)) {
+                        accountEditText.setError("Please enter bank name");
+                    } else {
+                        Utils.commonDialog("Insufficient Pay Amount!", SaleOrderCheckoutActivity.this);
+                        return;
+                    }
+                    insertPreOrderInformation("CA");
+                }
             }
 
             if(isOnline()) {
@@ -1731,6 +1791,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             final TextView txt_price = (TextView) view.findViewById(R.id.price);
             final TextView txt_discount = (TextView) view.findViewById(R.id.discount);
             final TextView txt_amount = (TextView) view.findViewById(R.id.amount);
+            final TextView focQtyTextView = (TextView) view.findViewById(R.id.extra_foc_txt_view) ;
 
             CheckBox checkBox_foc = (CheckBox) view.findViewById(R.id.foc);
 
@@ -1743,7 +1804,11 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                     checkBox_foc.setChecked(true);
                     soldProduct.setFocStatus(true);
                 }
+            } else {
+                focQtyTextView.setVisibility(View.VISIBLE);
+                focQtyTextView.setText(soldProduct.getFocQuantity() + "");
             }
+
 
             /*checkBox_foc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override

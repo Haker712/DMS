@@ -62,4 +62,12 @@
         android:visibility="gone"
         android:gravity="center"/>
 
+    <TextView
+        android:id="@+id/extra_foc_txt_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.6"
+        android:visibility="gone"
+        android:gravity="center"/>
+
 </LinearLayout>

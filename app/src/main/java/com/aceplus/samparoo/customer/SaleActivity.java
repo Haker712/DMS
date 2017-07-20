@@ -120,8 +120,8 @@ public class SaleActivity extends AppCompatActivity {
         if (intent != null) {
 
             check = intent.getExtras().getString("SaleExchange");
-            if (check.equalsIgnoreCase("yes")) {
-
+            if (!check.equalsIgnoreCase("yes")) {
+                findViewById(R.id.tableHeaderFocQty).setVisibility(View.VISIBLE);
                 //titleTextView.setText("SALE EXCHANGE");
             }
 
@@ -543,6 +543,59 @@ public class SaleActivity extends AppCompatActivity {
             final Button qtyButton = (Button) view.findViewById(R.id.qty);
             final TextView priceTextView = (TextView) view.findViewById(R.id.price);
             final TextView totalAmountTextView = (TextView) view.findViewById(R.id.amount);
+            final Button focQtyButton = (Button) view.findViewById(R.id.foc_qty_btn);
+
+            if(!check.equalsIgnoreCase("yes")) {
+                focQtyButton.setVisibility(View.VISIBLE);
+                focQtyButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                        final View dialogView = layoutInflater.inflate(R.layout.dialog_box_sale_quantity, null);
+
+                        final LinearLayout availQtyLayout = (LinearLayout) dialogView.findViewById(R.id.availableQuantityLayout);
+                        availQtyLayout.setVisibility(View.GONE);
+                        final EditText quantityEditText = (EditText) dialogView.findViewById(R.id.quantity);
+                        final TextView messageTextView = (TextView) dialogView.findViewById(R.id.message);
+
+                        final AlertDialog alertDialog = new AlertDialog.Builder(context)
+                                .setView(dialogView)
+                                .setTitle("FOC Quantity")
+                                .setPositiveButton("Confirm", null)
+                                .setNegativeButton("Cancel", null)
+                                .create();
+                        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+
+                            @Override
+                            public void onShow(DialogInterface arg0) {
+
+                                Button confirmButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                                confirmButton.setOnClickListener(new View.OnClickListener() {
+
+                                    @Override
+                                    public void onClick(View arg0) {
+
+                                        if (quantityEditText.getText().toString().length() == 0) {
+
+                                            messageTextView.setText("You must specify quantity.");
+                                            return;
+                                        }
+
+                                        int quantity = Integer.parseInt(quantityEditText.getText().toString());
+                                        soldProduct.setFocQuantity(quantity);
+                                        soldProductListRowAdapter.notifyDataSetChanged();
+                                        alertDialog.dismiss();
+                                    }
+                                });
+                            }
+                        });
+
+                        alertDialog.show();
+                    }
+                });
+
+                focQtyButton.setText(soldProduct.getFocQuantity() + "");
+            }
 
             qtyButton.setOnClickListener(new View.OnClickListener() {
 
@@ -639,9 +692,10 @@ public class SaleActivity extends AppCompatActivity {
             Log.i("um_id", soldProduct.getProduct().getUm());
             Cursor cursor = sqLiteDatabase.rawQuery("select * from UM where ID=" + soldProduct.getProduct().getUm() + "", null);
             while (cursor.moveToNext()) {
-                um = cursor.getString(cursor.getColumnIndex(DatabaseContract.UM.code));
+                um = cursor.getString(cursor.getColumnIndex(DatabaseContract.UM.name));
             }
             Log.i("um", um);
+            soldProduct.getProduct().setUmName(um);
             umTextView.setText(um);
 
             if (this.resource == R.layout.list_row_sold_product_with_custom_discount) {

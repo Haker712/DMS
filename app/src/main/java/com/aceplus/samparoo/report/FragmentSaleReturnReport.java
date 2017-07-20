@@ -120,7 +120,7 @@ public class FragmentSaleReturnReport extends Fragment {
                 salereturnDetailListview.setAdapter(new FragmentSaleReturnReport.SaleReturnDetailAdapter(getActivity()));
                 new AlertDialog.Builder(getActivity())
                         .setView(dialogBoxView)
-                        .setTitle("SALERETURN DETAIL")
+                        .setTitle("SALE RETURN DETAIL")
                         .setPositiveButton("OK", null)
                         .show();
 

@@ -39,6 +39,7 @@
     <string name="product">Product</string>
     <string name="um">UM</string>
     <string name="qty">Qty</string>
+    <string name="foc_qty">Extra FOC Qty</string>
     <string name="ordered_qty">Ordered Qty</string>
     <string name="price">Price</string>
     <string name="discount">Discount</string>

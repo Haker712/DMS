@@ -37,7 +37,7 @@ public class FragmentPreOrderReport extends Fragment {
 
     String invoice_Id;
 
-    ArrayList<Preorder_Product> preorderProductArrayList=new ArrayList<>();
+    ArrayList<Preorder_Product> preorderProductArrayList;
     Preorder_Product preorderProduct;
 
     @Override
@@ -72,17 +72,14 @@ public class FragmentPreOrderReport extends Fragment {
                 Cursor cursor = database.rawQuery("select * from PRE_ORDER_PRODUCT where SALE_ORDER_ID='" + invoice_Id + "'", null);
 
                 while (cursor.moveToNext()) {
-
-
-
                     String orderQty = cursor.getString(cursor.getColumnIndex("ORDER_QTY"));
                     Log.i("OrderQty",orderQty);
                     String total_amount = cursor.getString(cursor.getColumnIndex("TOTAL_AMT"));
 
                     String product_Id = cursor.getString(cursor.getColumnIndex("PRODUCT_ID"));
 
-                    Cursor cursor1 = database.rawQuery("select * from PRODUCT where ID='" + product_Id + "'", null);
-
+                    Cursor cursor1 = database.rawQuery("select * from PRODUCT where ID=" + product_Id + "", null);
+                    preorderProductArrayList = new ArrayList<>();
                     while (cursor1.moveToNext()) {
 
                         preorderProduct=new Preorder_Product();

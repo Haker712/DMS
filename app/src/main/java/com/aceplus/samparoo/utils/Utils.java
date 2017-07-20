@@ -676,7 +676,7 @@ public class Utils {
 
         double totalAmount = 0, totalNetAmount = 0;
 
-        printDataByteArrayList.add("                Samparoo\n\n".getBytes());
+        printDataByteArrayList.add(("         Samparoo Industries Co.,Ltd.\n       Purified Drinking Water & Soft Drink\n     Shwe Pyi Thar Industrial Zone, Zone (4)\n        Hotline: 09-508256, 09-5504808\n\n").getBytes());
         printDataByteArrayList.add((
                 "Customer       :     " + customerName + "\n").getBytes());
         printDataByteArrayList.add((
@@ -691,10 +691,11 @@ public class Utils {
         formatter = new Formatter(new StringBuilder(), Locale.US);
         printDataByteArrayList.add(
                 formatter.format(
-                        "%1$-10s \t %2$6s \t %3$5s \t %4$13s\n"
+                        "%1$-10s \t %2$6s \t %3$5s \t %4$5s \t %5$7s\n"
                         , "Item"
                         , "Qty"
                         , "Price"
+                        , "Pro:Price"
                         , "Amount").toString().getBytes());
         formatter.close();
         printDataByteArrayList.add("----------------------------------------------\n".getBytes());
@@ -703,12 +704,12 @@ public class Utils {
 
             String name = new String();
             int quantity = soldProduct.getQuantity();
-            double pricePerUnit = 0.0;
+            double pricePerUnit = 0.0, promoPrice = 0.0;
 
             if(soldProduct.getPromotionPrice() == 0.0) {
                 pricePerUnit = soldProduct.getProduct().getPrice();
             } else {
-                pricePerUnit = soldProduct.getPromotionPrice();
+                promoPrice = soldProduct.getPromotionPrice();
             }
 
             double amount = soldProduct.getTotalAmount();
@@ -789,10 +790,11 @@ public class Utils {
                 formatter = new Formatter(new StringBuilder(), Locale.US);
                 printDataByteArrayList.add(
                         formatter.format(
-                                "%1$-10s \t %2$6s \t %3$5s \t %4$13s\n\n"
+                                "%1$-10s \t %2$6s \t %3$5s \t %4$6s \t %5$9s\n\n"
                                 , name
                                 , quantity
                                 , decimalFormatterWithoutComma.format(pricePerUnit)
+                                , decimalFormatterWithoutComma.format(promoPrice)
                                 , decimalFormatterWithComma.format(amount)).toString().getBytes());
                 formatter.close();
             }
@@ -802,36 +804,37 @@ public class Utils {
                 formatter = new Formatter(new StringBuilder(), Locale.US);
                 printDataByteArrayList.add(
                         formatter.format(
-                                "%1$-10s \t %2$6s \t %3$5s \t %4$13s\n\n"
+                                "%1$-10s \t %2$6s \t %3$5s \t %4$6s \t %5$9s\n\n"
                                 , name
                                 , quantity
                                 , decimalFormatterWithoutComma.format(pricePerUnit)
+                                , decimalFormatterWithoutComma.format(promoPrice)
                                 , decimalFormatterWithComma.format(netAmount)).toString().getBytes());
                 formatter.close();
             }
         }
-        printDataByteArrayList.add("----------------------------------------------\n".getBytes());
+        //printDataByteArrayList.add("----------------------------------------------\n".getBytes());
 
         if (presentList != null && presentList.size() > 0) {
             formatter = new Formatter(new StringBuilder(), Locale.US);
 
-            printDataByteArrayList.add(
+           /* printDataByteArrayList.add(
                     formatter.format(
-                            "%1$-10s \t %2$6s \t %3$5s \t %4$13s\n"
+                            "%1$-10s \t %2$6s \t %3$5s \t %4$13s \t %5$17s\n"
                             , "Gift Item"
                             , "Qty"
                             , "Price"
                             , "Amount").toString().getBytes());
             formatter.close();
-            printDataByteArrayList.add("----------------------------------------------\n".getBytes());
+            printDataByteArrayList.add("----------------------------------------------\n".getBytes());*/
 
             /* PRESENT LIST */
             for (Promotion invoicePresent : presentList) {
                 {
                     String name = new String();
                     int quantity = invoicePresent.getPromotionQty();
-                    double presentPrice = invoicePresent.getPrice();
-
+                    double presentPrice = 0.0;
+                    double promoPrice = 0.0;
                     // Shorthand the name.
                     String productName = getProductNameAndPrice(invoicePresent);
 
@@ -857,10 +860,11 @@ public class Utils {
                         formatter = new Formatter(new StringBuilder(), Locale.US);
                         printDataByteArrayList.add(
                                 formatter.format(
-                                        "%1$-10s \t %2$6s \t %3$5s \t %4$13s\n\n"
+                                        "%1$-10s \t %2$6s \t %3$5s \t %4$6s \t %5$9s\n\n"
                                         , name
                                         , quantity
                                         , decimalFormatterWithComma.format(presentPrice)
+                                        , decimalFormatterWithoutComma.format(promoPrice)
                                         , "0.0").toString().getBytes());
                         formatter.close();
                     }
@@ -870,10 +874,11 @@ public class Utils {
                         formatter = new Formatter(new StringBuilder(), Locale.US);
                         printDataByteArrayList.add(
                                 formatter.format(
-                                        "%1$-10s \t %2$6s \t %3$5s \t %4$13s\n\n"
+                                        "%1$-10s \t %2$6s \t %3$5s \t %4$6s \t %5$9s\n\n"
                                         , name
                                         , quantity
                                         , decimalFormatterWithComma.format(presentPrice)
+                                        , decimalFormatterWithoutComma.format(promoPrice)
                                         , "0.0").toString().getBytes());
                         formatter.close();
                     }
@@ -904,8 +909,8 @@ public class Utils {
                             , "Total Amount    :", decimalFormatterWithComma.format(totalAmount)
                             , taxText, decimalFormatterWithComma.format(invoice.getTaxAmount()) + " (" + taxPercent + "%)"
                             , "Discount        :", decimalFormatterWithComma.format(invoice.getTotalDiscountAmt()) + " (" + new DecimalFormat("#0.00").format(invoice.getDiscountPercent()) +"%)"
-                            , "Prepaid Amount  :", decimalFormatterWithComma.format(invoice.getTotalPayAmt())
-                            , "Pay Amount      :", decimalFormatterWithComma.format(invoice.getTotalPayAmt())).toString().getBytes());
+                            , "Net Amount  :", decimalFormatterWithComma.format(invoice.getTotalPayAmt())
+                            , "Receive      :", decimalFormatterWithComma.format(invoice.getTotalPayAmt())).toString().getBytes());
         } else if (mode.equals(Utils.FOR_DELIVERY)) {
 
             printDataByteArrayList.add(
@@ -918,15 +923,15 @@ public class Utils {
         } else {
 
             printDataByteArrayList.add(
-                    formatter.format("%1$-13s%2$19s\n%3$-13s%4$19s\n%5$-13s%6$19s\n%7$-13s%8$19s\n%9$-13s%10$19s\n%11$-13s%12$19s\n\n\n"
+                    formatter.format("%1$-13s%2$19s\n%3$-13s%4$19s\n%5$-13s%6$19s\n%7$-13s%8$19s\n%9$-13s%10$19s\n%11$-13s%12$19s\n"
                             , "Total Amount    :", decimalFormatterWithComma.format(totalAmount)
                             , taxText, decimalFormatterWithComma.format(invoice.getTaxAmount()) + " (" + new DecimalFormat("#0.00").format(taxPercent) + "%)"
                             , "Discount        :", decimalFormatterWithComma.format(invoice.getTotalDiscountAmt()) + " (" + new DecimalFormat("#0.00").format(invoice.getDiscountPercent()) +"%)"
                             , "Net Amount      :", decimalFormatterWithComma.format(totalNetAmount)
-                            , "Pay Amount      :", decimalFormatterWithComma.format(invoice.getTotalPayAmt())
-                            , "Change Due      :", decimalFormatterWithComma.format(Math.abs(invoice.getTotalPayAmt() - totalNetAmount))).toString().getBytes());
+                            , "Receive         :", decimalFormatterWithComma.format(invoice.getTotalPayAmt())
+                            , "Credit Balance  :", decimalFormatterWithComma.format(Math.abs(invoice.getTotalPayAmt() - totalNetAmount))).toString().getBytes());
         }
-
+        printDataByteArrayList.add(("\nSignature       :\n\n                 Thank You. \n\n").getBytes());
         printDataByteArrayList.add(new byte[]{0x1b, 0x64, 0x02}); // Cut
         printDataByteArrayList.add(new byte[]{0x07}); // Kick cash drawer
 

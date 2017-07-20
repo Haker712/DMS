@@ -132,7 +132,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
 
         Utils.setOnActionClickListener(this);
 
-
+        Intent intent = this.getIntent();
         customer = (Customer) getIntent().getSerializableExtra(CUSTOMER_INFO_KEY);
         if (getIntent().getSerializableExtra(SOLD_PROUDCT_LIST_KEY) != null) {
             soldProductList = (ArrayList<SoldProduct>) getIntent().getSerializableExtra(SOLD_PROUDCT_LIST_KEY);
@@ -151,6 +151,15 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         findViewById(R.id.advancedPaidAmountLayout).setVisibility(View.GONE);
         findViewById(R.id.totalInfoForPreOrder).setVisibility(View.GONE);
         taxLayout.setVisibility(View.VISIBLE);
+
+        if (intent != null) {
+
+            check = intent.getExtras().getString("SaleExchange");
+            if (!check.equalsIgnoreCase("yes")) {
+                findViewById(R.id.tableHeaderFoc).setVisibility(View.VISIBLE);
+            }
+        }
+
         TextView discountHeader = (TextView)findViewById(R.id.tableHeaderDiscount);
         discountHeader.setText("Promotion Price");
 
@@ -168,7 +177,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             locationCodeName = cursorForLocation.getString(cursorForLocation.getColumnIndex(DatabaseContract.Location.no));
         }
 
-        Intent intent = this.getIntent();
+
 
         try {
             if (intent != null) {
@@ -930,6 +939,16 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             database.execSQL("UPDATE PRODUCT SET REMAINING_QTY = REMAINING_QTY - " + soldProduct.getQuantity()
                     + ", SOLD_QTY = SOLD_QTY + " + soldProduct.getQuantity() + " WHERE PRODUCT_ID = \'" + soldProduct.getProduct().getId() + "\'");
 
+            if(soldProduct.getFocQuantity() > 0) {
+                Promotion promotion = new Promotion();
+                promotion.setPromotionPlanId(null);
+                promotion.setPromotionProductId(soldProduct.getProduct().getStockId() + "");
+                promotion.setPromotionProductName(soldProduct.getProduct().getName());
+                promotion.setPromotionQty(soldProduct.getFocQuantity());
+                promotion.setPrice(0.0);
+                promotion.setCurrencyId(1);
+                promotionArrayList.add(promotion);
+            }
         }
 
         for(Promotion promotion : promotionArrayList) {
@@ -957,6 +976,15 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         invoice.setRate(1);
         invoice.setTaxAmount(taxAmt);
         invoice.setDueDate(dueDate);
+
+        if(branchEditText.getText().toString() != null && !branchEditText.getText().toString().equals("")) {
+            invoice.setBankName(branchEditText.getText().toString());
+        }
+
+        if(accountEditText.getText().toString() != null && !accountEditText.getText().toString().equals("")) {
+            invoice.setBankAccountNo(accountEditText.getText().toString());
+        }
+
         invoice.setInvoiceDetail(invoiceDetailList);
 
         database.execSQL("INSERT INTO INVOICE VALUES (\""
@@ -983,7 +1011,9 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                 + cashOrLoanOrBank + "\", "
                 + totalVolumeDiscountPercent + ", "
                 + 1 + ", "
-                + taxAmt
+                + taxAmt + ", \""
+                + invoice.getBankName() + "\", \""
+                + invoice.getBankAccountNo() + "\""
                 + ")");
 
         for (Promotion promotion : promotionArrayList) {
@@ -1045,7 +1075,11 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                         accountEditText.setError("Please enter bank name");
                     } else {
                         Utils.commonDialog("Insufficient Pay Amount!", SaleCheckoutActivity.this);
+                        return;
                     }
+
+                    saveDatas("CA");
+                    saleOrExchange();
                 } else {
                     saveDatas("CR");
                     saleOrExchange();
@@ -1078,10 +1112,16 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             final TextView priceTextView = (TextView) view.findViewById(R.id.price);
             final TextView discountTextView = (TextView) view.findViewById(R.id.discount);
             final TextView totalAmountTextView = (TextView) view.findViewById(R.id.amount);
+            final TextView focQtyTextView = (TextView) view.findViewById(R.id.extra_foc_txt_view) ;
 
             nameTextView.setText(soldProduct.getProduct().getName());
-            umTextView.setText(soldProduct.getProduct().getUm());
+            umTextView.setText(soldProduct.getProduct().getUmName());
             qtyTextView.setText(soldProduct.getQuantity() + "");
+
+            if(!check.equalsIgnoreCase("yes")) {
+                focQtyTextView.setVisibility(View.VISIBLE);
+                focQtyTextView.setText(soldProduct.getFocQuantity() + "");
+            }
 
             if (soldProductList.size() == position + 1 && adapterFlag) {
                 Map<String, Double> amountAndPercentage = calculateVolumeDiscount(soldProductList);
