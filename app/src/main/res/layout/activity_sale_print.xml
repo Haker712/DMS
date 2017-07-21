@@ -459,7 +459,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="7"
                     android:gravity="right"
-                    android:text="Prepaid Amount:" />
+                    android:text="Receive :" />
 
                 <TextView
                     android:id="@+id/print_prepaidAmount"
