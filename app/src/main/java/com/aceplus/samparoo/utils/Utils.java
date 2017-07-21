@@ -1021,7 +1021,7 @@ public class Utils {
             if(totalNetAmount > invoice.getTotalPayAmt()) {
                 crediBalance = totalNetAmount - invoice.getTotalPayAmt();
             }
-            crediBalance = invoice.getTotalPayAmt() - totalNetAmount;
+
             printDataByteArrayList.add(
                     formatter.format("%1$-13s%2$19s\n%3$-13s%4$19s\n%5$-13s%6$19s\n%7$-13s%8$19s\n%9$-13s%10$19s\n%11$-13s%12$19s\n"
                             , "Total Amount    :        ", decimalFormatterWithComma.format(totalAmount)
