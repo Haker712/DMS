@@ -713,6 +713,8 @@ public class SaleOrderActivity extends AppCompatActivity {
                     }
                 });
                 focQtyButton.setText(soldProduct.getFocQuantity() + "");
+            } else {
+                salePriceBtn.setVisibility(View.GONE);
             }
 
             qtyButton.setOnClickListener(new View.OnClickListener() {

@@ -1,5 +1,6 @@
 package com.aceplus.samparoo;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
@@ -14,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -35,10 +37,15 @@ import com.aceplus.samparoo.utils.DatabaseContract;
 import com.aceplus.samparoo.utils.Utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.starmicronics.stario.PortInfo;
+import com.starmicronics.stario.StarIOPort;
+import com.starmicronics.stario.StarIOPortException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -129,7 +136,121 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
 
     @OnClick(R.id.buttonReissue)
     void reissue() {
-        downloadReissueFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
+        //downloadReissueFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
+        print(SyncActivity.this);
+    }
+
+        public void print(final Activity activity) {
+
+            List<PortInfo> portInfoList = null;
+
+            try {
+
+                portInfoList = StarIOPort.searchPrinter("BT:Star");
+            } catch (StarIOPortException e) {
+
+                e.printStackTrace();
+            }
+
+            if (portInfoList == null || portInfoList.size() == 0) {
+
+                return;
+            }
+
+            List<String> availableBluetoothPrinterNameList = new ArrayList<String>();
+            for (PortInfo portInfo : portInfoList) {
+
+                availableBluetoothPrinterNameList.add(portInfo.getPortName());
+            }
+            final ArrayAdapter<String> arrayAdapter =
+                    new ArrayAdapter<String>(
+                            activity
+                            , android.R.layout.select_dialog_singlechoice
+                            , availableBluetoothPrinterNameList);
+            new android.app.AlertDialog.Builder(activity)
+                    .setTitle("Select Printer")
+                    .setNegativeButton("Cancel", null)
+                    .setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int position) {
+
+                            StarIOPort starIOPort = null;
+                            try {
+
+                                starIOPort = StarIOPort.getPort(arrayAdapter.getItem(position), "mini", 10000);
+                                if (starIOPort.retreiveStatus().offline) {
+
+                                    if (!starIOPort.retreiveStatus().compulsionSwitch) {
+
+                                        Toast.makeText(SyncActivity.this, "The Drawer is offline\nCash Drawer: Close", Toast.LENGTH_SHORT).show();
+                                    } else {
+
+                                        Toast.makeText(SyncActivity.this, "The Drawer is offline\nCash Drawer: Open",Toast.LENGTH_SHORT).show();
+                                    }
+
+                                    return;
+                                } else {
+
+                                    if (starIOPort.retreiveStatus().compulsionSwitch) {
+
+                                        Toast.makeText(SyncActivity.this, "The Drawer is online\nCash Drawer: Open", Toast.LENGTH_SHORT).show();
+                                    } else {
+
+                                        byte[] printDataByteArray =
+                                                convertFromListByteArrayTobyteArray(
+                                                        getPrintDataByteArrayListForCredit(" ိ်ျ်ုူ္ျ်ိ္ူုါ့ိါိ္ါိ္ါိါိ္ါိ္ါိ္ါ"));
+                                        starIOPort.writePort(printDataByteArray, 0, printDataByteArray.length);
+                                    }
+                                }
+                            } catch (StarIOPortException e) {
+
+                                Toast.makeText(SyncActivity.this, "Failed to connect to drawer", Toast.LENGTH_SHORT).show();
+                                e.printStackTrace();
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            } finally {
+                                if (starIOPort != null) {
+
+                                    try {
+
+                                        StarIOPort.releasePort(starIOPort);
+                                    } catch (StarIOPortException e) {
+
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        }
+                    })
+                    .show();
+    }
+
+    private static byte[] convertFromListByteArrayTobyteArray(List<byte[]> ByteArray) throws UnsupportedEncodingException {
+        int dataLength = 0;
+        for (int i = 0; i < ByteArray.size(); i++) {
+            dataLength += ByteArray.get(i).length;
+        }
+
+        int distPosition = 0;
+        byte[] byteArray = new byte[dataLength];
+        for (int i = 0; i < ByteArray.size(); i++) {
+            System.arraycopy(ByteArray.get(i), 0, byteArray, distPosition, ByteArray.get(i).length);
+            distPosition += ByteArray.get(i).length;
+        }
+
+        return byteArray;
+    }
+
+    private static List<byte[]> getPrintDataByteArrayListForCredit(String txt) {
+        List<byte[]> printDataByteArrayList = new ArrayList<byte[]>();
+
+            printDataByteArrayList.add((txt + "\n\n").getBytes(Charset.forName("UTF-8")));
+        printDataByteArrayList.add(new byte[]{0x1b, 0x64, 0x02}); // Cut
+        printDataByteArrayList.add(new byte[]{0x07}); // Kick cash drawer
+
+        return printDataByteArrayList;
+
     }
 
     @OnClick(R.id.buttonSaleVisitRecord)

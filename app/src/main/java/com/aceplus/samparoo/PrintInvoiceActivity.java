@@ -18,9 +18,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.aceplus.samparoo.customer.SaleCheckoutActivity;
+import com.aceplus.samparoo.model.CreditInvoice;
 import com.aceplus.samparoo.model.Promotion;
 import com.aceplus.samparoo.model.SoldProduct;
 import com.aceplus.samparoo.model.forApi.Invoice;
@@ -46,20 +48,25 @@ public class PrintInvoiceActivity extends Activity{
     Invoice invoie;
     List<SoldProduct> invoiceDetailList;
     List<Promotion> invoicePresentList;
+    List<CreditInvoice> creditList;
 
     public static final String INVOICE = "INVOICE";
     public static final String INVOICE_DETAIL = "INVOICE_DETAIL";
     public static final String INVOICE_PRESENT = "INVOICE_PRESENT";
-    String taxType = null, branchCode = null;
+    String taxType = null, branchCode = null, creditFlg = null;
     Double taxPercent = 0.0;
+    int pos = 0;
 
     TextView txtSaleDate, txtInvoiceNo, txtSaleMan, txtBranch, totalAmountTxtView, netAmountTxtView, prepaidAmountTxtView, print_discountAmountTxtView;
+    TextView creditCustomerName, creditTownshipName, creditRecievieNo, creditInvoiceNo, creditCollectPerson, creditDate, crediTotalAmount, crediDiscount, crediNetAmount, creditReceiveAmount;;
     ImageView cancelBtn, printBtn;
     String saleman_Id = "";
     SQLiteDatabase database;
     SoldProductListRowAdapter soldProductListRowAdapter;
     PromotionProductCustomAdapter promotionProductCustomAdapter;
     ListView soldProductListView, promotionPlanItemListView;
+    RelativeLayout saleLayout;
+    LinearLayout creditPrintHeaderLayout, salePrintHeaderLayout1, salePrintHeaderLayout2;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -79,16 +86,36 @@ public class PrintInvoiceActivity extends Activity{
             invoiceDetailList = (List<SoldProduct>) getIntent().getSerializableExtra(SaleCheckoutActivity.SOLD_PROUDCT_LIST_KEY);
         }
 
+        if (getIntent().getSerializableExtra("CREDIT") != null) {
+            creditList = (List<CreditInvoice>) getIntent().getSerializableExtra("CREDIT");
+        }
+
+        if (getIntent().getSerializableExtra("CREDIT_FLG") != null) {
+            creditFlg = (String) getIntent().getSerializableExtra("CREDIT_FLG");
+        }
+
+        if (getIntent().getSerializableExtra("CUR_POS") != null) {
+            pos = (int) getIntent().getSerializableExtra("CUR_POS");
+        }
+
         registerIds();
         getTaxAmount();
         setDataToWidgets();
         printBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utils.print(PrintInvoiceActivity.this, getCustomerName(invoie.getCustomerId())
-                        , invoie.getId()
-                        , getSaleManName(invoie.getSalepersonId()), invoie, invoiceDetailList, invoicePresentList, Utils.PRINT_FOR_NORMAL_SALE
-                        , Utils.FOR_OTHERS);
+                if(creditFlg!= null && !creditFlg.equals("")) {
+
+                    if (creditList != null && creditList.size() > 0) {
+                        Utils.printCredit(PrintInvoiceActivity.this, getCustomerName(creditList.get(pos).getCustomerId()), getCustomerTownshipName(creditList.get(pos).getCustomerId())
+                                , creditList.get(pos).getInvoiceNo(), getSaleManName(creditList.get(pos).getSaleManId()), creditList.get(pos));
+                    }
+                } else {
+                    Utils.print(PrintInvoiceActivity.this, getCustomerName(Integer.parseInt(invoie.getCustomerId()))
+                            , invoie.getId()
+                            , getSaleManName(invoie.getSalepersonId()), invoie, invoiceDetailList, invoicePresentList, Utils.PRINT_FOR_NORMAL_SALE
+                            , Utils.FOR_OTHERS);
+                }
 
             }
         });
@@ -114,23 +141,65 @@ public class PrintInvoiceActivity extends Activity{
         netAmountTxtView = (TextView) findViewById(R.id.print_net_amount);
         prepaidAmountTxtView = (TextView) findViewById(R.id.print_prepaidAmount);
         print_discountAmountTxtView = (TextView) findViewById(R.id.print_discountAmount);
+        saleLayout = (RelativeLayout) findViewById(R.id.printForSaleLayout);
+        creditPrintHeaderLayout = (LinearLayout) findViewById(R.id.crditPrintHeaderLayout1);
+        salePrintHeaderLayout1 = (LinearLayout) findViewById(R.id.salePrintHeaderLayout1);
+        salePrintHeaderLayout2 = (LinearLayout) findViewById(R.id.salePrintHeaderLayout2);
+
+        if(creditFlg != null && !creditFlg.equals("")) {
+            creditCustomerName = (TextView) findViewById(R.id.credit_customer_name);
+            creditTownshipName = (TextView) findViewById(R.id.credit_township_name);
+            creditRecievieNo = (TextView) findViewById(R.id.credit_receive_no);
+            creditInvoiceNo = (TextView) findViewById(R.id.credit_invoice_no);
+            creditCollectPerson = (TextView) findViewById(R.id.credit_sale_man);
+            creditDate = (TextView) findViewById(R.id.credit_date);
+            crediTotalAmount = (TextView) findViewById(R.id.credit_total_amt);
+            crediDiscount = (TextView) findViewById(R.id.credit_discount);
+            crediNetAmount = (TextView) findViewById(R.id.credit_net_amount);
+            creditReceiveAmount = (TextView) findViewById(R.id.credit_receive_amt);
+
+
+        }
     }
 
     private void setDataToWidgets() {
-        txtSaleDate.setText(invoie.getDate().substring(0,10));
-        txtInvoiceNo.setText(invoie.getId());
-        txtSaleMan.setText(getSaleManName(invoie.getSalepersonId()));
-        txtBranch.setText(branchCode);
-        soldProductListView.setAdapter(new SoldProductListRowAdapter(this));
-        setPromotionProductListView();
-        totalAmountTxtView.setText(Utils.formatAmount(invoie.getTotalAmt()));
-        if(taxType.equalsIgnoreCase("E")) {
-            netAmountTxtView.setText(Utils.formatAmount(invoie.getTotalAmt() - invoie.getTotalDiscountAmt() + invoie.getTaxAmount()));
+        if(creditFlg== null || creditFlg.equals("")) {
+            txtSaleDate.setText(invoie.getDate().substring(0,10));txtInvoiceNo.setText(invoie.getId());
+            txtSaleMan.setText(getSaleManName(invoie.getSalepersonId()));
+            txtBranch.setText(branchCode);
+            soldProductListView.setAdapter(new SoldProductListRowAdapter(this));
+            setPromotionProductListView();
+            totalAmountTxtView.setText(Utils.formatAmount(invoie.getTotalAmt()));
+            if(taxType.equalsIgnoreCase("E")) {
+                netAmountTxtView.setText(Utils.formatAmount(invoie.getTotalAmt() - invoie.getTotalDiscountAmt() + invoie.getTaxAmount()));
+            } else {
+                netAmountTxtView.setText(Utils.formatAmount(invoie.getTotalAmt() - invoie.getTotalDiscountAmt()));
+            }
+            prepaidAmountTxtView.setText(Utils.formatAmount(invoie.getTotalPayAmt()));
+            print_discountAmountTxtView.setText(Utils.formatAmount(invoie.getTotalDiscountAmt()) + " (" + new DecimalFormat("#0.00").format(invoie.getDiscountPercent()) + "%)");
         } else {
-            netAmountTxtView.setText(Utils.formatAmount(invoie.getTotalAmt() - invoie.getTotalDiscountAmt()));
+            saleLayout.setVisibility(View.GONE);
+            salePrintHeaderLayout1.setVisibility(View.GONE);
+            salePrintHeaderLayout2.setVisibility(View.GONE);
+            creditPrintHeaderLayout.setVisibility(View.VISIBLE);
+            creditDate.setText(creditList.get(pos).getInvoiceDate().substring(0,10));
+            creditInvoiceNo.setText(creditList.get(pos).getInvoiceNo());
+            creditCollectPerson.setText(getSaleManName(creditList.get(pos).getSaleManId()));
+            creditCustomerName.setText(getCustomerName(creditList.get(pos).getCustomerId()));
+            creditTownshipName.setText(getCustomerTownshipName(creditList.get(pos).getCustomerId()));
+            creditRecievieNo.setText(creditList.get(pos).getInvoiceNo());
+
+            crediTotalAmount.setTextSize(30);
+            crediDiscount.setTextSize(30);
+            crediNetAmount.setTextSize(30);
+            creditReceiveAmount.setTextSize(30);
+
+            crediTotalAmount.setText(Utils.formatAmount(creditList.get(pos).getAmt()));
+            crediNetAmount.setText(Utils.formatAmount(creditList.get(pos).getAmt()));
+            creditReceiveAmount.setText(Utils.formatAmount(creditList.get(pos).getPayAmt()));
+            crediDiscount.setText("0.0 (0%)");
         }
-        prepaidAmountTxtView.setText(Utils.formatAmount(invoie.getTotalPayAmt()));
-        print_discountAmountTxtView.setText(Utils.formatAmount(invoie.getTotalDiscountAmt()) + " (" + new DecimalFormat("#0.00").format(invoie.getDiscountPercent()) + "%)");
+
     }
 
     private String getSaleManName(int id) {
@@ -143,14 +212,24 @@ public class PrintInvoiceActivity extends Activity{
         return saleManName;
     }
 
-    private String getCustomerName(String id) {
-        Cursor cursorCustomer = database.rawQuery("SELECT CUSTOMER_NAME FROM CUSTOMER WHERE id = '" + id + "'", null);
+    private String getCustomerName(int id) {
+        Cursor cursorCustomer = database.rawQuery("SELECT CUSTOMER_NAME FROM CUSTOMER WHERE id = " + id + "", null);
         String customerName = "";
         while(cursorCustomer.moveToNext()) {
             customerName = cursorCustomer.getString(cursorCustomer.getColumnIndex("CUSTOMER_NAME"));
 
         }
         return customerName;
+    }
+
+    private String getCustomerTownshipName(int id) {
+        Cursor cursorCustomer = database.rawQuery("SELECT TOWNSHIP_NAME FROM TOWNSHIP WHERE TOWNSHIP_ID = (SELECT township_number FROM CUSTOMER where id = "+ id + ")", null);
+        String townshipName = "";
+        while(cursorCustomer.moveToNext()) {
+            townshipName = cursorCustomer.getString(cursorCustomer.getColumnIndex("TOWNSHIP_NAME"));
+
+        }
+        return townshipName;
     }
 
     @Override

@@ -25,8 +25,10 @@ import android.widget.TextView;
 
 
 import com.aceplus.samparoo.LoginActivity;
+import com.aceplus.samparoo.PrintInvoiceActivity;
 import com.aceplus.samparoo.R;
 import com.aceplus.samparoo.customer.SaleCheckoutActivity;
+import com.aceplus.samparoo.customer.SaleOrderCheckoutActivity;
 import com.aceplus.samparoo.model.CreditInvoice;
 import com.aceplus.samparoo.model.CreditInvoiceItems;
 import com.aceplus.samparoo.model.CustomerCredit;
@@ -36,6 +38,7 @@ import com.aceplus.samparoo.utils.Database;
 import com.aceplus.samparoo.utils.DatabaseContract;
 import com.aceplus.samparoo.utils.Utils;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -81,6 +84,7 @@ public class CreditCheckOut_Activity extends Activity implements OnActionClickLi
     public static double amount = 0.0;
     public static double paidAmount = 0.0;
     public static double unPaidAmount = 0.0;
+    int position = 0;
 
     CustomerCredit customerCredit;
 
@@ -392,6 +396,7 @@ public class CreditCheckOut_Activity extends Activity implements OnActionClickLi
             double Amt = cursor.getDouble(cursor.getColumnIndex("AMT"));
             double paidAmt = cursor.getDouble(cursor.getColumnIndex("PAY_AMT"));
             String flag = cursor.getString(cursor.getColumnIndex("FIRST_PAY_AMT"));
+            Integer saleManId = cursor.getInt(cursor.getColumnIndex("SALE_MAN_ID"));
 
             CreditInvoice creditInvoice = new CreditInvoice();
             creditInvoice.setId(id);
@@ -401,6 +406,7 @@ public class CreditCheckOut_Activity extends Activity implements OnActionClickLi
             creditInvoice.setAmt(Amt);
             creditInvoice.setPayAmt(paidAmt);
             creditInvoice.setCreditAmt(Amt - paidAmt);
+            creditInvoice.setSaleManId(saleManId);
             //creditInvoice.setStatus(flag);
 
             creditInvoiceList.add(creditInvoice);
@@ -553,16 +559,18 @@ public class CreditCheckOut_Activity extends Activity implements OnActionClickLi
             if(payAmountEdit.getText().toString().equals("")) {
                 payAmountEdit.setError("Please enter pay amount");
             } else {
-                insertIntoDB(calculatePayAmount(payAmountEdit.getText().toString()));
-                Utils.backToCustomerVisit(CreditCheckOut_Activity.this);
+                List<CreditInvoice> creditInvoiceList = calculatePayAmount(payAmountEdit.getText().toString());
+                insertIntoDB(creditInvoiceList);
+                toPrintActivity(creditInvoiceList, listviewPosition);
             }
 
         } else {
             if(itemPayEdit.getText().toString().equals("")) {
                 itemPayEdit.setError("Please enter pay amount");
             } else {
-                insertIntoDB(calculatePayAmount(itemPayEdit.getText().toString()));
-                Utils.backToCustomerVisit(CreditCheckOut_Activity.this);
+                List<CreditInvoice> creditInvoiceList = calculatePayAmount(itemPayEdit.getText().toString());
+                insertIntoDB(creditInvoiceList);
+                toPrintActivity(creditInvoiceList, listviewPosition);
             }
         }
     }
@@ -599,7 +607,6 @@ public class CreditCheckOut_Activity extends Activity implements OnActionClickLi
             TextView invdate = (TextView) rowView.findViewById(R.id.invoice_date);
             TextView invAmt = (TextView) rowView.findViewById(R.id.invoice_amount);
             TextView statusTxt = (TextView) rowView.findViewById(R.id.status_txt);
-
             invId.setText(creditInv.getInvoiceNo());
             invdate.setText(creditInv.getInvoiceDate());
             invAmt.setText(Utils.formatAmount(creditInv.getAmt()));
@@ -650,5 +657,14 @@ public class CreditCheckOut_Activity extends Activity implements OnActionClickLi
     public void onBackPressed() {
         startActivity(new Intent(CreditCheckOut_Activity.this, CreditCollectActivity.class));
         finish();
+    }
+
+    private void toPrintActivity(List<CreditInvoice> creditInvoiceList, int position) {
+        Intent intent = new Intent(CreditCheckOut_Activity.this, PrintInvoiceActivity.class);
+        intent.putExtra("CREDIT", (Serializable) creditInvoiceList);
+        intent.putExtra("CUR_POS", position);
+        intent.putExtra("CREDIT_FLG"
+                , "CREDIT");
+        startActivity(intent);
     }
 }

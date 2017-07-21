@@ -491,8 +491,8 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
     private void registerIDs() {
         this.titleTextView = (TextView) findViewById(R.id.title);
         soldProductsListView = (ListView) findViewById(R.id.soldProductList);
-        promotionPlanItemListView = (ListView) findViewById(R.id.promotion_plan_item_listview);
-        promotionPlanGiftListView = (ListView) findViewById(R.id.promotion_plan_gift_listview);
+        promotionPlanItemListView = (ListView) findViewById(R.id.promotion_plan_item_listview);/*
+        promotionPlanGiftListView = (ListView) findViewById(R.id.promotion_plan_gift_listview);*/
         saleDateTextView = (TextView) findViewById(R.id.saleDateTextView);
         invoiceIdTextView = (TextView) findViewById(R.id.invoiceId);
         totalAmountTextView = (TextView) findViewById(R.id.totalAmount);
@@ -1142,7 +1142,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                 priceTextView.setText(Utils.formatAmount(soldProduct.getProduct().getPrice()));
                 discountTextView.setText(Utils.formatAmount(soldProduct.getProduct().getPrice()));
             } else {
-                priceTextView.setText(Utils.formatAmount(soldProduct.getPromotionPrice()));
+                priceTextView.setText(Utils.formatAmount(soldProduct.getProduct().getPrice()));
                 discountTextView.setText(Utils.formatAmount(soldProduct.getPromotionPrice()));
             }
 
