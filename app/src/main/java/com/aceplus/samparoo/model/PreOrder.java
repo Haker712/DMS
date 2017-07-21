@@ -63,6 +63,10 @@ public class PreOrder implements Cloneable, Serializable {
 
     private String remark;
 
+    private String bankName;
+
+    private String bankAccountNo;
+
     /**
      * Getter method of invoiceId
      *
@@ -245,5 +249,21 @@ public class PreOrder implements Cloneable, Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public String getBankName() {
+        return bankName;
+    }
+
+    public void setBankName(String bankName) {
+        this.bankName = bankName;
+    }
+
+    public String getBankAccountNo() {
+        return bankAccountNo;
+    }
+
+    public void setBankAccountNo(String bankAccountNo) {
+        this.bankAccountNo = bankAccountNo;
     }
 }

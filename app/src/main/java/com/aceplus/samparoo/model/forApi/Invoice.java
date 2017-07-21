@@ -70,6 +70,12 @@ public class Invoice implements Serializable{
     @SerializedName("due_date")
     @Expose
     private String dueDate;
+    @SerializedName("card_code_id")
+    @Expose
+    private String bankName;
+    @SerializedName("card_no")
+    @Expose
+    private String bankAccountNo;
 
     public String getId() {
         return id;
@@ -229,5 +235,21 @@ public class Invoice implements Serializable{
 
     public void setDueDate(String dueDate) {
         this.dueDate = dueDate;
+    }
+
+    public String getBankName() {
+        return bankName;
+    }
+
+    public void setBankName(String bankName) {
+        this.bankName = bankName;
+    }
+
+    public String getBankAccountNo() {
+        return bankAccountNo;
+    }
+
+    public void setBankAccountNo(String bankAccountNo) {
+        this.bankAccountNo = bankAccountNo;
     }
 }

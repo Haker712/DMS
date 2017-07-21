@@ -957,6 +957,15 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         invoice.setRate(1);
         invoice.setTaxAmount(taxAmt);
         invoice.setDueDate(dueDate);
+
+        if(branchEditText.getText().toString() != null && !branchEditText.getText().toString().equals("")) {
+            invoice.setBankName(branchEditText.getText().toString());
+        }
+
+        if(accountEditText.getText().toString() != null && !accountEditText.getText().toString().equals("")) {
+            invoice.setBankAccountNo(accountEditText.getText().toString());
+        }
+
         invoice.setInvoiceDetail(invoiceDetailList);
 
         database.execSQL("INSERT INTO INVOICE VALUES (\""
@@ -983,7 +992,9 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                 + cashOrLoanOrBank + "\", "
                 + totalVolumeDiscountPercent + ", "
                 + 1 + ", "
-                + taxAmt
+                + taxAmt + ", \""
+                + invoice.getBankName() + "\", \""
+                + invoice.getBankAccountNo() + "\""
                 + ")");
 
         for (Promotion promotion : promotionArrayList) {
@@ -1045,7 +1056,11 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                         accountEditText.setError("Please enter bank name");
                     } else {
                         Utils.commonDialog("Insufficient Pay Amount!", SaleCheckoutActivity.this);
+                        return;
                     }
+
+                    saveDatas("CA");
+                    saleOrExchange();
                 } else {
                     saveDatas("CR");
                     saleOrExchange();
@@ -1080,7 +1095,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             final TextView totalAmountTextView = (TextView) view.findViewById(R.id.amount);
 
             nameTextView.setText(soldProduct.getProduct().getName());
-            umTextView.setText(soldProduct.getProduct().getUm());
+            umTextView.setText(soldProduct.getProduct().getUmName());
             qtyTextView.setText(soldProduct.getQuantity() + "");
 
             if (soldProductList.size() == position + 1 && adapterFlag) {
@@ -1102,7 +1117,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                 priceTextView.setText(Utils.formatAmount(soldProduct.getProduct().getPrice()));
                 discountTextView.setText(Utils.formatAmount(soldProduct.getProduct().getPrice()));
             } else {
-                priceTextView.setText(Utils.formatAmount(soldProduct.getPromotionPrice()));
+                priceTextView.setText(Utils.formatAmount(soldProduct.getProduct().getPrice()));
                 discountTextView.setText(Utils.formatAmount(soldProduct.getPromotionPrice()));
             }
 

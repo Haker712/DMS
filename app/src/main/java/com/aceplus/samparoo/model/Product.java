@@ -12,6 +12,8 @@ public class Product implements Cloneable, Serializable {
 
     private String um;
 
+    private String umName;
+
     private int stockId;
 
     public Product(){}
@@ -119,5 +121,13 @@ public class Product implements Cloneable, Serializable {
 
     public void setRemainingQty(int remainingQty) {
         this.remainingQty = remainingQty;
+    }
+
+    public String getUmName() {
+        return umName;
+    }
+
+    public void setUmName(String umName) {
+        this.umName = umName;
     }
 }

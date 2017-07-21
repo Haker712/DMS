@@ -103,7 +103,7 @@ public class SaleActivity extends AppCompatActivity {
     ArrayList<Promotion> promotionArrayList = new ArrayList<>();
     PromotionProductCustomAdapter promotionProductCustomAdapter;
 
-    double promotionPrice = 0.0;
+    //double promotionPrice = 0.0;
     double totalPromotionPrice = 0.0;
 
     @Override
@@ -607,7 +607,7 @@ public class SaleActivity extends AppCompatActivity {
                                     soldProductListRowAdapter.notifyDataSetChanged();
 
                                     //promotionArrayList.clear();
-                                    promotionPrice = calculatePromotinPriceAndGift(soldProduct);
+                                    double promotionPrice = calculatePromotinPriceAndGift(soldProduct);
                                     totalPromotionPrice += promotionPrice;
 
                                     soldProduct.setPromotionPrice(promotionPrice);
@@ -639,9 +639,10 @@ public class SaleActivity extends AppCompatActivity {
             Log.i("um_id", soldProduct.getProduct().getUm());
             Cursor cursor = sqLiteDatabase.rawQuery("select * from UM where ID=" + soldProduct.getProduct().getUm() + "", null);
             while (cursor.moveToNext()) {
-                um = cursor.getString(cursor.getColumnIndex(DatabaseContract.UM.code));
+                um = cursor.getString(cursor.getColumnIndex(DatabaseContract.UM.name));
             }
             Log.i("um", um);
+            soldProduct.getProduct().setUmName(um);
             umTextView.setText(um);
 
             if (this.resource == R.layout.list_row_sold_product_with_custom_discount) {
@@ -659,11 +660,11 @@ public class SaleActivity extends AppCompatActivity {
             priceTextView.setText(Utils.formatAmount(soldProduct.getProduct().getPrice()));
 
             Double totalAmount = 0.0;
-            if (promotionPrice == 0.0) {
+            if (soldProduct.getPromotionPrice() == 0.0) {
                 totalAmount = (soldProduct.getProduct().getPrice() * soldProduct.getQuantity());
                 Log.i("totalAmount1", totalAmount + "");
             } else {
-                totalAmount = promotionPrice * soldProduct.getQuantity();
+                totalAmount = soldProduct.getPromotionPrice() * soldProduct.getQuantity();
                 Log.i("totalAmount2", totalAmount + "");
             }
 
