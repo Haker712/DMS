@@ -1,9 +1,11 @@
 package com.aceplus.samparoo.model;
 
+import java.io.Serializable;
+
 /**
  * Created by ESeries on 12/1/2015.
  */
-public class CreditInvoice {
+public class CreditInvoice implements Serializable{
 
     /**
      * id
