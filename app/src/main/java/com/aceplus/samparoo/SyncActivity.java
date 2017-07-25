@@ -2525,7 +2525,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
 
             String sizeInStoreShareNo = cursor.getString(cursor.getColumnIndex("size_in_store_share_id"));
             Integer cus_Id = cursor.getInt(cursor.getColumnIndex("customer_id"));
-            String date = cursor.getString(cursor.getColumnIndex("date"));
+            String date = cursor.getString(cursor.getColumnIndex("INVOICE_DATE"));
             Integer stockId = cursor.getInt(cursor.getColumnIndex("stock_id"));
             Integer quantity = cursor.getInt(cursor.getColumnIndex("quantity"));
             String status = cursor.getString(cursor.getColumnIndex("status"));
