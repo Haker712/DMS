@@ -164,7 +164,8 @@ public class PrintInvoiceActivity extends Activity{
 
     private void setDataToWidgets() {
         if(creditFlg== null || creditFlg.equals("")) {
-            txtSaleDate.setText(invoie.getDate().substring(0,10));txtInvoiceNo.setText(invoie.getId());
+            txtSaleDate.setText(invoie.getDate().substring(0,10));
+            txtInvoiceNo.setText(invoie.getId());
             txtSaleMan.setText(getSaleManName(invoie.getSalepersonId()));
             txtBranch.setText(branchCode);
             soldProductListView.setAdapter(new SoldProductListRowAdapter(this));
