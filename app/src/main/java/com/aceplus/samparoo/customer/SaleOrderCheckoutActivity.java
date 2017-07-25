@@ -1450,10 +1450,10 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
     private void toPrintActivity() {
         Intent intent = new Intent(SaleOrderCheckoutActivity.this, PrintInvoiceActivity.class);
-        intent.putExtra(SaleCheckoutActivity.INVOICE, SaleOrderCheckoutActivity.this.invoice);
+        intent.putExtra(PrintInvoiceActivity.INVOICE, SaleOrderCheckoutActivity.this.invoice);
         intent.putExtra(SaleCheckoutActivity.SOLD_PROUDCT_LIST_KEY
                 , SaleOrderCheckoutActivity.this.soldProductList);
-        intent.putExtra(SaleCheckoutActivity.INVOICE_PRESENT
+        intent.putExtra(PrintInvoiceActivity.INVOICE_PRESENT
                 , SaleOrderCheckoutActivity.this.promotionArrayList);
         startActivity(intent);
     }
@@ -1664,6 +1664,8 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                         return;
                     }
                     insertPreOrderInformation("CA");
+                } else {
+                    insertPreOrderInformation("CR");
                 }
             }
 
