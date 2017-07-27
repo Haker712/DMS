@@ -122,76 +122,37 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <LinearLayout
+            <ListView
+                android:id="@+id/soldProductList"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@id/headerLayout"
-                android:orientation="vertical">
+                android:layout_height="300dp"
+                android:layout_margin="10dp"
+                android:descendantFocusability="blocksDescendants"
+                android:padding="10dp"
+                android:layout_below="@id/headerLayout" />
 
-                <ListView
-                    android:id="@+id/soldProductList"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="10dp"
-                    android:layout_weight="1"
-                    android:padding="10dp" />
+            <ScrollView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/soldProductList">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="2"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <LinearLayout
+                    <ListView
+                        android:id="@+id/promotion_plan_item_listview"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="2"
-                        android:orientation="vertical">
+                        android:layout_height="wrap_content"/>
 
-                        <ScrollView
-                            android:id="@+id/horizontalScrollView1"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                    <ListView
+                        android:id="@+id/promotion_plan_gift_listview"
+                        android:layout_width="match_parent"
+                        android:layout_height="150dp"/>
 
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="fill_parent"
-                                android:orientation="vertical">
-
-                                <RelativeLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content">
-
-                                    <LinearLayout
-                                        android:id="@+id/posmListLayout"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:orientation="vertical">
-
-                                        <ListView
-                                            android:id="@+id/promotion_plan_item_listview"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"/>
-                                    </LinearLayout>
-
-                                    <LinearLayout
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:layout_below="@+id/posmListLayout"
-                                        android:orientation="vertical">
-
-                                        <ListView
-                                            android:id="@+id/promotion_plan_gift_listview"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="match_parent"></ListView>
-                                    </LinearLayout>
-                                </RelativeLayout>
-                            </LinearLayout>
-                        </ScrollView>
-                    </LinearLayout>
                 </LinearLayout>
-
-            </LinearLayout>
+            </ScrollView>
 
         </RelativeLayout>
 
