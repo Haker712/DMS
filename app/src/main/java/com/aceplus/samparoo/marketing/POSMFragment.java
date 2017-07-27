@@ -465,6 +465,7 @@ public class POSMFragment extends Fragment {
             final TextView priceTextView = (TextView) view.findViewById(R.id.price);
             final TextView discountButtonOrTextView = (TextView) view.findViewById(R.id.discount);
             final TextView totalAmountTextView = (TextView) view.findViewById(R.id.amount);
+            final Button btn = (Button) view.findViewById(R.id.sale_activity_price_btn);
 
             nameTextView.setText(soldProduct.getProduct().getName());
 
@@ -474,6 +475,7 @@ public class POSMFragment extends Fragment {
                 TextView um = (TextView) view.findViewById(R.id.um);
                 TextView discount = (TextView) view.findViewById(R.id.promotionPrice);
 
+                btn.setVisibility(View.GONE);
                 um.setVisibility(View.GONE);
                 discount.setVisibility(View.GONE);
                 orderedQuantityTextView.setVisibility(View.GONE);

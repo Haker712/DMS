@@ -438,6 +438,7 @@ public class SaleOrderActivity extends AppCompatActivity {
 
         if(isDelivery) {
             searchProductLayout.setVisibility(View.GONE);
+            txt_Discount.setVisibility(View.GONE);
             textViewTableHeaderQty.setVisibility(View.VISIBLE);
         }
     }
@@ -815,7 +816,12 @@ public class SaleOrderActivity extends AppCompatActivity {
                 //discount.setVisibility(View.GONE);
 
                 if (SaleOrderActivity.this.isDelivery) {
-
+                    LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            1.0f
+                    );
+                    orderedQuantityTextView.setLayoutParams(param);
                     orderedQuantityTextView.setText(soldProduct.getOrderedQuantity() + "");
                 }
             }
