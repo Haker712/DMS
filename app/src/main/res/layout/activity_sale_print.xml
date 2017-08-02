@@ -43,9 +43,9 @@
         android:id="@+id/crditPrintHeaderLayout1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         android:layout_margin="30dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -56,14 +56,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Customer : "
-                android:textSize="30dp"/>
+                android:textSize="30dp" />
 
             <TextView
                 android:id="@+id/credit_customer_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="SALE DAT"
-                android:textSize="30dp"/>
+                android:text="SALE"
+                android:textSize="30dp" />
 
         </LinearLayout>
 
@@ -76,14 +76,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Tsp : "
-                android:textSize="30dp"/>
+                android:textSize="30dp" />
 
             <TextView
                 android:id="@+id/credit_township_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="SALE DAT"
-                android:textSize="30dp"/>
+                android:text="SALE"
+                android:textSize="30dp" />
 
         </LinearLayout>
 
@@ -95,15 +95,15 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Offical Receive No : "
-                android:textSize="30dp"/>
+                android:text="Official Receive No : "
+                android:textSize="30dp" />
 
             <TextView
                 android:id="@+id/credit_receive_no"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="SALE DAT"
-                android:textSize="30dp"/>
+                android:text="SALE"
+                android:textSize="30dp" />
 
         </LinearLayout>
 
@@ -116,14 +116,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Sale Invoice : "
-                android:textSize="30dp"/>
+                android:textSize="30dp" />
 
             <TextView
                 android:id="@+id/credit_invoice_no"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="SALE DAT"
-                android:textSize="30dp"/>
+                android:text="SALE"
+                android:textSize="30dp" />
 
         </LinearLayout>
 
@@ -136,14 +136,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Collect Person : "
-                android:textSize="30dp"/>
+                android:textSize="30dp" />
 
             <TextView
                 android:id="@+id/credit_sale_man"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="SALE DAT"
-                android:textSize="30dp"/>
+                android:text="SALE"
+                android:textSize="30dp" />
 
         </LinearLayout>
 
@@ -156,14 +156,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Date : "
-                android:textSize="30dp"/>
+                android:textSize="30dp" />
 
             <TextView
                 android:id="@+id/credit_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="SALE DAT"
-                android:textSize="30dp"/>
+                android:text="SALE"
+                android:textSize="30dp" />
 
         </LinearLayout>
 
@@ -176,14 +176,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Total Amount : "
-                android:textSize="30dp"/>
+                android:textSize="30dp" />
 
             <TextView
                 android:id="@+id/credit_total_amt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="SALE DAT"
-                android:textSize="30dp"/>
+                android:text="SALE"
+                android:textSize="30dp" />
 
         </LinearLayout>
 
@@ -196,14 +196,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Discount : "
-                android:textSize="30dp"/>
+                android:textSize="30dp" />
 
             <TextView
                 android:id="@+id/credit_discount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="SALE DAT"
-                android:textSize="30dp"/>
+                android:text="SALE"
+                android:textSize="30dp" />
 
         </LinearLayout>
 
@@ -216,14 +216,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Net Amount : "
-                android:textSize="30dp"/>
+                android:textSize="30dp" />
 
             <TextView
                 android:id="@+id/credit_net_amount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="SALE DAT"
-                android:textSize="30dp"/>
+                android:text="SALE"
+                android:textSize="30dp" />
 
         </LinearLayout>
 
@@ -236,17 +236,180 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Receive : "
-                android:textSize="30dp"/>
+                android:textSize="30dp" />
 
             <TextView
                 android:id="@+id/credit_receive_amt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="SALE DAT"
-                android:textSize="30dp"/>
+                android:text="SALE"
+                android:textSize="30dp" />
 
         </LinearLayout>
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/deliverPrintHeaderLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TableRow>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Customer : " />
+
+                    <TextView
+                        android:id="@+id/deliver_customer_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="SALE" />
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_column="2"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tsp: " />
+
+                    <TextView
+                        android:id="@+id/deliver_township_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="SALE" />
+
+                </LinearLayout>
+            </TableRow>
+
+
+            <TableRow>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Order Invoice : " />
+
+                    <TextView
+                        android:id="@+id/deliver_order_invoice_no"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="SALE" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_column="2"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Order Person : " />
+
+                    <TextView
+                        android:id="@+id/deliver_order_person"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="SALE" />
+
+                </LinearLayout>
+            </TableRow>
+
+            <TableRow>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Delivery No : " />
+
+                    <TextView
+                        android:id="@+id/deliver_invoice_no"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="SALE" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_column="2"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Delivery Person   : " />
+
+                    <TextView
+                        android:id="@+id/deliver_person"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="SALE" />
+
+                </LinearLayout>
+            </TableRow>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Delivery Date : " />
+
+                <TextView
+                    android:id="@+id/deliver_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SALE" />
+
+            </LinearLayout>
+        </TableLayout>
     </LinearLayout>
 
     <LinearLayout
@@ -501,73 +664,32 @@
             android:layout_below="@id/headerLayout"
             android:orientation="vertical">-->
 
-            <ListView
-                android:id="@+id/print_soldProductList"
+        <ListView
+            android:id="@+id/print_soldProductList"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_below="@id/headerLayout"
+            android:layout_margin="10dp"
+            android:descendantFocusability="blocksDescendants"
+            android:padding="10dp" />
+
+        <ScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="150dp"
+            android:layout_above="@+id/netAmountLayout"
+            android:layout_below="@+id/print_soldProductList">
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_margin="10dp"
-                android:descendantFocusability="blocksDescendants"
-                android:padding="10dp"
-                android:layout_below="@id/headerLayout" />
+                android:layout_height="150dp">
 
-            <ScrollView
-                android:layout_width="wrap_content"
-                android:layout_height="150dp"
-                android:layout_above="@+id/netAmountLayout"
-                android:layout_below="@+id/print_soldProductList">
-
-                <LinearLayout
+                <ListView
+                    android:id="@+id/promotion_plan_item_listview"
                     android:layout_width="match_parent"
-                    android:layout_height="150dp">
+                    android:layout_height="150dp" />
 
-                    <ListView
-                        android:id="@+id/promotion_plan_item_listview"
-                        android:layout_width="match_parent"
-                        android:layout_height="150dp"/>
+            </LinearLayout>
+        </ScrollView>
 
-                </LinearLayout>
-            </ScrollView>
-
-            <!--<ListView
-                android:id="@+id/print_soldProductList"
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:layout_margin="10dp"
-                android:layout_weight="1"
-                android:padding="10dp" />
-
-			<LinearLayout
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_weight="2"
-				android:orientation="vertical">
-
-				<ScrollView
-					android:id="@+id/horizontalScrollView1"
-					android:layout_width="match_parent"
-					android:layout_height="150dp">
-
-						<RelativeLayout
-							android:layout_width="match_parent"
-							android:layout_height="wrap_content">
-
-							<LinearLayout
-								android:id="@+id/posmListLayout"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:orientation="vertical">
-
-								<ListView
-									android:id="@+id/promotion_plan_item_listview"
-									android:layout_width="match_parent"
-									android:layout_height="150dp"/>
-							</LinearLayout>
-
-						</RelativeLayout>
-				</ScrollView>
-			</LinearLayout>-->
-
-		<!--</LinearLayout>-->
-
-	</RelativeLayout>
+    </RelativeLayout>
 </LinearLayout>

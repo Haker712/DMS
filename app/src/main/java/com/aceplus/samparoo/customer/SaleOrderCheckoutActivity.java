@@ -347,10 +347,11 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         volDisForPreOrderLayout.setVisibility(View.GONE);
         txt_table_header_foc.setVisibility(View.VISIBLE);
         if(isDelivery) {
-            totalInfoForPreOrderLayout.setVisibility(View.GONE);
-            volumeDiscountLayout.setVisibility(View.GONE);
+            //totalInfoForPreOrderLayout.setVisibility(View.GONE);
+            //volumeDiscountLayout.setVisibility(View.GONE);
             volDisForPreOrderLayout.setVisibility(View.GONE);
-            advancedPaidAmountLayout.setVisibility(View.VISIBLE);
+            remarkLayout.setVisibility(View.GONE);
+            //advancedPaidAmountLayout.setVisibility(View.VISIBLE);
             receiptPersonLayout.setVisibility(View.VISIBLE);
             paymentMethodLayout.setVisibility(View.GONE);
         }
@@ -877,7 +878,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                             sendSMS(phoneNo, msg);
                             insertSMSRecord(phoneNo, msg);
 
-                            toPrintActivity();
+                            toPrintActivity("S");
                         }
 
                         alertDialog.dismiss();
@@ -995,71 +996,62 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             preOrder.setBankAccountNo(accountEditText.getText().toString());
         }
 
-        database.beginTransaction();
+        if(Utils.checkDuplicateInvoice(preOrder.getInvoiceId(), DatabaseContract.PreOrder.tb, DatabaseContract.PreOrder.invoice_id)) {
+            database.beginTransaction();
 
-        /*database.execSQL("INSERT INTO PRE_ORDER VALUES (\""
-                + preOrder.getInvoiceId() + "\", \""
-                + preOrder.getCustomerId() + "\", \""
-                + preOrder.getSalePersonId() + "\", \""
-                + preOrder.getDeviceId() + "\", \""
-                + preOrder.getPreOrderDate() + "\", \""
-                + preOrder.getExpectedDeliveryDate() + "\", "
-                + preOrder.getAdvancedPaymentAmount() + ", \""
-                + preOrder.getNetAmount() + "\""
-                + ")");*/
+            invoice = new Invoice();
+            invoice.setId(preOrder.getInvoiceId());
+            invoice.setCustomerId(preOrder.getCustomerId());
+            invoice.setDate(preOrder.getPreOrderDate());
+            invoice.setTotalAmt(totalAmount);
+            invoice.setTotalDiscountAmt(totalDiscountAmount);
+            invoice.setTotalPayAmt(preOrder.getAdvancedPaymentAmount());
+            invoice.setSalepersonId(Integer.parseInt(preOrder.getSalePersonId()));
+            invoice.setLocationCode(locationCode);
+            invoice.setDeviceId(preOrder.getDeviceId());
+            invoice.setCurrencyId(1);
+            invoice.setInvoiceStatus(cashOrBank);
+            invoice.setDiscountPercent(totalVolumeDiscountPercent);
+            invoice.setRate(1);
+            invoice.setTaxAmount(taxAmt);
+            invoice.setDueDate(preOrder.getExpectedDeliveryDate());
 
-        invoice = new Invoice();
-        invoice.setId(preOrder.getInvoiceId());
-        invoice.setCustomerId(preOrder.getCustomerId());
-        invoice.setDate(preOrder.getPreOrderDate());
-        invoice.setTotalAmt(totalAmount);
-        invoice.setTotalDiscountAmt(totalDiscountAmount);
-        invoice.setTotalPayAmt(preOrder.getAdvancedPaymentAmount());
-        invoice.setSalepersonId(Integer.parseInt(preOrder.getSalePersonId()));
-        invoice.setLocationCode(locationCode);
-        invoice.setDeviceId(preOrder.getDeviceId());
-        invoice.setCurrencyId(1);
-        invoice.setInvoiceStatus(cashOrBank);
-        invoice.setDiscountPercent(totalVolumeDiscountPercent);
-        invoice.setRate(1);
-        invoice.setTaxAmount(taxAmt);
-        invoice.setDueDate(preOrder.getExpectedDeliveryDate());
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(DatabaseContract.PreOrder.invoice_id, preOrder.getInvoiceId());
+            contentValues.put(DatabaseContract.PreOrder.customer_id, preOrder.getCustomerId());
+            contentValues.put(DatabaseContract.PreOrder.saleperson_id, preOrder.getSalePersonId());
+            contentValues.put(DatabaseContract.PreOrder.dev_id, preOrder.getDeviceId());
+            contentValues.put(DatabaseContract.PreOrder.preorder_date, preOrder.getPreOrderDate());
+            contentValues.put(DatabaseContract.PreOrder.expected_delivery_date, preOrder.getExpectedDeliveryDate());
+            contentValues.put(DatabaseContract.PreOrder.advance_payment_amount, preOrder.getAdvancedPaymentAmount());
+            contentValues.put(DatabaseContract.PreOrder.net_amount, preOrder.getNetAmount());
+            contentValues.put(DatabaseContract.PreOrder.location_id, preOrder.getLocationId());
+            contentValues.put(DatabaseContract.PreOrder.discount, preOrder.getDiscount());
+            contentValues.put(DatabaseContract.PreOrder.discount_per, preOrder.getDiscountPer());
+            contentValues.put("TAX_AMOUNT", preOrder.getTaxAmount());
+            contentValues.put("REMARK", preOrder.getRemark());
+            contentValues.put("BANK_NAME", preOrder.getBankName());
+            contentValues.put("BANK_ACCOUNT_NO", preOrder.getBankAccountNo());
+            database.insert(DatabaseContract.PreOrder.tb, null, contentValues);
 
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(DatabaseContract.PreOrder.invoice_id, preOrder.getInvoiceId());
-        contentValues.put(DatabaseContract.PreOrder.customer_id, preOrder.getCustomerId());
-        contentValues.put(DatabaseContract.PreOrder.saleperson_id, preOrder.getSalePersonId());
-        contentValues.put(DatabaseContract.PreOrder.dev_id, preOrder.getDeviceId());
-        contentValues.put(DatabaseContract.PreOrder.preorder_date, preOrder.getPreOrderDate());
-        contentValues.put(DatabaseContract.PreOrder.expected_delivery_date, preOrder.getExpectedDeliveryDate());
-        contentValues.put(DatabaseContract.PreOrder.advance_payment_amount, preOrder.getAdvancedPaymentAmount());
-        contentValues.put(DatabaseContract.PreOrder.net_amount, preOrder.getNetAmount());
-        contentValues.put(DatabaseContract.PreOrder.location_id, preOrder.getLocationId());
-        contentValues.put(DatabaseContract.PreOrder.discount, preOrder.getDiscount());
-        contentValues.put(DatabaseContract.PreOrder.discount_per, preOrder.getDiscountPer());
-        contentValues.put("TAX_AMOUNT", preOrder.getTaxAmount());
-        contentValues.put("REMARK", preOrder.getRemark());
-        contentValues.put("BANK_NAME", preOrder.getBankName());
-        contentValues.put("BANK_ACCOUNT_NO", preOrder.getBankAccountNo());
-        database.insert(DatabaseContract.PreOrder.tb, null, contentValues);
+            insertProductList(preOrderProductList);
 
-        insertProductList(preOrderProductList);
+            for (Promotion promotion : promotionArrayList) {
+                ContentValues contentValues1 = new ContentValues();
+                contentValues1.put("pre_order_id", preOrder.getInvoiceId());
+                contentValues1.put("stock_id", promotion.getPromotionProductId());
+                contentValues1.put("quantity", promotion.getPromotionQty());
+                contentValues1.put("pc_address", preOrder.getDeviceId());
+                contentValues1.put("location_id", locationCode);
+                contentValues1.put("price", promotion.getPromotionPrice());
+                contentValues1.put("status", 1);
+                contentValues1.put("DELETE_FLAG", 0);
+                database.insert("PRE_ORDER_PRESENT", null, contentValues1);
+            }
 
-        for (Promotion promotion : promotionArrayList) {
-            ContentValues contentValues1 = new ContentValues();
-            contentValues1.put("pre_order_id", preOrder.getInvoiceId());
-            contentValues1.put("stock_id", promotion.getPromotionProductId());
-            contentValues1.put("quantity", promotion.getPromotionQty());
-            contentValues1.put("pc_address", preOrder.getDeviceId());
-            contentValues1.put("location_id", locationCode);
-            contentValues1.put("price", promotion.getPromotionPrice());
-            contentValues1.put("status", 1);
-            contentValues1.put("DELETE_FLAG", 0);
-            database.insert("PRE_ORDER_PRESENT", null, contentValues1);
+            database.setTransactionSuccessful();
+            database.endTransaction();
         }
-
-        database.setTransactionSuccessful();
-        database.endTransaction();
     }
 
     /**
@@ -1138,11 +1130,15 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                                 .setAction("DONE", new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
-                                        toPrintActivity();
+                                        toPrintActivity("S");
                                     }
                                 });
 
                         snackbar.show();
+                    }else {
+                        if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
+                            onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                        }
                     }
                 } else {
                     if(response.body() != null && response.body().getAceplusStatusMessage().length() != 0 ) {
@@ -1261,8 +1257,8 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             preOrderApi.setDiscountPer(preOrder.getDiscountPer());
             preOrderApi.setTaxAmount(preOrder.getTaxAmount());
             preOrderApi.setRemark(preOrder.getRemark());
-            preOrder.setBankName(preOrder.getBankName());
-            preOrder.setBankAccountNo(preOrder.getBankAccountNo());
+            preOrderApi.setBankName(preOrder.getBankName());
+            preOrderApi.setBankAccountNo(preOrder.getBankAccountNo());
 
             for (Promotion promotion : promotionArrayList) {
                 PreOrderPresentApi preOrderPresentApi = new PreOrderPresentApi();
@@ -1346,6 +1342,8 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             preOrder.setLocationId(cursorPreOrder.getInt(cursorPreOrder.getColumnIndex(DatabaseContract.PreOrder.location_id)));
             preOrder.setDiscount(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex(DatabaseContract.PreOrder.discount)));
             preOrder.setDiscountPer(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex(DatabaseContract.PreOrder.discount_per)));
+            preOrder.setBankName(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("BANK_NAME")));
+            preOrder.setBankAccountNo(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("BANK_ACCOUNT_NO")));
            preOrderList.add(preOrder);
         }
 
@@ -1459,13 +1457,17 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         finish();
     }
 
-    private void toPrintActivity() {
+    private void toPrintActivity(String printMode) {
         Intent intent = new Intent(SaleOrderCheckoutActivity.this, PrintInvoiceActivity.class);
         intent.putExtra(PrintInvoiceActivity.INVOICE, SaleOrderCheckoutActivity.this.invoice);
         intent.putExtra(SaleCheckoutActivity.SOLD_PROUDCT_LIST_KEY
                 , SaleOrderCheckoutActivity.this.soldProductList);
         intent.putExtra(PrintInvoiceActivity.INVOICE_PRESENT
                 , SaleOrderCheckoutActivity.this.promotionArrayList);
+        intent.putExtra(SaleOrderCheckoutActivity.ORDERED_INVOICE_KEY
+                , SaleOrderCheckoutActivity.this.orderedInvoice);
+        intent.putExtra("PRINT_MODE"
+                , printMode);
         startActivity(intent);
     }
 
@@ -1484,7 +1486,11 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         }
 
         double totalAmount = deliver.getAmount();
-        double paidAmount = deliver.getPaidAmount();
+
+        double paidAmount = prepaidAmt.getText().length() > 0 ?
+                Double.parseDouble(prepaidAmt.getText().toString().replace(",", ""))
+                : 0;
+
         String dueDate = Utils.getCurrentDate(true);
         String invoiceTime = Utils.getCurrentDate(true);
         database.beginTransaction();
@@ -1706,7 +1712,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             }
 
             insertDeliveryDataToDatabase(orderedInvoice);
-            toPrintActivity();
+            toPrintActivity("D");
             //toDeliveryActivity();
         }
     }

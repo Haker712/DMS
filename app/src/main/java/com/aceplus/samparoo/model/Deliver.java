@@ -53,6 +53,8 @@ public class Deliver implements Serializable{
      */
     private List<DeliveryPresentForApi> deliveryPresentForApiList;
 
+    private int saleManId;
+
     /**
      * Getter method for deliverId
      *
@@ -195,5 +197,13 @@ public class Deliver implements Serializable{
      */
     public void setDeliveryPresentForApiList(List<DeliveryPresentForApi> deliveryPresentForApiList) {
         this.deliveryPresentForApiList = deliveryPresentForApiList;
+    }
+
+    public int getSaleManId() {
+        return saleManId;
+    }
+
+    public void setSaleManId(int saleManId) {
+        this.saleManId = saleManId;
     }
 }

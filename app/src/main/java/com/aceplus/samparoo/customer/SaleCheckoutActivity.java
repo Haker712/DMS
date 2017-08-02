@@ -681,6 +681,8 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                     , SaleCheckoutActivity.this.soldProductList);
             intent.putExtra(SaleCheckoutActivity.INVOICE_PRESENT
                     , SaleCheckoutActivity.this.promotionArrayList);
+            intent.putExtra("PRINT_MODE"
+                    , "S");
             startActivity(intent);
 
             //Utils.backToCustomer(SaleCheckoutActivity.this);
@@ -895,146 +897,149 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         int totolQtyForInvoice = 0;
 
         ArrayList<InvoiceDetail> invoiceDetailList = new ArrayList<>();
-        database.beginTransaction();
-        for (SoldProduct soldProduct : soldProductList) {
-            InvoiceDetail invoiceDetail = new InvoiceDetail();
-            invoiceDetail.setTsaleId(invoiceId);
-            invoiceDetail.setProductId(soldProduct.getProduct().getStockId());
-            invoiceDetail.setQty(soldProduct.getQuantity());
-            invoiceDetail.setDiscountAmt(soldProduct.getDiscountAmount());
-            invoiceDetail.setAmt(soldProduct.getNetAmount(this));
-            invoiceDetail.setDiscountPercent(soldProduct.getDiscountPercent());
-            invoiceDetail.setS_price(soldProduct.getProduct().getPrice());
-            invoiceDetail.setP_price(soldProduct.getProduct().getPurchasePrice());
-            invoiceDetail.setPromotionPrice(soldProduct.getPromotionPrice());
 
-            if(soldProduct.getPromotionPlanId() != null && !soldProduct.getPromotionPlanId().equals("")) {
-                invoiceDetail.setPromotion_plan_id(Integer.parseInt(soldProduct.getPromotionPlanId()));
+        if(Utils.checkDuplicateInvoice(invoiceId, "INVOICE", "INVOICE_ID")) {
+            database.beginTransaction();
+            for (SoldProduct soldProduct : soldProductList) {
+                InvoiceDetail invoiceDetail = new InvoiceDetail();
+                invoiceDetail.setTsaleId(invoiceId);
+                invoiceDetail.setProductId(soldProduct.getProduct().getStockId());
+                invoiceDetail.setQty(soldProduct.getQuantity());
+                invoiceDetail.setDiscountAmt(soldProduct.getDiscountAmount());
+                invoiceDetail.setAmt(soldProduct.getNetAmount(this));
+                invoiceDetail.setDiscountPercent(soldProduct.getDiscountPercent());
+                invoiceDetail.setS_price(soldProduct.getProduct().getPrice());
+                invoiceDetail.setP_price(soldProduct.getProduct().getPurchasePrice());
+                invoiceDetail.setPromotionPrice(soldProduct.getPromotionPrice());
+
+                if (soldProduct.getPromotionPlanId() != null && !soldProduct.getPromotionPlanId().equals("")) {
+                    invoiceDetail.setPromotion_plan_id(Integer.parseInt(soldProduct.getPromotionPlanId()));
+                }
+
+                if (soldProduct.getExclude() != null && !soldProduct.getExclude().equals("")) {
+                    invoiceDetail.setExclude(soldProduct.getExclude());
+                }
+
+                invoiceDetailList.add(invoiceDetail);
+
+                invoiceDetail.setTsaleId(invoiceId);
+                ContentValues cvInvoiceProduct = new ContentValues();
+                cvInvoiceProduct.put("INVOICE_PRODUCT_ID", invoiceId);
+                cvInvoiceProduct.put("PRODUCT_ID", soldProduct.getProduct().getStockId());
+                cvInvoiceProduct.put("SALE_QUANTITY", soldProduct.getQuantity());
+                cvInvoiceProduct.put("DISCOUNT_AMOUNT", soldProduct.getDiscountAmount() + "");
+                cvInvoiceProduct.put("TOTAL_AMOUNT", soldProduct.getNetAmount(this));
+                cvInvoiceProduct.put("DISCOUNT_PERCENT", soldProduct.getDiscountPercent());
+                cvInvoiceProduct.put("S_PRICE", soldProduct.getProduct().getPrice());
+                cvInvoiceProduct.put("P_PRICE", soldProduct.getProduct().getPurchasePrice());
+                cvInvoiceProduct.put("PROMOTION_PRICE", soldProduct.getPromotionPrice());
+                cvInvoiceProduct.put("PROMOTION_PLAN_ID", soldProduct.getPromotionPlanId());
+                cvInvoiceProduct.put("EXCLUDE", soldProduct.getExclude());
+
+                totolQtyForInvoice += soldProduct.getQuantity();
+
+                database.insert("INVOICE_PRODUCT", null, cvInvoiceProduct);
+
+                database.execSQL("UPDATE PRODUCT SET REMAINING_QTY = REMAINING_QTY - " + soldProduct.getQuantity()
+                        + ", SOLD_QTY = SOLD_QTY + " + soldProduct.getQuantity() + " WHERE PRODUCT_ID = \'" + soldProduct.getProduct().getId() + "\'");
+
+                if (soldProduct.getFocQuantity() > 0) {
+                    Promotion promotion = new Promotion();
+                    promotion.setPromotionPlanId(null);
+                    promotion.setPromotionProductId(soldProduct.getProduct().getStockId() + "");
+                    promotion.setPromotionProductName(soldProduct.getProduct().getName());
+                    promotion.setPromotionQty(soldProduct.getFocQuantity());
+                    promotion.setPrice(0.0);
+                    promotion.setCurrencyId(1);
+                    promotionArrayList.add(promotion);
+                }
             }
 
-            if(soldProduct.getExclude() != null && !soldProduct.getExclude().equals("")) {
-                invoiceDetail.setExclude(soldProduct.getExclude());
+            for (Promotion promotion : promotionArrayList) {
+                database.execSQL("UPDATE PRODUCT SET PRESENT_QTY = PRESENT_QTY + " + promotion.getPromotionQty() + " WHERE ID = \'" + promotion.getPromotionProductId() + "\'");
+                database.execSQL("UPDATE PRODUCT SET REMAINING_QTY = REMAINING_QTY - " + promotion.getPromotionQty() + " WHERE ID = '" + promotion.getPromotionProductId() + "'");
             }
 
-            invoiceDetailList.add(invoiceDetail);
 
-            invoiceDetail.setTsaleId(invoiceId);
-            ContentValues cvInvoiceProduct = new ContentValues();
-            cvInvoiceProduct.put("INVOICE_PRODUCT_ID", invoiceId);
-            cvInvoiceProduct.put("PRODUCT_ID", soldProduct.getProduct().getStockId());
-            cvInvoiceProduct.put("SALE_QUANTITY", soldProduct.getQuantity());
-            cvInvoiceProduct.put("DISCOUNT_AMOUNT", soldProduct.getDiscountAmount() + "");
-            cvInvoiceProduct.put("TOTAL_AMOUNT", soldProduct.getNetAmount(this));
-            cvInvoiceProduct.put("DISCOUNT_PERCENT", soldProduct.getDiscountPercent());
-            cvInvoiceProduct.put("S_PRICE", soldProduct.getProduct().getPrice());
-            cvInvoiceProduct.put("P_PRICE", soldProduct.getProduct().getPurchasePrice());
-            cvInvoiceProduct.put("PROMOTION_PRICE", soldProduct.getPromotionPrice());
-            cvInvoiceProduct.put("PROMOTION_PLAN_ID", soldProduct.getPromotionPlanId());
-            cvInvoiceProduct.put("EXCLUDE", soldProduct.getExclude());
+            invoice.setId(invoiceId);
+            invoice.setCustomerId(customerId);
+            invoice.setDate(saleDate);
+            invoice.setTotalAmt(totalAmount);
+            invoice.setTotalQty(totolQtyForInvoice);
+            invoice.setTotalDiscountAmt(totalDiscountAmount);
+            invoice.setTotalPayAmt(payAmount);
+            invoice.setTotalRefundAmt(refundAmount);
+            invoice.setReceiptPerson(receiptPersonName);
+            invoice.setSalepersonId(Integer.parseInt(salePersonId));
+            invoice.setLocationCode(locationCode);
+            invoice.setDeviceId(deviceId);
+            invoice.setInvoiceTime(invoiceTime);
+            invoice.setCurrencyId(1);
+            invoice.setInvoiceStatus(cashOrLoanOrBank);
+            invoice.setDiscountPercent(totalVolumeDiscountPercent);
+            invoice.setRate(1);
+            invoice.setTaxAmount(taxAmt);
+            invoice.setDueDate(dueDate);
 
-            totolQtyForInvoice += soldProduct.getQuantity();
-
-            database.insert("INVOICE_PRODUCT", null, cvInvoiceProduct);
-
-            database.execSQL("UPDATE PRODUCT SET REMAINING_QTY = REMAINING_QTY - " + soldProduct.getQuantity()
-                    + ", SOLD_QTY = SOLD_QTY + " + soldProduct.getQuantity() + " WHERE PRODUCT_ID = \'" + soldProduct.getProduct().getId() + "\'");
-
-            if(soldProduct.getFocQuantity() > 0) {
-                Promotion promotion = new Promotion();
-                promotion.setPromotionPlanId(null);
-                promotion.setPromotionProductId(soldProduct.getProduct().getStockId() + "");
-                promotion.setPromotionProductName(soldProduct.getProduct().getName());
-                promotion.setPromotionQty(soldProduct.getFocQuantity());
-                promotion.setPrice(0.0);
-                promotion.setCurrencyId(1);
-                promotionArrayList.add(promotion);
+            if (branchEditText.getText().toString() != null && !branchEditText.getText().toString().equals("")) {
+                invoice.setBankName(branchEditText.getText().toString());
             }
+
+            if (accountEditText.getText().toString() != null && !accountEditText.getText().toString().equals("")) {
+                invoice.setBankAccountNo(accountEditText.getText().toString());
+            }
+
+            invoice.setInvoiceDetail(invoiceDetailList);
+
+            database.execSQL("INSERT INTO INVOICE VALUES (\""
+                    + customerId + "\", \""
+                    + saleDate + "\", \""
+                    + invoiceId + "\", \""
+                    + totalAmount + "\", \""
+                    + totalVolumeDiscount + "\", \""
+                    + payAmount + "\", \""
+                    + refundAmount + "\", \""
+                    + receiptPersonName + "\", \""
+                    + salePersonId + "\", \""
+                    + dueDate + "\", \""
+                    + cashOrLoanOrBank + "\", \""
+                    + locationCode + "\", \""
+                    + deviceId + "\", \""
+                    + invoiceTime + "\", "
+                    + null + ", "
+                    + null + ", "
+                    + null + ", "
+                    + null + ", \""
+                    + invoiceId + "\", "
+                    + totolQtyForInvoice + ", \""
+                    + cashOrLoanOrBank + "\", "
+                    + totalVolumeDiscountPercent + ", "
+                    + 1 + ", "
+                    + taxAmt + ", \""
+                    + invoice.getBankName() + "\", \""
+                    + invoice.getBankAccountNo() + "\""
+                    + ")");
+
+            for (Promotion promotion : promotionArrayList) {
+                ContentValues contentValues = new ContentValues();
+                contentValues.put("tsale_id", invoiceId);
+                contentValues.put("stock_id", promotion.getPromotionProductId());
+                contentValues.put("quantity", promotion.getPromotionQty());
+                contentValues.put("pc_address", deviceId);
+                contentValues.put("location_id", locationCode);
+                contentValues.put("price", promotion.getPrice());
+                contentValues.put("currency_id", promotion.getCurrencyId());
+                contentValues.put("rate", 1);
+                database.insert("INVOICE_PRESENT", null, contentValues);
+            }
+
+            if (saleReturnInvoiceId != null && !saleReturnInvoiceId.equals("")) {
+                database.execSQL("UPDATE SALE_RETURN SET SALE_ID = '" + invoiceId + "' WHERE SALE_RETURN_ID = '" + saleReturnInvoiceId + "'");
+            }
+
+            database.setTransactionSuccessful();
+            database.endTransaction();
         }
-
-        for(Promotion promotion : promotionArrayList) {
-            database.execSQL("UPDATE PRODUCT SET PRESENT_QTY = PRESENT_QTY + " + promotion.getPromotionQty() + " WHERE ID = \'" + promotion.getPromotionProductId() + "\'");
-            database.execSQL("UPDATE PRODUCT SET REMAINING_QTY = REMAINING_QTY - " + promotion.getPromotionQty() + " WHERE ID = '" + promotion.getPromotionProductId() + "'");
-        }
-
-
-        invoice.setId(invoiceId);
-        invoice.setCustomerId(customerId);
-        invoice.setDate(saleDate);
-        invoice.setTotalAmt(totalAmount);
-        invoice.setTotalQty(totolQtyForInvoice);
-        invoice.setTotalDiscountAmt(totalDiscountAmount);
-        invoice.setTotalPayAmt(payAmount);
-        invoice.setTotalRefundAmt(refundAmount);
-        invoice.setReceiptPerson(receiptPersonName);
-        invoice.setSalepersonId(Integer.parseInt(salePersonId));
-        invoice.setLocationCode(locationCode);
-        invoice.setDeviceId(deviceId);
-        invoice.setInvoiceTime(invoiceTime);
-        invoice.setCurrencyId(1);
-        invoice.setInvoiceStatus(cashOrLoanOrBank);
-        invoice.setDiscountPercent(totalVolumeDiscountPercent);
-        invoice.setRate(1);
-        invoice.setTaxAmount(taxAmt);
-        invoice.setDueDate(dueDate);
-
-        if(branchEditText.getText().toString() != null && !branchEditText.getText().toString().equals("")) {
-            invoice.setBankName(branchEditText.getText().toString());
-        }
-
-        if(accountEditText.getText().toString() != null && !accountEditText.getText().toString().equals("")) {
-            invoice.setBankAccountNo(accountEditText.getText().toString());
-        }
-
-        invoice.setInvoiceDetail(invoiceDetailList);
-
-        database.execSQL("INSERT INTO INVOICE VALUES (\""
-                + customerId + "\", \""
-                + saleDate + "\", \""
-                + invoiceId + "\", \""
-                + totalAmount + "\", \""
-                + totalVolumeDiscount + "\", \""
-                + payAmount + "\", \""
-                + refundAmount + "\", \""
-                + receiptPersonName + "\", \""
-                + salePersonId + "\", \""
-                + dueDate + "\", \""
-                + cashOrLoanOrBank + "\", \""
-                + locationCode + "\", \""
-                + deviceId + "\", \""
-                + invoiceTime + "\", "
-                + null + ", "
-                + null + ", "
-                + null + ", "
-                + null + ", \""
-                + invoiceId + "\", "
-                + totolQtyForInvoice + ", \""
-                + cashOrLoanOrBank + "\", "
-                + totalVolumeDiscountPercent + ", "
-                + 1 + ", "
-                + taxAmt + ", \""
-                + invoice.getBankName() + "\", \""
-                + invoice.getBankAccountNo() + "\""
-                + ")");
-
-        for (Promotion promotion : promotionArrayList) {
-            ContentValues contentValues = new ContentValues();
-            contentValues.put("tsale_id", invoiceId);
-            contentValues.put("stock_id", promotion.getPromotionProductId());
-            contentValues.put("quantity", promotion.getPromotionQty());
-            contentValues.put("pc_address", deviceId);
-            contentValues.put("location_id", locationCode);
-            contentValues.put("price", promotion.getPrice());
-            contentValues.put("currency_id", promotion.getCurrencyId());
-            contentValues.put("rate", 1);
-            database.insert("INVOICE_PRESENT", null, contentValues);
-        }
-
-        if(saleReturnInvoiceId != null && !saleReturnInvoiceId.equals("")) {
-            database.execSQL("UPDATE SALE_RETURN SET SALE_ID = '" + invoiceId + "' WHERE SALE_RETURN_ID = '" + saleReturnInvoiceId + "'");
-        }
-
-        database.setTransactionSuccessful();
-        database.endTransaction();
     }
 
     @Override
