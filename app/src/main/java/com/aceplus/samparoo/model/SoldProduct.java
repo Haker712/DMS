@@ -20,6 +20,7 @@ public class SoldProduct implements Serializable {
     private ArrayList<String> serialList;
 
     private int orderedQuantity;
+
     private int size_in_store_share;
     private String remark;
 
@@ -32,6 +33,8 @@ public class SoldProduct implements Serializable {
     String promotionPlanId;
 
     Integer exclude;
+
+    int focQuantity;
 
     public SoldProduct(){}
 
@@ -260,5 +263,13 @@ public class SoldProduct implements Serializable {
 
     public void setExclude(Integer exclude) {
         this.exclude = exclude;
+    }
+
+    public int getFocQuantity() {
+        return focQuantity;
+    }
+
+    public void setFocQuantity(int focQuantity) {
+        this.focQuantity = focQuantity;
     }
 }

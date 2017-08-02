@@ -77,7 +77,7 @@ public class DeliveryActivity extends AppCompatActivity {
 
         Cursor cursor = database.rawQuery("SELECT CUSTOMER.ID AS CID, " +
                 "CUSTOMER.CUSTOMER_NAME, DELIVERY.ID AS DID, DELIVERY.INVOICE_NO, DELIVERY.AMOUNT, " +
-                "DELIVERY.PAID_AMOUNT FROM DELIVERY INNER JOIN CUSTOMER ON " +
+                "DELIVERY.PAID_AMOUNT, DELIVERY.SALEMAN_ID FROM DELIVERY INNER JOIN CUSTOMER ON " +
                 "CUSTOMER.ID = DELIVERY.CUSTOMER_ID;", null);
 
         List<Deliver> deliverList = new ArrayList<>();
@@ -90,7 +90,7 @@ public class DeliveryActivity extends AppCompatActivity {
             deliver.setInvoiceNo(cursor.getString(cursor.getColumnIndex("INVOICE_NO")));
             deliver.setAmount(cursor.getDouble(cursor.getColumnIndex("AMOUNT")));
             deliver.setPaidAmount(cursor.getDouble(cursor.getColumnIndex("PAID_AMOUNT")));
-
+            deliver.setSaleManId(cursor.getInt(cursor.getColumnIndex("SALEMAN_ID")));
 
             Cursor deliveryItemCursor = database.rawQuery("SELECT * FROM DELIVERY_ITEM WHERE DELIVERY_FLG = 0 AND DELIVERY_ID = '" + deliver.getDeliverId() + "' AND RECEIVED_QTY <> ORDER_QTY", null);
 

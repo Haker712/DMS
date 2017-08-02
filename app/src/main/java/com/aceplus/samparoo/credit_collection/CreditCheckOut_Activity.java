@@ -665,6 +665,8 @@ public class CreditCheckOut_Activity extends Activity implements OnActionClickLi
         intent.putExtra("CUR_POS", position);
         intent.putExtra("CREDIT_FLG"
                 , "CREDIT");
+        intent.putExtra("PRINT_MODE"
+                , "C");
         startActivity(intent);
     }
 }

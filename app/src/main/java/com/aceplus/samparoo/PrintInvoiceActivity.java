@@ -22,7 +22,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.aceplus.samparoo.customer.SaleCheckoutActivity;
+import com.aceplus.samparoo.customer.SaleOrderCheckoutActivity;
 import com.aceplus.samparoo.model.CreditInvoice;
+import com.aceplus.samparoo.model.Deliver;
+import com.aceplus.samparoo.model.Product;
 import com.aceplus.samparoo.model.Promotion;
 import com.aceplus.samparoo.model.SoldProduct;
 import com.aceplus.samparoo.model.forApi.Invoice;
@@ -59,14 +62,16 @@ public class PrintInvoiceActivity extends Activity{
 
     TextView txtSaleDate, txtInvoiceNo, txtSaleMan, txtBranch, totalAmountTxtView, netAmountTxtView, prepaidAmountTxtView, print_discountAmountTxtView;
     TextView creditCustomerName, creditTownshipName, creditRecievieNo, creditInvoiceNo, creditCollectPerson, creditDate, crediTotalAmount, crediDiscount, crediNetAmount, creditReceiveAmount;;
+    TextView deliveryCustomerNameTxt, deliveryTownshipNameTxt, deliveryOrderNoTxt, deliveryOrderPersonTxt, deliveryInvoiceNoTxt, deliveryPersonTxt, deliveryDateTxt;
     ImageView cancelBtn, printBtn;
-    String saleman_Id = "";
+    String saleman_Id = "", printMode = "";
     SQLiteDatabase database;
     SoldProductListRowAdapter soldProductListRowAdapter;
     PromotionProductCustomAdapter promotionProductCustomAdapter;
     ListView soldProductListView, promotionPlanItemListView;
     RelativeLayout saleLayout;
-    LinearLayout creditPrintHeaderLayout, salePrintHeaderLayout1, salePrintHeaderLayout2;
+    LinearLayout creditPrintHeaderLayout, salePrintHeaderLayout1, salePrintHeaderLayout2, deliveryHeaderLayout1;
+    private Deliver orderedInvoice;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -98,23 +103,44 @@ public class PrintInvoiceActivity extends Activity{
             pos = (int) getIntent().getSerializableExtra("CUR_POS");
         }
 
+        if (getIntent().getSerializableExtra("PRINT_MODE") != null) {
+            printMode = (String) getIntent().getSerializableExtra("PRINT_MODE");
+        }
+
+        if (getIntent().getSerializableExtra(SaleOrderCheckoutActivity.ORDERED_INVOICE_KEY) != null) {
+            orderedInvoice = (Deliver) getIntent().getSerializableExtra(SaleOrderCheckoutActivity.ORDERED_INVOICE_KEY);
+        }
+
         registerIds();
         getTaxAmount();
         setDataToWidgets();
         printBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(creditFlg!= null && !creditFlg.equals("")) {
+                if(printMode.equals("C") && creditFlg!= null && !creditFlg.equals("")) {
 
                     if (creditList != null && creditList.size() > 0) {
-                        Utils.printCredit(PrintInvoiceActivity.this, getCustomerName(creditList.get(pos).getCustomerId()), getCustomerTownshipName(creditList.get(pos).getCustomerId())
-                                , creditList.get(pos).getInvoiceNo(), getSaleManName(creditList.get(pos).getSaleManId()), creditList.get(pos));
+                        Utils.printCredit(PrintInvoiceActivity.this, getCustomerName(creditList.get(pos).getCustomerId()), creditList.get(pos).getInvoiceNo(), getCustomerTownshipName(creditList.get(pos).getCustomerId())
+                                , getSaleManName(creditList.get(pos).getSaleManId()), creditList.get(pos));
                     }
-                } else {
+                } else if(printMode.equals("S")){
+                    List<SoldProduct> editProductList = arrangeProductList(invoiceDetailList, invoicePresentList);
                     Utils.print(PrintInvoiceActivity.this, getCustomerName(Integer.parseInt(invoie.getCustomerId()))
                             , invoie.getId()
-                            , getSaleManName(invoie.getSalepersonId()), invoie, invoiceDetailList, invoicePresentList, Utils.PRINT_FOR_NORMAL_SALE
+                            , getSaleManName(invoie.getSalepersonId())
+                            , getCustomerTownshipName(Integer.parseInt(invoie.getCustomerId()))
+                            , invoie, editProductList, invoicePresentList, Utils.PRINT_FOR_NORMAL_SALE
                             , Utils.FOR_OTHERS);
+                } else if(printMode.equals("D")) {
+                    List<SoldProduct> editProductList = arrangeProductList(invoiceDetailList, invoicePresentList);
+                    Utils.printDeliver(PrintInvoiceActivity.this, getCustomerName(Integer.parseInt(invoie.getCustomerId()))
+                            , orderedInvoice.getInvoiceNo()
+                            , getSaleManName(orderedInvoice.getSaleManId())
+                            , invoie.getId()
+                            , getSaleManName(invoie.getSalepersonId())
+                            , getCustomerTownshipName(Integer.parseInt(invoie.getCustomerId()))
+                            , invoie, editProductList, invoicePresentList, Utils.PRINT_FOR_NORMAL_SALE
+                            , Utils.FOR_OTHERS);;
                 }
 
             }
@@ -145,8 +171,9 @@ public class PrintInvoiceActivity extends Activity{
         creditPrintHeaderLayout = (LinearLayout) findViewById(R.id.crditPrintHeaderLayout1);
         salePrintHeaderLayout1 = (LinearLayout) findViewById(R.id.salePrintHeaderLayout1);
         salePrintHeaderLayout2 = (LinearLayout) findViewById(R.id.salePrintHeaderLayout2);
+        deliveryHeaderLayout1 = (LinearLayout) findViewById(R.id.deliverPrintHeaderLayout1);
 
-        if(creditFlg != null && !creditFlg.equals("")) {
+        if(printMode.equals("C") && creditFlg != null && !creditFlg.equals("")) {
             creditCustomerName = (TextView) findViewById(R.id.credit_customer_name);
             creditTownshipName = (TextView) findViewById(R.id.credit_township_name);
             creditRecievieNo = (TextView) findViewById(R.id.credit_receive_no);
@@ -154,16 +181,25 @@ public class PrintInvoiceActivity extends Activity{
             creditCollectPerson = (TextView) findViewById(R.id.credit_sale_man);
             creditDate = (TextView) findViewById(R.id.credit_date);
             crediTotalAmount = (TextView) findViewById(R.id.credit_total_amt);
+
             crediDiscount = (TextView) findViewById(R.id.credit_discount);
             crediNetAmount = (TextView) findViewById(R.id.credit_net_amount);
             creditReceiveAmount = (TextView) findViewById(R.id.credit_receive_amt);
+        }
 
-
+        if(printMode.equals("D") && orderedInvoice != null) {
+            deliveryCustomerNameTxt = (TextView) findViewById(R.id.deliver_customer_name);
+            deliveryTownshipNameTxt = (TextView) findViewById(R.id.deliver_township_name);
+            deliveryOrderNoTxt = (TextView) findViewById(R.id.deliver_order_invoice_no);
+            deliveryOrderPersonTxt = (TextView) findViewById(R.id.deliver_order_person);
+            deliveryInvoiceNoTxt = (TextView) findViewById(R.id.deliver_invoice_no);
+            deliveryPersonTxt = (TextView) findViewById(R.id.deliver_person);
+            deliveryDateTxt = (TextView) findViewById(R.id.deliver_date);
         }
     }
 
     private void setDataToWidgets() {
-        if(creditFlg== null || creditFlg.equals("")) {
+        if(printMode.equals("S")) {
             txtSaleDate.setText(invoie.getDate().substring(0,10));
             txtInvoiceNo.setText(invoie.getId());
             txtSaleMan.setText(getSaleManName(invoie.getSalepersonId()));
@@ -178,7 +214,7 @@ public class PrintInvoiceActivity extends Activity{
             }
             prepaidAmountTxtView.setText(Utils.formatAmount(invoie.getTotalPayAmt()));
             print_discountAmountTxtView.setText(Utils.formatAmount(invoie.getTotalDiscountAmt()) + " (" + new DecimalFormat("#0.00").format(invoie.getDiscountPercent()) + "%)");
-        } else {
+        } else if(printMode.equals("C")){
             saleLayout.setVisibility(View.GONE);
             salePrintHeaderLayout1.setVisibility(View.GONE);
             salePrintHeaderLayout2.setVisibility(View.GONE);
@@ -199,6 +235,31 @@ public class PrintInvoiceActivity extends Activity{
             crediNetAmount.setText(Utils.formatAmount(creditList.get(pos).getAmt()));
             creditReceiveAmount.setText(Utils.formatAmount(creditList.get(pos).getPayAmt()));
             crediDiscount.setText("0.0 (0%)");
+        } else if(printMode.equals("D")) {
+            salePrintHeaderLayout1.setVisibility(View.GONE);
+            salePrintHeaderLayout2.setVisibility(View.GONE);
+            deliveryHeaderLayout1.setVisibility(View.VISIBLE);
+
+            int cusId = Integer.parseInt(orderedInvoice.getCustomerId());
+
+            deliveryCustomerNameTxt.setText(getCustomerName(cusId));
+            deliveryTownshipNameTxt.setText(getCustomerTownshipName(cusId));
+            deliveryOrderNoTxt.setText(orderedInvoice.getInvoiceNo());
+            deliveryOrderPersonTxt.setText(getSaleManName(orderedInvoice.getSaleManId()));
+            deliveryInvoiceNoTxt.setText(invoie.getId());
+            deliveryPersonTxt.setText(getSaleManName(invoie.getSalepersonId()));
+            deliveryDateTxt.setText(invoie.getDate().substring(0,10));
+
+            soldProductListView.setAdapter(new SoldProductListRowAdapter(this));
+            setPromotionProductListView();
+            totalAmountTxtView.setText(Utils.formatAmount(invoie.getTotalAmt()));
+            if(taxType.equalsIgnoreCase("E")) {
+                netAmountTxtView.setText(Utils.formatAmount(invoie.getTotalAmt() - invoie.getTotalDiscountAmt() + invoie.getTaxAmount()));
+            } else {
+                netAmountTxtView.setText(Utils.formatAmount(invoie.getTotalAmt() - invoie.getTotalDiscountAmt()));
+            }
+            prepaidAmountTxtView.setText(Utils.formatAmount(invoie.getTotalPayAmt()));
+            print_discountAmountTxtView.setText(Utils.formatAmount(invoie.getTotalDiscountAmt()) + " (" + new DecimalFormat("#0.00").format(invoie.getDiscountPercent()) + "%)");
         }
 
     }
@@ -342,5 +403,111 @@ public class PrintInvoiceActivity extends Activity{
             taxPercent = cursorTax.getDouble(cursorTax.getColumnIndex("Tax"));
             branchCode = cursorTax.getString(cursorTax.getColumnIndex("Branch_Code"));
         }
+    }
+
+    List<SoldProduct> arrangeProductList(List<SoldProduct> soldProductList, List<Promotion> presentList) {
+
+            List<Integer> positionList = new ArrayList<>();
+
+            List<SoldProduct> newSoldProductList = new ArrayList<>();
+            List<Promotion> newPresentList = new ArrayList<>();
+
+            for(int i = 0; i < presentList.size(); i++) {
+
+                int stockId1 = 0;
+                if(presentList.get(i).getPromotionProductId() != null && !presentList.get(i).getPromotionProductId().equals("")) {
+                    stockId1 = Integer.parseInt(presentList.get(i).getPromotionProductId());
+                }
+
+                int indexForNew = 0;
+                for (Promotion promotion : newPresentList) {
+                    int stockId = 0;
+                    if(promotion.getPromotionProductId() != null && !promotion.getPromotionProductId().equals("")) {
+                        stockId = Integer.parseInt(promotion.getPromotionProductId());
+                    }
+
+                    if(stockId != stockId1 && (indexForNew+1) == newPresentList.size()) {
+                        Promotion promotion1 = new Promotion();
+                        promotion1.setPromotionQty(0);
+                        promotion1.setCurrencyId(presentList.get(i).getCurrencyId());
+                        promotion1.setPrice(presentList.get(i).getPrice());
+                        promotion1.setPromotionPlanId(presentList.get(i).getPromotionPlanId());
+                        promotion1.setPromotionPrice(presentList.get(i).getPromotionPrice());
+                        promotion1.setPromotionProductId(presentList.get(i).getPromotionProductId());
+                        promotion1.setPromotionProductName(presentList.get(i).getPromotionProductName());
+
+                        newPresentList.add(promotion1);
+                    }
+                    indexForNew++;
+                }
+
+                if(newPresentList.size() == 0) {
+                    Promotion promotion1 = new Promotion();
+                    promotion1.setPromotionQty(0);
+                    promotion1.setCurrencyId(presentList.get(i).getCurrencyId());
+                    promotion1.setPrice(presentList.get(i).getPrice());
+                    promotion1.setPromotionPlanId(presentList.get(i).getPromotionPlanId());
+                    promotion1.setPromotionPrice(presentList.get(i).getPromotionPrice());
+                    promotion1.setPromotionProductId(presentList.get(i).getPromotionProductId());
+                    promotion1.setPromotionProductName(presentList.get(i).getPromotionProductName());
+
+                    newPresentList.add(promotion1);
+                }
+            }
+
+            List<Promotion> tempPresentList = new ArrayList<>();
+            tempPresentList.addAll(presentList);
+
+            for(Promotion promotion : tempPresentList) {
+                int stockId = 0;
+                if(promotion.getPromotionProductId() != null && !promotion.getPromotionProductId().equals("")) {
+                    stockId = Integer.parseInt(promotion.getPromotionProductId());
+                }
+
+                for(int kk = 0; kk < newPresentList.size() ; kk++) {
+                    int stockId1 = 0;
+                    if(newPresentList.get(kk).getPromotionProductId() != null && !newPresentList.get(kk).getPromotionProductId().equals("")) {
+                        stockId1 = Integer.parseInt(newPresentList.get(kk).getPromotionProductId());
+                    }
+
+                    if(stockId == stockId1) {
+                        int promotionQty = promotion.getPromotionQty();
+                        newPresentList.get(kk).setPromotionQty(promotionQty + newPresentList.get(kk).getPromotionQty());
+                        int index = presentList.indexOf(promotion);
+                        presentList.remove(index);
+                    }
+                }
+            }
+
+            for(int i = 0; i < soldProductList.size(); i++ ) {
+                int soldProductStockId = soldProductList.get(i).getProduct().getStockId();
+
+                newSoldProductList.add(soldProductList.get(i));
+                if (newPresentList != null && newPresentList.size() > 0) {
+                    for(int j = 0; j < newPresentList.size(); j++) {
+                        int promoProductId =  Integer.parseInt(newPresentList.get(j).getPromotionProductId());
+
+                        if(soldProductStockId == promoProductId) {
+                            SoldProduct promoProduct = new SoldProduct(new Product(), false);
+                            promoProduct.getProduct().setStockId(promoProductId);
+                            promoProduct.setQuantity(newPresentList.get(j).getPromotionQty());
+                            promoProduct.getProduct().setPurchasePrice(0.0);
+                            promoProduct.getProduct().setPrice(0.0);
+                            promoProduct.getProduct().setName(newPresentList.get(j).getPromotionProductName());
+                            promoProduct.setPromotionPrice(0.0);
+                            newSoldProductList.add(promoProduct);
+                            positionList.add(j);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            for(int i = positionList.size(); i < 0; i--) {
+                int pos = positionList.get(i-1);
+                newPresentList.remove(pos);
+            }
+
+        return newSoldProductList;
     }
 }
