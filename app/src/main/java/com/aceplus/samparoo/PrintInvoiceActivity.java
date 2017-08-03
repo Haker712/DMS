@@ -134,9 +134,9 @@ public class PrintInvoiceActivity extends Activity{
                 } else if(printMode.equals("D")) {
                     List<SoldProduct> editProductList = arrangeProductList(invoiceDetailList, invoicePresentList);
                     Utils.printDeliver(PrintInvoiceActivity.this, getCustomerName(Integer.parseInt(invoie.getCustomerId()))
-                            , invoie.getId()
                             , orderedInvoice.getInvoiceNo()
                             , getSaleManName(orderedInvoice.getSaleManId())
+                            , invoie.getId()
                             , getSaleManName(invoie.getSalepersonId())
                             , getCustomerTownshipName(Integer.parseInt(invoie.getCustomerId()))
                             , invoie, editProductList, invoicePresentList, Utils.PRINT_FOR_NORMAL_SALE

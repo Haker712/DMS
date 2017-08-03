@@ -1155,15 +1155,15 @@ public class Utils {
 
         printDataByteArrayList.add(("         Samparoo Industries Co.,Ltd.\n       Purified Drinking Water & Soft Drink\n     Shwe Pyi Thar Industrial Zone, Zone (4)\n        Hotline: 09-508256, 09-5504808\n\n").getBytes());
         printDataByteArrayList.add((
-                "Customer       :     " + customerName + "\n").getBytes("UTF-8"));
+                "Customer           :     " + customerName + "\n").getBytes("UTF-8"));
         printDataByteArrayList.add((
-                "Tsp            :     " + townshipName + "\n").getBytes("UTF-8"));
+                "Tsp                :     " + townshipName + "\n").getBytes("UTF-8"));
         printDataByteArrayList.add((
-                "Order Invoice  :     " + orderInvoiceNo + "\n").getBytes());
+                "Order Invoice      :     " + orderInvoiceNo + "\n").getBytes());
         printDataByteArrayList.add((
-                "Order Person   :     " + orderSaleManName + "\n").getBytes());
+                "Order Person       :     " + orderSaleManName + "\n").getBytes());
         printDataByteArrayList.add((
-                "Delivery No     :     " + invoiceNumber + "\n").getBytes());
+                "Delivery No        :     " + invoiceNumber + "\n").getBytes());
         printDataByteArrayList.add((
                 "Delivery Person    :     " + salePersonName + "\n").getBytes());
         printDataByteArrayList.add((
