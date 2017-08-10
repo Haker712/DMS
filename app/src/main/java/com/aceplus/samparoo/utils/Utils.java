@@ -901,7 +901,7 @@ public class Utils {
         if(companyInfoCursor.moveToNext()) {
             companyName = companyInfoCursor.getString(companyInfoCursor.getColumnIndex(DatabaseContract.CompanyInformation.CompanyName));
         }
-        companyName += " Purified Drinking Water & Soft Drink";
+
         String[] companyNames = companyName.split(" ");
         String names = "         ", fullName = "";
         for(String s : companyNames) {
@@ -1200,10 +1200,10 @@ public class Utils {
         }
 
         String[] companyNames = companyName.split(" ");
-        String names = "        ", fullName = "";
+        String names = "         ", fullName = "";
         for(String s : companyNames) {
             if(names.length() < 30) {
-                names += " " + s;
+                names += s +" ";
             } else {
                 fullName += (names + "         ");
                 names = "\n         " + s;
@@ -1508,10 +1508,10 @@ public class Utils {
         }
 
         String[] companyNames = companyName.split(" ");
-        String names = "        ", fullName = "";
+        String names = "         ", fullName = "";
         for(String s : companyNames) {
             if(names.length() < 30) {
-                names += " " + s;
+                names += s +" ";
             } else {
                 fullName += (names + "         ");
                 names = "\n         " + s;
