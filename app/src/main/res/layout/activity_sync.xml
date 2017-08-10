@@ -80,6 +80,13 @@
                 android:background="@drawable/eroute_upload" />
 
             <Button
+                android:id="@+id/buttonClearProductData"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:background="@drawable/clear_product" />
+
+            <Button
                 android:id="@+id/buttonClearData"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

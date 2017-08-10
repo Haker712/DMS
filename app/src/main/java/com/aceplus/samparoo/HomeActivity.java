@@ -99,7 +99,7 @@ public class HomeActivity extends AppCompatActivity implements OnActionClickList
             Intent intent = new Intent(this, RouteActivity.class);
             startActivity(intent);
             finish();
-        }else {Utils.commonDialog("NO CUSTOMER",this);}
+        }else {Utils.commonDialog("NO CUSTOMER",this, 1);}
     }
 
     @OnClick(R.id.buttonCustomerVisit)

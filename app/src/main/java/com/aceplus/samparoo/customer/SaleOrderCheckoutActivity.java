@@ -3,6 +3,7 @@ package com.aceplus.samparoo.customer;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
@@ -18,6 +19,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -36,6 +38,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -138,9 +141,9 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
     private LinearLayout advancedPaidAmountLayout, totalInfoForGeneralSaleLayout, totalInfoForPreOrderLayout, receiptPersonLayout, refundLayout, payAmountLayout, netAmountLayout, volumeDiscountLayout, volDisForPreOrderLayout;
 
-    private LinearLayout paymentMethodLayout, remarkLayout, layoutBranch, layoutBankAcc;
+    private LinearLayout paymentMethodLayout, remarkLayout, layoutBranch, layoutBankAcc, deliveryDateLayout;
 
-    private EditText prepaidAmt, receiptPersonEditText, remarkEditText ,branchEditText, accountEditText;
+    private EditText prepaidAmt, receiptPersonEditText, remarkEditText ,branchEditText, accountEditText, deliveryDateChooser;
 
     private ListView lv_soldProductList, promotionPlanItemListView;
 
@@ -165,9 +168,12 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
     TextView volDisForPreOrder;
 
+    Calendar myCalendar = Calendar.getInstance();
+
     RadioGroup bankOrCashRadioGroup;
     RadioButton bankRadio, cashRadio;
     Invoice invoice;
+    Date deliveryDate;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -331,6 +337,8 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         branchEditText = (EditText) findViewById(R.id.edit_txt_branch_name);
         layoutBranch = (LinearLayout) findViewById(R.id.bank_branch_layout);
         layoutBankAcc = (LinearLayout) findViewById(R.id.bank_account_layout);
+        deliveryDateLayout = (LinearLayout) findViewById(R.id.checkout_delivery_date_layout);
+        deliveryDateChooser = (EditText) findViewById(R.id.checkout_delivery_date_chooser_text);
     }
 
     /**
@@ -346,6 +354,8 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         receiptPersonLayout.setVisibility(View.GONE);
         volDisForPreOrderLayout.setVisibility(View.GONE);
         txt_table_header_foc.setVisibility(View.VISIBLE);
+        deliveryDateLayout.setVisibility(View.VISIBLE);
+
         if(isDelivery) {
             //totalInfoForPreOrderLayout.setVisibility(View.GONE);
             //volumeDiscountLayout.setVisibility(View.GONE);
@@ -354,6 +364,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             //advancedPaidAmountLayout.setVisibility(View.VISIBLE);
             receiptPersonLayout.setVisibility(View.VISIBLE);
             paymentMethodLayout.setVisibility(View.GONE);
+            deliveryDateLayout.setVisibility(View.GONE);
         }
     }
 
@@ -422,6 +433,8 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                 }
 
                 Log.i("Total Amt for include : ", totalBuyAmtInclude + "");
+
+
                 Log.i("Total Amt for exclude : ", totalBuyAmtExclude + "");
 
                 if (exclude == 0) {
@@ -728,11 +741,10 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
         for(PreOrder preOrder : preOrderList) {
 
-            message += "Sale Order Invoice Number : " + preOrder.getInvoiceId()
-                    + "\nCustomer Number : " + preOrder.getCustomerId()
-                    + "\nSale Person Number : " + preOrder.getSalePersonId()
-                    + "\nSale Order Date : " + preOrder.getPreOrderDate()
-                    + "\nAdvanced Payment Amount : " + preOrder.getAdvancedPaymentAmount();
+            message += "Inv: " + preOrder.getInvoiceId()
+                    + "\nCus: " + preOrder.getCustomerId() + " SM: " + preOrder.getSalePersonId()
+                    + "\nSO: " + preOrder.getPreOrderDate();
+                    //+ "\nAdvanced Payment Amount : " + preOrder.getAdvancedPaymentAmount();
 
             for (Promotion promotion : promotionArrayList) {
                 PreOrderPresentApi preOrderPresentApi = new PreOrderPresentApi();
@@ -740,8 +752,8 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                 preOrderPresentApi.setProductId(Integer.parseInt(promotion.getPromotionProductId()));
                 preOrderPresentApi.setQuantity(promotion.getPromotionQty());
 
-                message += "\nPresent Product Stock Number : " + promotion.getPromotionProductId()
-                        + "\nPresent Product Quantity : " + promotion.getPromotionQty();
+                message += "\n" + promotion.getPromotionProductName()
+                        + "\t" + promotion.getPromotionQty();
 
                 preOrderPresentApiList.add(preOrderPresentApi);
             }
@@ -751,12 +763,13 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             List<PreOrderDetailApi> preOrderDetailApiList = new ArrayList<>();
             for(PreOrderProduct preOrderProduct : preOrderProductList) {
 
-                message += "\nSale Order Stock Number : " + preOrderProduct.getProductId()
-                        + "\nOrder Quantity : " + preOrderProduct.getOrderQty();
+                message += "\n" + getProductNameByStockId(preOrderProduct.getProductId())
+                        + "\t" + preOrderProduct.getOrderQty();
 
             }
 
-            message += "\n";
+            message += "\nRemark: " + preOrder.getRemark();
+            message += "\nDL: " + preOrder.getExpectedDeliveryDate();
         }
         return message;
     }
@@ -830,6 +843,15 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             public void afterTextChanged(Editable editable) {
             }
         });
+
+        if(!isDelivery) {
+            deliveryDateChooser.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    chooseDob();
+                }
+            });
+        }
     }
 
     private void showDialogForPhoneNumber() {
@@ -882,7 +904,16 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                         }
 
                         alertDialog.dismiss();
-                        //Utils.backToCustomer(SaleOrderCheckoutActivity.this);
+                    }
+
+
+                });
+
+                Button cancelBtn = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                cancelBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        toPrintActivity("S");
                     }
                 });
             }
@@ -919,11 +950,15 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         //preOrder.setDeviceId("");
         preOrder.setPreOrderDate(new SimpleDateFormat("yyyy/MM/dd").format(new Date()));
 
-        Calendar calendar = Calendar.getInstance();
+        /*Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        calendar.add(Calendar.DATE, 7);    // Number of days to add.
+        calendar.add(Calendar.DATE, 7);*/    // Number of days to add.
 
-        preOrder.setExpectedDeliveryDate(new SimpleDateFormat("yyyy/MM/dd").format(calendar.getTime()));
+        if(deliveryDateChooser.getText() != null) {
+            preOrder.setExpectedDeliveryDate(new SimpleDateFormat("yyyy/MM/dd").format(deliveryDate));
+        }
+
+        //preOrder.setExpectedDeliveryDate(new SimpleDateFormat("yyyy/MM/dd").format(calendar.getTime()));
 
         double advancedPaymentAmount = prepaidAmt.getText().length() > 0 ?
                 Double.parseDouble(prepaidAmt.getText().toString().replace(",", ""))
@@ -961,9 +996,9 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
             preOrderProductList.add(preOrderProduct);
 
-            database.execSQL("UPDATE PRODUCT SET REMAINING_QTY = REMAINING_QTY - " + soldProduct.getQuantity()
+            /*database.execSQL("UPDATE PRODUCT SET REMAINING_QTY = REMAINING_QTY - " + soldProduct.getQuantity()
                     + ", SOLD_QTY = SOLD_QTY + " + soldProduct.getQuantity() + " WHERE PRODUCT_ID = \'" + soldProduct.getProduct().getId() + "\'");
-
+*/
             if(soldProduct.getFocQuantity() > 0) {
                 Promotion promotion = new Promotion();
                 promotion.setPromotionPlanId(null);
@@ -976,10 +1011,10 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             }
         }
 
-        for (Promotion promotion : promotionArrayList) {
+        /*for (Promotion promotion : promotionArrayList) {
             database.execSQL("UPDATE PRODUCT SET PRESENT_QTY = PRESENT_QTY + " + promotion.getPromotionQty() + " WHERE ID = \'" + promotion.getPromotionProductId() + "\'");
             database.execSQL("UPDATE PRODUCT SET REMAINING_QTY = REMAINING_QTY - " + promotion.getPromotionQty() + " WHERE ID = '" + promotion.getPromotionProductId() + "'");
-        }
+        }*/
 
         preOrder.setNetAmount(totalAmount);
         preOrder.setLocationId(locationCode);
@@ -1145,7 +1180,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                         onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
                     } else {
                         Utils.cancelDialog();
-                        Utils.commonDialog(getResources().getString(R.string.server_error), SaleOrderCheckoutActivity.this);
+                        commonDialog(getResources().getString(R.string.server_error), SaleOrderCheckoutActivity.this, false);
                     }
                 }
             }
@@ -1153,7 +1188,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             @Override
             public void onFailure(Call<InvoiceResponse> call, Throwable t) {
                 Utils.cancelDialog();
-                Utils.commonDialog(t.getMessage(), SaleOrderCheckoutActivity.this);
+                commonDialog(t.getMessage(), SaleOrderCheckoutActivity.this, false);
             }
         });
     }
@@ -1205,7 +1240,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                         onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
                     } else {
                         Utils.cancelDialog();
-                        Utils.commonDialog(getResources().getString(R.string.server_error), SaleOrderCheckoutActivity.this);
+                        commonDialog(getResources().getString(R.string.server_error), SaleOrderCheckoutActivity.this, false);
                     }
                 }
             }
@@ -1213,7 +1248,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             @Override
             public void onFailure(Call<InvoiceResponse> call, Throwable t) {
                 Utils.cancelDialog();
-                Utils.commonDialog(t.getMessage(), SaleOrderCheckoutActivity.this);
+                commonDialog(t.getMessage(), SaleOrderCheckoutActivity.this, false);
             }
         });
     }
@@ -1667,6 +1702,12 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         String cashOrBank = getPaymentMethod();
 
         if(isPreOrder) {
+
+            if(deliveryDateChooser.getText().toString().equals("")) {
+                deliveryDateChooser.setError("Please enter DELIVERY DATE");
+                return;
+            }
+
             if (isFullyPaid()) {
                 cashOrBank = "CA";
                 insertPreOrderInformation(cashOrBank);
@@ -1677,7 +1718,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                     } else if (accountEditText.getText().toString().equals("") || accountEditText.getText().toString().equals(null)) {
                         accountEditText.setError("Please enter bank name");
                     } else {
-                        Utils.commonDialog("Insufficient Pay Amount!", SaleOrderCheckoutActivity.this);
+                        Utils.commonDialog("Insufficient Pay Amount!", SaleOrderCheckoutActivity.this, 1);
                         return;
                     }
                     insertPreOrderInformation("CA");
@@ -1999,5 +2040,74 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             }
         }
 
+    }
+
+    void commonDialog(final String message, final Activity activity, final boolean status) {
+        Handler handler = new Handler();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (activity.isFinishing()) {
+                    return;
+                } else {
+
+                    int statusImage = 0;
+                    String title= "";
+                    if(status) {
+                        statusImage = R.drawable.success;
+                        title = "Success";
+                    } else {
+                        statusImage = R.drawable.fail;
+                        title = "Error";
+                    }
+
+                    new android.support.v7.app.AlertDialog.Builder(activity)
+                            .setMessage(message)
+                            .setTitle(title)
+                            .setIcon(statusImage)
+                            .setCancelable(false)
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    toPrintActivity("S");
+                                    //Utils.backToCustomer(SaleOrderCheckoutActivity.this);
+                                }
+                            })
+                            .show();
+                }
+            }
+        });
+    }
+
+    void chooseDob() {
+        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+        DatePickerDialog.OnDateSetListener datePicker = new DatePickerDialog.OnDateSetListener() {
+
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, monthOfYear);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+                deliveryDateChooser.setText(sdf.format(myCalendar.getTime()));
+                deliveryDate = myCalendar.getTime();
+            }
+        };
+
+        DatePickerDialog dateDialog = new DatePickerDialog(SaleOrderCheckoutActivity.this,
+                datePicker,
+                myCalendar.get(Calendar.YEAR),
+                myCalendar.get(Calendar.MONTH),
+                myCalendar.get(Calendar.DAY_OF_MONTH));
+        dateDialog.show();
+    }
+
+    String getProductNameByStockId(int stockId) {
+        Cursor cursorProductName = database.rawQuery("SELECT PRODUCT_NAME FROM PRODUCT WHERE ID = " + stockId, null);
+        String productName = null;
+        while(cursorProductName.moveToNext()) {
+            productName = cursorProductName.getString(cursorProductName.getColumnIndex("PRODUCT_NAME"));
+        }
+        return productName;
     }
 }

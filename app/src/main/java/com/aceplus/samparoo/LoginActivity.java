@@ -118,7 +118,7 @@ public class LoginActivity extends AppCompatActivity {
         sqLiteDatabase = new Database(this).getDataBase();
 
         /*try {
-            RetrofitServiceFactory.getUrlFromDb(sqLiteDatabase);
+            RetrofitServiceFactory.getUrlFromDb(database);
             Log.i("url in retrofit", RetrofitServiceFactory.url);
         }catch (ExceptionInInitializerError e) {
             e.printStackTrace();
@@ -177,7 +177,7 @@ public class LoginActivity extends AppCompatActivity {
                     finish();
                 }
                 else {
-                    Utils.commonDialog("User ID or Password is incorrect!", this);
+                    Utils.commonDialog("User ID or Password is incorrect!", this, 1);
                 }
             }
             else {
@@ -304,11 +304,11 @@ public class LoginActivity extends AppCompatActivity {
                                 startActivity(intent);
                                 finish();
                             } else {
-                                Utils.commonDialog("No route for this sale man!", LoginActivity.this);
+                                Utils.commonDialog("No route for this sale man!", LoginActivity.this, 2);
                             }
                         }
                         else {
-                            Utils.commonDialog("You have no route.", LoginActivity.this);
+                            Utils.commonDialog("You have no route.", LoginActivity.this, 2);
                         }
                     } else {
                         onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
@@ -320,7 +320,7 @@ public class LoginActivity extends AppCompatActivity {
                         onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
                     } else {
                         Utils.cancelDialog();
-                        Utils.commonDialog(getResources().getString(R.string.server_error), LoginActivity.this);
+                        Utils.commonDialog(getResources().getString(R.string.server_error), LoginActivity.this, 1);
                     }
                 }
             }
@@ -329,9 +329,9 @@ public class LoginActivity extends AppCompatActivity {
             public void onFailure(Call<LoginResponse> call, Throwable t) {
                 Utils.cancelDialog();
                 if(t.getMessage() == null) {
-                    Utils.commonDialog(getResources().getString(R.string.connection_error), LoginActivity.this);
+                    Utils.commonDialog(getResources().getString(R.string.connection_error), LoginActivity.this, 1);
                 } else {
-                    Utils.commonDialog(t.getMessage(), LoginActivity.this);
+                    Utils.commonDialog(t.getMessage(), LoginActivity.this, 1);
                 }
             }
         });

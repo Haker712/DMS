@@ -87,6 +87,7 @@ public class FragmentDeliveryReport extends Fragment {
                                 .setTitle("Delivery")
                                 .setMessage("No products to deliver for this invoice.")
                                 .setPositiveButton("OK", null)
+                                .setIcon(R.drawable.info)
                                 .show();
 
                         return;

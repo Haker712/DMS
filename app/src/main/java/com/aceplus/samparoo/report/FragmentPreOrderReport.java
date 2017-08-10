@@ -72,32 +72,22 @@ public class FragmentPreOrderReport extends Fragment {
                 Cursor cursor = database.rawQuery("select * from PRE_ORDER_PRODUCT where SALE_ORDER_ID='" + invoice_Id + "'", null);
 
                 while (cursor.moveToNext()) {
-
-
-
                     String orderQty = cursor.getString(cursor.getColumnIndex("ORDER_QTY"));
                     Log.i("OrderQty",orderQty);
                     String total_amount = cursor.getString(cursor.getColumnIndex("TOTAL_AMT"));
 
+                    preorderProduct=new Preorder_Product();
+                    preorderProduct.setOrderQty(orderQty);
+                    preorderProduct.setTotalAmount(total_amount);
                     String product_Id = cursor.getString(cursor.getColumnIndex("PRODUCT_ID"));
 
                     Cursor cursor1 = database.rawQuery("select * from PRODUCT where ID='" + product_Id + "'", null);
 
                     while (cursor1.moveToNext()) {
-
-                        preorderProduct=new Preorder_Product();
-
                         String productName = cursor1.getString(cursor1.getColumnIndex("PRODUCT_NAME"));
-
                         preorderProduct.setProductName(productName);
-                        preorderProduct.setOrderQty(orderQty);
-                        preorderProduct.setTotalAmount(total_amount);
-
-                        preorderProductArrayList.add(preorderProduct);
-
                     }
-
-
+                    preorderProductArrayList.add(preorderProduct);
                 }
                 preOrderProductsListView.setAdapter(new PreOrderProductsArrayAdapter(getActivity()));
                 new AlertDialog.Builder(getActivity())

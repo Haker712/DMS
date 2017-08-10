@@ -1,13 +1,10 @@
 package com.aceplus.samparoo;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.media.Image;
+import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,16 +26,10 @@ import com.aceplus.samparoo.model.Product;
 import com.aceplus.samparoo.model.Promotion;
 import com.aceplus.samparoo.model.SoldProduct;
 import com.aceplus.samparoo.model.forApi.Invoice;
-import com.aceplus.samparoo.model.forApi.InvoiceDetail;
-import com.aceplus.samparoo.model.forApi.InvoicePresent;
 import com.aceplus.samparoo.utils.Database;
 import com.aceplus.samparoo.utils.Utils;
 
-import org.json.JSONException;
-import org.w3c.dom.Text;
-
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -117,21 +108,44 @@ public class PrintInvoiceActivity extends Activity{
         printBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(printMode.equals("C") && creditFlg!= null && !creditFlg.equals("")) {
+                View v1 = getWindow().getDecorView().getRootView();
+                v1.setDrawingCacheEnabled(true);
+                Bitmap myBitmap = v1.getDrawingCache();
 
+                Log.e(myBitmap+"", "OutPutBitmap");
+
+                if (getIntent().getSerializableExtra(PrintInvoiceActivity.INVOICE) != null) {
+                    invoie = (Invoice) getIntent().getSerializableExtra(PrintInvoiceActivity.INVOICE);
+                }
+
+                if (getIntent().getSerializableExtra(PrintInvoiceActivity.INVOICE_PRESENT) != null) {
+                    invoicePresentList = (List<Promotion>) getIntent().getSerializableExtra(PrintInvoiceActivity.INVOICE_PRESENT);
+                }
+
+                if (getIntent().getSerializableExtra(SaleCheckoutActivity.SOLD_PROUDCT_LIST_KEY) != null) {
+                    invoiceDetailList = (List<SoldProduct>) getIntent().getSerializableExtra(SaleCheckoutActivity.SOLD_PROUDCT_LIST_KEY);
+                }
+
+                if(printMode.equals("C") && creditFlg!= null && !creditFlg.equals("")) {
+                    Utils.saveInvoiceImageIntoGallery(creditList.get(pos).getInvoiceNo(), PrintInvoiceActivity.this,myBitmap, "Credit Collect");
                     if (creditList != null && creditList.size() > 0) {
                         Utils.printCredit(PrintInvoiceActivity.this, getCustomerName(creditList.get(pos).getCustomerId()), creditList.get(pos).getInvoiceNo(), getCustomerTownshipName(creditList.get(pos).getCustomerId())
                                 , getSaleManName(creditList.get(pos).getSaleManId()), creditList.get(pos));
                     }
                 } else if(printMode.equals("S")){
-                    List<SoldProduct> editProductList = arrangeProductList(invoiceDetailList, invoicePresentList);
+                    Utils.saveInvoiceImageIntoGallery(invoie.getId(), PrintInvoiceActivity.this,myBitmap, "Sale");
+                    List<Promotion> tempPresentList = new ArrayList<>();
+                    tempPresentList.addAll(invoicePresentList);
+
+                    List<SoldProduct> editProductList = arrangeProductList(invoiceDetailList, tempPresentList);
                     Utils.print(PrintInvoiceActivity.this, getCustomerName(Integer.parseInt(invoie.getCustomerId()))
                             , invoie.getId()
                             , getSaleManName(invoie.getSalepersonId())
                             , getCustomerTownshipName(Integer.parseInt(invoie.getCustomerId()))
-                            , invoie, editProductList, invoicePresentList, Utils.PRINT_FOR_NORMAL_SALE
+                            , invoie, editProductList, tempPresentList, Utils.PRINT_FOR_NORMAL_SALE
                             , Utils.FOR_OTHERS);
                 } else if(printMode.equals("D")) {
+                    Utils.saveInvoiceImageIntoGallery(invoie.getId(), PrintInvoiceActivity.this,myBitmap, "Deliver");
                     List<SoldProduct> editProductList = arrangeProductList(invoiceDetailList, invoicePresentList);
                     Utils.printDeliver(PrintInvoiceActivity.this, getCustomerName(Integer.parseInt(invoie.getCustomerId()))
                             , orderedInvoice.getInvoiceNo()
@@ -509,5 +523,17 @@ public class PrintInvoiceActivity extends Activity{
             }
 
         return newSoldProductList;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.i("RESUME", "");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.i("PAUSE", "");
     }
 }

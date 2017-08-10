@@ -642,7 +642,7 @@ public class AddNewCustomerActivity extends FragmentActivity implements OnAction
             Utils.backToLogin(this);
         }
         reset();
-        Utils.commonDialog("Customer has been successfully created", AddNewCustomerActivity.this);
+        Utils.commonDialog("Customer has been successfully created", AddNewCustomerActivity.this, 0);
 
         //finish();
     }

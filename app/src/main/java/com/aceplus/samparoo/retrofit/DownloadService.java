@@ -10,6 +10,7 @@ import com.aceplus.samparoo.model.forApi.GeneralResponse;
 import com.aceplus.samparoo.model.forApi.IncentiveResponse;
 import com.aceplus.samparoo.model.forApi.LoginResponse;
 import com.aceplus.samparoo.model.forApi.PosmShopTypeResponse;
+import com.aceplus.samparoo.model.forApi.PreOrderHistoryResponse;
 import com.aceplus.samparoo.model.forApi.ProductResponse;
 import com.aceplus.samparoo.model.forApi.PromotionResponse;
 import com.aceplus.samparoo.model.forApi.SaleHistoryResponse;
@@ -89,4 +90,8 @@ public interface DownloadService {
     @FormUrlEncoded
     @POST("incentive")
     Call<IncentiveResponse> getIncentiveFromApi(@Field("param_data") String paramData);
+
+    @FormUrlEncoded
+    @POST("saleOrderHistory")
+    Call<PreOrderHistoryResponse> getPreOrderHistoryFromApi(@Field("param_data") String paramData);
 }

@@ -1070,7 +1070,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                     } else if(accountEditText.getText().toString().equals("") || accountEditText.getText().toString().equals(null)) {
                         accountEditText.setError("Please enter bank name");
                     } else {
-                        Utils.commonDialog("Insufficient Pay Amount!", SaleCheckoutActivity.this);
+                        Utils.commonDialog("Insufficient Pay Amount!", SaleCheckoutActivity.this, 1);
                         return;
                     }
 

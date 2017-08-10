@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
@@ -23,6 +25,7 @@ import com.aceplus.samparoo.CustomerVisitActivity;
 import com.aceplus.samparoo.HomeActivity;
 import com.aceplus.samparoo.LoginActivity;
 import com.aceplus.samparoo.MarketingActivity;
+import com.aceplus.samparoo.R;
 import com.aceplus.samparoo.customer.CustomerActivity;
 import com.aceplus.samparoo.marketing.MainFragmentActivity;
 import com.aceplus.samparoo.model.CreditInvoice;
@@ -41,9 +44,12 @@ import com.starmicronics.stario.StarIOPortException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.channels.FileChannel;
 import java.text.DecimalFormat;
@@ -242,7 +248,7 @@ public class Utils {
         }
     }
 
-    public static void commonDialog(final String message, final Activity activity) {
+    public static void commonDialog(final String message, final Activity activity, final int flag) {
         Handler handler = new Handler();
         handler.post(new Runnable() {
             @Override
@@ -250,9 +256,25 @@ public class Utils {
                 if (activity.isFinishing()) {
                     return;
                 } else {
+                    int statusImage = 0;
+                    String title = "";
+                    if(flag == 0) {
+                        statusImage = R.drawable.success;
+                        title = "Success";
+                    } else if(flag == 1) {
+                        statusImage = R.drawable.fail;
+                        title = "Error";
+                    } else if(flag == 2) {
+                        statusImage = R.drawable.info;
+                        title = "Info";
+                    }
+
                     new AlertDialog.Builder(activity)
+                            .setTitle(title)
                             .setMessage(message)
                             .setPositiveButton("OK", null)
+                            .setCancelable(false)
+                            .setIcon(statusImage)
                             .show();
                 }
             }
@@ -874,7 +896,25 @@ public class Utils {
 
         double totalAmount = 0, totalNetAmount = 0;
 
-        printDataByteArrayList.add(("         Samparoo Industries Co.,Ltd.\n       Purified Drinking Water & Soft Drink\n     Shwe Pyi Thar Industrial Zone, Zone (4)\n        Hotline: 09-508256, 09-5504808\n\n").getBytes());
+        String companyName = "";
+        Cursor companyInfoCursor = database.rawQuery("SELECT " + DatabaseContract.CompanyInformation.CompanyName + " FROM " + DatabaseContract.CompanyInformation.tb, null);
+        if(companyInfoCursor.moveToNext()) {
+            companyName = companyInfoCursor.getString(companyInfoCursor.getColumnIndex(DatabaseContract.CompanyInformation.CompanyName));
+        }
+        companyName += " Purified Drinking Water & Soft Drink";
+        String[] companyNames = companyName.split(" ");
+        String names = "         ", fullName = "";
+        for(String s : companyNames) {
+            if(names.length() < 30) {
+                names += s +" ";
+            } else {
+                fullName += (names + "         ");
+                names = "\n         " + s;
+            }
+        }
+        fullName += names;
+
+        printDataByteArrayList.add((fullName + "\n\n").getBytes());
         printDataByteArrayList.add((
                 "Customer       :     " + customerName + "\n").getBytes("UTF-8"));
         printDataByteArrayList.add((
@@ -1153,7 +1193,25 @@ public class Utils {
 
         double totalAmount = 0, totalNetAmount = 0;
 
-        printDataByteArrayList.add(("         Samparoo Industries Co.,Ltd.\n       Purified Drinking Water & Soft Drink\n     Shwe Pyi Thar Industrial Zone, Zone (4)\n        Hotline: 09-508256, 09-5504808\n\n").getBytes());
+        String companyName = "";
+        Cursor companyInfoCursor = database.rawQuery("SELECT " + DatabaseContract.CompanyInformation.CompanyName + " FROM " + DatabaseContract.CompanyInformation.tb, null);
+        if(companyInfoCursor.moveToNext()) {
+            companyName = companyInfoCursor.getString(companyInfoCursor.getColumnIndex(DatabaseContract.CompanyInformation.CompanyName));
+        }
+
+        String[] companyNames = companyName.split(" ");
+        String names = "        ", fullName = "";
+        for(String s : companyNames) {
+            if(names.length() < 30) {
+                names += " " + s;
+            } else {
+                fullName += (names + "         ");
+                names = "\n         " + s;
+            }
+        }
+        fullName += names;
+
+        printDataByteArrayList.add((fullName + "\n\n").getBytes());
         printDataByteArrayList.add((
                 "Customer           :     " + customerName + "\n").getBytes("UTF-8"));
         printDataByteArrayList.add((
@@ -1443,8 +1501,25 @@ public class Utils {
         DecimalFormat decimalFormatterWithComma = new DecimalFormat("###,##0");
 
         //double totalAmount = 0, totalNetAmount = 0;
+        String companyName = "";
+        Cursor companyInfoCursor = database.rawQuery("SELECT " + DatabaseContract.CompanyInformation.CompanyName + " FROM " + DatabaseContract.CompanyInformation.tb, null);
+        if(companyInfoCursor.moveToNext()) {
+            companyName = companyInfoCursor.getString(companyInfoCursor.getColumnIndex(DatabaseContract.CompanyInformation.CompanyName));
+        }
 
-        printDataByteArrayList.add(("         Samparoo Industries Co.,Ltd.\n       Purified Drinking Water & Soft Drink\n     Shwe Pyi Thar Industrial Zone, Zone (4)\n        Hotline: 09-508256, 09-5504808\n\n").getBytes());
+        String[] companyNames = companyName.split(" ");
+        String names = "        ", fullName = "";
+        for(String s : companyNames) {
+            if(names.length() < 30) {
+                names += " " + s;
+            } else {
+                fullName += (names + "         ");
+                names = "\n         " + s;
+            }
+        }
+        fullName += names;
+
+        printDataByteArrayList.add((fullName + "\n\n").getBytes());
         printDataByteArrayList.add((
                 "Customer           :     " + customerName + "\n").getBytes());
         printDataByteArrayList.add((
@@ -1487,5 +1562,52 @@ public class Utils {
         } else {
             return true;
         }
+    }
+
+    public static void saveInvoiceImageIntoGallery(String invoiceNo, Context context, Bitmap bitmap, String directoryName)
+    {
+        File sdCard = Environment.getExternalStorageDirectory();
+        File directory = new File (sdCard.getAbsolutePath() + "/ScreenShot/" + directoryName);
+        directory.mkdirs();
+
+        String filename =  invoiceNo + ".jpg";
+        File yourFile = new File(directory, filename);
+        String time = getCurrentDate(true);
+
+        while(yourFile.exists()) {
+            filename = invoiceNo + "_" + time + ".jpg";
+            yourFile = new File(directory, filename);
+            break;
+        }
+
+        String image=yourFile.toString();
+        Log.e(image, "ImageOOO");
+
+
+        FileOutputStream fos;
+        try {
+            fos = new FileOutputStream(yourFile, true);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 40, fos);//change 100 to 40
+
+            fos.flush();
+            fos.close();
+            Toast.makeText(context, "Image saved to /sdcard/ScreenShot/" + directoryName + filename + ".jpg", Toast.LENGTH_SHORT).show();
+        } catch (FileNotFoundException e) {
+            Log.e("GREC", e.getMessage(), e);
+        } catch (IOException e) {
+            Log.e("GREC", e.getMessage(), e);
+        }
+
+        Bitmap bitmapOrg1= BitmapFactory.decodeFile(image);
+        ByteArrayOutputStream bao1 = new ByteArrayOutputStream();
+        Log.e(bitmapOrg1.toString()+"","BitMap1");
+        Log.e(bao1.toString(),"BAO");
+        bitmapOrg1.compress(Bitmap.CompressFormat.JPEG, 40, bao1); //change 90 to 40
+
+        Log.e("here1", "here1");
+        byte [] ba1 = bao1.toByteArray();
+
+        String imgBase64Str=Base64.encodeToString(ba1, Base64.NO_WRAP);
+        Log.e("ImageBase64String",imgBase64Str.toString()+ "aa");
     }
 }

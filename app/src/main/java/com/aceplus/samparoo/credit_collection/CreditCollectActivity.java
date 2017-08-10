@@ -55,7 +55,7 @@ public class CreditCollectActivity extends Activity {
             customerCreditAdapter = new CustomerCreditAdapter(CreditCollectActivity.this);
             customerCreditList.setAdapter(customerCreditAdapter);
         } else {
-            Utils.commonDialog("No credit to pay", CreditCollectActivity.this);
+            Utils.commonDialog("No credit to pay", CreditCollectActivity.this, 2);
         }
 
         catchEvents();
@@ -163,7 +163,7 @@ public class CreditCollectActivity extends Activity {
                     intent.putExtra(CreditCheckOut_Activity.CREDIT_KEY, customerCredit);
                     startActivity(intent);
                 } else {
-                    Utils.commonDialog("No credit for this customer", CreditCollectActivity.this);
+                    Utils.commonDialog("No credit for this customer", CreditCollectActivity.this, 2);
                 }
             }
         });

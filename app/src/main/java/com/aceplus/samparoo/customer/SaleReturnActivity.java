@@ -616,6 +616,7 @@ public class SaleReturnActivity extends AppCompatActivity implements OnActionCli
         if (returnCashAmtEditText.getText().length() == 0 || returnCashAmtEditText.getText().toString().equals("")) {
             new AlertDialog.Builder(SaleReturnActivity.this)
                     .setTitle("Alert")
+                    .setIcon(R.drawable.fail)
                     .setMessage("Return Cash Amount must be required.")
                     .setPositiveButton("OK", null)
                     .show();
@@ -623,7 +624,7 @@ public class SaleReturnActivity extends AppCompatActivity implements OnActionCli
             return;
         } else if (!Utils.isNumeric(returnCashAmtEditText.getText().toString())) {
             new AlertDialog.Builder(SaleReturnActivity.this)
-                    .setTitle("Alert")
+                    .setTitle("Alert").setIcon(R.drawable.fail)
                     .setMessage("Please enter valid amount.")
                     .setPositiveButton("OK", null)
                     .show();

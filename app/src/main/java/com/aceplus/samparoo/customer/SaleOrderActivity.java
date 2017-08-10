@@ -202,7 +202,7 @@ public class SaleOrderActivity extends AppCompatActivity {
                         soldProductList.add(new SoldProduct(tempProduct, false));
                         soldProductListRowAdapter.notifyDataSetChanged();
                     } else {
-                        Utils.commonDialog("Already have this product", SaleOrderActivity.this);
+                        Utils.commonDialog("Already have this product", SaleOrderActivity.this, 2);
                     }
                 }
                 searchProductTextView.setText("");
@@ -284,7 +284,7 @@ public class SaleOrderActivity extends AppCompatActivity {
                         soldProductList.add(new SoldProduct(tempProduct, false));
                         soldProductListRowAdapter.notifyDataSetChanged();
                     } else {
-                        Utils.commonDialog("Already have this product", SaleOrderActivity.this);
+                        Utils.commonDialog("Already have this product", SaleOrderActivity.this, 2);
                     }
                 }
             }
@@ -574,7 +574,7 @@ public class SaleOrderActivity extends AppCompatActivity {
                     soldProductList.add(new SoldProduct(tempProduct, false));
                     soldProductListRowAdapter.notifyDataSetChanged();
                 } else {
-                    Utils.commonDialog("Already have this product", SaleOrderActivity.this);
+                    Utils.commonDialog("Already have this product", SaleOrderActivity.this, 2);
                 }
             }
         }
@@ -647,13 +647,13 @@ public class SaleOrderActivity extends AppCompatActivity {
 
                                     int quantity = Integer.parseInt(quantityEditText.getText().toString());
 
-                                    if (SaleOrderActivity.this.isDelivery
+                                    /*if (SaleOrderActivity.this.isDelivery
                                             && quantity > soldProduct.getOrderedQuantity()) {
 
                                         messageTextView.setText("Quantity must be no more than ordered quantity.");
                                         quantityEditText.selectAll();
                                         return;
-                                    }
+                                    }*/
 
                                     soldProduct.setQuantity(quantity);
                                     soldProductListRowAdapter.notifyDataSetChanged();

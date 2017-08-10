@@ -194,7 +194,7 @@ public class SaleActivity extends AppCompatActivity {
                         soldProductList.add(new SoldProduct(tempProduct, false));
                         soldProductListRowAdapter.notifyDataSetChanged();
                     } else {
-                        Utils.commonDialog("Already have this product", SaleActivity.this);
+                        Utils.commonDialog("Already have this product", SaleActivity.this, 2);
                     }
                 }
                 searchProductTextView.setText("");
@@ -274,7 +274,7 @@ public class SaleActivity extends AppCompatActivity {
                         soldProductList.add(new SoldProduct(tempProduct, false));
                         soldProductListRowAdapter.notifyDataSetChanged();
                     } else {
-                        Utils.commonDialog("Already have this product", SaleActivity.this);
+                        Utils.commonDialog("Already have this product", SaleActivity.this, 2);
                     }
                 }
             }
@@ -395,7 +395,7 @@ public class SaleActivity extends AppCompatActivity {
         Log.i("products length", products.length + "");
 
         if (products.length == 0) {
-            Utils.commonDialog("No issued product", this);
+            Utils.commonDialog("No issued product", this, 2);
             return;
         }
 
