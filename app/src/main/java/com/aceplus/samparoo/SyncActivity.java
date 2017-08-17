@@ -3330,7 +3330,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
                             deleteDataAfterUpload(DatabaseContract.SALE_HISTORY_DETAIL.TABLE, null, null);
                             insertSaleHistory(saleHistoryCustomerList);
 
-                             database.setTransactionSuccessful();
+                            database.setTransactionSuccessful();
                             database.endTransaction();
                         }
                         //Utils.commonDialog(getResources().getString(R.string.download_success), SyncActivity.this);
@@ -3378,6 +3378,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
             cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.LOCATION_CODE, saleHistory.getLocationCode());
             cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.CASH_OR_CREDIT, saleHistory.getInvoiceStatus());
             cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.DEVICE_ID, saleHistory.getDeviceId());
+            cvForSaleHistory.put(DatabaseContract.SALE_HISTORY.SALE_FLAG, 1);
             insertSaleHistoryDetail(saleHistory.getSaleHistoryDetailList());
             database.insert(DatabaseContract.SALE_HISTORY.TABLE, null, cvForSaleHistory);
         }
@@ -3703,6 +3704,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
         contentValues.put("REMARK", preOrderHistoryForApi.getRemark());
         contentValues.put("BANK_NAME", preOrderHistoryForApi.getCardCodeId());
         contentValues.put("BANK_ACCOUNT_NO", preOrderHistoryForApi.getCardNo());
+        contentValues.put("SALE_FLAG", 1);
         database.insert(DatabaseContract.PreOrder.tb, null, contentValues);
 
         for (PreOrderDetailHistoryForApi preOrderProduct : preOrderHistoryForApi.getItemHistoryList()) {

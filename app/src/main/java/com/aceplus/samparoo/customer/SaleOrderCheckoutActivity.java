@@ -1557,8 +1557,8 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                 + 1 + ", "
                 + taxAmt+ ", \""
                 + "" + "\", \""
-                + "" + "\""
-                + ")");
+                + "" + "\", \""
+                + ",0)");
 
         invoice = new Invoice();
         invoice.setId(invoiceId);

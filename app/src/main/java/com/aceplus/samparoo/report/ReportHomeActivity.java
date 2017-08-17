@@ -103,13 +103,14 @@ public class ReportHomeActivity extends FragmentActivity {
                 , "Sale Exchange Report"
                 , "POSM Report"
                 , "Deliver Report"
-                , "PreOrder Report"
-
+                , "Pre-order Report"
                 , "Sale Target & Actual Sale Report"
                 , "Sale Target & Actual Sale Product Report"
                 , "Display Program Report"
                 , "Incentive Program Report"
                 , "Size And Stock Report"
+                , "Sale History Report"
+                , "Sale Order History Report"
         };
         ArrayAdapter<String> reportsSpinnerAdapter
                 = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, reportNames);
@@ -309,6 +310,40 @@ public class ReportHomeActivity extends FragmentActivity {
                     FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                     FragmentSizeAndStockReport fragmentSizeAndStockReport = new FragmentSizeAndStockReport();
                     fragmentTransaction.replace(R.id.fragment_report, fragmentSizeAndStockReport);
+                    fragmentTransaction.commit();
+                } else if (position == 13) {
+
+                    if (CustomerReportArrayList.size() == 0) {
+
+                        for (JSONObject customerReportJsonObject : getCustomerReports()) {
+
+                            CustomerReportArrayList.add(customerReportJsonObject);
+                        }
+                    }
+
+                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+
+                    FragmentSaleInvoiceReport saleInvoiceFragment = new FragmentSaleInvoiceReport();
+                    saleInvoiceFragment.customerReportsArrayList = CustomerReportArrayList;
+                    saleInvoiceFragment.saleHistory = 1;
+                    fragmentTransaction.replace(R.id.fragment_report, saleInvoiceFragment);
+                    fragmentTransaction.commit();
+                } else if (position == 14) {
+
+                    if (CustomerReportArrayList.size() == 0) {
+
+                        for (JSONObject customerReportJsonObject : getCustomerReports()) {
+
+                            CustomerReportArrayList.add(customerReportJsonObject);
+                        }
+                    }
+
+                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+
+                    FragmentSaleOrderHistoryReport saleInvoiceFragment = new FragmentSaleOrderHistoryReport();
+                    saleInvoiceFragment.customerReportsArrayList = CustomerReportArrayList;
+                    saleInvoiceFragment.saleHistory = 1;
+                    fragmentTransaction.replace(R.id.fragment_report, saleInvoiceFragment);
                     fragmentTransaction.commit();
                 }
             }
@@ -612,7 +647,7 @@ public class ReportHomeActivity extends FragmentActivity {
                 "SELECT CUSTOMER.CUSTOMER_NAME, ADVANCE_PAYMENT_AMOUNT, NET_AMOUNT, INVOICE_ID"
                         + " FROM PRE_ORDER"
                         + " INNER JOIN CUSTOMER"
-                        + " ON CUSTOMER.id = PRE_ORDER.CUSTOMER_ID"
+                        + " ON CUSTOMER.id = PRE_ORDER.CUSTOMER_ID WHERE SALE_FLAG = 0"
                 , null);
         Log.i("PRE OREDER COUNT ", cursor.getCount() + "");
         while (cursor.moveToNext()) {

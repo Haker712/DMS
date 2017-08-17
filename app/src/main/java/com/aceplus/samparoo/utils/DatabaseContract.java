@@ -530,6 +530,7 @@ public class DatabaseContract {
         public static final String LOCATION_CODE = "LOCATION_CODE";
         public static final String CASH_OR_CREDIT = "CASH_OR_CREDIT";
         public static final String DEVICE_ID = "DEVICE_ID";
+        public static final String SALE_FLAG = "SALE_FLAG";
     }
 
     public abstract class SALE_HISTORY_DETAIL {

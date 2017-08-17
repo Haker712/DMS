@@ -1009,7 +1009,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                     + taxAmt + ", \""
                     + invoice.getBankName() + "\", \""
                     + invoice.getBankAccountNo() + "\""
-                    + ")");
+                    + ",0)");
 
             for (Promotion promotion : promotionArrayList) {
                 ContentValues contentValues = new ContentValues();

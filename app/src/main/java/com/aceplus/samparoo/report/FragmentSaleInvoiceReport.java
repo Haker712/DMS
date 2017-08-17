@@ -46,6 +46,8 @@ public class FragmentSaleInvoiceReport extends Fragment {
 
     ArrayList<JSONObject> customerReportsArrayList;
 
+    int saleHistory = 0;
+
     JSONObject saleInvoiceReportJsonObject;
 
     SQLiteDatabase database;
@@ -331,7 +333,7 @@ public class FragmentSaleInvoiceReport extends Fragment {
 
         ArrayList<JSONObject> saleInvoiceReportsArrayList = new ArrayList<JSONObject>();
 
-        String query = "SELECT * FROM INVOICE where INVOICE_ID not like 'SX%' and INVOICE_ID not like 'OS%' ";
+        String query = "SELECT * FROM INVOICE where INVOICE_ID not like 'SX%' and INVOICE_ID not like 'OS%' and SALE_FLAG = " + saleHistory + " ";
         String customerCondition = "and CUSTOMER_ID = '" + customerId + "' ";
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
