@@ -115,7 +115,7 @@ public class LoginActivity extends AppCompatActivity {
 
         ButterKnife.inject(this);
 
-        sqLiteDatabase = new Database(this).getDataBase();
+        sqLiteDatabase  = new Database(this).getDataBase();
 
         /*try {
             RetrofitServiceFactory.getUrlFromDb(database);
@@ -133,7 +133,7 @@ public class LoginActivity extends AppCompatActivity {
         }
         Log.i("Current URL2", Constant.BASE_URL);
 
-        editTextUserID.setText("TA");
+        editTextUserID.setText("AMM");
         editTextPassword.setText("aceplus");
 
         if (Utils.isOsMarshmallow()) {

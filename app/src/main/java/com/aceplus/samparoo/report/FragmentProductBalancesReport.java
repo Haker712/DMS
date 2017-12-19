@@ -61,6 +61,7 @@ public class FragmentProductBalancesReport extends Fragment {
 
             TextView productNameTextView = (TextView) view.findViewById(R.id.productName);
             TextView totalQuantityTextView = (TextView) view.findViewById(R.id.totalQuantity);
+            TextView orderQuantityTextView = (TextView) view.findViewById(R.id.orderQuantity);
             TextView soldQuantityTextView = (TextView) view.findViewById(R.id.soldQuantity);
             TextView remainingQuantityTextView = (TextView) view.findViewById(R.id.remainingQuantity);
             TextView exchangeQuantityTextView= (TextView) view.findViewById(R.id.exchangeQuantity);
@@ -72,7 +73,7 @@ public class FragmentProductBalancesReport extends Fragment {
             try {
                 int remaingingQuantity = (int) saleInvoiceReportJsonObject.getDouble("remainingQuantity");
                 int soldQuantity = (int) saleInvoiceReportJsonObject.getDouble("soldQuantity");
-
+                int orderQuantity = (int) saleInvoiceReportJsonObject.getDouble("orderQuantity");
                 int returnQuantity = (int) saleInvoiceReportJsonObject.getDouble("returnQuantity");
                 int deliveryQuantity = (int) saleInvoiceReportJsonObject.getDouble("deliveryQuantity");
                 int presentQuantity = (int) saleInvoiceReportJsonObject.getDouble("presentQuantity");
@@ -83,18 +84,20 @@ public class FragmentProductBalancesReport extends Fragment {
                     Resources res1 = getActivity().getResources();
                     remainingQuantityTextView.setTextColor(res1.getColor(R.color.accentColor));
                     productNameTextView.setTextColor(res1.getColor(R.color.accentColor));
+                    orderQuantityTextView.setTextColor(res1.getColor(R.color.accentColor));
                     totalQuantityTextView.setTextColor(res1.getColor(R.color.accentColor));
                     soldQuantityTextView.setTextColor(res1.getColor(R.color.accentColor));
                     exchangeQuantityTextView.setTextColor(res1.getColor(R.color.accentColor));
                     returnQuantityTextView.setTextColor(res1.getColor(R.color.accentColor));
                     deliveryQuantityTextView.setTextColor(res1.getColor(R.color.accentColor));
                     presentQuantityTextView.setTextColor(res1.getColor(R.color.accentColor));
-
-
                 }
+
                 productNameTextView.setText(saleInvoiceReportJsonObject.getString("productName"));
                 totalQuantityTextView.setText(
                         Utils.formatAmount(saleInvoiceReportJsonObject.getDouble("totalQuantity")));
+                orderQuantityTextView.setText(
+                        Utils.formatAmount(saleInvoiceReportJsonObject.getDouble("orderQuantity")));
                 soldQuantityTextView.setText(
                         Utils.formatAmount(saleInvoiceReportJsonObject.getDouble("soldQuantity")));
                 remainingQuantityTextView.setText(

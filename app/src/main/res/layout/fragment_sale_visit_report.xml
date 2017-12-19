@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center|center_horizontal"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:paddingLeft="10dp">
+
+            <TextView
+                android:id="@+id/fragment_sale_visit_txt_from_customer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="FROM CUSTOMER : " />
+
+            <Spinner
+                android:id="@+id/fragment_sale_visit_spinner_from_customer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/fragment_sale_visit_txt_from_customer"
+                android:focusable="false" />
+
+            <TextView
+                android:id="@+id/fragment_sale_visit_txt_to_customer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/fragment_sale_visit_spinner_from_customer"
+                android:text="TO CUSTOMER : " />
+
+            <Spinner
+                android:id="@+id/fragment_sale_visit_spinner_to_customer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/fragment_sale_visit_txt_to_customer"
+                android:focusable="false" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/fragment_sale_visit_btn_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true">
+
+            <Button
+                android:id="@+id/btn_sale_visit_search"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Search"
+                style="@style/Base.Widget.AppCompat.Button.Small"/>
+
+        </LinearLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/fragment_sale_visit_list_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#898989"
+        android:padding="10dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:text="Customer Name"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:gravity="center_horizontal"
+            android:text="Address"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:text="Status"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:gravity="center_horizontal"
+            android:text="Task"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF" />
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/saleVisitList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>

@@ -54,15 +54,12 @@ public class SaleExchangeTab1 extends Fragment {
 
         saleReturnReportsArrayList=getSaleReturnReports();
 
-
         View view = inflater.inflate(R.layout.fragment_sale_return_report, container, false);
         salereturnlistview = (ListView) view.findViewById(R.id.saleReturnReports);
         salereturnlistview.setAdapter(new SaleExchangeTab1.SaleReturnReportAdapter(getActivity()));
         salereturnlistview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-
 
                 JSONObject saleReturnReportJsonObject = saleReturnReportsArrayList.get(position);
                 try {
@@ -71,8 +68,6 @@ public class SaleExchangeTab1 extends Fragment {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-
 
                 saleReturnDetailreports.clear();
 
@@ -92,11 +87,7 @@ public class SaleExchangeTab1 extends Fragment {
                     Cursor cursor_product_id=database.rawQuery("select * from PRODUCT WHERE PRODUCT_ID='"+product_id+"'",null);
 
                     while (cursor_product_id.moveToNext()){
-
-
-
                         product_name=cursor_product_id.getString(cursor_product_id.getColumnIndex("PRODUCT_NAME"));
-
                     }
 
                     saleReturnDetailreport.setProductName(product_name);
@@ -106,28 +97,17 @@ public class SaleExchangeTab1 extends Fragment {
 
                 }
 
-
-
-
-
-
                 View dialogBoxView = getActivity().getLayoutInflater().inflate(R.layout.dialog_box_sale_return_detail, null);
                 ListView salereturnDetailListview = (ListView) dialogBoxView.findViewById(R.id.salereturnreportdetail);
 
                 salereturnDetailListview.setAdapter(new SaleExchangeTab1.SaleReturnDetailAdapter(getActivity()));
                 new AlertDialog.Builder(getActivity())
                         .setView(dialogBoxView)
-                        .setTitle("SALERETURN DETAIL")
+                        .setTitle("Sale Return Detail")
                         .setPositiveButton("OK", null)
                         .show();
-
-
-
             }
         });
-
-
-
 
         return view;
     }

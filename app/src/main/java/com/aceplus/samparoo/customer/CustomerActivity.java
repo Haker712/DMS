@@ -387,8 +387,8 @@ public class CustomerActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
 
-                customer = customers.get(position);
-
+                customer = customerListArrayAdapter.getItem(position);
+                //customer = customers.get(position);
                 customerNameTextView.setText(customer.getCustomerName());
                 phoneTextView.setText(customer.getPhone());
                 addressTextView.setText(customer.getAddress());
@@ -682,6 +682,16 @@ public class CustomerActivity extends AppCompatActivity {
                                     cursor.getString(cursor.getColumnIndex(DatabaseContract.CustomerFeedback.ID))
                                     , cursor.getString(cursor.getColumnIndex(DatabaseContract.CustomerFeedback.INVOICE_DATE))
                                     , cursor.getString(cursor.getColumnIndex(DatabaseContract.CustomerFeedback.REMARK))));
+                        }
+
+                        if(customerFeedbacks.size() == 0) {
+                            new AlertDialog.Builder(CustomerActivity.this)
+                                    .setTitle("No Feedbacks")
+                                    .setMessage("You need to download feedback data.")
+                                    .setPositiveButton("OK", null)
+                                    .show();
+
+                            return;
                         }
 
                         final AlertDialog alertDialog = new AlertDialog.Builder(CustomerActivity.this)
@@ -1014,7 +1024,7 @@ public class CustomerActivity extends AppCompatActivity {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
 
-            final Customer customer = customerListForArrayAdapter.get(position);
+            final Customer customer = customerListForArrayAdapter.get(position); 
 
             LayoutInflater layoutInflater = context.getLayoutInflater();
             View view = layoutInflater.inflate(R.layout.custom_simple_list_item_1, null, true);

@@ -434,7 +434,6 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
                 Log.i("Total Amt for include : ", totalBuyAmtInclude + "");
 
-
                 Log.i("Total Amt for exclude : ", totalBuyAmtExclude + "");
 
                 if (exclude == 0) {
@@ -733,9 +732,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
     private String getMessageInfo() {
         String message = "";
-        List<PreOrder> preOrderList = getPreOrderFromDatabase();
-
-        List<PreOrderApi> preOrderApiList = new ArrayList<>();
+        List<PreOrder> preOrderList = getPreOrderFromDatabaseByInvoiceId(SaleOrderCheckoutActivity.this.txt_invoiceId.getText().toString());
 
         List<PreOrderPresentApi> preOrderPresentApiList = new ArrayList<>();
 
@@ -948,14 +945,14 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
         preOrder.setDeviceId(Utils.getDeviceId(SaleOrderCheckoutActivity.this));
 
         //preOrder.setDeviceId("");
-        preOrder.setPreOrderDate(new SimpleDateFormat("yyyy/MM/dd").format(new Date()));
+        preOrder.setPreOrderDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
 
         /*Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.add(Calendar.DATE, 7);*/    // Number of days to add.
 
         if(deliveryDateChooser.getText() != null) {
-            preOrder.setExpectedDeliveryDate(new SimpleDateFormat("yyyy/MM/dd").format(deliveryDate));
+            preOrder.setExpectedDeliveryDate(new SimpleDateFormat("yyyy-MM-dd").format(deliveryDate));
         }
 
         //preOrder.setExpectedDeliveryDate(new SimpleDateFormat("yyyy/MM/dd").format(calendar.getTime()));
@@ -996,9 +993,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
             preOrderProductList.add(preOrderProduct);
 
-            /*database.execSQL("UPDATE PRODUCT SET REMAINING_QTY = REMAINING_QTY - " + soldProduct.getQuantity()
-                    + ", SOLD_QTY = SOLD_QTY + " + soldProduct.getQuantity() + " WHERE PRODUCT_ID = \'" + soldProduct.getProduct().getId() + "\'");
-*/
+            database.execSQL("UPDATE PRODUCT SET " + "ORDER_QTY = ORDER_QTY + " + soldProduct.getQuantity() + " WHERE PRODUCT_ID = \'" + soldProduct.getProduct().getId() + "\'");
             if(soldProduct.getFocQuantity() > 0) {
                 Promotion promotion = new Promotion();
                 promotion.setPromotionPlanId(null);
@@ -1011,10 +1006,10 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             }
         }
 
-        /*for (Promotion promotion : promotionArrayList) {
-            database.execSQL("UPDATE PRODUCT SET PRESENT_QTY = PRESENT_QTY + " + promotion.getPromotionQty() + " WHERE ID = \'" + promotion.getPromotionProductId() + "\'");
-            database.execSQL("UPDATE PRODUCT SET REMAINING_QTY = REMAINING_QTY - " + promotion.getPromotionQty() + " WHERE ID = '" + promotion.getPromotionProductId() + "'");
-        }*/
+        for (Promotion promotion : promotionArrayList) {
+            database.execSQL("UPDATE PRODUCT SET ORDER_QTY = ORDER_QTY + " + promotion.getPromotionQty() + " WHERE ID = \'" + promotion.getPromotionProductId() + "\'");
+            //database.execSQL("UPDATE PRODUCT SET REMAINING_QTY = REMAINING_QTY - " + promotion.getPromotionQty() + " WHERE ID = '" + promotion.getPromotionProductId() + "'");
+        }
 
         preOrder.setNetAmount(totalAmount);
         preOrder.setLocationId(locationCode);
@@ -1386,6 +1381,38 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
     }
 
     /**
+     * Retrieve pre order from database.
+     *
+     * @return PreOrder object list
+     */
+    private List<PreOrder> getPreOrderFromDatabaseByInvoiceId(String invoiceId) {
+        List<PreOrder> preOrderList = new ArrayList<>();
+
+        Cursor cursorPreOrder = database.rawQuery("select P.* from PRE_ORDER AS P WHERE P.DELETE_FLAG = 0 AND P.INVOICE_ID = '" + invoiceId + "'", null);
+
+        while (cursorPreOrder.moveToNext()) {
+            PreOrder preOrder = new PreOrder();
+            preOrder.setInvoiceId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("INVOICE_ID")));
+            preOrder.setCustomerId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("CUSTOMER_ID")));
+            preOrder.setSalePersonId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("SALEPERSON_ID")));
+            preOrder.setDeviceId(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("DEV_ID")));
+            preOrder.setPreOrderDate(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("PREORDER_DATE")));
+            preOrder.setExpectedDeliveryDate(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("EXPECTED_DELIVERY_DATE")));
+            preOrder.setAdvancedPaymentAmount(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex("ADVANCE_PAYMENT_AMOUNT")));
+            preOrder.setNetAmount(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex("NET_AMOUNT")));
+            preOrder.setTaxAmount(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex("TAX_AMOUNT")));
+            preOrder.setLocationId(cursorPreOrder.getInt(cursorPreOrder.getColumnIndex(DatabaseContract.PreOrder.location_id)));
+            preOrder.setDiscount(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex(DatabaseContract.PreOrder.discount)));
+            preOrder.setDiscountPer(cursorPreOrder.getDouble(cursorPreOrder.getColumnIndex(DatabaseContract.PreOrder.discount_per)));
+            preOrder.setBankName(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("BANK_NAME")));
+            preOrder.setBankAccountNo(cursorPreOrder.getString(cursorPreOrder.getColumnIndex("BANK_ACCOUNT_NO")));
+            preOrderList.add(preOrder);
+        }
+
+        return preOrderList;
+    }
+
+    /**
      * Retrieve pre order product from database.
      *
      * @return PreOrderProduct object list
@@ -1557,7 +1584,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                 + 1 + ", "
                 + taxAmt+ ", \""
                 + "" + "\", \""
-                + "" + "\", \""
+                + "" + "\""
                 + ",0)");
 
         invoice = new Invoice();
@@ -1843,7 +1870,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
             CheckBox checkBox_foc = (CheckBox) view.findViewById(R.id.foc);
 
-            if(isDelivery) {
+            /*if(isDelivery) {*/
                 checkBox_foc.setVisibility(View.VISIBLE);
                 checkBox_foc.setEnabled(false);
                 soldProduct.setFocStatus(false);
@@ -1852,7 +1879,7 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
                     checkBox_foc.setChecked(true);
                     soldProduct.setFocStatus(true);
                 }
-            }
+
 
             /*checkBox_foc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override

@@ -914,6 +914,8 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                 invoiceDetailList.add(invoiceDetail);
 
                 invoiceDetail.setTsaleId(invoiceId);
+
+
                 ContentValues cvInvoiceProduct = new ContentValues();
                 cvInvoiceProduct.put("INVOICE_PRODUCT_ID", invoiceId);
                 cvInvoiceProduct.put("PRODUCT_ID", soldProduct.getProduct().getStockId());
@@ -923,7 +925,13 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                 cvInvoiceProduct.put("DISCOUNT_PERCENT", soldProduct.getDiscountPercent());
                 cvInvoiceProduct.put("S_PRICE", soldProduct.getProduct().getPrice());
                 cvInvoiceProduct.put("P_PRICE", soldProduct.getProduct().getPurchasePrice());
-                cvInvoiceProduct.put("PROMOTION_PRICE", soldProduct.getPromotionPrice());
+
+                double promoPrice = soldProduct.getPromotionPrice();
+                if(promoPrice == 0.0) {
+                    promoPrice = soldProduct.getProduct().getPrice();
+                }
+
+                cvInvoiceProduct.put("PROMOTION_PRICE", promoPrice);
                 cvInvoiceProduct.put("PROMOTION_PLAN_ID", soldProduct.getPromotionPlanId());
                 cvInvoiceProduct.put("EXCLUDE", soldProduct.getExclude());
 
@@ -1125,6 +1133,15 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                 }
 
                 displayFinalAmount(totalItemDisAmt);
+                if(check.equalsIgnoreCase("yes")) {
+                    Double salereturnAmount = getIntent().getDoubleExtra(Constant.KEY_SALE_RETURN_AMOUNT, 0.0);
+                    Double netAmount = 0.0;
+                    if(netAmountTextView.getText() != null && !netAmountTextView.getText().toString().equals("")) {
+                        netAmount = Double.parseDouble(netAmountTextView.getText().toString().replace(",",""));
+                    }
+                    Double payAmt = netAmount - salereturnAmount;
+                    payAmountEditText.setText(payAmt + "");
+                }
                 adapterFlag = false;
             }
 

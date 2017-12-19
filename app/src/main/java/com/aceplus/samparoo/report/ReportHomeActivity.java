@@ -111,6 +111,7 @@ public class ReportHomeActivity extends FragmentActivity {
                 , "Size And Stock Report"
                 , "Sale History Report"
                 , "Sale Order History Report"
+                , "Sale Visit History Report"
         };
         ArrayAdapter<String> reportsSpinnerAdapter
                 = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, reportNames);
@@ -345,6 +346,11 @@ public class ReportHomeActivity extends FragmentActivity {
                     saleInvoiceFragment.saleHistory = 1;
                     fragmentTransaction.replace(R.id.fragment_report, saleInvoiceFragment);
                     fragmentTransaction.commit();
+                } else if(position == 15) {
+                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    FragmentSaleVisitReport fragmentSaleVisitReport = new FragmentSaleVisitReport();
+                    fragmentTransaction.replace(R.id.fragment_report, fragmentSaleVisitReport);
+                    fragmentTransaction.commit();
                 }
             }
 
@@ -577,6 +583,7 @@ public class ReportHomeActivity extends FragmentActivity {
 
                 double totalQuantity = cursor.getDouble(cursor.getColumnIndex("TOTAL_QTY"));
                 double remainingQuanity = cursor.getDouble(cursor.getColumnIndex("REMAINING_QTY"));
+                double orderQuantity = cursor.getDouble(cursor.getColumnIndex("ORDER_QTY"));
                 double soldQuantity = cursor.getDouble(cursor.getColumnIndex("SOLD_QTY"));
                 double exchangeQuantity = cursor.getDouble(cursor.getColumnIndex("EXCHANGE_QTY"));
                 double returnQuantity = cursor.getDouble(cursor.getColumnIndex("RETURN_QTY"));
@@ -589,7 +596,7 @@ public class ReportHomeActivity extends FragmentActivity {
                 productBalanceReportJsonObject.put("totalQuantity", totalQuantity);
                 productBalanceReportJsonObject.put("soldQuantity", soldQuantity);
                 productBalanceReportJsonObject.put("remainingQuantity", remainingQuanity);
-
+                productBalanceReportJsonObject.put("orderQuantity", orderQuantity);
                 productBalanceReportJsonObject.put("returnQuantity", returnQuantity);
                 productBalanceReportJsonObject.put("deliveryQuantity", deliveryQuantity);
                 productBalanceReportJsonObject.put("presentQuantity", presentQuantity);

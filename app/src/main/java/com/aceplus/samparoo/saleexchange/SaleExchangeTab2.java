@@ -64,8 +64,6 @@ public class SaleExchangeTab2 extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
-
         View view = inflater.inflate(R.layout.fragment_sale_invoice_report, container, false);
 
         customerSpinner = (Spinner) view.findViewById(R.id.customer_spinner_fragment_invoice_report);
@@ -79,6 +77,8 @@ public class SaleExchangeTab2 extends Fragment {
         customerSpinner.setVisibility(View.GONE);
         fromDateEditTxt.setVisibility(View.GONE);
         toDateEditTxt.setVisibility(View.GONE);
+        fromDateTxtView.setVisibility(View.GONE);
+        toDateTxtView.setVisibility(View.GONE);
         searchBtn.setVisibility(View.GONE);
         clearBtn.setVisibility(View.GONE);
 
@@ -123,7 +123,7 @@ public class SaleExchangeTab2 extends Fragment {
                         total_amount = Double.valueOf(tAmt);
                     }
 
-                    Cursor cursor_product_Id = database.rawQuery("SELECT * FROM PRODUCT WHERE PRODUCT_ID='" + produc_Id + "'", null);
+                    Cursor cursor_product_Id = database.rawQuery("SELECT * FROM PRODUCT WHERE ID=" + produc_Id + "", null);
                     Log.i("cur_count", cursor_product_Id.getCount() + "");
                     while (cursor_product_Id.moveToNext()) {
                         product_name = cursor_product_Id.getString(cursor_product_Id.getColumnIndex("PRODUCT_NAME"));
@@ -136,12 +136,7 @@ public class SaleExchangeTab2 extends Fragment {
 
                     }
                     saleinvoicedetailList.add(saleinvoicedetail);
-
-//
-
-
                 }
-
 
                 View dialogBoxView = getActivity().getLayoutInflater().inflate(R.layout.dialog_box_sale_invoice_report, null);
                 saleInvoiceReportsListView = (ListView) dialogBoxView.findViewById(R.id.saleinvoicedialog);
@@ -149,10 +144,9 @@ public class SaleExchangeTab2 extends Fragment {
                 saleInvoiceReportsListView.setAdapter(new SaleExchangeTab2.SaleInvoiceArrayAdapter(getActivity()));
                 new AlertDialog.Builder(getActivity())
                         .setView(dialogBoxView)
-                        .setTitle("Pre-Order Products")
+                        .setTitle("Sale Products")
                         .setPositiveButton("OK", null)
                         .show();
-
             }
         });
         return view;
@@ -246,7 +240,7 @@ public class SaleExchangeTab2 extends Fragment {
 
                 Cursor cursorForCustomer = database.rawQuery(
                         "SELECT CUSTOMER_NAME, ADDRESS FROM CUSTOMER"
-                                + " WHERE CUSTOMER_ID = \"" + cursor.getString(cursor.getColumnIndex("CUSTOMER_ID")) + "\""
+                                + " WHERE id = \"" + cursor.getString(cursor.getColumnIndex("CUSTOMER_ID")) + "\""
                         , null);
                 if (cursorForCustomer.moveToNext()) {
 
