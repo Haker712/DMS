@@ -23,6 +23,7 @@ import com.aceplus.samparoo.R;
 import com.aceplus.samparoo.model.DeliveryInvoiceDetail;
 import com.aceplus.samparoo.model.Saleinvoicedetail;
 import com.aceplus.samparoo.utils.Database;
+import com.aceplus.samparoo.utils.Utils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -57,10 +58,8 @@ public class FragmentDeliveryInvoiceReport extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_deliveryinvoice_report, container, false);
 
-
         database = new Database(getContext()).getDataBase();
-
-
+        getTotalQty(DeliveryReportArrayList);
         deliveryInvoiceReportListview = (ListView) view.findViewById(R.id.DeliveryReportListview);
         deliveryInvoiceReportListview.setAdapter(new DeliveryAdapter(getActivity()));
         deliveryInvoiceReportListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -141,23 +140,24 @@ public class FragmentDeliveryInvoiceReport extends Fragment {
             TextView invoiceNo = (TextView) view.findViewById(R.id.invoiceNo);
             TextView customerName = (TextView) view.findViewById(R.id.customerName);
             TextView address = (TextView) view.findViewById(R.id.address);
-
-
+            TextView totalQty = (TextView) view.findViewById(R.id.delivery_report_total_qty);
+            TextView totalAmt = (TextView) view.findViewById(R.id.delivery_report_total_amt);
             try {
                 invoiceNo.setText(deliveryReportJsonObject.getString("InvoiceNo"));
                 customerName.setText(deliveryReportJsonObject.getString("CustomerName"));
                 address.setText(deliveryReportJsonObject.getString("Address"));
+                totalQty.setText(deliveryReportJsonObject.getString("totalQty"));
+                totalAmt.setText(Utils.formatAmount(deliveryReportJsonObject.getDouble("totalAmt")));
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
 
             return view;
         }
     }
 
     private class DeliveryDetailAdapter extends ArrayAdapter<DeliveryInvoiceDetail> {
-
 
         public final Activity context;
 
@@ -174,12 +174,8 @@ public class FragmentDeliveryInvoiceReport extends Fragment {
 
             LayoutInflater layoutInflater = context.getLayoutInflater();
             View view = layoutInflater.inflate(R.layout.list_row_deliveryinvoicedetail_report, null, true);
-
-
             TextView productName= (TextView) view.findViewById(R.id.productNameTextView);
             TextView qty= (TextView) view.findViewById(R.id.qtyTextView);
-
-
             productName.setText(deliveryInvoiceDetail.getProduct_Name());
             qty.setText(deliveryInvoiceDetail.getQty());
 
@@ -187,4 +183,30 @@ public class FragmentDeliveryInvoiceReport extends Fragment {
         }
     }
 
+    void getTotalQty(List<JSONObject> deliveryList){
+        for (JSONObject deliver : deliveryList) {
+            try {
+                Cursor cursor = database.rawQuery("select * from DELIVERY_ITEM_UPLOAD where DELIVERY_ID='" + deliver.getString("InvoiceNo") + "'", null);
+                int quantity = 0;
+                while (cursor.moveToNext()) {
+                    String orderQty = cursor.getString(cursor.getColumnIndex("QUANTITY"));
+                    quantity += Integer.parseInt(orderQty);
+                }
+
+                deliver.put("totalQty", quantity);
+
+                double totalAmount = 0.0;
+                Cursor cursorDelivey = database.rawQuery("select DIP.QUANTITY, PRODUCT.SELLING_PRICE from DELIVERY_ITEM_UPLOAD AS DIP LEFT JOIN PRODUCT ON PRODUCT.ID = DIP.STOCK_ID where DELIVERY_ID ='"+ deliver.getString("InvoiceNo") + "'", null);
+                while(cursorDelivey.moveToNext()) {
+                    int qty = cursorDelivey.getInt(cursorDelivey.getColumnIndex("QUANTITY"));
+                    double price = cursorDelivey.getDouble(cursorDelivey.getColumnIndex("SELLING_PRICE"));
+                    totalAmount += (qty * price);
+                }
+
+                deliver.put("totalAmt", totalAmount);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

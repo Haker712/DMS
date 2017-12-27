@@ -541,6 +541,7 @@ public class ReportHomeActivity extends FragmentActivity {
                 //  saleReturnReportJsonObject.put("customerId", cursor.getString(cursor.getColumnIndex("CUSTOMER_ID")));
 
                 String customer_Id = cursor.getString(cursor.getColumnIndex("CUSTOMER_ID"));
+                saleReturnReportJsonObject.put("returnAmount", cursor.getString(cursor.getColumnIndex("PAY_AMT")));
                 saleReturnReportJsonObject.put("customerId", cursor.getString(cursor.getColumnIndex("CUSTOMER_ID")));
 
             } catch (JSONException e) {

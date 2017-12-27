@@ -37,7 +37,7 @@ public class FragmentPreOrderReport extends Fragment {
 
     String invoice_Id;
 
-    ArrayList<Preorder_Product> preorderProductArrayList=new ArrayList<>();
+    ArrayList<Preorder_Product> preorderProductArrayList = new ArrayList<>();
     Preorder_Product preorderProduct;
 
     @Override
@@ -50,6 +50,7 @@ public class FragmentPreOrderReport extends Fragment {
         database = new Database(getContext()).getDataBase();
 
         preOrderReportsListView = (ListView) view.findViewById(R.id.preOrderReports);
+        getTotalQtyPreOrder(preOrderReportsArrayList);
         preOrderReportsListView.setAdapter(new PreOrderReportsArrayAdapter(getActivity()));
         preOrderReportsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -69,14 +70,15 @@ public class FragmentPreOrderReport extends Fragment {
                     e.printStackTrace();
                 }
 
+                preorderProductArrayList = new ArrayList<>();
                 Cursor cursor = database.rawQuery("select * from PRE_ORDER_PRODUCT where SALE_ORDER_ID='" + invoice_Id + "'", null);
 
                 while (cursor.moveToNext()) {
                     String orderQty = cursor.getString(cursor.getColumnIndex("ORDER_QTY"));
-                    Log.i("OrderQty",orderQty);
+                    Log.i("OrderQty", orderQty);
                     String total_amount = cursor.getString(cursor.getColumnIndex("TOTAL_AMT"));
 
-                    preorderProduct=new Preorder_Product();
+                    preorderProduct = new Preorder_Product();
                     preorderProduct.setOrderQty(orderQty);
                     preorderProduct.setTotalAmount(total_amount);
                     String product_Id = cursor.getString(cursor.getColumnIndex("PRODUCT_ID"));
@@ -89,6 +91,7 @@ public class FragmentPreOrderReport extends Fragment {
                     }
                     preorderProductArrayList.add(preorderProduct);
                 }
+
                 preOrderProductsListView.setAdapter(new PreOrderProductsArrayAdapter(getActivity()));
                 new AlertDialog.Builder(getActivity())
                         .setView(dialogBoxView)
@@ -122,10 +125,13 @@ public class FragmentPreOrderReport extends Fragment {
             TextView customerNameTextView = (TextView) view.findViewById(R.id.customerName);
             TextView prepaidAmountTextView = (TextView) view.findViewById(R.id.prepaidAmount);
             TextView totalAmountTextView = (TextView) view.findViewById(R.id.totalAmount);
+            TextView totalQtyTextView = (TextView) view.findViewById(R.id.pre_order_total_qty);
+            TextView invoiceNoTextView = (TextView) view.findViewById(R.id.pre_order_invoice);
 
             try {
-
+                invoiceNoTextView.setText(saleInvoiceReportJsonObject.getString("invoice_Id"));
                 customerNameTextView.setText(saleInvoiceReportJsonObject.getString("customerName"));
+                totalQtyTextView.setText(saleInvoiceReportJsonObject.getString("totalQty"));
                 prepaidAmountTextView.setText(Utils.formatAmount(saleInvoiceReportJsonObject.getDouble("prepaidAmount")));
                 totalAmountTextView.setText(Utils.formatAmount(saleInvoiceReportJsonObject.getDouble("totalAmount")));
             } catch (JSONException e) {
@@ -150,7 +156,7 @@ public class FragmentPreOrderReport extends Fragment {
         public View getView(int position, View convertView, ViewGroup parent) {
 
 
-            preorderProduct=preorderProductArrayList.get(position);
+            preorderProduct = preorderProductArrayList.get(position);
 
             LayoutInflater layoutInflater = context.getLayoutInflater();
             View view = layoutInflater.inflate(R.layout.list_row_pre_order_product, null, true);
@@ -160,13 +166,30 @@ public class FragmentPreOrderReport extends Fragment {
             TextView quantityTextView = (TextView) view.findViewById(R.id.quantity);
             TextView totalAmountTextView = (TextView) view.findViewById(R.id.totalAmount);
 
-          productNameTextView.setText(preorderProduct.getProductName());
+            productNameTextView.setText(preorderProduct.getProductName());
             quantityTextView.setText(preorderProduct.getOrderQty());
             totalAmountTextView.setText(preorderProduct.getTotalAmount());
 
 
-
             return view;
+        }
+    }
+
+    void getTotalQtyPreOrder(ArrayList<JSONObject> preOrderList) {
+
+        for (JSONObject preOrder : preOrderList) {
+            try {
+                Cursor cursor = database.rawQuery("select * from PRE_ORDER_PRODUCT where SALE_ORDER_ID='" + preOrder.getString("invoice_Id") + "'", null);
+                int quantity = 0;
+                while (cursor.moveToNext()) {
+                    String orderQty = cursor.getString(cursor.getColumnIndex("ORDER_QTY"));
+                    quantity += Integer.parseInt(orderQty);
+                }
+
+                preOrder.put("totalQty", quantity);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

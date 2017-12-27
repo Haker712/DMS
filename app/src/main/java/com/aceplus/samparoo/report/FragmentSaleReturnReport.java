@@ -55,15 +55,13 @@ public class FragmentSaleReturnReport extends Fragment {
 
         database = new Database(getActivity()).getDataBase();
 
-
         View view = inflater.inflate(R.layout.fragment_sale_return_report, container, false);
         salereturnlistview = (ListView) view.findViewById(R.id.saleReturnReports);
         salereturnlistview.setAdapter(new FragmentSaleReturnReport.SaleReturnReportAdapter(getActivity()));
+
         salereturnlistview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-
 
                 JSONObject saleReturnReportJsonObject = saleReturnReportsArrayList.get(position);
                 try {
@@ -73,13 +71,9 @@ public class FragmentSaleReturnReport extends Fragment {
                     e.printStackTrace();
                 }
 
-
-
                 saleReturnDetailreports.clear();
 
                 Cursor cursor_sale_return_id= database.rawQuery("select * from SALE_RETURN_DETAIL WHERE SALE_RETURN_ID='"+sale_return_id+"'",null);
-
-
 
                 while (cursor_sale_return_id.moveToNext()){
 
@@ -95,11 +89,8 @@ public class FragmentSaleReturnReport extends Fragment {
                     while (cursor_product_id.moveToNext()){
 
                         saleReturnDetailreport=new SaleReturnDetailreport();
-
-
                         product_name=cursor_product_id.getString(cursor_product_id.getColumnIndex("PRODUCT_NAME"));
                         Log.i("ProductName",product_name);
-
                     }
 
                     saleReturnDetailreport.setProductName(product_name);
@@ -108,11 +99,6 @@ public class FragmentSaleReturnReport extends Fragment {
                     saleReturnDetailreports.add(saleReturnDetailreport);
 
                 }
-
-
-
-
-
 
                 View dialogBoxView = getActivity().getLayoutInflater().inflate(R.layout.dialog_box_sale_return_detail, null);
                 ListView salereturnDetailListview = (ListView) dialogBoxView.findViewById(R.id.salereturnreportdetail);
@@ -123,14 +109,8 @@ public class FragmentSaleReturnReport extends Fragment {
                         .setTitle("SALERETURN DETAIL")
                         .setPositiveButton("OK", null)
                         .show();
-
-
-
             }
         });
-
-
-
 
         return view;
     }
@@ -154,28 +134,46 @@ public class FragmentSaleReturnReport extends Fragment {
 
             LayoutInflater layoutInflater = context.getLayoutInflater();
             View view = layoutInflater.inflate(R.layout.list_row_sale_return_report, null, true);
-
+            TextView invoiceNoTextView = (TextView) view.findViewById(R.id.sale_return_invoice);
             TextView customerNameTextView = (TextView) view.findViewById(R.id.customerName);
             TextView addressTextView= (TextView) view.findViewById(R.id.customerAddress);
             TextView dateTextView= (TextView) view.findViewById(R.id.date);
+            TextView totalQtyTxtView = (TextView) view.findViewById(R.id.sale_return_total_qty);
+            TextView totalAmtTxtView = (TextView) view.findViewById(R.id.sale_return_total_amt);
 
+            int totalQty = getSaleReturnTotalQtyAndAmt(saleReturnReportJsonObject);
             try {
-
+                invoiceNoTextView.setText(saleReturnReportJsonObject.getString("saleReturnId"));
                 customerNameTextView.setText(saleReturnReportJsonObject.getString("customerName"));
                 addressTextView.setText(saleReturnReportJsonObject.getString("customerAddress"));
                 dateTextView.setText(saleReturnReportJsonObject.getString("returnedDate"));
-
-
-
-
-
-
+                totalQtyTxtView.setText(totalQty + "");
+                totalAmtTxtView.setText(saleReturnReportJsonObject.getString("returnAmount"));
             } catch (JSONException e) {
-
                 e.printStackTrace();
             }
             return view;
         }
+    }
+
+    int getSaleReturnTotalQtyAndAmt(JSONObject saleReturn) {
+        int qty = 0;
+        String sale_return_id = null;
+
+        try {
+            sale_return_id = saleReturn.getString("saleReturnId");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Cursor cursor_sale_return_id= database.rawQuery("select * from SALE_RETURN_DETAIL WHERE SALE_RETURN_ID='"+sale_return_id+"'",null);
+
+        while (cursor_sale_return_id.moveToNext()) {
+            String qtyString = cursor_sale_return_id.getString(cursor_sale_return_id.getColumnIndex("QUANTITY"));
+            int qty_temp = Integer.parseInt(qtyString);
+            qty += qty_temp;
+        }
+        return qty;
     }
 
     private class SaleReturnDetailAdapter extends ArrayAdapter<SaleReturnDetailreport> {
@@ -204,10 +202,7 @@ public class FragmentSaleReturnReport extends Fragment {
             quantityTextView.setText(saleReturnDetailreport.getQuantity());
             remarkTextView.setText(saleReturnDetailreport.getRemark());
 
-
             return view;
         }
     }
-
-
 }

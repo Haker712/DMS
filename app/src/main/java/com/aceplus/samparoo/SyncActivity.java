@@ -1867,6 +1867,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
             saleReturnDetail.setSaleReturnId(cursorSaleReturnDetail.getString(cursorSaleReturnDetail.getColumnIndex("SALE_RETURN_ID")));
             saleReturnDetail.setProductId(cursorSaleReturnDetail.getString(cursorSaleReturnDetail.getColumnIndex("PRODUCT_ID")));
             saleReturnDetail.setQuantity(cursorSaleReturnDetail.getInt(cursorSaleReturnDetail.getColumnIndex("QUANTITY")));
+            saleReturnDetail.setPrice(cursorSaleReturnDetail.getDouble(cursorSaleReturnDetail.getColumnIndex("PRICE")));
             //saleReturnDetail.setRemark(cursorSaleReturnProduct.getString(cursorSaleReturnProduct.getColumnIndex("REMARK")));
             saleReturnDetailList.add(saleReturnDetail);
         }

@@ -19,6 +19,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 
@@ -72,6 +73,10 @@ public class FragmentSaleOrderHistoryReport extends Fragment {
 
     Button searchBtn, clearBtn;
 
+    TextView sale_order_history_report_total, sale_order_history_report_discount, sale_order_history_report_net, sale_report_discount_advance_amt_label, sale_order_report_advance_amt;
+
+    TableRow table_row_advance_amt;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -88,7 +93,15 @@ public class FragmentSaleOrderHistoryReport extends Fragment {
         toDateEditTxt = (EditText) view.findViewById(R.id.edit_text_sale_report_to_date);
         searchBtn = (Button) view.findViewById(R.id.btn_sale_report_search);
         clearBtn = (Button) view.findViewById(R.id.btn_sale_report_clear);
+        sale_order_history_report_total = (TextView) view.findViewById(R.id.sale_report_total_amt);
+        sale_order_history_report_discount = (TextView) view.findViewById(R.id.sale_report_discount);
+        sale_order_history_report_net = (TextView) view.findViewById(R.id.sale_report_net_amt);
+        sale_report_discount_advance_amt_label = (TextView) view.findViewById(R.id.sale_order_report_advanced_amount_label);
+        table_row_advance_amt = (TableRow) view.findViewById(R.id.table_row_advance_amt);
+        sale_order_report_advance_amt = (TextView) view.findViewById(R.id.sale_order_report_advanced_amt);
 
+        table_row_advance_amt.setVisibility(View.VISIBLE);
+        sale_report_discount_advance_amt_label.setVisibility(View.VISIBLE);
         List<String> customerNameArr = new ArrayList<>();
         if (customerSpinner != null) {
             try {
@@ -101,6 +114,11 @@ public class FragmentSaleOrderHistoryReport extends Fragment {
                     customerNameArr.add(customerName.getString("customerName"));
                 }
                 saleOrderHistoryReportsArrayList = getSaleInvoiceReports(ALL_CUSTOMER);
+                double[] amountArr = Utils.calculateReportAmounts(saleOrderHistoryReportsArrayList, false);
+                sale_order_history_report_total.setText(Utils.formatAmount(amountArr[0]));
+                sale_order_history_report_discount.setText(Utils.formatAmount(amountArr[1]));
+                sale_order_history_report_net.setText(Utils.formatAmount(amountArr[2]));
+                sale_order_report_advance_amt.setText(Utils.formatAmount(amountArr[3]));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -237,6 +255,11 @@ public class FragmentSaleOrderHistoryReport extends Fragment {
             ArrayAdapter<JSONObject> saleInvoiceReportsArrayAdapter = new SaleInvoiceReportsArrayAdapter(getActivity());
             saleInvoiceReportsListView.setAdapter(saleInvoiceReportsArrayAdapter);
             saleInvoiceReportsArrayAdapter.notifyDataSetChanged();
+            double[] amountArr = Utils.calculateReportAmounts(saleOrderHistoryReportsArrayList, false);
+            sale_order_history_report_total.setText(Utils.formatAmount(amountArr[0]));
+            sale_order_history_report_discount.setText(Utils.formatAmount(amountArr[1]));
+            sale_order_history_report_net.setText(Utils.formatAmount(amountArr[2]));
+            sale_order_report_advance_amt.setText(Utils.formatAmount(amountArr[3]));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -251,6 +274,11 @@ public class FragmentSaleOrderHistoryReport extends Fragment {
             ArrayAdapter<JSONObject> saleInvoiceReportsArrayAdapter = new SaleInvoiceReportsArrayAdapter(getActivity());
             saleInvoiceReportsListView.setAdapter(saleInvoiceReportsArrayAdapter);
             saleInvoiceReportsArrayAdapter.notifyDataSetChanged();
+            double[] amountArr = Utils.calculateReportAmounts(saleOrderHistoryReportsArrayList, false);
+            sale_order_history_report_total.setText(Utils.formatAmount(amountArr[0]));
+            sale_order_history_report_discount.setText(Utils.formatAmount(amountArr[1]));
+            sale_order_history_report_net.setText(Utils.formatAmount(amountArr[2]));
+            sale_order_report_advance_amt.setText(Utils.formatAmount(amountArr[3]));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -279,14 +307,16 @@ public class FragmentSaleOrderHistoryReport extends Fragment {
             TextView addressTextView = (TextView) view.findViewById(R.id.address);
             TextView totalAmountTextView = (TextView) view.findViewById(R.id.totalAmount);
             TextView discountTextView = (TextView) view.findViewById(R.id.discount);
+            TextView advanceAmtTextView = (TextView) view.findViewById(R.id.advance_amt);
             TextView netAmountTextView = (TextView) view.findViewById(R.id.netAmount);
-
+            advanceAmtTextView.setVisibility(View.VISIBLE);
             try {
                 invoiceIdTextView.setText(saleOrderHistoryReportJsonObject.getString("invoiceId"));
                 customerNameTextView.setText(saleOrderHistoryReportJsonObject.getString("customerName"));
                 addressTextView.setText(saleOrderHistoryReportJsonObject.getString("address"));
                 totalAmountTextView.setText(Utils.formatAmount(saleOrderHistoryReportJsonObject.getDouble("totalAmount")));
-                discountTextView.setText(Utils.formatAmount(saleOrderHistoryReportJsonObject.getDouble("advancedPaymentAmount")));
+                discountTextView.setText(Utils.formatAmount(saleOrderHistoryReportJsonObject.getDouble("discount")));
+                advanceAmtTextView.setText(Utils.formatAmount(saleOrderHistoryReportJsonObject.getDouble("advancedPaymentAmount")));
                 netAmountTextView.setText(Utils.formatAmount(saleOrderHistoryReportJsonObject.getDouble("netAmount")));
             } catch (JSONException e) {
 
@@ -376,10 +406,12 @@ public class FragmentSaleOrderHistoryReport extends Fragment {
 
                     double totalAmount = cursor.getDouble(cursor.getColumnIndex("NET_AMOUNT"));
                     double advancedPaymentAmount = cursor.getDouble(cursor.getColumnIndex("ADVANCE_PAYMENT_AMOUNT"));
+                    double discount = cursor.getDouble(cursor.getColumnIndex("DISCOUNT"));
                     Log.i("advancedPaymentAmount :", advancedPaymentAmount + "");
                     saleInvoiceReportJsonObject.put("totalAmount", totalAmount);
+                    saleInvoiceReportJsonObject.put("discount", discount);
                     saleInvoiceReportJsonObject.put("advancedPaymentAmount", advancedPaymentAmount);
-                    saleInvoiceReportJsonObject.put("netAmount", totalAmount - advancedPaymentAmount);
+                    saleInvoiceReportJsonObject.put("netAmount", totalAmount - advancedPaymentAmount - discount);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

@@ -1121,7 +1121,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
             umTextView.setText(soldProduct.getProduct().getUmName());
             qtyTextView.setText(soldProduct.getQuantity() + "");
 
-            if (soldProductList.size() == position + 1 && adapterFlag) {
+            if (adapterFlag) {
                 Map<String, Double> amountAndPercentage = calculateVolumeDiscount(soldProductList);
                 calculateInvoiceDiscount();
                 Double itemDiscountAmt = amountAndPercentage.get("Amount");

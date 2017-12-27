@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +18,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -73,6 +76,10 @@ public class FragmentSaleInvoiceReport extends Fragment {
 
     Button searchBtn, clearBtn;
 
+    LinearLayout saleReportAmountLayout;
+
+    TextView sale_report_total, sale_report_discount, sale_report_net;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -89,6 +96,14 @@ public class FragmentSaleInvoiceReport extends Fragment {
         toDateEditTxt = (EditText) view.findViewById(R.id.edit_text_sale_report_to_date);
         searchBtn = (Button) view.findViewById(R.id.btn_sale_report_search);
         clearBtn = (Button) view.findViewById(R.id.btn_sale_report_clear);
+        saleReportAmountLayout = (LinearLayout) view.findViewById(R.id.sale_report_amount_layout);
+        sale_report_total = (TextView) view.findViewById(R.id.sale_report_total_amt);
+        sale_report_discount = (TextView) view.findViewById(R.id.sale_report_discount);
+        sale_report_net = (TextView) view.findViewById(R.id.sale_report_net_amt);
+
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) saleInvoiceReportsListView.getLayoutParams();
+        params.setMargins(0, 0, 0, saleReportAmountLayout.getHeight());
+        saleInvoiceReportsListView.setLayoutParams(params);
 
         List<String> customerNameArr = new ArrayList<>();
         if (customerSpinner != null) {
@@ -101,7 +116,12 @@ public class FragmentSaleInvoiceReport extends Fragment {
                 for (JSONObject customerName : customerReportsArrayList) {
                     customerNameArr.add(customerName.getString("customerName"));
                 }
+
                 saleInvoiceReportsArrayList = getSaleInvoiceReports(ALL_CUSTOMER);
+                double[] amountArr = Utils.calculateReportAmounts(saleInvoiceReportsArrayList, true);
+                sale_report_total.setText(Utils.formatAmount(amountArr[0]));
+                sale_report_discount.setText(Utils.formatAmount(amountArr[1]));
+                sale_report_net.setText(Utils.formatAmount(amountArr[2]));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -199,7 +219,7 @@ public class FragmentSaleInvoiceReport extends Fragment {
                     }
 
                     Cursor cursor_product_Id = database.rawQuery("SELECT * FROM PRODUCT WHERE ID =" + produc_Id, null);
-                    Log.i("cur_count", cursor_product_Id.getCount() + "");
+                    Log.i("cur_count", cursor_product_Id.getCount() + ""); 
                     while (cursor_product_Id.moveToNext()) {
                         product_name = cursor_product_Id.getString(cursor_product_Id.getColumnIndex("PRODUCT_NAME"));
                         Log.i("product_name", cursor_product_Id.getString(cursor_product_Id.getColumnIndex("PRODUCT_NAME")) + " aaa");
@@ -237,6 +257,11 @@ public class FragmentSaleInvoiceReport extends Fragment {
             ArrayAdapter<JSONObject> saleInvoiceReportsArrayAdapter = new SaleInvoiceReportsArrayAdapter(getActivity());
             saleInvoiceReportsListView.setAdapter(saleInvoiceReportsArrayAdapter);
             saleInvoiceReportsArrayAdapter.notifyDataSetChanged();
+
+            double[] amountArr = Utils.calculateReportAmounts(saleInvoiceReportsArrayList, true);
+            sale_report_total.setText(Utils.formatAmount(amountArr[0]));
+            sale_report_discount.setText(Utils.formatAmount(amountArr[1]));
+            sale_report_net.setText(Utils.formatAmount(amountArr[2]));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -251,6 +276,11 @@ public class FragmentSaleInvoiceReport extends Fragment {
             ArrayAdapter<JSONObject> saleInvoiceReportsArrayAdapter = new SaleInvoiceReportsArrayAdapter(getActivity());
             saleInvoiceReportsListView.setAdapter(saleInvoiceReportsArrayAdapter);
             saleInvoiceReportsArrayAdapter.notifyDataSetChanged();
+
+            double[] amountArr = Utils.calculateReportAmounts(saleInvoiceReportsArrayList, true);
+            sale_report_total.setText(Utils.formatAmount(amountArr[0]));
+            sale_report_discount.setText(Utils.formatAmount(amountArr[1]));
+            sale_report_net.setText(Utils.formatAmount(amountArr[2]));
         } catch (JSONException e) {
             e.printStackTrace();
         }

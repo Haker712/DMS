@@ -738,8 +738,20 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
         for(PreOrder preOrder : preOrderList) {
 
+            String customerName = "";
+            Cursor cursorCustomer = database.rawQuery("select CUSTOMER_NAME from CUSTOMER where id = " + preOrder.getCustomerId(), null);
+            while(cursorCustomer.moveToNext()) {
+                customerName = cursorCustomer.getString(cursorCustomer.getColumnIndex("CUSTOMER_NAME"));
+            }
+
+            String saleManName = "";
+            Cursor cursorSaleMan = database.rawQuery("select USER_NAME from SALE_MAN where ID = " + preOrder.getSalePersonId(), null);
+            while(cursorSaleMan.moveToNext()) {
+                saleManName = cursorSaleMan.getString(cursorSaleMan.getColumnIndex("USER_NAME"));
+            }
+
             message += "Inv: " + preOrder.getInvoiceId()
-                    + "\nCus: " + preOrder.getCustomerId() + " SM: " + preOrder.getSalePersonId()
+                    + "\nCus: " + customerName + ", SM: " + saleManName
                     + "\nSO: " + preOrder.getPreOrderDate();
                     //+ "\nAdvanced Payment Amount : " + preOrder.getAdvancedPaymentAmount();
 
@@ -765,7 +777,8 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
 
             }
 
-            message += "\nRemark: " + preOrder.getRemark();
+            /** need to modify value from remark */
+            message += "\nRemark: " + remarkEditText.getText().toString();
             message += "\nDL: " + preOrder.getExpectedDeliveryDate();
         }
         return message;
