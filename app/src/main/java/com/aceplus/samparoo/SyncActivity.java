@@ -431,6 +431,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
                 cv.put("PURCHASE_PRICE", product.getPurchasePrice());
                 cv.put("DISCOUNT_TYPE", product.getProductTypeId());
                 cv.put("UM", product.getUmId());
+                cv.put("DEVICE_ISSUE_STATUS", product.getDeviceIssueStatus());
                 database.insertOrThrow("PRODUCT", null, cv);
             } else if(checkDuplicate(product.getId()) && product.getTotal_Qty() != 0) {
                 String query = "UPDATE PRODUCT SET TOTAL_QTY = TOTAL_QTY + " + product.getTotal_Qty() + ", REMAINING_QTY = REMAINING_QTY + " + product.getTotal_Qty() + " WHERE ID = " + product.getId();
@@ -459,6 +460,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
             cv.put("PURCHASE_PRICE", product.getPurchasePrice());
             cv.put("DISCOUNT_TYPE", product.getProductTypeId());
             cv.put("UM", product.getUmId());
+            cv.put("DEVICE_ISSUE_STATUS", product.getDeviceIssueStatus());
 
             String[] whereArgs = {product.getId()};
 

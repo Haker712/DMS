@@ -61,87 +61,89 @@
         </LinearLayout>
     </RelativeLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#898989"
-        android:padding="10dp">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:text="Invoice ID"
-            android:textColor="#FFFFFF"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:text="Customer Name"
-            android:textColor="#FFFFFF"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:gravity="center_horizontal"
-            android:text="Address"
-            android:textColor="#FFFFFF"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:text="Total Amount"
-            android:textColor="#FFFFFF"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:text="Discount Amount"
-            android:textColor="#FFFFFF"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/sale_order_report_advanced_amount_label"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:text="Advanced Payment Amount"
-            android:textColor="#FFFFFF"
-            android:textStyle="bold"
-            android:visibility="gone"/>
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:text="Net Amount"
-            android:textColor="#FFFFFF"
-            android:textStyle="bold" />
-    </LinearLayout>
-
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/sale_invoice_report_header_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#898989"
+            android:padding="10dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:text="Invoice ID"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:text="Customer Name"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:gravity="center_horizontal"
+                android:text="Address"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:text="Total Amount"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:text="Discount Amount"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/sale_order_report_advanced_amount_label"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:text="Advanced Payment Amount"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:text="Net Amount"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold" />
+        </LinearLayout>
 
         <ListView
             android:id="@+id/saleInvoceReports"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@+id/sale_report_amount_layout"
+            android:layout_below="@+id/sale_invoice_report_header_layout"
             android:paddingBottom="20dp" />
 
         <TableLayout
@@ -151,8 +153,8 @@
             android:layout_above="@+id/empty_layout"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:paddingRight="30dp"
-            android:paddingEnd="30dp">
+            android:paddingEnd="30dp"
+            android:paddingRight="30dp">
 
             <TableRow
                 android:layout_width="wrap_content"
@@ -164,19 +166,19 @@
                     android:id="@+id/sale_report_total_amt_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_column="1"
                     android:text="Total Amount            : "
                     android:textSize="17sp"
-                    android:textStyle="bold"
-                    android:layout_column="1"/>
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/sale_report_total_amt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_column="2"
                     android:text="0.0"
                     android:textSize="17sp"
-                    android:textStyle="bold"
-                    android:layout_column="2" />
+                    android:textStyle="bold" />
 
             </TableRow>
 
@@ -190,19 +192,19 @@
                     android:id="@+id/sale_report_discount_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_column="1"
                     android:text="Discount                     : "
                     android:textSize="17sp"
-                    android:textStyle="bold"
-                    android:layout_column="1" />
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/sale_report_discount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_column="2"
                     android:text="0.0"
                     android:textSize="17sp"
-                    android:textStyle="bold"
-                    android:layout_column="2" />
+                    android:textStyle="bold" />
             </TableRow>
 
             <TableRow
@@ -217,19 +219,19 @@
                     android:id="@+id/sale_order_report_advanced_amt_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_column="1"
                     android:text="Advanced Payment : "
                     android:textSize="17sp"
-                    android:textStyle="bold"
-                    android:layout_column="1" />
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/sale_order_report_advanced_amt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_column="2"
                     android:text="0.0"
                     android:textSize="17sp"
-                    android:textStyle="bold"
-                    android:layout_column="2" />
+                    android:textStyle="bold" />
             </TableRow>
 
             <TableRow
@@ -242,17 +244,17 @@
                     android:id="@+id/sale_report_net_amt_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_column="1"
                     android:text="Net Amount               : "
                     android:textSize="17sp"
-                    android:textStyle="bold"
-                    android:layout_column="1" />
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/sale_report_net_amt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0.0"
                     android:layout_column="2"
+                    android:text="0.0"
                     android:textSize="17sp"
                     android:textStyle="bold" />
             </TableRow>

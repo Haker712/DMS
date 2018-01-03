@@ -43,6 +43,7 @@ public class PrintInvoiceActivity extends Activity{
     List<SoldProduct> invoiceDetailList;
     List<Promotion> invoicePresentList;
     List<CreditInvoice> creditList;
+    List<SoldProduct> saleReturnList;
 
     public static final String INVOICE = "INVOICE";
     public static final String INVOICE_DETAIL = "INVOICE_DETAIL";
@@ -126,6 +127,10 @@ public class PrintInvoiceActivity extends Activity{
                     invoiceDetailList = (List<SoldProduct>) getIntent().getSerializableExtra(SaleCheckoutActivity.SOLD_PROUDCT_LIST_KEY);
                 }
 
+                if (getIntent().getSerializableExtra("sale_return_list") != null) {
+                    saleReturnList = (List<SoldProduct>) getIntent().getSerializableExtra(SaleCheckoutActivity.SOLD_PROUDCT_LIST_KEY);
+                }
+
                 if(printMode.equals("C") && creditFlg!= null && !creditFlg.equals("")) {
                     Utils.saveInvoiceImageIntoGallery(creditList.get(pos).getInvoiceNo(), PrintInvoiceActivity.this,myBitmap, "Credit Collect");
                     if (creditList != null && creditList.size() > 0) {
@@ -154,7 +159,34 @@ public class PrintInvoiceActivity extends Activity{
                             , getSaleManName(invoie.getSalepersonId())
                             , getCustomerTownshipName(Integer.parseInt(invoie.getCustomerId()))
                             , invoie, editProductList, invoicePresentList, Utils.PRINT_FOR_NORMAL_SALE
-                            , Utils.FOR_OTHERS);;
+                            , Utils.FOR_OTHERS);
+                } /*else if(printMode.equals("SX")) {
+                    Utils.saveInvoiceImageIntoGallery(invoie.getId(), PrintInvoiceActivity.this,myBitmap, "Sale");
+                    List<Promotion> tempPresentList = new ArrayList<>();
+                    tempPresentList.addAll(invoicePresentList);
+
+                    List<SoldProduct> editProductList = arrangeProductList(invoiceDetailList, tempPresentList);
+                    Utils.printSaleExchange(PrintInvoiceActivity.this, getCustomerName(Integer.parseInt(invoie.getCustomerId()))
+                            , invoie.getId()
+                            , getSaleManName(invoie.getSalepersonId())
+                            , getCustomerTownshipName(Integer.parseInt(invoie.getCustomerId()))
+                            , invoie, editProductList, saleReturnList, tempPresentList, Utils.PRINT_FOR_NORMAL_SALE
+                            , Utils.FOR_OTHERS);
+                } */else if(printMode.equals("SR")){
+                    Utils.saveInvoiceImageIntoGallery(invoie.getId(), PrintInvoiceActivity.this,myBitmap, "Sale");
+                    List<Promotion> tempPresentList = new ArrayList<>();
+
+                    if(invoicePresentList != null && invoicePresentList.size() > 0) {
+                        tempPresentList.addAll(invoicePresentList);
+                    }
+
+                    List<SoldProduct> editProductList = arrangeProductList(invoiceDetailList, tempPresentList);
+                    Utils.print(PrintInvoiceActivity.this, getCustomerName(Integer.parseInt(invoie.getCustomerId()))
+                            , invoie.getId()
+                            , getSaleManName(invoie.getSalepersonId())
+                            , getCustomerTownshipName(Integer.parseInt(invoie.getCustomerId()))
+                            , invoie, editProductList, tempPresentList, Utils.PRINT_FOR_NORMAL_SALE
+                            , Utils.FOR_OTHERS);
                 }
 
             }
@@ -222,9 +254,13 @@ public class PrintInvoiceActivity extends Activity{
             setPromotionProductListView();
             totalAmountTxtView.setText(Utils.formatAmount(invoie.getTotalAmt()));
             if(taxType.equalsIgnoreCase("E")) {
-                netAmountTxtView.setText(Utils.formatAmount(invoie.getTotalAmt() - invoie.getTotalDiscountAmt() + invoie.getTaxAmount()));
+                if(invoie.getTotalAmt() != null && invoie.getTotalDiscountAmt() != null) {
+                    netAmountTxtView.setText(Utils.formatAmount(invoie.getTotalAmt() - invoie.getTotalDiscountAmt() + invoie.getTaxAmount()));
+                }
             } else {
-                netAmountTxtView.setText(Utils.formatAmount(invoie.getTotalAmt() - invoie.getTotalDiscountAmt()));
+                if(invoie.getTotalAmt() != null && invoie.getTotalDiscountAmt() != null) {
+                    netAmountTxtView.setText(Utils.formatAmount(invoie.getTotalAmt() - invoie.getTotalDiscountAmt()));
+                }
             }
             prepaidAmountTxtView.setText(Utils.formatAmount(invoie.getTotalPayAmt()));
             print_discountAmountTxtView.setText(Utils.formatAmount(invoie.getTotalDiscountAmt()) + " (" + new DecimalFormat("#0.00").format(invoie.getDiscountPercent()) + "%)");
@@ -274,6 +310,33 @@ public class PrintInvoiceActivity extends Activity{
             }
             prepaidAmountTxtView.setText(Utils.formatAmount(invoie.getTotalPayAmt()));
             print_discountAmountTxtView.setText(Utils.formatAmount(invoie.getTotalDiscountAmt()) + " (" + new DecimalFormat("#0.00").format(invoie.getDiscountPercent()) + "%)");
+        } else if(printMode.equals("SR")) {
+            txtSaleDate.setText(invoie.getDate().substring(0,10));
+            txtInvoiceNo.setText(invoie.getId());
+            txtSaleMan.setText(getSaleManName(invoie.getSalepersonId()));
+            txtBranch.setText(branchCode);
+            soldProductListView.setAdapter(new SoldProductListRowAdapter(this));
+            setPromotionProductListView();
+            if(invoie.getTotalAmt() != null) {
+                totalAmountTxtView.setText(Utils.formatAmount(invoie.getTotalAmt()));
+            }
+            if(taxType.equalsIgnoreCase("E")) {
+                if(invoie.getTotalAmt() != null && invoie.getTotalDiscountAmt() != null) {
+                    netAmountTxtView.setText(Utils.formatAmount(invoie.getTotalAmt() - invoie.getTotalDiscountAmt() + invoie.getTaxAmount()));
+                }
+            } else {
+                if(invoie.getTotalAmt() != null && invoie.getTotalDiscountAmt() != null) {
+                    netAmountTxtView.setText(Utils.formatAmount(invoie.getTotalAmt() - invoie.getTotalDiscountAmt()));
+                }
+            }
+
+            if(invoie.getTotalPayAmt() != null){
+                prepaidAmountTxtView.setText(Utils.formatAmount(invoie.getTotalPayAmt()));
+            }
+
+            if(invoie.getTotalDiscountAmt() != null) {
+                print_discountAmountTxtView.setText(Utils.formatAmount(invoie.getTotalDiscountAmt()) + " (" + new DecimalFormat("#0.00").format(invoie.getDiscountPercent()) + "%)");
+            }
         }
 
     }
@@ -315,14 +378,17 @@ public class PrintInvoiceActivity extends Activity{
     }
 
     private void setPromotionProductListView() {
-        int itemLength = invoicePresentList.size() * 100;
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, itemLength);
-        params.setMargins(20, 0, 0, 20);
-        promotionPlanItemListView.setLayoutParams(params);
+        if(invoicePresentList != null){
+            int itemLength = invoicePresentList.size() * 100;
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, itemLength);
+            params.setMargins(20, 0, 0, 20);
+            promotionPlanItemListView.setLayoutParams(params);
 
-        promotionProductCustomAdapter = new PromotionProductCustomAdapter(this);
-        promotionPlanItemListView.setAdapter(promotionProductCustomAdapter);
-        promotionProductCustomAdapter.notifyDataSetChanged();
+            promotionProductCustomAdapter = new PromotionProductCustomAdapter(this);
+            promotionPlanItemListView.setAdapter(promotionProductCustomAdapter);
+            promotionProductCustomAdapter.notifyDataSetChanged();
+        }
+
     }
 
     private class SoldProductListRowAdapter extends ArrayAdapter<SoldProduct> {

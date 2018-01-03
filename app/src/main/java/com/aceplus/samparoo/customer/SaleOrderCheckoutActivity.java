@@ -986,7 +986,10 @@ public class SaleOrderCheckoutActivity extends AppCompatActivity implements OnAc
             preOrderProduct.setProductId(soldProduct.getProduct().getStockId());
             preOrderProduct.setOrderQty(soldProduct.getQuantity());
             preOrderProduct.setPrice(soldProduct.getProduct().getPrice());
-            preOrderProduct.setPromotionPrice(soldProduct.getPromotionPrice());
+
+            if(soldProduct.getPromotionPrice() == 0.0) {
+                preOrderProduct.setPromotionPrice(soldProduct.getProduct().getPrice());
+            }
 
             if(soldProduct.getPromotionPlanId() == null) {
                 preOrderProduct.setPromotionPlanId(null);

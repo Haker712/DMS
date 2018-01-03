@@ -321,7 +321,7 @@
                                 android:layout_marginRight="10dp"
                                 android:layout_weight="2"
                                 android:gravity="right"
-                                android:text="SaleReturn Amount" />
+                                android:text="Sale Return Amount" />
 
                             <TextView
                                 android:id="@+id/salereturnAmount"

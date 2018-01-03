@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aceplus.samparoo.LoginActivity;
+import com.aceplus.samparoo.PrintInvoiceActivity;
 import com.aceplus.samparoo.R;
 import com.aceplus.samparoo.model.Category;
 import com.aceplus.samparoo.model.Customer;
@@ -33,6 +34,7 @@ import com.aceplus.samparoo.model.Product;
 import com.aceplus.samparoo.model.SaleReturn;
 import com.aceplus.samparoo.model.SaleReturnDetail;
 import com.aceplus.samparoo.model.SoldProduct;
+import com.aceplus.samparoo.model.forApi.Invoice;
 import com.aceplus.samparoo.model.forApi.InvoiceResponse;
 import com.aceplus.samparoo.model.forApi.SaleReturnApi;
 import com.aceplus.samparoo.model.forApi.SaleReturnItem;
@@ -88,7 +90,7 @@ public class SaleReturnActivity extends AppCompatActivity implements OnActionCli
 
     private ImageView cancelImg, comfirmImg;
 
-    EditText returnCashAmtEditText;
+    EditText returnCashAmtEditText, returnDiscountEditText;
 
     String sale_return_id, saleman_Id;
     int count = 0;
@@ -175,7 +177,35 @@ public class SaleReturnActivity extends AppCompatActivity implements OnActionCli
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
 
-                sellProduct(null, parent.getItemAtPosition(position).toString());
+                /*sellProduct(null, parent.getItemAtPosition(position).toString());
+                searchProductTextView.setText("");*/
+
+                Product tempProduct = null;
+
+                for (Product product : products) {
+
+                    if (product.getName().equals(parent.getItemAtPosition(position).toString())) {
+
+                        tempProduct = product;
+                    }
+                }
+
+                if (tempProduct != null) {
+                    boolean sameProduct = false;
+                    for (SoldProduct tempSoldProduct : soldProductList) {
+                        if (tempSoldProduct.getProduct().getStockId() == tempProduct.getStockId()) {
+                            sameProduct = true;
+                            break;
+                        }
+                    }
+
+                    if (!sameProduct) {
+                        soldProductList.add(new SoldProduct(tempProduct, false));
+                        soldProductListRowAdapter.notifyDataSetChanged();
+                    } else {
+                        Utils.commonDialog("Already have this product", SaleReturnActivity.this, 2);
+                    }
+                }
                 searchProductTextView.setText("");
             }
         });
@@ -223,6 +253,7 @@ public class SaleReturnActivity extends AppCompatActivity implements OnActionCli
         comfirmImg = (ImageView) findViewById(R.id.confirm_img);
         netAmountTextView = (TextView) findViewById(R.id.netAmountTextView);
         returnCashAmtEditText = (EditText) findViewById(R.id.returnCashAmtEditText);
+        returnDiscountEditText = (EditText) findViewById(R.id.saleReturnDiscountEditText);
     }
 
     private void setAdapters() {
@@ -313,7 +344,7 @@ public class SaleReturnActivity extends AppCompatActivity implements OnActionCli
         Double netAmt = Double.parseDouble(netAmtTxt);
         saleReturn.setAmt(netAmt);
 
-        Double payAmt = 0.0;
+        Double payAmt = 0.0, discountAmt = 0.0;
 
         if(returnCashAmtEditText.getText().toString() != null && !returnCashAmtEditText.getText().toString().equals("")) {
             payAmt = Double.parseDouble(returnCashAmtEditText.getText().toString());
@@ -328,6 +359,11 @@ public class SaleReturnActivity extends AppCompatActivity implements OnActionCli
         } else {
             saleReturn.setInvoiceStatus("CR");
         }
+
+        if(returnDiscountEditText.getText().toString() != null && !returnDiscountEditText.getText().toString().equals("")) {
+            discountAmt = Double.parseDouble(returnDiscountEditText.getText().toString());
+        }
+        saleReturn.setDiscountAmount(discountAmt);
 
         database.beginTransaction();
 
@@ -368,17 +404,34 @@ public class SaleReturnActivity extends AppCompatActivity implements OnActionCli
             intent.putExtra("SaleExchange", "yes");
             intent.putExtra(SaleActivity.CUSTOMER_INFO_KEY, customer);
             intent.putExtra(SaleActivity.SALE_RETURN_INVOICEID_KEY, sale_return_id);
-            intent.putExtra(Constant.KEY_SALE_RETURN_AMOUNT, netAmount);
+            intent.putExtra(Constant.KEY_SALE_RETURN_AMOUNT, saleReturn.getDiscountAmount() + saleReturn.getPayAmt());
             startActivity(intent);
-
         } else {
 
-            Intent intent = new Intent(SaleReturnActivity.this, CustomerActivity.class);
-            //intent.putExtra(CustomerActivity.USER_INFO_KEY, userInfo.toString());
+            /*Intent intent = new Intent(SaleReturnActivity.this, CustomerActivity.class);
             intent.putExtra("SaleExchange", "no");
             startActivity(intent);
-            finish();
+            finish();*/
 
+            Invoice invoice = new Invoice();
+            invoice.setId(sale_return_id);
+            invoice.setDate(saleReturn.getReturnedDate());
+            invoice.setCustomerId(saleReturn.getCustomerId() + "");
+            invoice.setLocationCode(saleReturn.getLocationId());
+            invoice.setTotalAmt(saleReturn.getAmt());
+            invoice.setTotalPayAmt(saleReturn.getPayAmt());
+            invoice.setTotalDiscountAmt(saleReturn.getDiscountAmount());
+            invoice.setDeviceId(saleReturn.getPcAddress());
+            invoice.setInvoiceStatus(saleReturn.getInvoiceStatus());
+            invoice.setSalepersonId(Integer.parseInt(saleman_Id));
+
+            Intent intent = new Intent(SaleReturnActivity.this, PrintInvoiceActivity.class);
+            intent.putExtra(SaleCheckoutActivity.INVOICE, invoice);
+            intent.putExtra(SaleCheckoutActivity.SOLD_PROUDCT_LIST_KEY
+                    , SaleReturnActivity.this.soldProductList);
+            intent.putExtra("PRINT_MODE"
+                    , "SR");
+            startActivity(intent);
         }
 
 
@@ -401,6 +454,7 @@ public class SaleReturnActivity extends AppCompatActivity implements OnActionCli
         contentValues.put("DELETE_FLAG", 0);
         contentValues.put("INVOICE_STATUS", saleReturn.getInvoiceStatus());
         contentValues.put("SALE_MAN_ID", saleman_Id);
+        contentValues.put("DISCOUNT", saleReturn.getDiscountAmount());
 
         database.insert("SALE_RETURN", null, contentValues);
 

@@ -41,6 +41,9 @@ public class ProductForApi {
     @SerializedName("total_qty")
     @Expose
     private int total_Qty;
+    @SerializedName("device_issue_status")
+    @Expose
+    private int deviceIssueStatus;
 
     public String getId() {
         return id;
@@ -128,5 +131,13 @@ public class ProductForApi {
 
     public void setTotal_Qty(int total_Qty) {
         this.total_Qty = total_Qty;
+    }
+
+    public int getDeviceIssueStatus() {
+        return deviceIssueStatus;
+    }
+
+    public void setDeviceIssueStatus(int deviceIssueStatus) {
+        this.deviceIssueStatus = deviceIssueStatus;
     }
 }

@@ -587,7 +587,7 @@
                     android:layout_marginRight="10dp"
                     android:layout_weight="2"
                     android:gravity="right"
-                    android:text="10000" />
+                    android:text="0" />
             </LinearLayout>
 
             <LinearLayout
@@ -609,7 +609,7 @@
                     android:layout_marginRight="10dp"
                     android:layout_weight="2"
                     android:gravity="right"
-                    android:text="10000" />
+                    android:text="0" />
             </LinearLayout>
 
             <LinearLayout
@@ -631,7 +631,7 @@
                     android:layout_marginRight="10dp"
                     android:layout_weight="2"
                     android:gravity="right"
-                    android:text="10000" />
+                    android:text="0" />
             </LinearLayout>
 
             <LinearLayout
@@ -653,7 +653,7 @@
                     android:layout_marginRight="10dp"
                     android:layout_weight="2"
                     android:gravity="right"
-                    android:text="10000" />
+                    android:text="0" />
             </LinearLayout>
         </LinearLayout>
 

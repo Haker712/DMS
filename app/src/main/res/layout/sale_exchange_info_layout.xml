@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <RelativeLayout
+        android:id="@+id/sx_info_layout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/appbar_height"
         android:background="@color/colorAccent" >
@@ -17,6 +18,16 @@
             android:src="@drawable/ic_done_hx_btn"
             android:layout_marginLeft="20dp"/>
 
+        <ImageView
+            android:id="@+id/print_img"
+            android:layout_width="@dimen/btn_appbar_width"
+            android:layout_height="@dimen/btn_appbar_height"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:layout_toRightOf="@+id/confirmAndPrint_img"
+            android:gravity="center"
+            android:src="@drawable/ic_print_xh_btn" />
+
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
@@ -29,10 +40,12 @@
     </RelativeLayout>
     
     <LinearLayout
+        android:id="@+id/sx_info_main_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/sx_info_layout"
         android:orientation="vertical"
-        android:layout_margin="30dp">
+        android:layout_margin="10dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -42,14 +55,12 @@
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:text="Date"
-                android:textSize="20sp"
                 android:textColor="@color/black"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=":"
-                android:textSize="20sp"
                 android:textColor="@color/black"
                 android:layout_marginLeft="20dp"/>
 
@@ -58,7 +69,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/sale_date"
-                android:textSize="20sp"
                 android:textColor="@color/black"
                 android:layout_marginLeft="20dp"/>
 
@@ -66,21 +76,18 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp">
+            android:layout_height="wrap_content" >
 
             <TextView
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:text="Customer Name"
-                android:textSize="20sp"
                 android:textColor="@color/black"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=":"
-                android:textSize="20sp"
                 android:textColor="@color/black"
                 android:layout_marginLeft="20dp"/>
 
@@ -89,7 +96,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/customer_name_label"
-                android:textSize="20sp"
                 android:textColor="@color/black"
                 android:layout_marginLeft="20dp"/>
 
@@ -97,21 +103,18 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp">
+            android:layout_height="wrap_content">
 
             <TextView
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:text="Sale Return Amount"
-                android:textSize="20sp"
                 android:textColor="@color/black"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=":"
-                android:textSize="20sp"
                 android:textColor="@color/black"
                 android:layout_marginLeft="20dp"/>
 
@@ -120,7 +123,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/customer_name_label"
-                android:textSize="20sp"
                 android:textColor="@color/black"
                 android:layout_marginLeft="20dp"/>
 
@@ -128,21 +130,45 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp">
+            android:layout_height="wrap_content">
 
             <TextView
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
-                android:text="Sale Exchange Amount"
-                android:textSize="20sp"
+                android:text="Sale Return Discount Amount"
                 android:textColor="@color/black"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=":"
-                android:textSize="20sp"
+                android:textColor="@color/black"
+                android:layout_marginLeft="20dp"/>
+
+            <TextView
+                android:id="@+id/textViewSaleReturnDiscountAmt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/customer_name_label"
+                android:textColor="@color/black"
+                android:layout_marginLeft="20dp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:text="Sale Exchange Amount"
+                android:textColor="@color/black"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=":"
                 android:textColor="@color/black"
                 android:layout_marginLeft="20dp"/>
 
@@ -151,7 +177,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/customer_name_label"
-                android:textSize="20sp"
                 android:textColor="@color/black"
                 android:layout_marginLeft="20dp"/>
 
@@ -159,21 +184,19 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp">
+            android:layout_height="wrap_content">
 
             <TextView
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:text="Pay Amount From Customer"
-                android:textSize="20sp"
                 android:textColor="@color/black"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=":"
-                android:textSize="20sp"
+                android:textSize="12sp"
                 android:textColor="@color/black"
                 android:layout_marginLeft="20dp"/>
 
@@ -182,7 +205,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/customer_name_label"
-                android:textSize="20sp"
                 android:textColor="@color/black"
                 android:layout_marginLeft="20dp"/>
 
@@ -190,21 +212,18 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp">
+            android:layout_height="wrap_content">
 
             <TextView
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:text="Refund To Customer"
-                android:textSize="20sp"
                 android:textColor="@color/black"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=":"
-                android:textSize="20sp"
                 android:textColor="@color/black"
                 android:layout_marginLeft="20dp"/>
 
@@ -213,7 +232,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/customer_name_label"
-                android:textSize="20sp"
                 android:textColor="@color/black"
                 android:layout_marginLeft="20dp"/>
 
@@ -221,4 +239,103 @@
         
     </LinearLayout>
 
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/sale_return_headerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#898989"
+        android:layout_below="@+id/sx_info_main_header"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginEnd="10dp"
+        android:padding="5dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:gravity="center_horizontal"
+            android:text="@string/product"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:text="@string/qty"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:text="@string/price"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/sx_info_sale_exchange_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/sale_return_headerLayout"/>
+
+    <LinearLayout
+        android:id="@+id/sale_exchange_headerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#898989"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_below="@+id/sx_info_sale_exchange_list"
+        android:padding="3dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:gravity="center_horizontal"
+            android:text="@string/product"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:text="@string/qty"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:text="@string/price"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/sx_info_sale_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/sale_exchange_headerLayout"/>
+
+    <LinearLayout
+        android:id="@+id/empty_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="10dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal" />
+
+</RelativeLayout>

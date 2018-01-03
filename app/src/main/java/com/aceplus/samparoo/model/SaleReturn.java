@@ -61,6 +61,11 @@ public class SaleReturn implements Cloneable, Serializable {
     private String saleId;
 
     /**
+     * Discount of sale return
+     */
+    private double discountAmount;
+
+    /**
      * Getter method for saleReturnId
      *
      * @return saleReturnId
@@ -238,5 +243,21 @@ public class SaleReturn implements Cloneable, Serializable {
      */
     public void setSaleId(String saleId) {
         this.saleId = saleId;
+    }
+
+    /**
+     * Get discount amount
+     * @return discount amount
+     */
+    public double getDiscountAmount() {
+        return discountAmount;
+    }
+
+    /**
+     * Set discount amount
+     * @param discountAmount double
+     */
+    public void setDiscountAmount(double discountAmount) {
+        this.discountAmount = discountAmount;
     }
 }

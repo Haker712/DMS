@@ -609,7 +609,7 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
                 String tempNetAmount = netAmountTextView.getText().toString().replace(",", "");
                 //Log.i("tempNetAmount", tempNetAmount);
 
-                if (tempPayAmount.length() > 0 && tempNetAmount.length() > 0) {
+                if (tempPayAmount.length() > 0 && tempNetAmount.length() > 0 && !tempPayAmount.equalsIgnoreCase("-")) {
 
                     if (Double.parseDouble(tempPayAmount) >= Double.parseDouble(tempNetAmount)) {
 
@@ -697,6 +697,13 @@ public class SaleCheckoutActivity extends AppCompatActivity implements OnActionC
         intent.putExtra(SaleActivity.SALE_RETURN_INVOICEID_KEY, getIntent().getStringExtra(SaleActivity.SALE_RETURN_INVOICEID_KEY));
         intent.putExtra(SALE_EXCHANGE_INVOICEID_KEY, invoiceIdTextView.getText().toString());
         intent.putExtra(DATE_KEY, saleDateTextView.getText().toString());
+        intent.putExtra(SaleCheckoutActivity.INVOICE, SaleCheckoutActivity.this.invoice);
+        intent.putExtra(SaleCheckoutActivity.SOLD_PROUDCT_LIST_KEY
+                , SaleCheckoutActivity.this.soldProductList);
+        intent.putExtra(SaleCheckoutActivity.INVOICE_PRESENT
+                , SaleCheckoutActivity.this.promotionArrayList);
+        intent.putExtra("PRINT_MODE"
+                , "SX");
         startActivity(intent);
         finish();
     }

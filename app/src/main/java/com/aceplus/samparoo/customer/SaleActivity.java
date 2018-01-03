@@ -418,7 +418,7 @@ public class SaleActivity extends AppCompatActivity {
                 "SELECT * FROM PRODUCT WHERE CATEGORY_ID = '" + categoryId + "'", null);*/
 
         Cursor cursor = db.rawQuery(
-                "SELECT * FROM PRODUCT WHERE TOTAL_QTY > 0", null);
+                "SELECT * FROM PRODUCT WHERE TOTAL_QTY > 0 AND DEVICE_ISSUE_STATUS = 1", null);
 
         products = new Product[cursor.getCount()];
         while (cursor.moveToNext()) {
