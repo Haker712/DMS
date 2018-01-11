@@ -486,7 +486,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
         if (duplicateCursor.moveToNext()){
             count = duplicateCursor.getInt(duplicateCursor.getColumnIndex("COUNT"));
         }
-
+        duplicateCursor.close();
         if(count > 0) {
             return true;
         }
@@ -3325,7 +3325,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
                         //Utils.cancelDialog();
                         List<SaleHistory> saleHistoryCustomerList = response.body().getDataForSaleHistoryList().get(0).getSaleHistoryList();
 
-                        Log.i("saleHistoryRecordList>>>", saleHistoryCustomerList.size() + "");
+                        //Log.i("saleHistoryRecordList>>>", saleHistoryCustomerList.size() + "");
 
                         if(saleHistoryCustomerList.size() > 0) {
                             database.beginTransaction();
@@ -3802,7 +3802,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
             public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
                 if (response.code() == 200) {
                     if (response.body().getAceplusStatusCode() == 200) {
-                        uploadCompetitorToServer();
+                        uploadInvoiceCancelToSever();
                     } else {
                         if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
                             onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
@@ -3910,6 +3910,158 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
         competitorRequestData.setCompetitorActivityList(competitorActivities);
         competitorRequestDataList.add(competitorRequestData);
         return competitorRequestDataList;
+    }
+
+    private void uploadInvoiceCancelToSever() {
+
+        String paramData = "";
+        DataForSaleCancelUpload dataforSaleUpload = new DataForSaleCancelUpload();
+        List<DataForSaleCancelUpload> dataforSaleUploads = new ArrayList<>();
+
+        dataforSaleUpload.setInvoice(getInvoiceCancelData());
+
+        dataforSaleUploads.add(dataforSaleUpload);
+
+        TSaleCancelRequest tSaleCancelRequest = new TSaleCancelRequest();
+        tSaleCancelRequest.setSiteActivationKey(Constant.SITE_ACTIVATION_KEY);
+        tSaleCancelRequest.setTabletActivationKey(Constant.TABLET_ACTIVATION_KEY);
+        tSaleCancelRequest.setUserId(saleman_Id);
+        tSaleCancelRequest.setPassword("");//it is empty string bcoz json format using gson cannot accept encrypted
+        tSaleCancelRequest.setRoute(String.valueOf(getRouteID(saleman_Id)));
+        tSaleCancelRequest.setData(dataforSaleUploads);
+
+        paramData = getJsonFromObject(tSaleCancelRequest);
+
+        Log.i("ParamData", paramData);
+
+
+        UploadService uploadService = RetrofitServiceFactory.createService(UploadService.class);
+        Call<InvoiceResponse> call = uploadService.getSaleCancelInvoice(paramData);
+        call.enqueue(new Callback<InvoiceResponse>() {
+            @Override
+            public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
+                if (response.code() == 200) {
+                    if (response.body().getAceplusStatusCode() == 200) {
+
+                        if (!services.equals("")) {
+                            services += ",";
+                        }
+                        services += getResources().getString(R.string.sale);
+
+                        uploadCompetitorToServer();
+                    } else {
+                        if (response.body() != null && response.body().getAceplusStatusMessage().length() != 0) {
+                            onFailure(call, new Throwable(response.body().getAceplusStatusMessage()));
+                        }
+                    }
+
+                } else {
+                    Utils.cancelDialog();
+                    Utils.commonDialog(getResources().getString(R.string.server_error), SyncActivity.this, 1);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<InvoiceResponse> call, Throwable t) {
+                Utils.cancelDialog();
+                Utils.commonDialog(t.getMessage(), SyncActivity.this, 1);
+
+            }
+        });
+    }
+
+    private List<Invoice> getInvoiceCancelData() {
+
+        List<Invoice> invoiceList = new ArrayList<>();
+
+        Cursor cursor_invoice = database.rawQuery("select * from INVOICE_CANCEL WHERE SALE_DATE >= DATE('now')", null);
+
+        while (cursor_invoice.moveToNext()) {
+
+            Invoice invoice = new Invoice();
+            String invoice_Id = cursor_invoice.getString(cursor_invoice.getColumnIndex("INVOICE_ID"));
+            String customer_Id = cursor_invoice.getString(cursor_invoice.getColumnIndex("CUSTOMER_ID"));
+            String sale_date = cursor_invoice.getString(cursor_invoice.getColumnIndex("SALE_DATE"));
+            Double totalAmount = cursor_invoice.getDouble(cursor_invoice.getColumnIndex("TOTAL_AMOUNT"));
+            int totalQuantity = cursor_invoice.getInt(cursor_invoice.getColumnIndex("TOTAL_QUANTITY"));
+            Double totalDiscountAmount = cursor_invoice.getDouble(cursor_invoice.getColumnIndex("TOTAL_DISCOUNT_AMOUNT"));
+            Double totalPayAmount = cursor_invoice.getDouble(cursor_invoice.getColumnIndex("PAY_AMOUNT"));
+            Double totalRefundAmount = cursor_invoice.getDouble(cursor_invoice.getColumnIndex("REFUND_AMOUNT"));
+            String receiptPerson = cursor_invoice.getString(cursor_invoice.getColumnIndex("RECEIPT_PERSON_NAME"));
+            String invoiceStatus = cursor_invoice.getString(cursor_invoice.getColumnIndex("CASH_OR_CREDIT"));
+            Double totalDiscountPer = cursor_invoice.getDouble(cursor_invoice.getColumnIndex("TOTAL_DISCOUNT_PERCENT"));
+            String rate = cursor_invoice.getString(cursor_invoice.getColumnIndex("RATE"));
+            Double tax = cursor_invoice.getDouble(cursor_invoice.getColumnIndex("TAX_AMOUNT"));
+            String dueDate = cursor_invoice.getString(cursor_invoice.getColumnIndex("DUE_DATE"));
+            String bankName = cursor_invoice.getString(cursor_invoice.getColumnIndex("BANK_NAME"));
+            String bankAccNo = cursor_invoice.getString(cursor_invoice.getColumnIndex("BANK_ACCOUNT_NO"));
+
+            if(dueDate.equals("null") || dueDate.equals("NULL")) {
+                dueDate = null;
+            }
+
+            invoice.setId(invoice_Id);
+            invoice.setCustomerId(customer_Id);
+            invoice.setDate(sale_date);
+            invoice.setTotalAmt(totalAmount);
+            invoice.setTotalQty(totalQuantity);
+            invoice.setTotalDiscountAmt(totalDiscountAmount);
+            invoice.setTotalPayAmt(totalPayAmount);
+            invoice.setTotalRefundAmt(totalRefundAmount);
+            invoice.setReceiptPerson(receiptPerson);
+            invoice.setSalepersonId(cursor_invoice.getInt(cursor_invoice.getColumnIndex("SALE_PERSON_ID")));
+            invoice.setLocationCode(cursor_invoice.getInt(cursor_invoice.getColumnIndex("LOCATION_CODE")));
+            invoice.setDeviceId(cursor_invoice.getString(cursor_invoice.getColumnIndex("DEVICE_ID")));
+            invoice.setInvoiceTime(cursor_invoice.getString(cursor_invoice.getColumnIndex("INVOICE_TIME")));
+            invoice.setCurrencyId(currencyId);
+            invoice.setInvoiceStatus(invoiceStatus);
+            invoice.setDiscountPercent(totalDiscountPer);
+            invoice.setRate(Double.parseDouble(rate));
+            invoice.setTaxAmount(tax);
+            invoice.setDueDate(dueDate);
+            invoice.setBankName(bankName);
+            invoice.setBankAccountNo(bankAccNo);
+
+            List<InvoiceDetail> invoiceDetailList = new ArrayList<>();
+
+            Cursor cur_invoiceDetail = database.rawQuery("select * from INVOICE_CANCEL_PRODUCT WHERE INVOICE_PRODUCT_ID = '" + invoice.getId() + "'", null);
+            while (cur_invoiceDetail.moveToNext()) {
+                InvoiceDetail invoiceDetail = new InvoiceDetail();
+                String tsale_Id = cur_invoiceDetail.getString(cur_invoiceDetail.getColumnIndex("INVOICE_PRODUCT_ID"));
+                int product_Id = cur_invoiceDetail.getInt(cur_invoiceDetail.getColumnIndex("PRODUCT_ID"));
+                int quantity = cur_invoiceDetail.getInt(cur_invoiceDetail.getColumnIndex("SALE_QUANTITY"));
+                Double discountAmount = cur_invoiceDetail.getDouble(cur_invoiceDetail.getColumnIndex("DISCOUNT_AMOUNT"));
+                Double amount = cur_invoiceDetail.getDouble(cur_invoiceDetail.getColumnIndex("TOTAL_AMOUNT"));
+                Double discount_percent = cur_invoiceDetail.getDouble(cur_invoiceDetail.getColumnIndex("DISCOUNT_PERCENT"));
+                Double sPrice = cur_invoiceDetail.getDouble(cur_invoiceDetail.getColumnIndex("S_PRICE"));
+                Double pPrice = cur_invoiceDetail.getDouble(cur_invoiceDetail.getColumnIndex("P_PRICE"));
+                Double promotionPrice = cur_invoiceDetail.getDouble(cur_invoiceDetail.getColumnIndex("PROMOTION_PRICE"));
+                int promotionPlanId = cur_invoiceDetail.getInt(cur_invoiceDetail.getColumnIndex("PROMOTION_PLAN_ID"));
+                int exclude = cur_invoiceDetail.getInt(cur_invoiceDetail.getColumnIndex("EXCLUDE"));
+
+                invoiceDetail.setTsaleId(tsale_Id);
+                invoiceDetail.setProductId(product_Id);
+                invoiceDetail.setQty(quantity);
+                invoiceDetail.setDiscountAmt(discountAmount);
+                invoiceDetail.setAmt(amount);
+                invoiceDetail.setDiscountPercent(discount_percent);
+                invoiceDetail.setS_price(sPrice);
+                invoiceDetail.setP_price(pPrice);
+                invoiceDetail.setPromotionPrice(promotionPrice);
+                invoiceDetail.setPromotion_plan_id(promotionPlanId);
+                invoiceDetail.setExclude(exclude);
+
+                invoiceDetailList.add(invoiceDetail);
+            }
+
+            invoice.setInvoiceDetail(invoiceDetailList);
+
+            invoiceList.add(invoice);
+
+        }
+
+
+        return invoiceList;
     }
 
     @OnClick(R.id.cancel_img)

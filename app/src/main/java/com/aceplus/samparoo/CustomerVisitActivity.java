@@ -9,6 +9,7 @@ import com.aceplus.samparoo.credit_collection.CreditCollectActivity;
 import com.aceplus.samparoo.customer.AddNewCustomerActivity;
 import com.aceplus.samparoo.customer.CustomerActivity;
 import com.aceplus.samparoo.customer.DeliveryActivity;
+import com.aceplus.samparoo.customer.SaleCancelActivity;
 import com.aceplus.samparoo.utils.Utils;
 
 import butterknife.ButterKnife;
@@ -69,6 +70,12 @@ public class CustomerVisitActivity extends AppCompatActivity {
         finish();
     }
 
+    @OnClick(R.id.buttonInvoiceCanel)
+    void saleCancel(){
+        Intent intent=new Intent(this,SaleCancelActivity.class);
+        startActivity(intent);
+        finish();
+    }
 
     @OnClick(R.id.cancel_img)
     void back() {

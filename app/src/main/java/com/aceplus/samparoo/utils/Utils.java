@@ -1927,7 +1927,7 @@ public class Utils {
         }
     }
 
-    static String getProductNameAndPrice(Promotion invoicePresent) {
+    public static String getProductNameAndPrice(Promotion invoicePresent) {
         Cursor cursorProductName = database.rawQuery("SELECT PRODUCT_NAME, SELLING_PRICE FROM PRODUCT WHERE ID = " + invoicePresent.getPromotionProductId(), null);
         String productName = null;
         while (cursorProductName.moveToNext()) {

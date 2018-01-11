@@ -32,10 +32,12 @@
     <string name="visit_record">VISIT RECORD</string>
     <string name="posm">POSM</string>
     <string name="posm_checkout">POSM CHECKOUT</string>
+    <string name="sale_cancel">SALE CANCEL</string>
 
     <string name="category_previous">&lt;</string>
     <string name="category_next">&gt;</string>
     <string name="sale_date">Sale Date:</string>
+    <string name="cancel_date">Cancel Date:</string>
     <string name="product">Product</string>
     <string name="um">UM</string>
     <string name="qty">Qty</string>

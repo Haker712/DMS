@@ -18,6 +18,10 @@ public interface UploadService {
     Call<InvoiceResponse> getSaleInvoice(@Field("param_data") String paramData);
 
     @FormUrlEncoded
+    @POST("upload/tsale_cancel")
+    Call<InvoiceResponse> getSaleCancelInvoice(@Field("param_data") String paramData);
+
+    @FormUrlEncoded
     @POST("upload/customer")
     Call<InvoiceResponse> getCustomer(@Field("param_data") String paramData);
 

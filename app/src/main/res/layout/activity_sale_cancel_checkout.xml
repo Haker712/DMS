@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:text="@string/sale"
+            android:text="@string/sale_cancel"
             android:textColor="#ffffff"
             android:textSize="23sp" />
     </RelativeLayout>
@@ -118,31 +118,25 @@
                 android:gravity="right"
                 android:orientation="horizontal">
 
-                <LinearLayout
-                    android:id="@+id/invoiceIdLayout"
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:text="@string/invoice_id" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/invoice_id" />
-
-                    <TextView
-                        android:id="@+id/invoiceId"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="7dp" />
-                </LinearLayout>
+                <TextView
+                    android:id="@+id/sale_cancel_invoiceNo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="7dp"
+                    android:text="******" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/sale_date" />
+                    android:text="@string/cancel_date" />
 
                 <TextView
-                    android:id="@+id/saleDateTextView"
+                    android:id="@+id/cancelDateTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="7dp"
@@ -174,16 +168,6 @@
                     android:layout_weight="2"
                     android:gravity="center_horizontal"
                     android:text="@string/um"
-                    android:textColor="#FFFFFF"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tableHeaderOrderedQty"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:gravity="center_horizontal"
-                    android:text="@string/ordered_qty"
                     android:textColor="#FFFFFF"
                     android:textStyle="bold" />
 
@@ -237,62 +221,62 @@
                     android:layout_height="match_parent"
                     android:layout_alignParentBottom="true">-->
 
-                    <LinearLayout
-                        android:id="@+id/netAmountLayout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="true"
-                        android:layout_margin="10dp"
-                        android:padding="10dp">
+            <LinearLayout
+                android:id="@+id/netAmountLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_margin="10dp"
+                android:padding="10dp">
 
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="10dp"
-                            android:layout_weight="7"
-                            android:text="@string/net_amount"
-                            android:textStyle="bold" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_weight="7"
+                    android:text="@string/net_amount"
+                    android:textStyle="bold" />
 
-                        <TextView
-                            android:id="@+id/netAmountTextView"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="2"
-                            android:gravity="center_horizontal"
-                            android:text="0.0"
-                            android:textStyle="bold" />
-                    </LinearLayout>
+                <TextView
+                    android:id="@+id/netAmountTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:gravity="center_horizontal"
+                    android:text="0.0"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <ListView
+                android:id="@+id/soldProductList"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_margin="10dp"
+                android:descendantFocusability="blocksDescendants"
+                android:padding="10dp"
+                android:layout_below="@id/headerLayout" />
+
+            <ScrollView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/netAmountLayout"
+                android:layout_below="@+id/soldProductList">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
                     <ListView
-                        android:id="@+id/soldProductList"
+                        android:id="@+id/promotion_plan_gift_listview"
                         android:layout_width="match_parent"
-                        android:layout_height="300dp"
-                        android:layout_margin="10dp"
-                        android:descendantFocusability="blocksDescendants"
-                        android:padding="10dp"
-                        android:layout_below="@id/headerLayout" />
+                        android:layout_height="150dp"/>
 
-                    <ScrollView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_above="@+id/netAmountLayout"
-                        android:layout_below="@+id/soldProductList">
+                </LinearLayout>
+            </ScrollView>
+            <!--
+                            </RelativeLayout>
 
-                        <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <ListView
-                            android:id="@+id/promotion_plan_gift_listview"
-                            android:layout_width="match_parent"
-                            android:layout_height="150dp"/>
-
-                        </LinearLayout>
-                    </ScrollView>
-<!--
-                </RelativeLayout>
-
-            </ScrollView>-->
+                        </ScrollView>-->
 
         </RelativeLayout>
 
