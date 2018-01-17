@@ -38,7 +38,7 @@ public class ReportHomeActivity extends FragmentActivity {
 
     JSONObject userInfo;
 
-    ImageView cancelImg;
+    ImageView cancelImg, printImg;
     Spinner reportsSpinner;
 
     SQLiteDatabase database;
@@ -56,7 +56,7 @@ public class ReportHomeActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report_home);
 
-
+        printImg = (ImageView) findViewById(R.id.print_img);
         cancelImg = (ImageView) findViewById(R.id.cancel_img);
         reportsSpinner = (Spinner) findViewById(R.id.reports);
 
@@ -112,6 +112,7 @@ public class ReportHomeActivity extends FragmentActivity {
                 , "Sale History Report"
                 , "Sale Order History Report"
                 , "Sale Visit History Report"
+                , "End of Day Report"
         };
         ArrayAdapter<String> reportsSpinnerAdapter
                 = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, reportNames);
@@ -350,6 +351,12 @@ public class ReportHomeActivity extends FragmentActivity {
                     FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                     FragmentSaleVisitReport fragmentSaleVisitReport = new FragmentSaleVisitReport();
                     fragmentTransaction.replace(R.id.fragment_report, fragmentSaleVisitReport);
+                    fragmentTransaction.commit();
+                } else if(position == 16){
+                    printImg.setVisibility(View.VISIBLE);
+                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    FragmentDailyReportForSaleMan fragmentDailyReportForSaleMan = new FragmentDailyReportForSaleMan();
+                    fragmentTransaction.replace(R.id.fragment_report, fragmentDailyReportForSaleMan);
                     fragmentTransaction.commit();
                 }
             }

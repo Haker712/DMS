@@ -1226,7 +1226,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
 
         List<Invoice> invoiceList = new ArrayList<>();
 
-        Cursor cursor_invoice = database.rawQuery("select * from INVOICE WHERE SALE_DATE >= DATE('now')", null);
+        Cursor cursor_invoice = database.rawQuery("select * from INVOICE WHERE SALE_FLAG = 0", null);
 
         while (cursor_invoice.moveToNext()) {
 

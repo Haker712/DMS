@@ -31,6 +31,7 @@ import com.aceplus.samparoo.marketing.MainFragmentActivity;
 import com.aceplus.samparoo.model.CreditInvoice;
 import com.aceplus.samparoo.model.Product;
 import com.aceplus.samparoo.model.Promotion;
+import com.aceplus.samparoo.model.SaleManDailyReport;
 import com.aceplus.samparoo.model.SoldProduct;
 import com.aceplus.samparoo.model.forApi.Invoice;
 import com.aceplus.samparoo.model.forApi.InvoiceDetail;
@@ -913,6 +914,94 @@ public class Utils {
                                                             , townshipName
                                                             , salePersonName
                                                             , creditInvoiceList));
+                                    starIOPort.writePort(printDataByteArray, 0, printDataByteArray.length);
+                                }
+                            }
+                        } catch (StarIOPortException e) {
+
+                            showToast(activity, "Failed to connect to drawer");
+                            e.printStackTrace();
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        } finally {
+                            if (starIOPort != null) {
+
+                                try {
+
+                                    StarIOPort.releasePort(starIOPort);
+                                } catch (StarIOPortException e) {
+
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+                })
+                .show();
+    }
+
+    public static void printDailyReportForSaleMan(final Activity activity, final SaleManDailyReport saleManDailyReport) {
+
+        List<PortInfo> portInfoList = null;
+
+        try {
+
+            portInfoList = StarIOPort.searchPrinter("BT:Star");
+        } catch (StarIOPortException e) {
+
+            e.printStackTrace();
+        }
+
+        if (portInfoList == null || portInfoList.size() == 0) {
+
+            return;
+        }
+
+        List<String> availableBluetoothPrinterNameList = new ArrayList<String>();
+        for (PortInfo portInfo : portInfoList) {
+
+            availableBluetoothPrinterNameList.add(portInfo.getPortName());
+        }
+        final ArrayAdapter<String> arrayAdapter =
+                new ArrayAdapter<String>(
+                        activity
+                        , android.R.layout.select_dialog_singlechoice
+                        , availableBluetoothPrinterNameList);
+        new android.app.AlertDialog.Builder(activity)
+                .setTitle("Select Printer")
+                .setNegativeButton("Cancel", null)
+                .setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int position) {
+
+                        StarIOPort starIOPort = null;
+                        try {
+
+                            starIOPort = StarIOPort.getPort(arrayAdapter.getItem(position), "mini", 10000);
+                            if (starIOPort.retreiveStatus().offline) {
+
+                                if (!starIOPort.retreiveStatus().compulsionSwitch) {
+
+                                    showToast(activity, "The Drawer is offline\nCash Drawer: Close");
+                                } else {
+
+                                    showToast(activity, "The Drawer is offline\nCash Drawer: Open");
+                                }
+
+                                return;
+                            } else {
+
+                                if (starIOPort.retreiveStatus().compulsionSwitch) {
+
+                                    showToast(activity, "The Drawer is online\nCash Drawer: Open");
+                                } else {
+
+                                    byte[] printDataByteArray =
+                                            convertFromListByteArrayTobyteArray(
+                                                    getPrintDataByteArrayListForDailyReport(
+                                                            activity
+                                                            , saleManDailyReport));
                                     starIOPort.writePort(printDataByteArray, 0, printDataByteArray.length);
                                 }
                             }
@@ -1990,6 +2079,88 @@ public class Utils {
 
         return printDataByteArrayList;
     }
+
+    private static List<byte[]> getPrintDataByteArrayListForDailyReport(Activity activity, SaleManDailyReport saleManDailyReport) {
+        List<byte[]> printDataByteArrayList = new ArrayList<byte[]>();
+
+        //DecimalFormat decimalFormatterWithoutComma = new DecimalFormat("##0");
+        DecimalFormat decimalFormatterWithComma = new DecimalFormat("###,##0");
+
+        //double totalAmount = 0, totalNetAmount = 0;
+        /*String companyName = "";
+        Cursor companyInfoCursor = database.rawQuery("SELECT " + DatabaseContract.CompanyInformation.CompanyName + " FROM " + DatabaseContract.CompanyInformation.tb, null);
+        if (companyInfoCursor.moveToNext()) {
+            companyName = companyInfoCursor.getString(companyInfoCursor.getColumnIndex(DatabaseContract.CompanyInformation.CompanyName));
+        }
+
+        String[] companyNames = companyName.split(" ");
+        String names = "         ", fullName = "";
+        for (String s : companyNames) {
+            if (names.length() < 30) {
+                names += s + " ";
+            } else {
+                fullName += (names + "         ");
+                names = "\n         " + s;
+            }
+        }
+        fullName += names;*/
+
+        printDataByteArrayList.add(("               End of Day Report " + "\n\n").getBytes());
+        printDataByteArrayList.add((
+                "Sale Man                 :     " + saleManDailyReport.getSaleMan() + "\n").getBytes());
+        printDataByteArrayList.add((
+                "Route                    :     " + saleManDailyReport.getRouteName() + "\n").getBytes());
+        printDataByteArrayList.add((
+                "Date                     :     " + saleManDailyReport.getDate() + "\n").getBytes());
+
+        formatter = new Formatter(new StringBuilder(), Locale.US);
+        printDataByteArrayList.add(
+                formatter.format(
+                        "%1$-10s  %2$4s      %3$5s  %4$5s\n"
+                        , "Start Time : "
+                        , saleManDailyReport.getStartTime()
+                        , "End Time   : "
+                        , saleManDailyReport.getEndTime()).toString().getBytes());
+
+        formatter.close();
+
+        printDataByteArrayList.add((
+                "Total Sale               :     " + decimalFormatterWithComma.format(saleManDailyReport.getSaleAmt()) + "\n").getBytes());
+        printDataByteArrayList.add((
+                "Total Exchange & Return  :     " + decimalFormatterWithComma.format(saleManDailyReport.getReturnAmt()) + "\n").getBytes());
+
+        printDataByteArrayList.add((
+                "Total Cash Receipt       :     " + decimalFormatterWithComma.format(saleManDailyReport.getCashReceive()) + "\n").getBytes());
+
+        printDataByteArrayList.add((
+                "Net Cash                 :     " + decimalFormatterWithComma.format(saleManDailyReport.getNetAmt()) + "\n").getBytes());
+        printDataByteArrayList.add((
+                "Total Customer           :     " + saleManDailyReport.getCustomerCount() + "\n").getBytes());
+
+        printDataByteArrayList.add((
+                "Total Sale Count         :     " + saleManDailyReport.getSaleCount() + "\n").getBytes());
+
+        printDataByteArrayList.add((
+                "Total Order Count        :     " + saleManDailyReport.getOrderCount() + "\n").getBytes());
+
+        printDataByteArrayList.add((
+                "Total Sale Return Only   :     " +  saleManDailyReport.getReturnCount() + "\n").getBytes());
+
+        printDataByteArrayList.add((
+                "Total Cash Receipt Count :     " + saleManDailyReport.getCashReceiveCount() + "\n").getBytes());
+
+        printDataByteArrayList.add((
+                "Not Visited Count        :     " + saleManDailyReport.getNotVisitCount() + "\n").getBytes());
+
+        printDataByteArrayList.add((
+                "\nSignature          :\n\n                 Thank You. \n\n").getBytes());
+
+        printDataByteArrayList.add(new byte[]{0x1b, 0x64, 0x02}); // Cut
+        printDataByteArrayList.add(new byte[]{0x07}); // Kick cash drawer
+
+        return printDataByteArrayList;
+    }
+
 
     private static List<byte[]> getPrintDataByteArrayListForSaleExchange(Activity activity, String saleInvoiceNumber, String saleReturnInvoiceNumber, String salePersonName, Invoice invoice
             , List<SoldProduct> soldProductList, List<SoldProduct> saleReturnList, Double returnDiscountAmt) throws UnsupportedEncodingException {

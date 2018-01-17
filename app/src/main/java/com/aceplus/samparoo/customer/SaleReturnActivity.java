@@ -314,7 +314,7 @@ public class SaleReturnActivity extends AppCompatActivity implements OnActionCli
     private void insertintoDB() {
         String customerName = customer.getCustomerName();
         String customerAddress = customer.getAddress();
-        String saleDate = new SimpleDateFormat("yyyy/MM/dd").format(new Date());
+        String saleDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 
         JSONArray saleProducts = new JSONArray();
         for (SoldProduct soldProduct : SaleReturnActivity.this.soldProductList) {
