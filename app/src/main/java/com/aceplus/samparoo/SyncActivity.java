@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -55,6 +56,7 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
 
     String services;
 
+    SharedPreferences.Editor myEditor;
 
     @InjectView(R.id.textViewError)
     TextView textViewError;
@@ -97,6 +99,11 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
 
     @OnClick(R.id.buttonDownload)
     void download() {
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("h:mm a");
+        String startTime = sdf.format(date);
+        myEditor = LoginActivity.mySharedPreference.edit();
+        myEditor.putString(Constant.START_TIME, startTime);
 
         downloadCustomerFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
         //downloadProductsFromServer(Utils.createParamData(saleman_No, saleman_Pwd, getRouteID(saleman_Id)));
@@ -109,7 +116,6 @@ public class SyncActivity extends AppCompatActivity implements OnActionClickList
     @OnClick(R.id.buttonUpload)
     void upload() {
         services = "";
-
         Utils.askConfirmationDialog("UPLOAD", "Do you want to confirm?", "upload", SyncActivity.this);
     }
 

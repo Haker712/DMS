@@ -264,12 +264,12 @@
                         android:layout_gravity="center_horizontal"
                         android:layout_weight="2"
                         android:gravity="left"
-                        android:text="Total Exchange &amp; Return : "
+                        android:text="Total Order Sales : "
                         android:textSize="18sp"
                         android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/fragment_daily_report_total_exchange_return"
+                        android:id="@+id/fragment_daily_report_total_order_sale"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_column="3"
@@ -301,7 +301,83 @@
                         android:layout_gravity="center_horizontal"
                         android:layout_weight="2"
                         android:gravity="left"
-                        android:text="Total Cash Recipt : "
+                        android:text="Total Exchange : "
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/fragment_daily_report_total_exchange"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_column="3"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_weight="1"
+                        android:text="2018-01-01"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_column="4"
+                        android:layout_weight="1" />
+
+                </TableRow>
+
+                <TableRow android:padding="3dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_column="1"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_column="2"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_weight="2"
+                        android:gravity="left"
+                        android:text="Total Return : "
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/fragment_daily_report_total_return"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_column="3"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_weight="1"
+                        android:text="2018-01-01"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_column="4"
+                        android:layout_weight="1" />
+
+                </TableRow>
+
+                <TableRow android:padding="3dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_column="1"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_column="2"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_weight="2"
+                        android:gravity="left"
+                        android:text="Total Cash Receipt : "
                         android:textSize="18sp"
                         android:textStyle="bold" />
 
@@ -471,6 +547,44 @@
                         android:layout_height="wrap_content"
                         android:layout_column="4"
                         android:layout_weight="1" />
+                </TableRow>
+
+                <TableRow android:padding="3dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_column="1"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_column="2"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_weight="2"
+                        android:gravity="left"
+                        android:text="Total Sale Exchange only : "
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/fragment_daily_report_sale_exchange"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_column="3"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_weight="1"
+                        android:text="2018-01-01"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_column="4"
+                        android:layout_weight="1" />
+
                 </TableRow>
 
                 <TableRow android:padding="3dp">

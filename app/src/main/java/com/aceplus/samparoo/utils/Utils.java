@@ -2127,8 +2127,11 @@ public class Utils {
         printDataByteArrayList.add((
                 "Total Sale               :     " + decimalFormatterWithComma.format(saleManDailyReport.getSaleAmt()) + "\n").getBytes());
         printDataByteArrayList.add((
-                "Total Exchange & Return  :     " + decimalFormatterWithComma.format(saleManDailyReport.getReturnAmt()) + "\n").getBytes());
-
+                "Total Order Sales        :     " + decimalFormatterWithComma.format(saleManDailyReport.getOrderAmt()) + "\n").getBytes());
+        printDataByteArrayList.add((
+                "Total Exchange           :      (" + decimalFormatterWithComma.format(saleManDailyReport.getExchangeAmt()) + ")\n").getBytes());
+        printDataByteArrayList.add((
+                "Total Return           :      (" + decimalFormatterWithComma.format(saleManDailyReport.getReturnAmt()) + ")\n").getBytes());
         printDataByteArrayList.add((
                 "Total Cash Receipt       :     " + decimalFormatterWithComma.format(saleManDailyReport.getCashReceive()) + "\n").getBytes());
 
@@ -2142,6 +2145,9 @@ public class Utils {
 
         printDataByteArrayList.add((
                 "Total Order Count        :     " + saleManDailyReport.getOrderCount() + "\n").getBytes());
+
+        printDataByteArrayList.add((
+                "Total Exchange Only   :     " +  saleManDailyReport.getExchangeCount() + "\n").getBytes());
 
         printDataByteArrayList.add((
                 "Total Sale Return Only   :     " +  saleManDailyReport.getReturnCount() + "\n").getBytes());

@@ -527,7 +527,7 @@ public class ReportHomeActivity extends FragmentActivity {
 
         ArrayList<JSONObject> saleReturnReportsArrayList = new ArrayList<JSONObject>();
 
-        Cursor cursor = database.rawQuery("SELECT * FROM SALE_RETURN WHERE SALE_RETURN_ID LIKE 'SR%' ", null);
+        Cursor cursor = database.rawQuery("SELECT * FROM SALE_RETURN WHERE ` ", null);
         while (cursor.moveToNext()) {
 
             JSONObject saleReturnReportJsonObject = new JSONObject();

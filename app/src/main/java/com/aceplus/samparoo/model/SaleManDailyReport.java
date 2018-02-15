@@ -18,6 +18,10 @@ public class SaleManDailyReport {
 
     double saleAmt;
 
+    double orderAmt;
+
+    double exchangeAmt;
+
     double returnAmt;
 
     double cashReceive;
@@ -29,6 +33,8 @@ public class SaleManDailyReport {
     int saleCount;
 
     int orderCount;
+
+    int exchangeCount;
 
     int returnCount;
 
@@ -154,5 +160,29 @@ public class SaleManDailyReport {
 
     public void setNotVisitCount(int notVisitCount) {
         this.notVisitCount = notVisitCount;
+    }
+
+    public double getOrderAmt() {
+        return orderAmt;
+    }
+
+    public void setOrderAmt(double orderAmt) {
+        this.orderAmt = orderAmt;
+    }
+
+    public double getExchangeAmt() {
+        return exchangeAmt;
+    }
+
+    public void setExchangeAmt(double exchangeAmt) {
+        this.exchangeAmt = exchangeAmt;
+    }
+
+    public int getExchangeCount() {
+        return exchangeCount;
+    }
+
+    public void setExchangeCount(int exchangeCount) {
+        this.exchangeCount = exchangeCount;
     }
 }

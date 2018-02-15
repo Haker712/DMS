@@ -41,6 +41,10 @@ public class Constant {
 
     public String BASE_URL_TEST = "";
 
+    public static String START_TIME = "START_TIME";
+
+    public static String END_TIME = "END_TIME";
+
     public static void changeUrl(String ip) {
         BASE_URL = "";
         BASE_URL = ip;
